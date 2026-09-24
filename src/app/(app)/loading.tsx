@@ -1,0 +1,1 @@
+export default function Loading() { return <div role="status" aria-label="Loading your purchases"><div className="skeleton" style={{ height: 70 }} /><div className="stat-grid"><div className="skeleton" /><div className="skeleton" /><div className="skeleton" /></div><div className="skeleton" style={{ height: 270 }} /></div>; }

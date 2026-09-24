@@ -1,0 +1,10 @@
+import { notFound } from 'next/navigation';
+import { PurchaseForm } from '@/components/purchase-form';
+import { getPurchase } from '@/features/purchases/queries';
+import { uuidSchema } from '@/lib/validation';
+export const metadata = { title: 'Edit purchase' };
+export default async function EditPurchasePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params; if (!uuidSchema.safeParse(id).success) notFound();
+  const purchase = await getPurchase(id); if (!purchase) notFound();
+  return <PurchaseForm purchase={purchase} />;
+}
