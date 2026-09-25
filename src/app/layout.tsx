@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 export const metadata: Metadata = {
-  metadataBase: new URL('https://keeplyph.com'), title: { default: 'Keeply PH — Your important things, remembered', template: '%s · Keeply' },
+  metadataBase: new URL('https://www.keeplyph.com'), title: { default: 'Keeply PH — Your important things, remembered', template: '%s · Keeply' },
+  twitter: { card: 'summary_large_image' },
   openGraph: { locale: 'en_PH', siteName: 'Keeply PH', type: 'website' },
   description: 'Keep receipts, vehicle renewals and document expiry dates together, with reminders you choose.',
 };

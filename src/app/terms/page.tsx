@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Brand } from '@/components/brand';
-export const metadata = { title: 'Terms' };
+export const metadata = { title: 'Terms', alternates: { canonical: '/terms' } };
 export default function TermsPage() { return <><nav className="public-nav"><Brand /><Link href="/pricing">Plans →</Link></nav><main className="legal-page" id="main-content"><h1>Using Keeply</h1><p>Keeply helps you organize receipts, important dates and optional documents.</p>
   {!process.env.SUPPORT_EMAIL && <p className="alert info">Preview terms: operator details, refund handling, and the final terms must be reviewed before accepting customers or payments.</p>}
   <h2>Your account and uploads</h2><p>Use an account you control and upload only documents you have permission to store. Keep your Google account secure. Do not use Keeply to store unlawful content, interfere with the service, or access another person’s information.</p>

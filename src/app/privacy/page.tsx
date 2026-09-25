@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Brand } from '@/components/brand';
-export const metadata = { title: 'Privacy' };
+export const metadata = { title: 'Privacy', alternates: { canonical: '/privacy' } };
 export default function PrivacyPage() { return <><nav className="public-nav"><Brand /><Link href="/login">Your account →</Link></nav><main className="legal-page" id="main-content"><h1>Your important things are personal.</h1><p>Keeply stores receipts, optional documents and important dates so you can find them when you need them.</p>
   {!process.env.SUPPORT_EMAIL && <p className="alert info">Preview notice: the operator’s contact details and final retention policy must be completed before public launch.</p>}
   <h2>What we store</h2><p>We use your Google account’s identifier, email address, and name to create your account. We store the item details, optional receipts and vehicle documents, important dates, completion history, timezone, and reminder preferences you choose to add. Payment references and plan dates are stored to manage Premium access.</p>
