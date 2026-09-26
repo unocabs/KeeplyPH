@@ -12,7 +12,7 @@ export async function startCheckout(_previous: ActionResult, form: FormData): Pr
   if (process.env.PAYMENTS_ENABLED !== 'true') return { error: 'Payments are not available yet. Your Free account is ready to use.' };
   const { profile } = await requireUser();
   const product = String(form.get('product') || '');
-  if (!isProduct(product)) return { error: 'Choose a reminder pack.' };
+  if (!isProduct(product)) return { error: 'Choose an alert pack.' };
   let url = '';
   try {
     const live = paymentMode();

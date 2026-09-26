@@ -1,22 +1,24 @@
 import { ImageResponse } from 'next/og';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
-export const alt = 'Keeply PH — Your important things, remembered.';
+export const alt = 'Keeply PH — Your important things, remembered. Receipts, renewals and dates, with optional alerts.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-export default function Image() {
+export default async function Image() {
+  const logo = await readFile(join(process.cwd(), 'public/brand/keeply-logo.png'), 'base64');
   return new ImageResponse(
-    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 72, background: 'linear-gradient(120deg, #fafaff, #e9e3ff)', color: '#282738', fontFamily: 'sans-serif' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: 18, background: '#6351cf', color: 'white', fontSize: 40 }}>k</div>
-        <div style={{ fontSize: 42, fontWeight: 700 }}>keeply.</div>
+    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', padding: 64, background: 'linear-gradient(125deg, #faf9ff, #ece6ff)', color: '#29233e', fontFamily: 'sans-serif' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', width: 675 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 38 }}><span style={{ fontSize: 40, fontWeight: 700 }}>keeply.</span><span style={{ fontSize: 18, color: '#7054cb', border: '1px solid #d7cbee', borderRadius: 10, padding: '5px 12px' }}>PH</span></div>
+        <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.08, letterSpacing: -3 }}>Your important things, remembered.</div>
+        <div style={{ fontSize: 25, lineHeight: 1.5, color: '#70677f', marginTop: 25 }}>Receipts. Renewals. Important dates.</div>
+        <div style={{ fontSize: 25, lineHeight: 1.5, color: '#70677f' }}>Your reminders, with alerts you choose.</div>
+        <div style={{ fontSize: 20, color: '#6746cb', marginTop: 38 }}>www.keeplyph.com</div>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-        <div style={{ fontSize: 72, fontWeight: 700, lineHeight: 1.12, maxWidth: 950 }}>Your important things, remembered.</div>
-        <div style={{ fontSize: 28, color: '#625c78' }}>Receipts. Renewals. Important dates. A little peace of mind.</div>
-      </div>
-      <div style={{ fontSize: 24, color: '#6351cf' }}>www.keeplyph.com</div>
-    </div>,
-    size,
+      {/* ImageResponse renders an embedded asset directly, without the browser image optimizer. */}
+      <img src={'data:image/png;base64,' + logo} width={400} height={400} alt="" style={{ borderRadius: 48 }} />
+    </div>, size,
   );
 }

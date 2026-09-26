@@ -90,14 +90,14 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
     try {
       const result = await removeDocument(item.id);
       // If a reservation never succeeded there is no server file to remove.
-      if (result.error && result.error !== 'That item is no longer available.') { setError(result.error); return; }
+      if (result.error && result.error !== 'That reminder is no longer available.') { setError(result.error); return; }
       setUploads(current => current.filter(u => u.id !== item.id));
     } catch { setError('Unable to remove this file. Please retry.'); }
   }
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault(); setError('');
     if (uploads.some(u => ['uploading','processing'].includes(u.phase))) { setError('Please wait for the upload to finish.'); return; }
-    if(uploads.some(u=>u.phase==='error')) { setError('Remove unfinished attachments below, then save your item without them. Your entered details are kept.'); return; }
+    if(uploads.some(u=>u.phase==='error')) { setError('Remove unfinished attachments below, then save your reminder without them. Your entered details are kept.'); return; }
     if (demo) { setSavedPreview(true); dirty.current = false; return; }
     const data = new FormData(e.currentTarget);
     setSaving(true);
@@ -134,8 +134,8 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
     </div>;
   }
   return <>
-    <Link className="back-link" href={base + '/purchases'}><ArrowLeft size={14} /> My purchases</Link>
-    <div className="page-heading"><div><div className="eyebrow">A LITTLE ORGANIZATION. A LOT OF PEACE OF MIND.</div><h1>{purchase?.state === 'saved' ? 'Edit purchase' : 'Add a purchase'}</h1><p>Save the details now. Find them when you need them.</p></div></div>
+    <Link className="back-link" href={base + '/purchases'}><ArrowLeft size={14} /> Receipt Reminders</Link>
+    <div className="page-heading"><div><div className="eyebrow">A LITTLE ORGANIZATION. A LOT OF PEACE OF MIND.</div><h1>{purchase?.state === 'saved' ? 'Edit reminder' : 'Add a receipt reminder'}</h1><p>Save the details now. Find them when you need them.</p></div></div>
     <form onSubmit={submit} onChange={() => { dirty.current = true; }} className="form-layout">
       <div className="form-stack">
         <section className="panel form-section"><h2>The essentials</h2><p>A name is all you need to get started.</p>
@@ -158,13 +158,13 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
             <label className="full">Serial number<input name="serial_number" maxLength={160} defaultValue={purchase?.warranty?.serial_number || ''} /></label>
             <label className="full">Warranty notes<textarea name="warranty_notes" maxLength={5000} rows={2} defaultValue={purchase?.warranty?.notes || ''} placeholder="Coverage, service center, or claim details" /></label>
           </div>
-          <label className="checkbox-row"><input type="checkbox" name="reminders_enabled" defaultChecked={purchase?.warranty?.reminders_enabled || false} /><span><strong>Email me before it expires</strong><p>Reminders at 30, 7 and 1 day before expiration, around 9 AM in your timezone. Your first 3 item reminder slots are free. Saving still works when slots are full.</p></span></label>
+          <label className="checkbox-row"><input type="checkbox" name="reminders_enabled" defaultChecked={purchase?.warranty?.reminders_enabled || false} /><span><strong>Email me before it expires</strong><p>Alerts at 30, 7 and 1 day before expiration, around 9 AM in your timezone. Your first 3 alert slots are free. Saving still works when slots are full.</p></span></label>
           {uploadSection('warranty')}</div>}
         </section>
         {error && <div className="alert error" role="alert">{error}</div>}
         {savedPreview && <div className="alert success" role="status">Your sample form is ready. Sign in to save your own purchases; this preview does not store changes. <Link href="/login">Get started →</Link></div>}
         {purchase?.state === 'draft' && <button type="button" className="text-button" disabled={busy} onClick={() => void discardDraft()}>Discard this unfinished purchase</button>}
-        <div className="form-actions"><span>Only you can access your files.</span><div><Link className="button secondary" href={base + '/purchases'} onClick={e => { if (dirty.current && !confirm('Leave this form? Unsaved details will be lost.')) e.preventDefault(); }}>Cancel</Link><button disabled={busy} className="button primary">{saving ? 'Saving…' : demo ? 'Try saving purchase' : 'Save purchase'}</button></div></div>
+        <div className="form-actions"><span>Only you can access your files.</span><div><Link className="button secondary" href={base + '/purchases'} onClick={e => { if (dirty.current && !confirm('Leave this form? Unsaved details will be lost.')) e.preventDefault(); }}>Cancel</Link><button disabled={busy} className="button primary">{saving ? 'Saving…' : demo ? 'Try saving purchase' : 'Save reminder'}</button></div></div>
       </div>
       <aside className="form-help"><Lightbulb size={25} /><h3>A small habit, a calmer home.</h3><p>Add a receipt when you buy something. The next time you need it, it’ll be right here.</p><ul><li>Photos are optimized for storage.</li><li>Up to 6 files per purchase.</li><li>You can add more details later.</li><li>Uploads for unfinished purchases are kept for 24 hours.</li></ul></aside>
     </form>

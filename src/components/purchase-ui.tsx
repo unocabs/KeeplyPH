@@ -19,7 +19,7 @@ export function PurchaseCard({ purchase: p, today, base = '' }: { purchase: Purc
   </Link>;
 }
 export function EmptyPurchases({ base = '' }: { base?: string }) {
-  return <div className="empty-state"><span className="empty-icon"><ReceiptText size={34} /></span><h3>Your purchases deserve a safe place.</h3><p>Add your first purchase. Keep the receipt, remember the warranty,<br className="desktop-only" /> and find it all right here.</p><Link className="button primary" href={base + '/purchases/new'}><Plus size={17} />Add your first purchase</Link><span className="empty-footnote">Start with just a product name. The rest can wait.</span></div>;
+  return <div className="empty-state"><span className="empty-icon"><ReceiptText size={34} /></span><h3>Your receipts deserve a safe place.</h3><p>Add your first reminder. Keep the receipt, remember the warranty,<br className="desktop-only" /> and find it all right here.</p><Link className="button primary" href={base + '/purchases/new'}><Plus size={17} />Add your first reminder</Link><span className="empty-footnote">Start with just a product name. The rest can wait.</span></div>;
 }
 export function ExpiryRow({ purchase: p, today, base = '' }: { purchase: PurchaseWithDetails; today: string; base?: string }) {
   return <Link className="expiry-row" href={base + '/purchases/' + p.id}><CategoryIcon category={p.category} /><div className="expiry-name"><strong>{p.product_name}</strong><span>{p.merchant || 'Your purchase'}</span></div><div className="expiry-date"><strong>{remainingLabel(p.warranty!.expires_on, today)}</strong><span>{formatDate(p.warranty!.expires_on, true)}</span></div><ArrowUpRight size={16} /></Link>;

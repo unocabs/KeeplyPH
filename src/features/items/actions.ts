@@ -8,7 +8,7 @@ import { isTemplate } from '@/features/templates';
 import { dateSchema, requiredDate } from './validation';
 function refresh() { revalidatePath('/dashboard'); revalidatePath('/items', 'layout'); revalidatePath('/purchases','layout'); revalidatePath('/settings/billing'); }
 export async function createItemDraft(id: string, template: string): Promise<ActionResult> {
-  if (!uuidSchema.safeParse(id).success || !isTemplate(template)) return { error: 'Choose a supported item type.' };
+  if (!uuidSchema.safeParse(id).success || !isTemplate(template)) return { error: 'Choose a supported reminder type.' };
   const { supabase } = await requireUser();
   const { error } = await supabase.rpc('create_item_draft', { p_id: id, p_template: template });
   return error ? { error: errorMessage(error) } : { id };
@@ -41,16 +41,16 @@ export async function completeDate(id: string, revision: number, completed: stri
   if (error) return { error: errorMessage(error) }; refresh(); return { success: 'One less thing to remember.' };
 }
 export async function archiveItem(id: string, revision: number, archive: boolean): Promise<ActionResult> {
-  if (!uuidSchema.safeParse(id).success || !Number.isInteger(revision)) return { error: 'Invalid item.' };
+  if (!uuidSchema.safeParse(id).success || !Number.isInteger(revision)) return { error: 'Invalid reminder.' };
   const { supabase } = await requireUser();
   const { error } = await supabase.rpc('archive_item', { p_id: id, p_revision: revision, p_archive: archive });
-  if (error) return { error: errorMessage(error) }; refresh(); return { success: archive ? 'Item archived. Its reminders are paused.' : 'Item restored.' };
+  if (error) return { error: errorMessage(error) }; refresh(); return { success: archive ? 'Reminder archived. Its alerts are paused.' : 'Reminder restored.' };
 }
 export async function deleteItem(id: string): Promise<ActionResult> {
-  if (!uuidSchema.safeParse(id).success) return { error: 'Invalid item.' };
+  if (!uuidSchema.safeParse(id).success) return { error: 'Invalid reminder.' };
   const { supabase } = await requireUser();
   const { error } = await supabase.rpc('delete_item', { p_id: id });
-  if (error) return { error: errorMessage(error) }; refresh(); return { success: 'Item removed.' };
+  if (error) return { error: errorMessage(error) }; refresh(); return { success: 'Reminder removed.' };
 }
 
 export async function dateHistory(id:string,before:number) {

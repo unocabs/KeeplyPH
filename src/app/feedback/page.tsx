@@ -15,5 +15,5 @@ export default async function FeedbackPage() {
   if (!auth?.claims.sub) redirect('/login?next=/feedback');
   const { data, error } = await supabase.rpc('feedback_status', {});
   const [{ profile }, usage] = await Promise.all([requireUser(), getUsage()]);
-  return <AppShell name={profile.display_name} hasExtraSlots={(usage.slot_limit ?? 3) > 3}><div className="page-heading"><div><h1>Add feedback</h1><p>Help shape a calmer, more useful Keeply.</p></div></div>{error ? <section className="panel"><h2>Feedback is temporarily unavailable.</h2><p className="section-description">Please try again shortly. Your existing items and reminder slots are unchanged.</p></section> : <FeedbackForm submissionId={randomUUID()} initialStatus={feedbackStatusSchema.parse(data)}/>}</AppShell>;
+  return <AppShell name={profile.display_name} hasExtraSlots={(usage.slot_limit ?? 3) > 3}><div className="page-heading"><div><h1>Add feedback</h1><p>Help shape a calmer, more useful Keeply.</p></div></div>{error ? <section className="panel"><h2>Feedback is temporarily unavailable.</h2><p className="section-description">Please try again shortly. Your existing reminders and alert slots are unchanged.</p></section> : <FeedbackForm submissionId={randomUUID()} initialStatus={feedbackStatusSchema.parse(data)}/>}</AppShell>;
 }

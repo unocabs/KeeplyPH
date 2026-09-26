@@ -7,7 +7,7 @@ export const templates: Record<TemplateKey, { label: string; example: string; de
   receipt: { label: 'Receipt & Warranty', example: 'Sony headphones', description: 'A receipt ready to find. Coverage easy to check.', kinds: ['warranty', 'other'], files: true },
   car: { label: 'Car', example: 'My Toyota Vios', description: 'Registration, insurance and the next service.', kinds: ['registration', 'insurance', 'service', 'warranty', 'other'], files: true },
   motorcycle: { label: 'Motorcycle', example: 'My Honda Click', description: 'Keep your renewal and maintenance dates together.', kinds: ['registration', 'insurance', 'service', 'warranty', 'other'], files: true },
-  licence: { label: "Driver’s Licence", example: 'My driving licence', description: 'A reminder before your printed expiry. No ID scan needed.', kinds: ['expiration'], files: false },
+  licence: { label: "Driver’s Licence", example: 'My driving licence', description: 'An alert before your printed expiry. No ID scan needed.', kinds: ['expiration'], files: false },
   passport: { label: 'Passport', example: 'My passport', description: 'A little more time to plan your renewal. Dates only.', kinds: ['expiration'], files: false },
   aircon: { label: 'Aircon Maintenance', example: 'Bedroom aircon', description: 'Remember the last clean and plan the next one.', kinds: ['service'], files: true },
   other: { label: 'Something else', example: 'An important date', description: 'A name and a date. One less thing to remember.', kinds: ['other'], files: false },

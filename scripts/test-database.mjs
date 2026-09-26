@@ -59,6 +59,19 @@ try {
     assert.equal(job.date_id,migrationSeed.warranty);assert.equal(job.status,'accepted');assert.deepEqual(job.frozen_payload,migrationSeed.job.frozen_payload);
     assert.equal((await actor(migrationSeed.u,'select * from public.warranties')).rows[0].id,migrationSeed.warranty);
   });
+  await test('Active reminder count excludes archives and drafts and spans list pages', async () => {
+    const owner = await user(), outsider = await user();
+    // More than a page of reminders; account totals must not use the list length.
+    await admin.query("insert into public.items(user_id,state,product_name) select $1,'saved','Active ' || n from generate_series(1,28) n", [owner]);
+    await admin.query("insert into public.items(user_id,state,product_name,archived_at) values($1,'saved','Archived',now()),($1,'draft','Unfinished',null),($2,'saved','Other account',null)", [owner, outsider]);
+    const count = (await actor(owner, "select count(*)::integer as total from public.items where user_id=$1 and state='saved' and archived_at is null", [owner])).rows[0].total;
+    const page = (await actor(owner, "select public.list_items('all') as reminders")).rows[0].reminders;
+    assert.equal(count, 28);
+    assert.equal(page.length, 25);
+    assert.ok(page.every(i => i.state === 'saved' && !i.archived_at && i.user_id === owner));
+    const visible = (await actor(owner, "select count(*)::integer as total from public.items where state='saved' and archived_at is null")).rows[0].total;
+    assert.equal(visible, 28, 'RLS excludes other accounts');
+  });
   const alice = await user(), bob = await user();
   const purchase = await draft(alice);
   await save(alice, purchase);
