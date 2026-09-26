@@ -17,3 +17,29 @@
 /* Primary summary has more depth than statistics and content cards. */
 .dashboard-middle>.panel{background:linear-gradient(145deg,#fff,#f9f7fff5);border-color:#6852d61a;box-shadow:0 12px 35px #231b460b}.coverage-label{display:block;margin-top:12px;font-size:11px;color:var(--muted)}
 @media(max-width:720px){.category-section,.public-faq{margin:54px 0}.pricing-grid{grid-template-columns:1fr}.filter-panel{grid-template-columns:1fr}.coverage-label{font-size:10px}}
+
+/* Homepage hierarchy is scoped so app cards and template dialogs stay unchanged. */
+.landing-home .hero-footnote{font-size:14px;line-height:1.8}
+.landing-home .category-card{background:rgba(255,255,255,.65);box-shadow:none;transition:border-color .15s,background .15s}
+.landing-home .category-card:hover{background:#fff;border-color:var(--primary)}
+.landing-home .landing-preview{padding:36px;border:1px solid #d4c9f0;background:linear-gradient(135deg,#fff,#f2edff);box-shadow:0 16px 48px #57428a12;border-radius:22px}
+.landing-home .landing-preview h2{font-size:28px}
+.landing-home .example-dates>div{gap:18px;padding:24px 0}
+.landing-home .example-dates svg{color:var(--primary);flex-shrink:0}
+.landing-home .example-dates small{color:var(--muted);margin-top:3px}
+.landing-home .landing-features{border-block:1px solid var(--line);padding-block:36px}
+.landing-home #home-appliances{background:linear-gradient(125deg,#f0ebfc,#faf9ff);border-color:#ded6ef;padding:32px;box-shadow:none}
+.landing-home #home-appliances h2{font-size:26px;max-width:620px}
+.landing-home #home-appliances .section-description{margin-top:14px;max-width:620px}
+.home-template-directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px;margin-top:24px}
+.home-template-directory>a{display:flex;align-items:center;gap:14px;padding:18px 4px;border-bottom:1px solid var(--line);min-width:0}
+.home-template-directory>a:hover{background:#f4f0fc}
+.home-template-directory svg{flex-shrink:0;color:var(--primary)}
+.home-template-directory span{flex:1;min-width:0}
+.home-template-directory strong,.home-template-directory small{display:block}
+.home-template-directory small{color:var(--muted);margin-top:4px;font-size:13px}
+.home-final-cta{text-align:center;border-top:1px solid var(--line);padding:48px 16px 20px}
+.home-final-cta h2{font-size:30px}.home-final-cta p{color:var(--muted);margin:16px 0 24px}
+@media(max-width:720px){.landing-home .landing-preview{padding:22px 18px}.landing-home .landing-preview h2{font-size:24px}.landing-home .example-dates>div{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px 12px}.landing-home .example-dates>div>span:last-child{grid-column:2;margin-left:0;text-align:left;font-size:13px}.home-template-directory{grid-template-columns:1fr}.landing-home #home-appliances{padding:24px}.landing-home .button{white-space:normal;text-align:center}.home-final-cta{padding-top:32px}}
+
+.feedback-panel{max-width:760px}.feedback-panel .alert p{margin-top:10px}.feedback-panel textarea{resize:vertical}.feedback-panel .hint{overflow-wrap:anywhere}

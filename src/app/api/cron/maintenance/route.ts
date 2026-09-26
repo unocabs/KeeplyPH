@@ -14,6 +14,8 @@ export async function POST(request: Request) {
     const { data, error } = await admin.rpc('run_maintenance', {});
     if (error) throw new Error('Maintenance failed');
     const work = workSchema.parse(data);
+    const { error: feedbackError } = await admin.rpc('purge_old_feedback', {});
+    if (feedbackError) throw new Error('Feedback retention failed');
     let removed = 0, accounts = 0;
     for (const object of work.objects) {
       if (Date.now() - started > 40000) break;

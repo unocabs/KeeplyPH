@@ -328,6 +328,95 @@ try {
     assert.equal((await actor(u,'select public.account_usage() u')).rows[0].u.purchases,2003);
   });
 
+  const feedback = (u, id = randomUUID(), notes = 'Please make the reminder dates easier to see on mobile.', expect = true) => actor(u,
+    'select public.submit_feedback($1,\'suggestion\',\'Improve mobile reminders\',$2,$3) result', [id, notes, expect]);
+  const feedbackStatus = async u => (await actor(u,'select public.feedback_status() s')).rows[0].s;
+  const packState = async u => (await admin.query('select * from private.reminder_packs where user_id=$1',[u])).rows[0];
+  await admin.query('update private.billing_settings set live=false');
+  await test('Feedback validates notes and atomically grants exactly one reward under concurrent retries', async()=>{
+    const u=await user(),id=randomUUID();
+    await assert.rejects(feedback(u,id,'   \n\t '),/FEEDBACK_NOTES_REQUIRED/);
+    assert.equal((await admin.query('select * from private.feedback where user_id=$1',[u])).rowCount,0);
+    await Promise.all([feedback(u,id),feedback(u,id)]);
+    assert.equal((await admin.query('select * from private.feedback where user_id=$1',[u])).rowCount,1);
+    assert.equal((await admin.query('select * from private.feedback_claims where user_id=$1',[u])).rowCount,1);
+    assert.equal((await actor(u,'select public.account_usage() u')).rows[0].u.slot_limit,8);
+    const end=(await packState(u)).paid_until;
+    await assert.rejects(feedback(u,randomUUID(),'Another valid detailed suggestion here.',true),/FEEDBACK_OFFER_CHANGED/);
+    await feedback(u,randomUUID(),'',false);
+    assert.equal(+(await packState(u)).paid_until,+end);
+    await assert.rejects(feedback(u,id,'Changed retry content with enough characters.',false),/FEEDBACK_REPLAY_CONFLICT/);
+    assert.equal((await feedbackStatus(u)).claimed,true);
+    await admin.query('update private.reminder_packs set paid_until=now()-interval \'1 day\' where user_id=$1',[u]);
+    assert.equal((await actor(u,'select public.account_usage() u')).rows[0].u.slot_limit,3);
+    assert.equal((await feedbackStatus(u)).eligible,false);
+  });
+  await test('Concurrent different feedback claims cannot extend the reward twice',async()=>{
+    const u=await user();const results=await Promise.allSettled([feedback(u),feedback(u)]);
+    assert.equal(results.filter(r=>r.status==='fulfilled').length,1);
+    assert.equal((await admin.query('select count(*)::int n from private.feedback_claims where user_id=$1',[u])).rows[0].n,1);
+  });
+  await test('Feedback is private, rate limited, and claims are inaccessible to clients',async()=>{
+    const u=await user(),other=await user();await feedback(u);
+    assert.equal((await feedbackStatus(other)).claimed,false);
+    for(const table of ['feedback','feedback_claims','feedback_settings']) {
+      await assert.rejects(actor(u,'select * from private.'+table),/permission denied/);
+      await assert.rejects(actor(u,'delete from private.'+table),/permission denied/);
+    }
+    await assert.rejects(actor(null,'select public.feedback_status()',[],'anon'),/permission denied/);
+    await assert.rejects(actor(u,'select public.purge_old_feedback()'),/permission denied/);
+    for(let i=0;i<4;i++)await feedback(u,randomUUID(),'',false);
+    await assert.rejects(feedback(u,randomUUID(),'',false),/RATE_LIMITED/);
+  });
+  await test('Reward stacks after paid access; refund moves reward forward without losing its duration',async()=>{
+    const u=await user(),order=await packOrder(u);await pay(order);
+    const before=await packState(u);await feedback(u);
+    assert.equal(+(await packState(u)).paid_until-+before.paid_until,30*86400000);
+    await actor(null,'select public.revoke_refunded_order($1)',['pay_'+order.replaceAll('-','')],'service_role');
+    const c=(await admin.query('select * from private.feedback_claims where user_id=$1',[u])).rows[0];
+    assert.equal(+c.ends_at-+c.starts_at,30*86400000);
+    assert.ok(Math.abs(+c.starts_at-Date.now())<10000);
+    assert.equal(+(await packState(u)).paid_until,+c.ends_at);
+    await actor(null,'select public.revoke_refunded_order($1)',['pay_'+order.replaceAll('-','')],'service_role');
+    assert.equal(+(await packState(u)).paid_until,+c.ends_at);
+  });
+  await test('Paid renewal appends to promotion; paid refunds and permanent upgrade refunds preserve reward',async()=>{
+    const u=await user();await feedback(u);const promoEnd=(await packState(u)).paid_until;
+    const order=await packOrder(u);await pay(order);await pay(order);
+    assert.equal(+(await packState(u)).paid_until-+promoEnd,30*86400000);
+    await actor(null,'select public.revoke_refunded_order($1)',['pay_'+order.replaceAll('-','')],'service_role');
+    assert.equal(+(await packState(u)).paid_until,+promoEnd);
+    const permanent=await packOrder(u,'slots_permanent');await pay(permanent,'slots_permanent');
+    assert.equal((await feedbackStatus(u)).permanent,true);
+    await feedback(u,randomUUID(),'',false);
+    await actor(null,'select public.revoke_refunded_order($1)',['pay_'+permanent.replaceAll('-','')],'service_role');
+    assert.equal(+(await packState(u)).paid_until,+promoEnd);
+  });
+  await test('Permanent accounts, promotion switch, expired packs, and test/live isolation behave correctly',async()=>{
+    const permanent=await user(),order=await packOrder(permanent,'slots_permanent');await pay(order,'slots_permanent');
+    assert.equal((await feedbackStatus(permanent)).eligible,false);await feedback(permanent,randomUUID(),'',false);
+    assert.equal((await feedbackStatus(permanent)).claimed,false);
+    await admin.query('update private.feedback_settings set promotion_enabled=false');
+    const u=await user();await feedback(u,randomUUID(),'',false);assert.equal((await feedbackStatus(u)).claimed,false);
+    await admin.query('update private.feedback_settings set promotion_enabled=true');
+    await admin.query("insert into private.reminder_packs(user_id,live,paid_until) values($1,false,now()-interval '1 day')",[u]);
+    await feedback(u);assert.ok(Math.abs(+(await packState(u)).paid_until-Date.now()-30*86400000)<10000);
+    await admin.query('update private.billing_settings set live=true');
+    assert.equal((await actor(u,'select public.account_usage() u')).rows[0].u.slot_limit,3);
+    assert.equal((await feedbackStatus(u)).eligible,false);
+    const liveUser=await user();await feedback(liveUser);assert.equal((await packState(liveUser)).live,true);
+    await admin.query('update private.billing_settings set live=false');
+  });
+  await test('Feedback retention removes text but preserves claim; account deletion removes both',async()=>{
+    const u=await user();await feedback(u);
+    await admin.query("update private.feedback set created_at=now()-interval '13 months' where user_id=$1",[u]);
+    await actor(null,'select public.purge_old_feedback()',[],'service_role');
+    assert.equal((await admin.query('select * from private.feedback where user_id=$1',[u])).rowCount,0);
+    assert.equal((await feedbackStatus(u)).claimed,true);
+    await admin.query('delete from auth.users where id=$1',[u]);
+    assert.equal((await admin.query('select * from private.feedback_claims where user_id=$1',[u])).rowCount,0);
+  });
+
   console.log('\n' + passed + ' database integration tests passed.');
 } finally {
   if (admin) await admin.end();

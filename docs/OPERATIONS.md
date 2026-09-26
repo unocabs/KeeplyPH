@@ -122,3 +122,33 @@ Inspect `billing_reviews`, unknown notification counts, pending checkout age, an
 A confirmed complete refund may be applied repeatedly without subtracting access twice. Later prepaid periods are retained and shifted by only the refunded unused interval. Permanent refunds restore any remaining unrefunded short-term period. Partial refunds and disputes remain explicit review cases. Record the resolution in the billing audit ledger and close only the relevant review events.
 
 Optional product measurement reuses opt-in events and 90-day retention. Item coverage events are distinct from historical per-date opt-ins. No item names, due dates or payment details are captured as analytics.
+
+
+## Feedback rollout (migration 010)
+
+Apply `supabase/migrations/202609260010_feedback.sql` once, after 009, before deploying this app version. No new environment variables or provider settings are required. The migration enables the feedback promotion by default; it does not grant anything to existing accounts until they submit qualifying feedback. It leaves the current billing mode unchanged. Existing paid access remains intact.
+
+Then deploy the app. Smoke-test the public Feedback link through Google sign-in, an initial submission with required notes, the reward expiry in plan & billing, and a second submission with optional notes. Use a separate test database for repeated payment/refund experiments, never toggle production to test mode.
+
+The operator reviews submissions only in Supabase SQL Editor (database owner):
+
+```sql
+select user_id, id, kind, summary, notes, status, created_at
+from private.feedback
+order by created_at desc
+limit 50;
+```
+
+To pause new reward claims while keeping feedback open:
+
+```sql
+update private.feedback_settings set promotion_enabled = false where singleton;
+```
+
+Set it back to `true` to reopen the offer. Existing grants are unaffected. Feedback is limited to five successful submissions per account per daily rate-limit window. A summary is always required; notes require 30–2,000 trimmed characters only for reward-eligible submissions. Permanent pack accounts and accounts that already claimed can submit without notes.
+
+`private.feedback_claims` records one claim per account for the account's lifetime, independently of feedback text retention and billing mode. Temporary paid access is extended, not stacked into more slots. Refunding an earlier paid period moves later reward time forward; upgrading to permanent supersedes the temporary benefit. The claim remains used. Do not manually clear claims to retry tests on production.
+
+The existing hourly maintenance endpoint calls `purge_old_feedback`, removing text older than 12 months. Account deletion cascades both feedback and claims. Promotion expiry uses the existing slot expiry and renewal-email preference rules, with no automatic charges. The operator should review new submissions regularly; no extra email notifications are sent.
+
+Rollback: disable the promotion and roll back the app if needed. Do not drop the claim ledger or undo migration 010 after rewards have been granted; that would lose claim history or refund protection.

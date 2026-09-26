@@ -14,6 +14,9 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      feedback_status: Rpc<Record<string, never>>;
+      submit_feedback: Rpc<{p_id:string;p_kind:string;p_summary:string;p_notes:string;p_expect_reward:boolean}>;
+      purge_old_feedback: Rpc<Record<string, never>,undefined>;
       apply_verified_refund: Rpc<{p_payment:string;p_amount:number;p_currency:string;p_live:boolean},undefined>;
       item_detail: Rpc<{p_id:string}>;
       date_history: Rpc<{p_id:string;p_before:number}>;
