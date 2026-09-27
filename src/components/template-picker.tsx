@@ -2,11 +2,12 @@
 import Link from 'next/link';
 import { useRef } from 'react';
 import { Plus, X } from 'lucide-react';
-import { templateKeys, templates } from '@/features/templates';
+import { templateKeys, templates, reminderPresets } from '@/features/templates';
+import { IdCategory } from './id-category';
 import { ReminderIcon } from './reminder-icon';
 export { TemplateIcon } from './reminder-icon';
 export function TemplateChoices({ demo = false, onChoose }: { demo?: boolean; onChoose?: () => void }) {
-  return <div className="template-grid">{templateKeys.map(key => <Link className="template-choice" key={key} href={(demo ? '/demo' : '') + '/add/' + key} onClick={onChoose}><ReminderIcon template={key} /><div><strong>{templates[key].label}</strong><p>{templates[key].description}</p></div></Link>)}</div>;
+  return <div className="template-grid">{templateKeys.map(key => key === 'licence' ? <IdCategory key={key} demo={demo} onChoose={onChoose} /> : <Link className="template-choice" key={key} href={(demo ? '/demo' : '') + '/add/' + key} onClick={onChoose}><ReminderIcon template={key} /><div><strong>{templates[key].label}</strong><p>{templates[key].description}</p></div></Link>)}{(['nbi-clearance', 'water-bill', 'electric-bill', 'car-payment'] as const).map(key => <Link className="template-choice" key={key} href={(demo ? '/demo' : '') + '/add/other?preset=' + key} onClick={onChoose}><ReminderIcon template="other" /><div><strong>{reminderPresets[key].label}</strong><p>{reminderPresets[key].description}</p></div></Link>)}</div>;
 }
 export function AddItemButton({ demo = false, floating = false }: { demo?: boolean; floating?: boolean }) {
   const dialog = useRef<HTMLDialogElement>(null);

@@ -14,7 +14,7 @@ import { SettingsForm } from '@/components/settings-form';
 import { Billing } from '@/components/billing';
 import { notFound } from 'next/navigation';
 export const metadata = { title: 'Sample preview', robots: { index: false, follow: false } };
-export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ filter?: string }> }) {
+export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ filter?: string; preset?: string; focus?: string }> }) {
   const { slug = [] } = await params;
   const query = await searchParams;
   const purchases = samplePurchases();
@@ -24,7 +24,7 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   if (slug[0] === 'add') {
     if(!slug[1]) content = <><h1>What do you want to keep?</h1><TemplateChoices demo /></>;
     else if(!isTemplate(slug[1])) notFound();
-    else content = slug[1] === 'receipt' ? <PurchaseForm demo /> : <ItemForm template={slug[1]} demo />;
+    else content = slug[1] === 'receipt' ? <PurchaseForm demo /> : <ItemForm template={slug[1]} preset={query.preset} focus={query.focus} demo />;
   }
   else if(slug[0] === 'items') {
     if(!slug[1]) content = <ItemList key={query.filter} items={items} today={today} initialFilter={query.filter} demo />;

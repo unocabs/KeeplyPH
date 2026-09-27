@@ -7,7 +7,7 @@ export const templates: Record<TemplateKey, { label: string; example: string; de
   receipt: { label: 'Receipt & Warranty', example: 'Sony headphones', description: 'A receipt ready to find. Coverage easy to check.', kinds: ['warranty', 'other'], files: true },
   car: { label: 'Car', example: 'My Toyota Vios', description: 'Registration, insurance and the next service.', kinds: ['registration', 'insurance', 'service', 'warranty', 'other'], files: true },
   motorcycle: { label: 'Motorcycle', example: 'My Honda Click', description: 'Keep your renewal and maintenance dates together.', kinds: ['registration', 'insurance', 'service', 'warranty', 'other'], files: true },
-  licence: { label: "Driver’s Licence", example: 'My driving licence', description: 'An alert before your printed expiry. No ID scan needed.', kinds: ['expiration'], files: false },
+  licence: { label: "Driver’s License", example: 'My driver’s license', description: 'An alert before your printed expiry. No ID scan needed.', kinds: ['expiration'], files: false },
   passport: { label: 'Passport', example: 'My passport', description: 'A little more time to plan your renewal. Dates only.', kinds: ['expiration'], files: false },
   aircon: { label: 'Aircon Maintenance', example: 'Bedroom aircon', description: 'Remember the last clean and plan the next one.', kinds: ['service'], files: true },
   other: { label: 'Something else', example: 'An important date', description: 'A name and a date. One less thing to remember.', kinds: ['other'], files: false },
@@ -18,9 +18,27 @@ export function defaultOffsets(template: TemplateKey, kind: DateKind): Offset[] 
   return (template === 'licence' ? [90, 30, 7] : kind === 'service' ? [7, 1] : [30, 7, 1]).map(value => ({ unit: 'days', value }));
 }
 // Only supported, non-private intent survives the OAuth round trip.
-export function addIntent(template: TemplateKey, focus?: string, category?: string): string {
+export function addIntent(template: TemplateKey, focus?: string, category?: string, preset?: string): string {
   const query = new URLSearchParams();
   if (focus && templates[template].kinds.includes(focus as DateKind)) query.set('focus', focus);
   if (template === 'receipt' && category === 'appliances') query.set('category', category);
+  if (template === 'other' && isReminderPreset(preset)) query.set('preset', preset);
   return '/add/' + template + (query.size ? '?' + query.toString() : '');
+}
+
+// Presets use the existing custom-date contract; only these public choices survive sign-in.
+export const reminderPresets = {
+  umid: { label: 'UMID', example: 'My UMID', dateLabel: 'UMID appointment or follow-up', description: 'Choose an appointment or follow-up date. Do not assume an expiry date.', identity: true },
+  'national-id': { label: 'National ID', example: 'My National ID', dateLabel: 'National ID appointment or follow-up', description: 'Remember an appointment, update or follow-up you choose.', identity: true },
+  'nbi-clearance': { label: 'NBI Clearance', example: 'My NBI clearance', dateLabel: 'NBI clearance renewal', description: 'Remember the validity date on your clearance or your next appointment.', identity: true },
+  'water-bill': { label: 'Water Bill', example: 'My water bill', dateLabel: 'Water bill due date', description: 'Add the due date from your water bill and choose an email reminder.', identity: false },
+  'electric-bill': { label: 'Electric Bill', example: 'My electric bill', dateLabel: 'Electric bill due date', description: 'Keep your electricity payment deadline easy to remember.', identity: false },
+  'car-payment': { label: 'Car Payment', example: 'My car payment', dateLabel: 'Car payment due date', description: 'Remember your next car loan installment or vehicle bill.', identity: false },
+} as const;
+export type ReminderPreset = keyof typeof reminderPresets;
+export function isReminderPreset(value?: string): value is ReminderPreset {
+  return Boolean(value && Object.hasOwn(reminderPresets, value));
+}
+export function getReminderPreset(template: TemplateKey, value?: string) {
+  return template === 'other' && isReminderPreset(value) ? reminderPresets[value] : undefined;
 }
