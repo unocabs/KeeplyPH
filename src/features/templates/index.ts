@@ -30,6 +30,11 @@ export function addIntent(template: TemplateKey, focus?: string, category?: stri
 export const reminderPresets = {
   umid: { label: 'UMID', example: 'My UMID', dateLabel: 'UMID appointment or follow-up', description: 'Choose an appointment or follow-up date. Do not assume an expiry date.', identity: true },
   'national-id': { label: 'National ID', example: 'My National ID', dateLabel: 'National ID appointment or follow-up', description: 'Remember an appointment, update or follow-up you choose.', identity: true },
+  'prc-license': { label: 'PRC License', example: 'My PRC license', dateLabel: 'PRC license renewal', description: 'Remember your printed expiration date or renewal appointment.', identity: true },
+  'postal-id': { label: 'Postal ID', example: 'My Postal ID', dateLabel: 'Postal ID renewal', description: 'Add the date on your ID or your next renewal appointment.', identity: true },
+  'pwd-solo-parent-id': { label: 'PWD / Solo Parent ID', example: 'My PWD / Solo Parent ID', dateLabel: 'ID renewal or appointment', description: 'Name your ID and choose the renewal or appointment date you need.', identity: true },
+  'other-id': { label: 'Other ID', example: 'My ID', dateLabel: 'ID renewal or follow-up', description: 'Add any other ID, with a helpful name and the date you want to remember.', identity: true },
+  'police-clearance': { label: 'Police Clearance', example: 'My police clearance', dateLabel: 'Police clearance renewal', description: 'Remember the validity date on your clearance or your next appointment.', identity: true },
   'nbi-clearance': { label: 'NBI Clearance', example: 'My NBI clearance', dateLabel: 'NBI clearance renewal', description: 'Remember the validity date on your clearance or your next appointment.', identity: true },
   'water-bill': { label: 'Water Bill', example: 'My water bill', dateLabel: 'Water bill due date', description: 'Add the due date from your water bill and choose an email reminder.', identity: false },
   'electric-bill': { label: 'Electric Bill', example: 'My electric bill', dateLabel: 'Electric bill due date', description: 'Keep your electricity payment deadline easy to remember.', identity: false },
