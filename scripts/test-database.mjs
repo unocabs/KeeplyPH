@@ -430,6 +430,94 @@ try {
     assert.equal((await admin.query('select * from private.feedback_claims where user_id=$1',[u])).rowCount,0);
   });
 
+
+  const recurringInput = (due='2032-01-31', end='2032-03-31', enabled=true) => ({
+    ...input('other',due,enabled), offsets:[{unit:'days',value:7}],
+    recurrence_months:1, recurrence_ends_on:end, payment_amount_minor:845000,
+  });
+  async function recurring(u, value=recurringInput()) {
+    const id=await newItem(u,'other',value);
+    const d=(await actor(u,'select * from public.important_dates where item_id=$1',[id])).rows[0];
+    return {id,d};
+  }
+  const advance=()=>actor(null,'select public.advance_recurring_dates()',[],'service_role');
+  const occurrences=async(d)=>(await admin.query('select due_on::text,status,completed_on,cycle from public.date_occurrences where date_id=$1 order by cycle',[d])).rows;
+  await test('Recurring completion keeps the original month-end anchor and inclusive end',async()=>{
+    const u=await user(),{id,d}=await recurring(u);
+    assert.equal(d.payment_amount_minor,'845000');
+    await actor(u,'select public.complete_date($1,2,current_date,null)',[d.id]);
+    assert.equal((await occurrences(d.id))[1].due_on,'2032-02-29');
+    await actor(u,'select public.complete_date($1,3,current_date,null)',[d.id]);
+    assert.equal((await occurrences(d.id))[2].due_on,'2032-03-31');
+    await actor(u,'select public.complete_date($1,4,current_date,null)',[d.id]);
+    const rows=await occurrences(d.id);assert.equal(rows.length,3);assert.ok(rows.every(r=>r.status==='completed'));
+    assert.equal((await actor(u,'select public.account_usage() u')).rows[0].u.reminders,1);
+    assert.equal((await admin.query("select count(*)::int n from private.notification_jobs where date_id=$1 and status='pending'",[d.id])).rows[0].n,0);
+    assert.ok((await actor(u,'select public.item_detail($1) d',[id])).rows[0].d.dates[0].recurrence_months===1);
+  });
+  await test('Recurrence changes preserve anchors, resets are deliberate, stopping cancels future cycles',async()=>{
+    const u=await user(),{id,d}=await recurring(u);
+    await actor(u,'select public.complete_date($1,2,current_date,null)',[d.id]);
+    await actor(u,'select public.save_important_date($1,$2,3,$3)',[d.id,id,{...recurringInput('2032-02-29'),payment_amount_minor:null}]);
+    assert.equal((await admin.query('select recurrence_anchor::text a from public.important_dates where id=$1',[d.id])).rows[0].a,'2032-01-31');
+    await actor(u,'select public.complete_date($1,4,current_date,null)',[d.id]);
+    assert.equal((await occurrences(d.id))[2].due_on,'2032-03-31');
+    await actor(u,'select public.save_important_date($1,$2,5,$3)',[d.id,id,{...recurringInput('2032-03-31'),recurrence_months:null,recurrence_ends_on:null}]);
+    await actor(u,'select public.complete_date($1,6,current_date,null)',[d.id]);
+    assert.equal((await occurrences(d.id)).filter(r=>r.status==='open').length,0);
+    const reset=await recurring(await user());
+    const owner=reset.d.user_id;
+    await actor(owner,'select public.save_important_date($1,$2,2,$3)',[reset.d.id,reset.id,recurringInput('2032-02-15')]);
+    assert.equal((await admin.query('select recurrence_anchor::text a from public.important_dates where id=$1',[reset.d.id])).rows[0].a,'2032-02-15');
+  });
+  await test('Changing a recurring custom date to a one-time kind clears recurrence atomically',async()=>{
+    const u=await user(),id=await newItem(u,'car',recurringInput());
+    const d=(await actor(u,'select * from public.important_dates where item_id=$1',[id])).rows[0];
+    const value={...input('registration'),recurrence_months:null,recurrence_ends_on:null,payment_amount_minor:null};
+    await assert.rejects(actor(u,'select public.save_important_date($1,$2,1,$3)',[d.id,id,value]),/CONFLICT/);
+    assert.equal((await actor(u,'select recurrence_months from public.important_dates where id=$1',[d.id])).rows[0].recurrence_months,1);
+    await actor(u,'select public.save_important_date($1,$2,2,$3)',[d.id,id,value]);
+    const changed=(await actor(u,'select * from public.important_dates where id=$1',[d.id])).rows[0];
+    assert.equal(changed.kind,'registration');assert.equal(changed.recurrence_months,null);assert.equal(changed.recurrence_anchor,null);
+  });
+  await test('Worker catches up without marking payments complete and repeated runs are idempotent',async()=>{
+    const u=await user(),{d}=await recurring(u,recurringInput('2020-01-31','2020-03-31',false));
+    await Promise.all([advance(),advance()]);await advance();
+    const rows=await occurrences(d.id);
+    assert.deepEqual(rows.map(r=>r.due_on),['2020-01-31','2020-02-29','2020-03-31']);
+    assert.ok(rows.every(r=>r.status==='unconfirmed'&&r.completed_on===null));
+    assert.equal((await admin.query('select count(*)::int n from private.notification_jobs where date_id=$1',[d.id])).rows[0].n,0);
+  });
+  await test('Worker creates the next active email schedule once and retains one coverage slot',async()=>{
+    const dates=(await admin.query("select ((now() at time zone 'Asia/Manila')::date-interval '1 day')::date::text due, ((now() at time zone 'Asia/Manila')::date+interval '4 months')::date::text ending")).rows[0];
+    const u=await user(),{d}=await recurring(u,recurringInput(dates.due,dates.ending));
+    await advance();await advance();
+    const rows=await occurrences(d.id);assert.equal(rows.length,2);assert.equal(rows[0].status,'unconfirmed');assert.equal(rows[1].status,'open');
+    const jobs=(await admin.query("select expiration_date::text due,offset_value from private.notification_jobs where date_id=$1 and status='pending'",[d.id])).rows;
+    assert.deepEqual(jobs,[{due:rows[1].due_on,offset_value:7}]);
+    assert.equal((await actor(u,'select public.account_usage() u')).rows[0].u.reminders,1);
+  });
+  await test('Recurring worker honors archives and coverage without stopping saved schedules',async()=>{
+    const u=await user(),{id,d}=await recurring(u,recurringInput('2020-01-31','2020-02-29'));
+    await actor(u,'select public.archive_item($1,2,true)',[id]);await advance();
+    assert.equal((await occurrences(d.id))[0].status,'open');
+    await actor(u,'select public.archive_item($1,3,false)',[id]);await advance();
+    assert.equal((await occurrences(d.id)).length,2);
+    assert.equal((await admin.query("select count(*)::int n from private.notification_jobs where date_id=$1 and status='pending'",[d.id])).rows[0].n,0);
+  });
+  await test('Recurring fields reject invalid RPC input and isolate users and worker privileges',async()=>{
+    const u=await user(),outside=await user(),{id,d}=await recurring(u);
+    for(const patch of [{recurrence_months:2},{recurrence_ends_on:null},{recurrence_ends_on:'2031-01-01'},{payment_amount_minor:-1},{offsets:[{unit:'days',value:30}]},{offsets:[{unit:'months',value:1}]}]) {
+      await assert.rejects(actor(u,'select public.save_important_date($1,$2,2,$3)',[d.id,id,{...recurringInput(),...patch}]),/INVALID_INPUT|check constraint/);
+    }
+    await assert.rejects(actor(outside,'select public.save_important_date($1,$2,2,$3)',[d.id,id,recurringInput()]),/NOT_FOUND/);
+    await assert.rejects(actor(outside,'select public.complete_date($1,2,current_date,null)',[d.id]),/NOT_FOUND/);
+    await assert.rejects(actor(u,'select public.complete_date($1,2,current_date,$2)',[d.id,'2032-02-28']),/INVALID_INPUT/);
+    await assert.rejects(actor(u,'select public.advance_recurring_dates()'),/permission denied/);
+    await assert.rejects(actor(u,'select private.save_important_date_base($1,$2,2,$3)',[d.id,id,recurringInput()]),/permission denied/);
+    assert.equal((await actor(outside,'select * from public.important_dates where id=$1',[d.id])).rowCount,0);
+  });
+
   console.log('\n' + passed + ' database integration tests passed.');
 } finally {
   if (admin) await admin.end();

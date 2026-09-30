@@ -10,11 +10,13 @@ const jobSchema = z.array(z.object({ id: z.string().uuid(), lease_token: z.strin
 const payloadSchema = z.object({ from: z.string(), to: z.string().email(), subject: z.string(), text: z.string(), html: z.string() });
 export async function POST(request: Request) {
   if (!validCron(request)) return new Response('Unauthorized', { status: 401 });
-  if (process.env.EMAIL_DELIVERY_ENABLED !== 'true') return Response.json({ skipped: 'Email delivery is disabled' });
   const started = Date.now();
   try {
-    const apiKey = requireEnv('RESEND_API_KEY'), from = requireEnv('EMAIL_FROM');
     const admin = adminClient();
+    const { error: recurrenceError } = await admin.rpc('advance_recurring_dates', {});
+    if (recurrenceError) throw new Error('Recurring schedule advancement failed');
+    if (process.env.EMAIL_DELIVERY_ENABLED !== 'true') return Response.json({ skipped: 'Email delivery is disabled' });
+    const apiKey = requireEnv('RESEND_API_KEY'), from = requireEnv('EMAIL_FROM');
     // Five messages fit within the function duration even with provider timeouts.
     const { data, error } = await admin.rpc('claim_notification_jobs', { p_limit: 3, p_daily_limit: 90 });
     if (error) throw new Error('Claim failed');

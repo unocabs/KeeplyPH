@@ -37,6 +37,8 @@ In the project's SQL Editor, apply these migration files **once, in this order**
 7. supabase/migrations/202609240007_reminder_slots.sql
 8. supabase/migrations/202609240008_reminder_pack_billing.sql
 9. supabase/migrations/202609240009_history_measurement.sql
+10. supabase/migrations/202609260010_feedback.sql
+11. supabase/migrations/202609280011_recurring_dates.sql
 
 They create the application schema, private job/payment tables, RLS policies, transaction functions, and **two private Storage buckets**: upload-staging and purchase-documents. Do not make either bucket public or add broad client write policies. Keep the private schema outside the Data API's exposed schemas.
 
@@ -141,3 +143,12 @@ Pause notification workers while applying migrations 007–009 and deploying mat
 Coverage state is stored on the existing item row (owner-only reads; RPC-only writes), keeping slot selection and item revisions atomic. The authoritative coverage function applies current database time, even before cron runs. The notification queue now supports separate renewal notices: three days before and at expiry, sharing the global email budget. Users can disable renewal emails in Settings.
 
 Payment creation timeouts with no attached checkout require reference-based provider reconciliation; never blindly generate a replacement. The hourly worker also checks one attached pending checkout per run, rotating checks by last-attempt time. Monitor unresolved order age and review exceptions before launch.
+
+
+## Shared recurring reminders and loan presets
+
+Apply `202609280011_recurring_dates.sql` before deploying the matching app. The nine loan types are presets of a custom important date, not separate financial accounts. Recurrence, its anchor/end date, and an optional PHP payment amount belong to `important_dates`. Other custom dates (including bills) use the same controls. Frequencies are monthly, quarterly, six-monthly and yearly; recurring alerts support 0–27 days before each occurrence.
+
+Both existing authenticated cron endpoints call the service-role-only `advance_recurring_dates()` RPC, including when email delivery is disabled. It advances at most 40 schedules and 120 elapsed cycles per schedule per run, locks by account/date, preserves unconfirmed history, increments revisions, and schedules only the next active date using the existing coverage and notification queue. Repeated calls do not duplicate occurrences or sends. The original day is preserved across short months, and the end date is inclusive. An end date between scheduled payments does not create an extra payment. Archive pauses advancement and delivery; restore catches up without sending past alerts. Turning email alerts off does not stop the schedule. Changing Repeat to Does not repeat stops automatic future dates while retaining the current date and history.
+
+Deployment verification: confirm migration 011 is applied, POST cron calls succeed, and `advance_recurring_dates` exists only for service-role execution. Watch worker failures; pending catch-up work can be inspected with the query in `docs/OPERATIONS.md`. No lender integration, interest, balance calculations or payment execution are included.

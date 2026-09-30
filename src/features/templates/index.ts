@@ -28,6 +28,15 @@ export function addIntent(template: TemplateKey, focus?: string, category?: stri
 
 // Presets use the existing custom-date contract; only these public choices survive sign-in.
 export const reminderPresets = {
+  'personal-loan': { label: 'Personal Loan', example: 'My personal loan', dateLabel: 'Personal Loan payment', description: 'Track payment dates, an optional amount and reminders until your end date.', identity: false },
+  'home-loan': { label: 'Home Loan', example: 'My home loan', dateLabel: 'Home Loan payment', description: 'Track payment dates, an optional amount and reminders until your end date.', identity: false },
+  'car-loan': { label: 'Car Loan', example: 'My car loan', dateLabel: 'Car Loan payment', description: 'Track payment dates, an optional amount and reminders until your end date.', identity: false },
+  'motorcycle-loan': { label: 'Motorcycle Loan', example: 'My motorcycle loan', dateLabel: 'Motorcycle Loan payment', description: 'Track payment dates, an optional amount and reminders until your end date.', identity: false },
+  'salary-government-loan': { label: 'Salary / Government Loan', example: 'My salary / government loan', dateLabel: 'Salary / Government Loan payment', description: 'Track payment dates, an optional amount and reminders until your end date.', identity: false },
+  'credit-card-installment': { label: 'Credit Card / Installment', example: 'My credit card / installment', dateLabel: 'Credit Card / Installment payment', description: 'Track payment dates, an optional amount and reminders until your end date.', identity: false },
+  'business-loan': { label: 'Business Loan', example: 'My business loan', dateLabel: 'Business Loan payment', description: 'Track payment dates, an optional amount and reminders until your end date.', identity: false },
+  'digital-online-loan': { label: 'Digital / Online Loan', example: 'My digital / online loan', dateLabel: 'Digital / Online Loan payment', description: 'Track payment dates, an optional amount and reminders until your end date.', identity: false },
+  'other-loan': { label: 'Other Loan', example: 'My other loan', dateLabel: 'Other Loan payment', description: 'Track payment dates, an optional amount and reminders until your end date.', identity: false },
   umid: { label: 'UMID', example: 'My UMID', dateLabel: 'UMID appointment or follow-up', description: 'Choose an appointment or follow-up date. Do not assume an expiry date.', identity: true },
   'national-id': { label: 'National ID', example: 'My National ID', dateLabel: 'National ID appointment or follow-up', description: 'Remember an appointment, update or follow-up you choose.', identity: true },
   'prc-license': { label: 'PRC License', example: 'My PRC license', dateLabel: 'PRC license renewal', description: 'Remember your printed expiration date or renewal appointment.', identity: true },
@@ -47,3 +56,6 @@ export function isReminderPreset(value?: string): value is ReminderPreset {
 export function getReminderPreset(template: TemplateKey, value?: string) {
   return template === 'other' && isReminderPreset(value) ? reminderPresets[value] : undefined;
 }
+
+export const loanPresetKeys = ['personal-loan', 'home-loan', 'car-loan', 'motorcycle-loan', 'salary-government-loan', 'credit-card-installment', 'business-loan', 'digital-online-loan', 'other-loan'] as const;
+export function isLoanPreset(value?: string): boolean { return Boolean(value && (loanPresetKeys as readonly string[]).includes(value)); }

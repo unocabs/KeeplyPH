@@ -14,6 +14,7 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      advance_recurring_dates: Rpc<Record<string, never>,number>;
       feedback_status: Rpc<Record<string, never>>;
       submit_feedback: Rpc<{p_id:string;p_kind:string;p_summary:string;p_notes:string;p_expect_reward:boolean}>;
       purge_old_feedback: Rpc<Record<string, never>,undefined>;

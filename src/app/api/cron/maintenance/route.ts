@@ -10,6 +10,8 @@ export async function POST(request: Request) {
   const started = Date.now();
   try {
     const admin = adminClient();
+    const { error: recurrenceError } = await admin.rpc('advance_recurring_dates', {});
+    if (recurrenceError) throw new Error('Recurring schedule advancement failed');
     if(process.env.PAYMENTS_ENABLED==='true') await reconcilePayments(started);
     const { data, error } = await admin.rpc('run_maintenance', {});
     if (error) throw new Error('Maintenance failed');

@@ -152,3 +152,23 @@ Set it back to `true` to reopen the offer. Existing grants are unaffected. Feedb
 The existing hourly maintenance endpoint calls `purge_old_feedback`, removing text older than 12 months. Account deletion cascades both feedback and claims. Promotion expiry uses the existing slot expiry and renewal-email preference rules, with no automatic charges. The operator should review new submissions regularly; no extra email notifications are sent.
 
 Rollback: disable the promotion and roll back the app if needed. Do not drop the claim ledger or undo migration 010 after rewards have been granted; that would lose claim history or refund protection.
+
+
+## Recurring reminder advancement
+
+Deploy migration `202609280011_recurring_dates.sql` before the app. Existing 15-minute notification and hourly maintenance calls advance recurrence even when outbound email is disabled. Do not grant client execution on `advance_recurring_dates` or expose the private schema. Existing coverage/account preferences still decide email eligibility.
+
+Inspect catch-up backlog without private notes or payment amounts:
+
+```sql
+select count(*) as schedules_waiting, min(o.due_on) as oldest_due
+from public.important_dates d
+join public.date_occurrences o on o.date_id=d.id and o.status='open'
+join public.items i on i.id=d.item_id
+join public.profiles p on p.id=d.user_id
+where d.recurrence_months is not null
+  and i.archived_at is null and i.state='saved' and p.deletion_requested_at is null
+  and o.due_on < (now() at time zone p.timezone)::date;
+```
+
+The bounded worker can need multiple runs after extended downtime. Dates left unconfirmed are history, not evidence of nonpayment. The worker never marks payments paid and never sends historical alerts. Queued future alerts retain existing occurrence-based idempotency and are checked again before delivery. Migration verification is covered by `npm run test:db` against a temporary isolated database.
