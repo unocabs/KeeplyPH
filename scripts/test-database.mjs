@@ -41,13 +41,19 @@ try {
   command('pg_ctl', ['-D', join(folder, 'data'), '-l', join(folder, 'server.log'), '-o', "-k " + folder + " -p " + port + " -c listen_addresses='' -c unix_socket_permissions=0700", '-w', 'start']); started = true;
   admin = new pg.Client(config); await admin.connect();
   await admin.query("create role anon; create role authenticated; create role service_role bypassrls; create schema auth; create schema storage; grant usage on schema auth,storage,public to anon,authenticated,service_role; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz,last_sign_in_at timestamptz,raw_user_meta_data jsonb default '{}'::jsonb); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]); create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text); alter table storage.objects enable row level security; grant select on storage.objects to authenticated;");
-  let migrationSeed;
+  let migrationSeed, recurrenceMigrationSeed;
   for (const name of (await readdir('supabase/migrations')).filter(n => n.endsWith('.sql')).sort()) {
     if(name==='202609230005_items.sql') {
       const u=await user(), id=await draft(u); await save(u,id,{expires_on:'2032-03-31',reminders_enabled:true});
       const old=(await admin.query('select id from public.warranties where purchase_id=$1',[id])).rows[0];
       const job=(await admin.query("update private.notification_jobs set status='accepted',provider_email_id='migration_email',first_attempt_at=now(),frozen_payload='{\"to\":\"test@example.test\"}'::jsonb where warranty_id=$1 and offset_days=30 returning id,frozen_payload",[old.id])).rows[0];
       migrationSeed={u,id,warranty:old.id,job};
+    }
+    if(name==='202610010012_reminder_categories.sql') {
+      const u=await user(), id=randomUUID();
+      await actor(u,"select public.create_item_draft($1,'other')",[id]);
+      await actor(u,'select public.save_item_with_date($1,1,$2,$3,$4)',[id,'Existing loan','',{kind:'other',label:'Existing payment',due_on:'2032-01-31',reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}],recurrence_months:1,recurrence_ends_on:'2032-03-31',payment_amount_minor:845000}]);
+      recurrenceMigrationSeed=(await admin.query('select * from public.important_dates where item_id=$1',[id])).rows[0];
     }
     await admin.query(await readFile(join('supabase/migrations', name), 'utf8'));
     console.log('Applied ' + name);
@@ -556,7 +562,7 @@ try {
   });
   await test('Recurring fields reject invalid RPC input and isolate users and worker privileges',async()=>{
     const u=await user(),outside=await user(),{id,d}=await recurring(u);
-    for(const patch of [{recurrence_months:2},{recurrence_ends_on:null},{recurrence_ends_on:'2031-01-01'},{payment_amount_minor:-1},{offsets:[{unit:'days',value:30}]},{offsets:[{unit:'months',value:1}]}]) {
+    for(const patch of [{recurrence_months:2},{recurrence_ends_on:'2031-01-01'},{payment_amount_minor:-1},{offsets:[{unit:'days',value:30}]},{offsets:[{unit:'months',value:1}]}]) {
       await assert.rejects(actor(u,'select public.save_important_date($1,$2,2,$3)',[d.id,id,{...recurringInput(),...patch}]),/INVALID_INPUT|check constraint/);
     }
     await assert.rejects(actor(outside,'select public.save_important_date($1,$2,2,$3)',[d.id,id,recurringInput()]),/NOT_FOUND/);
@@ -565,6 +571,61 @@ try {
     await assert.rejects(actor(u,'select public.advance_recurring_dates()'),/permission denied/);
     await assert.rejects(actor(u,'select private.save_important_date_base($1,$2,2,$3)',[d.id,id,recurringInput()]),/permission denied/);
     assert.equal((await actor(outside,'select * from public.important_dates where id=$1',[d.id])).rowCount,0);
+  });
+
+  await test('Category migration preserves existing recurrence dates, amounts and anchors',async()=>{
+    const after=(await admin.query('select * from public.important_dates where id=$1',[recurrenceMigrationSeed.id])).rows[0];
+    assert.deepEqual(after,recurrenceMigrationSeed);
+  });
+  await test('Open-ended quarterly premiums complete and advance from their original anchor',async()=>{
+    const u=await user(), id=await item(u,'other');
+    const value={...recurringInput('2032-01-31',null),recurrence_months:3};
+    await actor(u,'select public.save_item_with_date($1,1,$2,$3,$4,$5)',[id,'Family policy','',value,'life-insurance']);
+    const d=(await actor(u,'select * from public.important_dates where item_id=$1',[id])).rows[0];
+    await actor(u,'select public.complete_date($1,2,current_date,null)',[d.id]);
+    await actor(u,'select public.complete_date($1,3,current_date,null)',[d.id]);
+    assert.deepEqual((await occurrences(d.id)).map(o=>o.due_on),['2032-01-31','2032-04-30','2032-07-31']);
+    const detail=(await actor(u,'select public.item_detail($1) d',[id])).rows[0].d;
+    assert.equal(detail.reminder_preset,'life-insurance');
+    assert.equal(detail.dates[0].recurrence_ends_on,null);
+    // The legacy five-argument save preserves the selected type.
+    await actor(u,'select public.save_item_with_date($1,2,$2,$3,null)',[id,'Renamed policy','']);
+    assert.equal((await actor(u,'select public.item_detail($1) d',[id])).rows[0].d.reminder_preset,'life-insurance');
+    await actor(u,'select public.save_item_with_date($1,3,$2,$3,null,$4)',[id,'Renamed policy','','']);
+    assert.equal((await actor(u,'select public.item_detail($1) d',[id])).rows[0].d.reminder_preset,null);
+  });
+  await test('Open-ended schedules catch up independently of email alerts and can be stopped',async()=>{
+    const due=(await admin.query("select ((now() at time zone 'Asia/Manila')::date-interval '1 day')::date::text d")).rows[0].d;
+    const u=await user(),{id,d}=await recurring(u,recurringInput(due,null,false));
+    await advance(); await advance();
+    const rows=await occurrences(d.id); assert.equal(rows.length,2); assert.equal(rows[0].status,'unconfirmed'); assert.equal(rows[1].status,'open');
+    await actor(u,'select public.save_important_date($1,$2,3,$3)',[d.id,id,{...recurringInput(rows[1].due_on,null,false),recurrence_months:null}]);
+    await actor(u,'select public.complete_date($1,4,current_date,null)',[d.id]);
+    assert.equal((await occurrences(d.id)).filter(o=>o.status==='open').length,0);
+  });
+  await test('Registration, insurance, maintenance and expiration can opt into repeat schedules',async()=>{
+    const u=await user();
+    for(const [template,kind] of [['car','registration'],['motorcycle','insurance'],['aircon','service'],['passport','expiration'],['receipt','warranty']]) {
+      const id=await newItem(u,template,{...recurringInput('2032-01-31',null,false),kind});
+      const d=(await actor(u,'select * from public.important_dates where item_id=$1',[id])).rows[0];
+      await actor(u,'select public.complete_date($1,2,current_date,null)',[d.id]);
+      assert.equal((await occurrences(d.id))[1].due_on,'2032-02-29');
+    }
+  });
+  await test('Saved type validation is atomic, owner-scoped and category filters run before pagination',async()=>{
+    const u=await user(),outside=await user();
+    const bad=await item(u,'other');
+    await assert.rejects(actor(u,'select public.save_item_with_date($1,1,$2,$3,$4,$5)',[bad,'Bad','',recurringInput(),'unknown-type']),/check constraint/);
+    assert.equal((await actor(u,'select state from public.items where id=$1',[bad])).rows[0].state,'draft');
+    const id=await item(u,'other');
+    await actor(u,'select public.save_item_with_date($1,1,$2,$3,$4,$5)',[id,'Policy','',recurringInput(),'life-insurance']);
+    await assert.rejects(actor(outside,'select public.save_item_with_date($1,2,$2,$3,null,$4)',[id,'Changed','','rent']),/NOT_FOUND/);
+    await admin.query("insert into public.items(user_id,template_key,state,product_name,created_at) select $1,'car','saved','Vehicle '||n,now()+interval '1 second' from generate_series(1,26) n",[u]);
+    const result=(await actor(u,"select public.list_items('all','','category:insurance') d")).rows[0].d;
+    assert.deepEqual(result.map(i=>i.id),[id]);
+    assert.equal((await actor(u,"select public.list_items('all','life insurance','all') d")).rows[0].d[0].id,id);
+    assert.deepEqual((await actor(outside,"select public.list_items('all','','category:insurance') d")).rows[0].d,[]);
+    await assert.rejects(actor(u,'select private.save_item_with_date_base($1,2,$2,$3,null)',[id,'Changed','']),/permission denied/);
   });
 
   console.log('\n' + passed + ' database integration tests passed.');

@@ -39,6 +39,8 @@ In the project's SQL Editor, apply these migration files **once, in this order**
 9. supabase/migrations/202609240009_history_measurement.sql
 10. supabase/migrations/202609260010_feedback.sql
 11. supabase/migrations/202609280011_recurring_dates.sql
+12. supabase/migrations/202610010011_variable_slot_packs.sql
+13. supabase/migrations/202610010012_reminder_categories.sql
 
 They create the application schema, private job/payment tables, RLS policies, transaction functions, and **two private Storage buckets**: upload-staging and purchase-documents. Do not make either bucket public or add broad client write policies. Keep the private schema outside the Data API's exposed schemas.
 
@@ -152,3 +154,6 @@ Apply `202609280011_recurring_dates.sql` before deploying the matching app. The 
 Both existing authenticated cron endpoints call the service-role-only `advance_recurring_dates()` RPC, including when email delivery is disabled. It advances at most 40 schedules and 120 elapsed cycles per schedule per run, locks by account/date, preserves unconfirmed history, increments revisions, and schedules only the next active date using the existing coverage and notification queue. Repeated calls do not duplicate occurrences or sends. The original day is preserved across short months, and the end date is inclusive. An end date between scheduled payments does not create an extra payment. Archive pauses advancement and delivery; restore catches up without sending past alerts. Turning email alerts off does not stop the schedule. Changing Repeat to Does not repeat stops automatic future dates while retaining the current date and history.
 
 Deployment verification: confirm migration 011 is applied, POST cron calls succeed, and `advance_recurring_dates` exists only for service-role execution. Watch worker failures; pending catch-up work can be inspected with the query in `docs/OPERATIONS.md`. No lender integration, interest, balance calculations or payment execution are included.
+
+
+Reminder categories and optional schedule end dates: apply `supabase/migrations/202610010012_reminder_categories.sql` once in the Supabase SQL Editor before deploying this version. It keeps existing schedules, adds saved reminder types, permits recurring schedules with no end date, and adds category filtering before pagination. Existing custom reminders remain available under Custom reminder. Weekly and custom intervals are deferred.

@@ -4,7 +4,7 @@ import { requireUser } from '@/lib/auth';
 import { type ActionResult } from '@/lib/domain';
 import { uuidSchema } from '@/lib/validation';
 import { errorMessage } from '@/lib/errors';
-import { isTemplate } from '@/features/templates';
+import { isTemplate, isReminderPreset } from '@/features/templates';
 import { dateSchema, requiredDate } from './validation';
 function refresh() { revalidatePath('/dashboard'); revalidatePath('/items', 'layout'); revalidatePath('/purchases','layout'); revalidatePath('/settings/billing'); }
 export async function createItemDraft(id: string, template: string): Promise<ActionResult> {
@@ -16,12 +16,14 @@ export async function createItemDraft(id: string, template: string): Promise<Act
 export async function saveItem(form: FormData): Promise<ActionResult> {
   const id = String(form.get('id') || ''), label = String(form.get('label') || '').trim(), notes = String(form.get('notes') || ''), revision = Number(form.get('revision'));
   if (!uuidSchema.safeParse(id).success || !label || label.length > 160 || notes.length > 5000 || !Number.isInteger(revision) || revision < 1) return { error: 'Please check the name and details.' };
+  const preset = String(form.get('preset') || '');
+  if (preset && !isReminderPreset(preset)) return { error: 'Choose a supported reminder type.' };
   let date = null;
   if (form.get('date')) {
     try { const parsed = dateSchema.safeParse(JSON.parse(String(form.get('date')))); if (!parsed.success) return { error: parsed.error.issues[0].message }; date = parsed.data; } catch { return { error: 'Check the date details.' }; }
   }
   const { supabase } = await requireUser();
-  const { error } = await supabase.rpc('save_item_with_date', { p_id: id, p_revision: revision, p_label: label, p_notes: notes, p_date: date });
+  const { error } = await supabase.rpc('save_item_with_date', { p_id: id, p_revision: revision, p_label: label, p_notes: notes, p_date: date, p_preset: preset || (form.has('preset') ? '' : null) });
   if (error) return { error: errorMessage(error) }; refresh();
   const {data:coverage}=await supabase.rpc('item_coverage',{p_id:id});
   return { id, uncovered: Boolean(date?.reminders_enabled && (coverage as {coverage?:string})?.coverage !== 'covered') };

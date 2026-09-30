@@ -12,7 +12,6 @@ export const dateSchema = z.object({
   interval_months: z.number().int().min(1).max(120).nullable(),
 }).superRefine((value, ctx) => {
   if (!value.recurrence_months) return;
-  if (value.kind !== 'other') ctx.addIssue({ code: 'custom', message: 'Recurring schedules use a custom important date.' });
-  if (!value.recurrence_ends_on || value.recurrence_ends_on < value.due_on) ctx.addIssue({ code: 'custom', message: 'Choose an end date on or after the next payment.', path: ['recurrence_ends_on'] });
+  if (value.recurrence_ends_on && value.recurrence_ends_on < value.due_on) ctx.addIssue({ code: 'custom', message: 'Choose an end date on or after the next date.', path: ['recurrence_ends_on'] });
   if (value.offsets.some(offset => offset.unit !== 'days' || offset.value > 27)) ctx.addIssue({ code: 'custom', message: 'For recurring reminders, choose 0–27 days before each date.', path: ['offsets'] });
 });
