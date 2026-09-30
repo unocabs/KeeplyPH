@@ -1,3 +1,4 @@
+import { safeRenewalDate } from '@/lib/lto-schedule';
 export const templateKeys = ['receipt', 'car', 'motorcycle', 'licence', 'passport', 'aircon', 'other'] as const;
 export type TemplateKey = typeof templateKeys[number];
 export type DateKind = 'warranty' | 'registration' | 'insurance' | 'service' | 'expiration' | 'other';
@@ -18,11 +19,13 @@ export function defaultOffsets(template: TemplateKey, kind: DateKind): Offset[] 
   return (template === 'licence' ? [90, 30, 7] : kind === 'service' ? [7, 1] : [30, 7, 1]).map(value => ({ unit: 'days', value }));
 }
 // Only supported, non-private intent survives the OAuth round trip.
-export function addIntent(template: TemplateKey, focus?: string, category?: string, preset?: string): string {
+export function addIntent(template: TemplateKey, focus?: string, category?: string, preset?: string, renewalDate?: string): string {
   const query = new URLSearchParams();
   if (focus && templates[template].kinds.includes(focus as DateKind)) query.set('focus', focus);
   if (template === 'receipt' && category === 'appliances') query.set('category', category);
   if (template === 'other' && isReminderPreset(preset)) query.set('preset', preset);
+  const suggestedDate = template === 'car' && focus === 'registration' ? safeRenewalDate(renewalDate) : undefined;
+  if (suggestedDate) query.set('renewalDate', suggestedDate);
   return '/add/' + template + (query.size ? '?' + query.toString() : '');
 }
 

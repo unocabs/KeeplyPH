@@ -23,3 +23,21 @@ describe('standard LTO plate schedule', () => {
     for (const year of [NaN, 0, 2026.5, 2101]) expect(ltoSchedule('98', year)).toBeNull();
   });
 });
+
+import { safeRenewalDate, suggestedRenewalDate } from '@/lib/lto-schedule';
+import { safeAuthIntent } from '@/lib/auth-intent';
+import { addIntent } from '@/features/templates';
+
+it('prefills the window start and preserves only the date through sign-in', () => {
+  const date = suggestedRenewalDate('CCC 2398', 2026);
+  expect(date).toBe('2026-08-22');
+  const intent = addIntent('car', 'registration', undefined, undefined, date);
+  expect(safeAuthIntent(intent + '&plate=CCC2398&label=private')).toBe('/add/car?focus=registration&renewalDate=2026-08-22');
+  expect(safeAuthIntent(safeAuthIntent(intent))).toBe(intent);
+  expect(safeAuthIntent('/add/passport?renewalDate=2026-08-22')).toBe('/add/passport');
+  expect(safeAuthIntent('/add/car?focus=insurance&renewalDate=2026-08-22')).toBe('/add/car?focus=insurance');
+});
+it('rejects malformed and unsupported prefill dates', () => {
+  for (const date of ['2026-02-31', '2026-13-01', '2026-11-01', '2026-08-23', '2026-8-22', 'private', '2101-08-22']) expect(safeRenewalDate(date)).toBeUndefined();
+  expect(suggestedRenewalDate('not a plate', 2026)).toBeUndefined();
+});

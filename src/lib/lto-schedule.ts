@@ -11,3 +11,15 @@ export function ltoSchedule(input: string, year: number) {
   const end = start === 22 ? new Date(Date.UTC(year, month, 0)).getUTCDate() : start + 6;
   return { month: months[month - 1], start, end, year, last, preceding };
 }
+
+/** Only a standard window's suggested start date may be carried through sign-in. */
+export function safeRenewalDate(value?: string | null): string | undefined {
+  return typeof value === 'string' && /^(20\d{2}|2100)-(0[1-9]|10)-(01|08|15|22)$/.test(value) ? value : undefined;
+}
+
+export function suggestedRenewalDate(input: string, year: number): string | undefined {
+  const result = ltoSchedule(input, year);
+  if (!result) return undefined;
+  const month = result.last === 0 ? 10 : result.last;
+  return `${year}-${String(month).padStart(2, '0')}-${String(result.start).padStart(2, '0')}`;
+}

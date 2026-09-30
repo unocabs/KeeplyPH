@@ -7,13 +7,15 @@ import { dateSchema } from '@/features/items/validation';
 import { createItemDraft, saveItem, deleteItem } from '@/features/items/actions';
 import type { ItemWithDetails } from '@/features/items/domain';
 import { DateFields, initialDate } from './date-fields';
-export function ItemForm({ template, item, focus, preset, demo = false }: { template: TemplateKey; item?: ItemWithDetails; focus?: string; preset?: string; demo?: boolean }) {
+import { safeRenewalDate } from '@/lib/lto-schedule';
+export function ItemForm({ template, item, focus, preset, renewalDate, demo = false }: { template: TemplateKey; item?: ItemWithDetails; focus?: string; preset?: string; renewalDate?: string; demo?: boolean }) {
+  const suggestedDate = !item && template === 'car' && focus === 'registration' ? safeRenewalDate(renewalDate) : undefined;
   const selectedPreset = getReminderPreset(template, preset);
   const choice = selectedPreset || templates[template];
   const loan = isLoanPreset(preset);
   const identity = ['licence', 'passport'].includes(template) || selectedPreset?.identity;
   const router = useRouter(), id = useRef(item?.id || '');
-  const [date, setDate] = useState(() => ({ ...initialDate(template, focus), ...(selectedPreset ? { label: selectedPreset.dateLabel } : {}), ...(loan ? { recurrence_months: 1, recurrence_ends_on: null, offsets: [{ unit: 'days' as const, value: 7 }] } : {}) }));
+  const [date, setDate] = useState(() => ({ ...initialDate(template, focus), ...(suggestedDate ? { due_on: suggestedDate } : {}), ...(selectedPreset ? { label: selectedPreset.dateLabel } : {}), ...(loan ? { recurrence_months: 1, recurrence_ends_on: null, offsets: [{ unit: 'days' as const, value: 7 }] } : {}) }));
   const optional = ['car','motorcycle'].includes(template);
   const [withDate, setWithDate] = useState(item?.state !== 'saved' && (!optional || Boolean(focus)));
   const dirty = useRef(false);
@@ -32,10 +34,10 @@ export function ItemForm({ template, item, focus, preset, demo = false }: { temp
     } catch(e) { setError(e instanceof Error ? e.message : 'Unable to save. Please retry.'); } finally { setBusy(false); }
   }
   return <><Link className="back-link" href={(demo ? '/demo' : '') + '/items'}>← Reminders</Link><div className="page-heading"><div><div className="eyebrow">ONE LESS THING TO REMEMBER</div><h1>{item ? 'Edit ' : 'Add '}{choice.label}</h1><p>{choice.description}</p></div></div><form onSubmit={submit} onChange={() => { dirty.current=true; }} className="form-stack narrow-form"><fieldset disabled={busy}><section className="panel form-section"><div className="field-grid"><label className="full">A helpful name<input name="label" required maxLength={160} defaultValue={item?.product_name || (selectedPreset || identity ? choice.example : '')} placeholder={choice.example} /></label><label className="full">Notes (optional)<textarea name="notes" rows={3} maxLength={5000} defaultValue={item?.notes || ''} placeholder={identity ? 'No identity numbers or sensitive details, please.' : 'Anything useful to remember'} /></label></div></section>
-    {item?.state !== 'saved' && <section className="panel form-section">{optional && <label className="checkbox-row"><input type="checkbox" checked={withDate} onChange={e => setWithDate(e.target.checked)} /><span><strong>Add an important date</strong><p>You can add dates later, too.</p></span></label>}{selectedPreset?.identity && <p className="hint">Keep only a name and your chosen date. Do not add identity numbers or scans.</p>}{withDate && <DateFields payment={loan} template={template} value={date} onChange={setDate} />}</section>}
+    {item?.state !== 'saved' && <section className="panel form-section">{optional && <label className="checkbox-row"><input type="checkbox" checked={withDate} onChange={e => setWithDate(e.target.checked)} /><span><strong>Add an important date</strong><p>You can add dates later, too.</p></span></label>}{selectedPreset?.identity && <p className="hint">Keep only a name and your chosen date. Do not add identity numbers or scans.</p>}{suggestedDate && withDate && <p className="alert info">We prefilled {suggestedDate}, the start of your calculated renewal window. Review it against your LTO record and choose a working day before saving. Email alerts are optional; enable them below.</p>}{withDate && <DateFields payment={loan} template={template} value={date} onChange={setDate} />}</section>}
     {item?.state === 'saved' && <p className="hint">Edit individual dates and alerts on the reminder’s detail page.</p>}
     {templates[template].files && <p className="hint">Save first, then attach receipts or vehicle documents privately.</p>}
-    {error && <p className="alert error" role="alert">{error}</p>}{preview && <p className="alert success" role="status">Your sample is ready. This preview does not store changes. <Link href={'/login?next=' + encodeURIComponent(addIntent(template, focus, undefined, preset))}>Sign in to keep your own →</Link></p>}
+    {error && <p className="alert error" role="alert">{error}</p>}{preview && <p className="alert success" role="status">Your sample is ready. This preview does not store changes. <Link href={'/login?next=' + encodeURIComponent(addIntent(template, focus, undefined, preset, suggestedDate))}>Sign in to keep your own →</Link></p>}
     {item?.state === 'draft' && <button type="button" className="text-button spaced" onClick={async () => { if(!confirm('Discard this unfinished reminder?'))return;setBusy(true);try{const result=await deleteItem(item.id);if(result.error)throw new Error(result.error);dirty.current=false;router.push('/items');router.refresh();}catch(e){setError(e instanceof Error?e.message:'Unable to discard.');}finally{setBusy(false);} }}>Discard unfinished reminder</button>}
     <div className="form-actions"><Link className="button secondary" href={(demo ? '/demo' : '') + '/items'}>Cancel</Link><button className="button primary">{busy ? 'Saving…' : demo ? 'Try saving reminder' : 'Save reminder'}</button></div></fieldset></form></>;
 }
