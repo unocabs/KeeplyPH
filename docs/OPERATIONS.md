@@ -111,7 +111,7 @@ This is a local implementation and a deployment runbook, not evidence that these
 
 ## Reminder packs and renewal notices
 
-Users manually purchase ₱29 for 30 days or ₱249 permanently through PayMongo checkout. Renewal extends from the later of current expiry and verified fulfillment time. No subscription API, saved-card billing, or automatic charge exists. Early renewal extends time, not slot quantity. Both new products add five slots to the free three; permanent switching replaces the same extra pack.
+Users manually purchase 5–100 extra slots in increments of five at ₱29 per five for 30 days or ₱249 per five permanently through PayMongo checkout. Apply `202610010011_variable_slot_packs.sql` before releasing the quantity selector. Renewal extends from the later of current expiry and verified fulfillment time. No subscription API, saved-card billing, or automatic charge exists. Early renewal queues another 30-day term; each term uses its purchased quantity. Permanent switching replaces temporary slots immediately. Further permanent purchases accumulate up to 100 purchased slots plus the free three. Orders bind quantity and amount server-side; competing checkouts exceeding the cap enter review. Refunds revoke only the affected purchase and preserve remaining terms, permanent purchases, and feedback rewards.
 
 Apply all migrations through 009 before deploying the matching app. New databases default to test billing mode. On the dedicated production database, set `private.billing_settings.live=true` through the operator SQL console after verifying live provider setup; this excludes test pack grants from capabilities. Keep previews in a separate test project. Do not change production mode for testing.
 

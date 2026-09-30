@@ -247,14 +247,14 @@ try {
     const result=(await actor(null,'select public.prepare_notification($1,$2,$3) payload',[j.id,j.lease_token,{to:u+'@example.test'}],'service_role')).rows[0];assert.equal(result.payload,null);
   });
 
-  async function packOrder(u,product='slots_30') {
+  async function packOrder(u,product='slots_30',slots=5) {
     const id=randomUUID();
-    await actor(null,'select public.create_pack_order($1,$2,$3,false)',[u,id,product],'service_role');
+    await actor(null,'select public.create_pack_order($1,$2,$3,false,$4)',[u,id,product,slots],'service_role');
     await actor(null,'select public.attach_checkout($1,$2,$3)',[id,'cs_'+id.replaceAll('-',''),'https://checkout.paymongo.com/test'],'service_role');
     return id;
   }
-  async function pay(id,product='slots_30',event='evt_'+randomUUID()) {
-    return actor(null,'select public.credit_payment($1,$2,$3,$4,$5,\'PHP\',false)',[event,id,'cs_'+id.replaceAll('-',''),'pay_'+id.replaceAll('-',''),product==='slots_30'?2900:24900],'service_role');
+  async function pay(id,product='slots_30',event='evt_'+randomUUID(),slots=5) {
+    return actor(null,'select public.credit_payment($1,$2,$3,$4,$5,\'PHP\',false)',[event,id,'cs_'+id.replaceAll('-',''),'pay_'+id.replaceAll('-',''),(product==='slots_30'?2900:24900)*(slots/5)],'service_role');
   }
   await test('Slot replacement is atomic, owner scoped, and blocks an already leased old item',async()=>{
     const u=await user(),other=await user(),ids=[];
@@ -284,6 +284,55 @@ try {
     const forever=(await actor(u,'select public.account_usage() u')).rows[0].u;
     assert.equal(forever.permanent,true);assert.equal(forever.slot_limit,8);
     await assert.rejects(packOrder(u),/PACK_ALREADY_OWNED/);
+  });
+  await test('Variable quantities bind checkout amount, deduplicate by size, and reject invalid sizes', async()=>{
+    const u=await user();
+    for(const quantity of [0,4,6,101,105,null]) await assert.rejects(actor(null,'select public.create_pack_order($1,$2,$3,false,$4)',[u,randomUUID(),'slots_30',quantity],'service_role'),/INVALID_INPUT/);
+    const id=await packOrder(u,'slots_30',25);
+    const existing=(await actor(null,'select public.create_pack_order($1,$2,$3,false,25) o',[u,randomUUID(),'slots_30'],'service_role')).rows[0].o;
+    assert.equal(existing.id,id); assert.equal(existing.amount_minor,14500);assert.equal(existing.slot_count,25);
+    const different=await packOrder(u,'slots_30',100);assert.notEqual(id,different);
+    await assert.rejects(pay(id),/PAYMENT_MISMATCH/);
+    await pay(id,'slots_30',undefined,25);await pay(id,'slots_30',undefined,25);
+    const usage=(await actor(u,'select public.account_usage() u')).rows[0].u;
+    assert.equal(usage.slot_limit,28);assert.equal(usage.renewal_slots,25);assert.equal(usage.temporary_active,true);
+    const history=(await actor(u,'select public.get_billing_orders() h')).rows[0].h;
+    assert.equal(history.find(o=>o.id===id).slot_count,25);assert.equal(history.find(o=>o.id===id).product,'slots_30');
+    await admin.query("insert into public.items(user_id,state,product_name,coverage_requested_at) select $1,'saved','Covered '||n,now() from generate_series(1,28) n",[u]);
+    const uncovered=await newItem(u,'car',input('registration','2032-03-31',true));
+    assert.equal((await actor(u,'select public.account_usage() u')).rows[0].u.reminders,28);
+    assert.equal((await actor(u,'select public.item_coverage($1) c',[uncovered])).rows[0].c.coverage,'off');
+    await assert.rejects(admin.query('update private.billing_orders set amount_minor=2900 where id=$1',[id]),/billing_orders_pack_price/);
+  });
+  await test('Changed renewal quantity applies only to its own term; refund revokes unused capacity',async()=>{
+    const u=await user(),first=await packOrder(u,'slots_30',25);await pay(first,'slots_30',undefined,25);
+    const second=await packOrder(u,'slots_30',100);await pay(second,'slots_30',undefined,100);
+    assert.equal((await actor(u,'select public.account_usage() u')).rows[0].u.slot_limit,28);
+    const terms=(await admin.query('select * from private.billing_orders where id=any($1) order by period_starts_at',[[first,second]])).rows;
+    assert.equal(+terms[0].period_ends_at,+terms[1].period_starts_at);
+    await admin.query("update private.billing_orders set period_starts_at=period_starts_at-interval '31 days',period_ends_at=period_ends_at-interval '31 days' where user_id=$1",[u]);
+    await admin.query("update private.reminder_packs set paid_until=paid_until-interval '31 days' where user_id=$1",[u]);
+    assert.equal((await actor(u,'select public.account_usage() u')).rows[0].u.slot_limit,103);
+    await actor(null,'select public.revoke_refunded_order($1)',['pay_'+second.replaceAll('-','')],'service_role');
+    assert.equal((await actor(u,'select public.account_usage() u')).rows[0].u.slot_limit,3);
+  });
+  await test('Permanent purchases accumulate to 100 slots, survive replay, and refunds remove only their quantity',async()=>{
+    const u=await user(),first=await packOrder(u,'slots_permanent',25);await pay(first,'slots_permanent',undefined,25);
+    const second=await packOrder(u,'slots_permanent',75);await pay(second,'slots_permanent',undefined,75);await pay(second,'slots_permanent',undefined,75);
+    const usage=(await actor(u,'select public.account_usage() u')).rows[0].u;
+    assert.equal(usage.slot_limit,103);assert.equal(usage.permanent_slots,100);
+    await assert.rejects(packOrder(u,'slots_permanent',5),/SLOT_PACK_LIMIT/);
+    await actor(null,'select public.revoke_refunded_order($1)',['pay_'+second.replaceAll('-','')],'service_role');
+    const restored=(await actor(u,'select public.account_usage() u')).rows[0].u;
+    assert.equal(restored.slot_limit,28);assert.equal(restored.permanent,true);
+    await actor(null,'select public.revoke_refunded_order($1)',['pay_'+first.replaceAll('-','')],'service_role');
+    assert.equal((await actor(u,'select public.account_usage() u')).rows[0].u.slot_limit,3);
+  });
+  await test('Competing permanent checkouts cannot exceed 100 slots on fulfillment',async()=>{
+    const u=await user(),first=await packOrder(u,'slots_permanent',75),second=await packOrder(u,'slots_permanent',100);
+    await pay(first,'slots_permanent',undefined,75);await pay(second,'slots_permanent',undefined,100);
+    assert.equal((await actor(u,'select public.account_usage() u')).rows[0].u.slot_limit,78);
+    assert.equal((await admin.query('select status from private.billing_orders where id=$1',[second])).rows[0].status,'review');
   });
   await test('Expired capacity is checked before send without waiting for maintenance; opt-ins survive',async()=>{
     const u=await user(),id=await packOrder(u);await pay(id);
