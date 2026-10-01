@@ -11,3 +11,6 @@
 
 .calculator{border:1px solid #ded5f2;margin:28px 0 0}.calculator h2{font-size:clamp(25px,3vw,34px);line-height:1.25;margin:12px 0 18px;letter-spacing:-.6px}.calculator .checker{max-width:560px}.calculator a{color:var(--primary);text-underline-offset:3px}.calculator .checkerActions :global(.button){white-space:normal;text-align:center}.checker{grid-template-columns:minmax(0,1fr)}
 @media(max-width:600px){.calculator{padding:22px 18px}.calculator .checkerActions{align-items:stretch}.calculator .checkerActions :global(.button){width:100%}}
+
+.overviewSteps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 30px;margin:22px 0 0;padding-left:22px}.overviewSteps li{min-width:0;margin:0}.overviewSteps a{font-weight:600}.overviewSteps p{margin:5px 0 0;font-size:14px;color:var(--muted)}.workedExample{border-left:3px solid var(--primary);padding:10px 14px;background:#ffffff80;font-size:14px}.hero .review a{color:var(--primary);text-decoration:underline;text-underline-offset:3px}
+@media(max-width:680px){.overviewSteps{grid-template-columns:minmax(0,1fr);gap:14px}.hero :global(.hero-actions){flex-wrap:wrap}.hero :global(.hero-actions .button){white-space:normal;text-align:center}}

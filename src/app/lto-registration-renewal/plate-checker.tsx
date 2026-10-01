@@ -16,6 +16,7 @@ export function PlateChecker({ currentYear }: { currentYear: number }) {
   return <section id="renewal-calculator" className={`${styles.example} ${styles.calculator}`} aria-labelledby="calculator-heading">
     <span className="eyebrow">FREE · NO SIGN-IN NEEDED</span><h2 id="calculator-heading">Car registration renewal date calculator <a className={styles.headingAnchor} href="#renewal-calculator" aria-label="Link to renewal calculator">🔗</a></h2>
     <p>Check when to renew your car registration in the Philippines. Enter a regular car plate or just its last two digits to calculate the standard LTO renewal month and date window. Confirm the actual deadline using your registration record and current LTO advisories.</p>
+    <p className={styles.workedExample}><strong>Example: a plate ending in 98.</strong> The last digit, 8, means August. The second-to-last digit, 9, gives the 22nd–31st window. For {currentYear}, the standard window is August 22–31. Choose a working day and confirm any exceptions with LTO.</p>
     <form onSubmit={event => { event.preventDefault(); setChecked(true); }} className={styles.checker}>
       <label htmlFor="renewal-plate">Plate number or last two digits</label>
       <input id="renewal-plate" value={plate} onChange={event => { setPlate(event.target.value); clearResult(); }} placeholder="CCC 2398 or 98" autoComplete="off" spellCheck={false} maxLength={12} aria-describedby="plate-help" />
