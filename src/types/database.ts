@@ -14,6 +14,13 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      update_alert_preferences: Rpc<{p_phone:string|null;p_sms:boolean;p_email:boolean},undefined>;
+      dismiss_phone_prompt: Rpc<Record<string,never>,undefined>;
+      begin_phone_verification: Rpc<{p_user:string;p_phone:string;p_hash:string},undefined>;
+      verify_alert_phone: Rpc<{p_user:string;p_hash:string},boolean>;
+      claim_sms_jobs: Rpc<{p_limit:number}>;
+      prepare_sms: Rpc<{p_id:string;p_lease:string},boolean>;
+      finish_sms: Rpc<{p_id:string;p_lease:string;p_status:string;p_provider_id:string|null;p_error:string|null},undefined>;
       advance_recurring_dates: Rpc<Record<string, never>,number>;
       feedback_status: Rpc<Record<string, never>>;
       submit_feedback: Rpc<{p_id:string;p_kind:string;p_summary:string;p_notes:string;p_expect_reward:boolean}>;

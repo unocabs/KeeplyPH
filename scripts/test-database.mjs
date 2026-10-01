@@ -605,7 +605,7 @@ try {
   });
   await test('Registration, insurance, maintenance and expiration can opt into repeat schedules',async()=>{
     const u=await user();
-    for(const [template,kind] of [['car','registration'],['motorcycle','insurance'],['aircon','service'],['passport','expiration'],['receipt','warranty']]) {
+    for(const [template,kind] of [['car','registration'],['motorcycle','insurance'],['aircon','service'],['passport','expiration']]) {
       const id=await newItem(u,template,{...recurringInput('2032-01-31',null,false),kind});
       const d=(await actor(u,'select * from public.important_dates where item_id=$1',[id])).rows[0];
       await actor(u,'select public.complete_date($1,2,current_date,null)',[d.id]);
@@ -626,6 +626,84 @@ try {
     assert.equal((await actor(u,"select public.list_items('all','life insurance','all') d")).rows[0].d[0].id,id);
     assert.deepEqual((await actor(outside,"select public.list_items('all','','category:insurance') d")).rows[0].d,[]);
     await assert.rejects(actor(u,'select private.save_item_with_date_base($1,2,$2,$3,null)',[id,'Changed','']),/permission denied/);
+  });
+
+  await test('SMS defaults off, preferences remain private, and provider RPCs are restricted',async()=>{
+    const u=await user(), other=await user();
+    const p=(await actor(u,'select * from public.profiles where id=$1',[u])).rows[0];
+    assert.equal(p.email_reminders_enabled,true);assert.equal(p.sms_reminders_enabled,false);assert.equal(p.phone_number,null);
+    await assert.rejects(actor(u,"select public.update_alert_preferences('123',true,true)"),/INVALID_INPUT/);
+    await actor(u,"select public.update_alert_preferences('+639171234567',true,true)");
+    assert.equal((await actor(other,'select phone_number from public.profiles where id=$1',[u])).rowCount,0);
+    await assert.rejects(actor(u,"select public.begin_phone_verification($1,'+639171234567','hash')",[u]),/permission denied/);
+    await assert.rejects(actor(u,'select public.claim_sms_jobs(2)'),/permission denied/);
+    await actor(u,'select public.dismiss_phone_prompt()');
+    assert.equal((await actor(u,'select phone_prompt_dismissed from public.profiles')).rows[0].phone_prompt_dismissed,true);
+  });
+  await test('Phone verification throttles sends and guesses, expires, and resets on number change',async()=>{
+    const u=await user();
+    await actor(u,"select public.update_alert_preferences('+639181234567',true,true)");
+    await actor(null,"select public.begin_phone_verification($1,'+639181234567','correct')",[u],'service_role');
+    await assert.rejects(actor(null,"select public.begin_phone_verification($1,'+639181234567','again')",[u],'service_role'),/RATE_LIMIT/);
+    for(let i=0;i<5;i++)assert.equal((await actor(null,"select public.verify_alert_phone($1,'wrong') ok",[u],'service_role')).rows[0].ok,false);
+    assert.equal((await actor(null,"select public.verify_alert_phone($1,'correct') ok",[u],'service_role')).rows[0].ok,false);
+    await admin.query("update private.phone_challenges set attempts=0,expires_at=now()-interval '1 second' where user_id=$1",[u]);
+    assert.equal((await actor(null,"select public.verify_alert_phone($1,'correct') ok",[u],'service_role')).rows[0].ok,false);
+    await admin.query("update private.phone_challenges set expires_at=now()+interval '1 minute' where user_id=$1",[u]);
+    assert.equal((await actor(null,"select public.verify_alert_phone($1,'correct') ok",[u],'service_role')).rows[0].ok,true);
+    await actor(u,"select public.update_alert_preferences('+639191234567',true,true)");
+    assert.equal((await actor(u,'select phone_verified_at from public.profiles')).rows[0].phone_verified_at,null);
+  });
+  async function smsFixture(){
+    const u=await user();
+    await actor(u,"select public.update_alert_preferences('+639201234567',true,false)");
+    const id=await newItem(u,'other',{kind:'other',label:'Payment',due_on:'2032-01-31',reminders_enabled:true,interval_months:null,offsets:[{unit:'days',value:7}]});
+    assert.equal((await admin.query('select count(*)::int n from private.sms_jobs s join public.important_dates d on d.id=s.date_id where d.item_id=$1',[id])).rows[0].n,0);
+    await admin.query('update public.profiles set phone_verified_at=now() where id=$1',[u]);
+    const job=(await admin.query('select s.* from private.sms_jobs s join public.important_dates d on d.id=s.date_id where d.item_id=$1',[id])).rows[0];
+    await admin.query("update private.sms_jobs set scheduled_at=now()-interval '1 minute' where id=$1",[job.id]);
+    return {u,id,job};
+  }
+  async function claimSms(){return (await actor(null,'select public.claim_sms_jobs(2) jobs',[],'service_role')).rows[0].jobs;}
+  await test('Verified SMS schedules independently of email and expired leases never resend',async()=>{
+    const {u,id,job}=await smsFixture();
+    const jobs=await claimSms(), claimed=jobs.find(j=>j.id===job.id);assert.ok(claimed);
+    assert.equal((await actor(null,'select public.prepare_sms($1,$2) ok',[job.id,claimed.lease_token],'service_role')).rows[0].ok,true);
+    assert.ok((await actor(u,'select public.reminder_preview($1) p',[id])).rows[0].p.length);
+    await admin.query("update private.sms_jobs set lease_until=now()-interval '1 second' where id=$1",[job.id]);
+    assert.equal((await claimSms()).some(j=>j.id===job.id),false);
+    assert.equal((await admin.query('select status from private.sms_jobs where id=$1',[job.id])).rows[0].status,'unknown');
+  });
+  await test('SMS rechecks opt-out, completion, phone changes, archives and coverage after claim',async()=>{
+    for(const change of ['opt-out','complete','phone','archive','coverage']){
+      const {u,id,job}=await smsFixture();
+      const claimed=(await claimSms()).find(j=>j.id===job.id);assert.ok(claimed);
+      if(change==='opt-out')await actor(u,"select public.update_alert_preferences('+639201234567',false,false)");
+      if(change==='complete')await actor(u,'select public.complete_date($1,2,current_date,null)',[job.date_id]);
+      if(change==='phone')await actor(u,"select public.update_alert_preferences('+639211234567',true,false)");
+      if(change==='archive')await actor(u,'select public.archive_item($1,2,true)',[id]);
+      if(change==='coverage')await actor(u,'select public.set_item_coverage($1,2,false,null,null)',[id]);
+      assert.equal((await actor(null,'select public.prepare_sms($1,$2) ok',[job.id,claimed.lease_token],'service_role')).rows[0].ok,false);
+    }
+  });
+  await test('SMS monthly and global quotas bound costs while preserving email jobs',async()=>{
+    const {u,job}=await smsFixture();
+    await admin.query("insert into private.sms_monthly_quota(user_id,month,reserved) values($1,date_trunc('month',now() at time zone 'UTC')::date,30)",[u]);
+    assert.equal((await claimSms()).some(j=>j.id===job.id),false);
+    assert.equal((await admin.query('select last_error_code from private.sms_jobs where id=$1',[job.id])).rows[0].last_error_code,'monthly_sms_limit');
+    const f=await smsFixture();
+    await admin.query("update private.sms_daily_quota set reserved=100 where day=(now() at time zone 'UTC')::date");
+    assert.deepEqual(await claimSms(),[]);
+    assert.equal((await admin.query('select status from private.sms_jobs where id=$1',[f.job.id])).rows[0].status,'pending');
+  });
+  await test('Warranties reject recurrence and assumed renewal dates through direct RPCs',async()=>{
+    const u=await user();
+    await assert.rejects(newItem(u,'receipt',{...recurringInput('2032-01-31',null,false),kind:'warranty'}),/warranty_does_not_repeat/);
+    const id=await newItem(u,'receipt',{kind:'warranty',label:'Warranty',due_on:'2032-01-31',reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]});
+    const d=(await actor(u,'select id from public.important_dates where item_id=$1',[id])).rows[0];
+    await assert.rejects(actor(u,"select public.complete_date($1,2,current_date,'2033-01-31')",[d.id]),/INVALID_INPUT/);
+    await actor(u,'select public.complete_date($1,2,current_date,null)',[d.id]);
+    assert.equal((await occurrences(d.id)).filter(o=>o.status==='open').length,0);
   });
 
   console.log('\n' + passed + ' database integration tests passed.');

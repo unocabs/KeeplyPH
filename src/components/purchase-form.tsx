@@ -33,6 +33,7 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
   const [error, setError] = useState('');
   const [savedPreview, setSavedPreview] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [alerts, setAlerts] = useState(Boolean(purchase?.warranty?.reminders_enabled));
   const [hasWarranty, setHasWarranty] = useState(Boolean(purchase?.warranty) || warrantyFocus);
   const [starts, setStarts] = useState(purchase?.warranty?.starts_on || purchase?.purchased_on || todayIn());
   const [expires, setExpires] = useState(purchase?.warranty?.expires_on || '');
@@ -158,7 +159,7 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
             <label className="full">Serial number<input name="serial_number" maxLength={160} defaultValue={purchase?.warranty?.serial_number || ''} /></label>
             <label className="full">Warranty notes<textarea name="warranty_notes" maxLength={5000} rows={2} defaultValue={purchase?.warranty?.notes || ''} placeholder="Coverage, service center, or claim details" /></label>
           </div>
-          <label className="checkbox-row"><input type="checkbox" name="reminders_enabled" defaultChecked={purchase?.warranty?.reminders_enabled || false} /><span><strong>Email me before it expires</strong><p>Alerts at 30, 7 and 1 day before expiration, around 9 AM in your timezone. Your first 3 alert slots are free. Saving still works when slots are full.</p></span></label>
+          <label className="checkbox-row"><input type="checkbox" name="reminders_enabled" checked={alerts} onChange={e => setAlerts(e.target.checked)} /><span><strong>Remind me before it expires</strong><p>Alerts at 30, 7 and 1 day before expiration, around 9 AM in your timezone. Your first 3 alert slots are free. Saving still works when slots are full.</p></span></label>
           {uploadSection('warranty')}</div>}
         </section>
         {error && <div className="alert error" role="alert">{error}</div>}

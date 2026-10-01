@@ -13,6 +13,7 @@ export async function proxy(request: NextRequest) {
     "frame-ancestors 'none'", ...(development ? [] : ['upgrade-insecure-requests']),
   ].join('; ');
   const headers = new Headers(request.headers);
+  headers.set('x-keeply-path', request.nextUrl.pathname + request.nextUrl.search);
   headers.set('x-nonce', nonce); headers.set('Content-Security-Policy', csp);
   let response = NextResponse.next({ request: { headers } });
   if (isConfigured() && !request.nextUrl.pathname.startsWith('/api/') && !request.nextUrl.pathname.startsWith('/demo')) {

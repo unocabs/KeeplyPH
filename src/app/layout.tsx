@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: 'Keeply PH', statusBarStyle: 'default' },
   twitter: { card: 'summary_large_image' },
   openGraph: { locale: 'en_PH', siteName: 'Keeply PH', type: 'website' },
-  description: 'Your all-in-one place for recurring loan payments, warranties, IDs, passports, bills and other important dates, with optional email alerts.',
+  description: 'Your all-in-one place for recurring loan payments, warranties, IDs, passports, bills and other important dates, with email alerts you choose.',
 };
 export const dynamic = 'force-dynamic';
 export default function RootLayout({ children }: { children: React.ReactNode }) {

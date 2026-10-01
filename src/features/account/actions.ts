@@ -23,12 +23,12 @@ export async function signOut() {
   redirect('/login');
 }
 export async function updatePreferences(_previous: ActionResult, form: FormData): Promise<ActionResult> {
-  const { supabase } = await requireUser();
+  const { supabase, profile } = await requireUser();
   const name = String(form.get('display_name') || '').trim();
   const timezone = String(form.get('timezone') || '');
   if (name.length > 160) return { error: 'Your name is too long.' };
   try { new Intl.DateTimeFormat('en', { timeZone: timezone }); } catch { return { error: 'Choose a valid timezone.' }; }
-  const { error } = await supabase.rpc('update_preferences', { p_name: name, p_timezone: timezone, p_email_enabled: form.get('email_reminders_enabled') === 'on' });
+  const { error } = await supabase.rpc('update_preferences', { p_name: name, p_timezone: timezone, p_email_enabled: profile.email_reminders_enabled });
   if (error) return { error: errorMessage(error) };
   const { error: renewalError } = await supabase.rpc('update_renewal_preference', { p_enabled: form.get('renewal_emails_enabled') === 'on' });
   if (renewalError) return { error: errorMessage(renewalError) };

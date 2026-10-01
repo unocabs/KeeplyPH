@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { MessageSquare, LayoutDashboard, NotebookTabs, ShieldCheck, Settings, ArrowUpRight, LogOut, LockKeyhole, Menu, X } from 'lucide-react';
+import { Bell, MessageSquare, LayoutDashboard, NotebookTabs, ShieldCheck, Settings, ArrowUpRight, LogOut, LockKeyhole, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { AddItemButton } from './template-picker';
 import { Brand } from './brand';
@@ -11,13 +11,13 @@ export function AppShell({ children, name, hasExtraSlots, demo = false }: { chil
   const filter = useSearchParams().get('filter');
   const [open, setOpen] = useState(false);
   const base = demo ? '/demo' : '';
-  const nav = [{ name: 'Overview', href: base + '/dashboard', icon: LayoutDashboard }, { name: 'Reminders', href: base + '/items', icon: NotebookTabs }, { name: 'Important dates', href: base + '/items?filter=dates', icon: ShieldCheck }];
+  const nav = [{ name: 'Overview', href: base + '/dashboard', icon: LayoutDashboard }, { name: 'Reminders', href: base + '/items', icon: NotebookTabs }, { name: 'Important dates', href: base + '/items?filter=dates', icon: ShieldCheck }, { name: 'Alert Options', href: base + '/settings/alerts', icon: Bell }];
   return <div className="app-shell">
     <header className="mobile-header"><Brand href={base + '/dashboard'} /><button className="icon-button" aria-label={open ? 'Close navigation' : 'Open navigation'} onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button></header>
     {open && <button className="sidebar-scrim" aria-label="Close navigation" onClick={() => setOpen(false)} />}
     <aside className={'sidebar ' + (open ? 'is-open' : '')}>
       <div className="sidebar-brand"><Brand href={base + '/dashboard'} /><span className="workspace-label">YOUR PERSONAL VAULT</span></div>
-      <nav className="primary-nav" aria-label="Main navigation">{nav.map(item => <Link key={item.name} href={item.href} onClick={() => setOpen(false)} className={'nav-link ' + ((item.name === 'Overview' && (pathname.endsWith('/dashboard') || pathname === '/demo')) || (item.name === 'Reminders' && (pathname.includes('/items') || pathname.includes('/purchases')) && !['dates','upcoming','overdue'].includes(filter || '')) || (item.name === 'Important dates' && pathname.includes('/items') && ['dates','upcoming','overdue'].includes(filter || '')) ? 'active' : '')}><item.icon size={19} /><span>{item.name}</span></Link>)}</nav>
+      <nav className="primary-nav" aria-label="Main navigation">{nav.map(item => <Link key={item.name} href={item.href} onClick={() => setOpen(false)} className={'nav-link ' + ((item.name === 'Alert Options' && pathname.endsWith('/settings/alerts')) || (item.name === 'Overview' && (pathname.endsWith('/dashboard') || pathname === '/demo')) || (item.name === 'Reminders' && (pathname.includes('/items') || pathname.includes('/purchases')) && !['dates','upcoming','overdue'].includes(filter || '')) || (item.name === 'Important dates' && pathname.includes('/items') && ['dates','upcoming','overdue'].includes(filter || '')) ? 'active' : '')}><item.icon size={19} /><span>{item.name}</span></Link>)}</nav>
       <div className="sidebar-bottom">
         {!hasExtraSlots && <div className="upgrade-card"><span className="mini-icon"><ShieldCheck size={18} /></span><strong>A little more peace of mind</strong><p>Five extra alert slots.<br />₱29 for 30 days or ₱249 once.</p><Link href={base + '/settings/billing'}>Explore alert packs <ArrowUpRight size={15} /></Link></div>}
         {!demo && <Link href="/feedback" className={'nav-link ' + (pathname === '/feedback' ? 'active' : '')} onClick={() => setOpen(false)}><MessageSquare size={19} aria-hidden="true"/>Add feedback</Link>}
@@ -28,7 +28,7 @@ export function AppShell({ children, name, hasExtraSlots, demo = false }: { chil
     <div className="workspace">
       {demo ? <div className="demo-banner">You’re exploring sample data. <Link href="/login">Sign in to start your own vault <ArrowUpRight size={14} /></Link></div> : <div className="workspace-top"><span><LockKeyhole size={13} /> Your reminders, kept private</span><span>Made for everyday peace of mind</span></div>}
       <main className="main-content" id="main-content">{children}</main>
-      {!pathname.includes('/add') && !pathname.endsWith('/edit') && !pathname.endsWith('/new') && <AddItemButton demo={demo} floating />}<footer className="app-footer"><span>One less thing to worry about.</span><div><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><span>Keeply © {new Date().getFullYear()}</span></div></footer>
+      {!pathname.includes('/settings') && !pathname.includes('/add') && !pathname.endsWith('/edit') && !pathname.endsWith('/new') && <AddItemButton demo={demo} floating />}<footer className="app-footer"><span>One less thing to worry about.</span><div><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><span>Keeply © {new Date().getFullYear()}</span></div></footer>
     </div>
   </div>;
 }

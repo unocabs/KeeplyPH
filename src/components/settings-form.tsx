@@ -11,10 +11,11 @@ export function SettingsForm({ profile, demo = false }: { profile: Profile; demo
   return <><section className="panel"><h2>Your preferences</h2><p className="section-description">A few details to make Keeply feel like yours.</p><form action={action} className="settings-form spaced">
     <label>Your name<input name="display_name" defaultValue={profile.display_name} maxLength={160} autoComplete="name" /></label>
     <label>Timezone<select name="timezone" defaultValue={profile.timezone}>{zones.map(z => <option key={z}>{z}</option>)}</select></label>
-    <label className="checkbox-row"><input name="email_reminders_enabled" type="checkbox" defaultChecked={profile.email_reminders_enabled} /><span><strong>Send alert emails</strong><p>For dates you enable, at the timings you choose. New alerts start from today; past alerts aren’t sent.</p></span></label>
+    <Link href={(demo ? '/demo' : '') + '/settings/alerts'} className="button secondary">Alert Options →</Link>
+    <p className="hint">Manage email alerts in Alert Options. SMS is coming soon.</p>
     <label className="checkbox-row"><input name="renewal_emails_enabled" type="checkbox" defaultChecked={profile.renewal_emails_enabled !== false} /><span><strong>Remind me to renew my extra slots</strong><p>One email before the 30-day pack expires and one at expiry. No automatic charges.</p></span></label>
     <label className="checkbox-row"><input name="analytics_enabled" type="checkbox" defaultChecked={profile.analytics_enabled || false}/><span><strong>Help improve Keeply (optional)</strong><p>Share counts of saves, alert opt-ins and completions. No names, document contents or due dates. Raw events expire after 90 days; turning this off removes your linked events.</p></span></label>
-    {profile.email_delivery_blocked && <p className="alert error">Delivery is paused after a bounced email or complaint. Contact support before re-enabling delivery.</p>}
+    {profile.email_delivery_blocked && <p className="alert error">Email delivery is paused after a bounced email or complaint. Contact support before re-enabling delivery.</p>}
     {state.error && <p className="alert error" role="alert">{state.error}</p>}{state.success && <p className="alert success" role="status">{state.success}</p>}
     <button className="button primary" disabled={pending}>{pending ? 'Saving…' : 'Save preferences'}</button>
   </form></section>

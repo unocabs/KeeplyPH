@@ -41,6 +41,7 @@ In the project's SQL Editor, apply these migration files **once, in this order**
 11. supabase/migrations/202609280011_recurring_dates.sql
 12. supabase/migrations/202610010011_variable_slot_packs.sql
 13. supabase/migrations/202610010012_reminder_categories.sql
+14. supabase/migrations/202610010013_sms_alerts.sql
 
 They create the application schema, private job/payment tables, RLS policies, transaction functions, and **two private Storage buckets**: upload-staging and purchase-documents. Do not make either bucket public or add broad client write policies. Keep the private schema outside the Data API's exposed schemas.
 
@@ -73,7 +74,11 @@ The scheduler invokes **POST** endpoints with an Authorization Bearer header. It
 
 Reminders are scheduled at 09:00 in the account timezone, at 30/7/1 days before expiration. New opt-ins do not backfill reminders before today. If several thresholds were missed, only the latest due one is sent. Free includes three item reminder slots. All enabled dates on one covered item share a slot. Saved items are unlimited. Choose 5–100 extra slots in steps of five. Each five costs ₱29 for 30 days, manually renewed, or ₱249 permanently. Oldest selections retain coverage on expiry; excess selections pause without deleting their date preferences.
 
-The worker conservatively reserves at most **90 attempts/day globally**. This can delay reminders during bursts; watch queue age and upgrade capacity when needed. Five jobs are processed per invocation, with row leases, retry delays, a frozen request, and a stable Resend idempotency key. Unknown outcomes stop retrying before Resend's 24-hour deduplication window expires; see the operations guide.
+The worker conservatively reserves at most **90 attempts/day globally**. This can delay reminders during bursts; watch queue age and upgrade capacity when needed. Up to two reminder emails, one pack-renewal email, and two SMS jobs are processed per invocation, with row leases, retry delays, a frozen request, and a stable Resend idempotency key. Unknown outcomes stop retrying before Resend's 24-hour deduplication window expires; see the operations guide.
+
+## Optional SMS and useful alerts
+
+See [the SMS launch plan](docs/sms-alerts.md) for provider selection, cost controls, configuration and acceptance checks. Apply `202610010013_sms_alerts.sql` in Supabase before deploying this version. It adds optional verified phone preferences, separate SMS jobs and quotas, actionable email context, and prevents warranty recurrence. SMS launch is postponed: Alert Options shows “SMS coming soon”, forms do not request phone numbers, and a code-level launch gate keeps setup and sending disabled. No production migration or provider delivery is implied by local test success.
 
 ## 4. Connect PayMongo in test mode
 

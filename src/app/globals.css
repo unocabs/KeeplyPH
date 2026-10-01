@@ -125,3 +125,11 @@ button.category-card,button.template-choice{font:inherit;color:inherit;text-alig
 .reminder-icon.group-health{background:#f7eef1;border-color:#eddee4;color:#9a6479}
 .reminder-icon.group-custom{background:#f2f2f5;border-color:#e5e5eb;color:#77768a}
 .date-title,.date-caption{display:flex;align-items:center;gap:8px}.date-title>svg,.date-caption>svg{flex-shrink:0;color:#8b829a}.date-caption>svg{margin:0}.expiry-name .date-caption{display:flex}
+
+/* Alert preferences keep email simple while SMS remains visible as coming soon. */
+.alert-options { min-width: 0; }
+.alert-options .checkbox-row strong { display: inline-flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.alert-options fieldset { min-width: 0; }
+.alert-options .button { white-space: normal; overflow-wrap: anywhere; }
+.sms-coming-soon { cursor: default; }
+@media (max-width: 600px) { .alert-options .button { width: 100%; } }
