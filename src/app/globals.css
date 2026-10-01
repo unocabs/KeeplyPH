@@ -214,6 +214,20 @@ select {
   .list-filter-fields.is-open { grid-template-columns:minmax(0,1fr); }
 }
 .receipt-filters { display:none; }
+.reminder-saved { border-color:#c9dfd0; background:linear-gradient(135deg,#f3faf5,#fff); }
+.reminder-saved-title { display:flex; align-items:center; gap:10px; }
+.reminder-saved-title svg { color:#467b5b; flex-shrink:0; }
+.reminder-saved-usage { margin-top:12px; color:var(--muted); line-height:1.8; }
+.reminder-saved .hint { margin-top:10px; }
+.reminder-saved-suggestions { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+.reminder-saved-suggestions a { display:flex; align-items:center; gap:9px; padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:#fff; min-height:44px; }
+.reminder-saved-suggestions a:hover { border-color:var(--primary); }
+.reminder-saved-actions { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:18px; }
+@media(max-width:480px) {
+  .reminder-saved-suggestions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .reminder-saved-suggestions a { padding:11px; font-size:12px; }
+  .reminder-saved-actions .button { width:100%; }
+}
 .receipt-filters.is-open { display:block; }
 @media(max-width:1000px) {
   .compact-list-filters .filter-toggle { position:relative; }

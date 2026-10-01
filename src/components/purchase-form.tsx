@@ -106,7 +106,8 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
       data.set('id', await ensureDraft()); data.set('revision', String(purchase?.revision || 1));
       const result = await savePurchase(data);
       if (result.error) throw new Error(result.error);
-      dirty.current = false; router.push('/items/' + result.id + (result.uncovered ? '?saved=uncovered' : '')); router.refresh();
+      const saved = purchase?.state === 'saved' ? 'updated' : 'created';
+      dirty.current = false; router.push('/items/' + result.id + '?saved=' + saved); router.refresh();
     } catch (e) { setError(e instanceof Error ? e.message : 'Unable to save. Please retry.'); }
     finally { setSaving(false); }
   }
