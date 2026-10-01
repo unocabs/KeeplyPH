@@ -1,3 +1,4 @@
+import { isSignedIn } from '@/lib/auth';
 import { AppShell } from '@/components/app-shell';
 import { Dashboard } from '@/components/dashboard';
 import { PurchaseList } from '@/components/purchase-list';
@@ -42,5 +43,5 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   else if (slug[0] === 'settings' && slug[1] === 'alerts') content = <><div className="page-heading"><div><h1>Alert Options</h1><p>Your alerts, in this sample preview.</p></div></div><section className="panel narrow-form"><AlertOptions demo initial={{email_reminders_enabled:true}}/></section></>;
   else if (slug[0] === 'settings') content = <><div className="page-heading"><div><h1>Make yourself at home.</h1><p>Your preferences, in this sample preview.</p></div></div><SettingsForm demo profile={{ id: 'sample', display_name: 'Alex Reyes', timezone: 'Asia/Manila', email_reminders_enabled: true, email_delivery_blocked: false, deletion_requested_at: null, created_at: '', updated_at: '' }} /></>;
   else content = <Dashboard items={items} usage={{ purchases: 8, reminders: 3, storage_bytes: 0, premium: false, premium_until: null }} name="Alex" today={today} demo />;
-  return <AppShell name="Alex Reyes" hasExtraSlots={false} demo>{content}</AppShell>;
+  return <AppShell name="Alex Reyes" hasExtraSlots={false} demo signedIn={await isSignedIn()}>{content}</AppShell>;
 }

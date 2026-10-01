@@ -16,3 +16,10 @@ export const requireUser = cache(async function requireUser() {
   if (!profile) redirect('/login?error=account');
   return { supabase, userId: data.claims.sub, profile };
 });
+
+export const isSignedIn = cache(async function isSignedIn() {
+  if (!isConfigured()) return false;
+  const supabase = await serverClient();
+  const { data, error } = await supabase.auth.getClaims();
+  return !error && Boolean(data?.claims.sub);
+});

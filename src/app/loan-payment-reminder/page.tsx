@@ -1,3 +1,4 @@
+import { PublicAuthLink } from '@/components/public-auth-link';
 import Link from 'next/link';
 import { Brand } from '@/components/brand';
 import { ReminderIcon } from '@/components/reminder-icon';
@@ -10,7 +11,7 @@ export const metadata = {
   alternates: { canonical: '/loan-payment-reminder' },
 };
 export default function LoanPaymentReminderPage() {
-  return <><nav className="public-nav"><Brand/><div><Link href="/pricing">Pricing</Link><Link className="button secondary" href="/login">Sign in</Link></div></nav><main id="main-content" className="landing tracker-page">
+  return <><nav className="public-nav"><Brand/><div><Link href="/pricing">Pricing</Link><PublicAuthLink/></div></nav><main id="main-content" className="landing tracker-page">
     <section className="landing-hero"><div className="eyebrow">LOAN & INSTALLMENT REMINDERS</div><h1>Remember each payment.<br/>Through your final due date.</h1><p>Keep personal loans, home loans, car loans and other installments together. Set up a recurring reminder once and Keeply follows the dates you choose.</p><Link className="button primary" href="/add/other?preset=personal-loan">Start a loan reminder</Link></section>
     <section className="panel"><h2>Your payment schedule, easy to check.</h2><dl className="spaced"><dt>Next payment</dt><dd>October 15, 2026</dd><dt>Repeat frequency</dt><dd>Monthly</dd><dt>Payment amount (optional)</dt><dd>₱8,450</dd><dt>End date (optional)</dt><dd>March 15, 2029</dd><dt>Reminder</dt><dd>7 days before each payment</dd></dl><p className="hint spaced">Example only. Enter the dates and amounts from your own repayment schedule.</p></section>
     <section className="category-section"><h2>Which loan do you want to remember?</h2><div className="template-grid"><IdCategory group="loans"/>{loanPresetKeys.map(key => <Link className="template-choice" key={key} href={'/add/other?preset=' + key}><ReminderIcon template="other" preset={key}/><strong>{reminderPresets[key].label}</strong></Link>)}</div></section>

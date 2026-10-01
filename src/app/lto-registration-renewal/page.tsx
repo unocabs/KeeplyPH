@@ -1,14 +1,13 @@
+import { PublicAuthLink } from '@/components/public-auth-link';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { isConfigured } from '@/lib/env';
-import { serverClient } from '@/lib/supabase/server';
 import { Brand } from '@/components/brand';
 import styles from './page.module.css';
 import { PlateChecker } from './plate-checker';
 import { DocumentPreview } from './document-preview';
 
-const title = 'LTO Car Registration Renewal: Requirements & Steps | Keeply PH';
-const description = 'Prepare for LTO car registration renewal with a requirements checklist, plate-based schedule, online and walk-in steps, and a renewal reminder from Keeply PH.';
+const title = 'LTO Renewal Date Calculator: Check Your Schedule | Keeply PH';
+const description = 'Check your car registration renewal month and date window in the Philippines. Use our free LTO plate number calculator, then prepare your renewal requirements.';
 const charter = 'https://lto.gov.ph/wp-content/uploads/2025/11/MV-CC-2025.pdf';
 const externalCharter = 'https://lto.gov.ph/wp-content/uploads/2025/09/LTO-CC-2025-External.pdf';
 const manual = 'https://lto.gov.ph/wp-content/uploads/2023/10/FDM-vol.-2-2nd-Edition.pdf';
@@ -24,25 +23,21 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  let authenticated = false;
-  if (isConfigured()) {
-    const client = await serverClient();
-    const { data, error } = await client.auth.getClaims();
-    authenticated = !error && Boolean(data?.claims.sub);
-  }
   return <>
-    <nav className="public-nav" aria-label="Main navigation"><Brand /><div><Link href="/vehicle-registration-reminder">Vehicle reminders</Link><Link className="button secondary" href={authenticated ? "/dashboard" : "/login"}>{authenticated ? "Dashboard" : "Sign in"}</Link></div></nav>
+    <nav className="public-nav" aria-label="Main navigation"><Brand /><div><Link href="/vehicle-registration-reminder">Vehicle reminders</Link><PublicAuthLink /></div></nav>
     <main id="main-content" className={styles.guide}>
       <header className={styles.hero}>
         <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden="true"> / </span><span>LTO registration renewal</span></nav>
-        <div className="eyebrow">A GUIDE FOR PHILIPPINE CAR OWNERS</div>
-        <h1>LTO car registration renewal:<br /><em>requirements and steps</em></h1>
-        <p className={styles.intro}>Get your paperwork ready, understand your registration schedule, and choose the renewal route that fits your vehicle. Then give your next renewal a little heads-up.</p>
+        <div className="eyebrow">FREE TOOL FOR PHILIPPINE CAR OWNERS</div>
+        <h1>LTO renewal date calculator<br /><em>Check your car registration schedule</em></h1>
+        <p className={styles.intro}>Wondering how to check your car renewal date? Enter your plate’s last two digits to find the standard LTO renewal month and date window. Then use the guide below to prepare your requirements and save a reminder.</p>
         <p className={styles.review}>Source excerpts reviewed <time dateTime="2026-09-30">September 30, 2026</time> · Based on LTO’s 2025 Citizen’s Charter and official schedule material.</p>
-        <div className="hero-actions"><a href="#requirements" className="button primary">See the requirements ↓</a><Link href={reminder} className="button secondary">Set my renewal reminder</Link></div>
+        <div className="hero-actions"><a href="#renewal-calculator" className="button primary">Check my renewal schedule ↓</a><a href="#requirements" className="button secondary">See renewal requirements</a></div>
         <p className={styles.disclosure}>This guide covers vehicle registration, not driver’s license renewal. Keeply PH is an independent reminder app; renewal transactions are completed through LTO.</p>
       </header>
-      <nav className={styles.jump} aria-label="On this page">{[['requirements','Requirements'],['schedule','Schedule'],['renewal-calculator','Plate checker'],['steps','Steps'],['costs','Costs'],['special-cases','Special cases'],['questions','Questions'],['sources','Sources']].map(([id,label]) => <a key={id} href={'#'+id}>{label}</a>)}</nav>
+      <nav className={styles.jump} aria-label="On this page">{[['renewal-calculator','Renewal date calculator'],['schedule','Plate number schedule'],['requirements','Requirements'],['steps','Steps'],['costs','Costs'],['special-cases','Special cases'],['questions','Questions'],['sources','Sources']].map(([id,label]) => <a key={id} href={'#'+id}>{label}</a>)}</nav>
+
+      <PlateChecker currentYear={Number(new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: 'Asia/Manila' }).format(new Date()))} />
 
       <section id="requirements" className={styles.section}>
         <span className={styles.number}>01 / PREPARE</span><h2>What do you need for renewal?</h2>
@@ -63,7 +58,7 @@ export default async function Page() {
         <div className={styles.columns}>
           <div className={styles.tableWrap}><table><caption>Registration month</caption><thead><tr><th scope="col">Last digit</th><th scope="col">Month</th></tr></thead><tbody>{months.map((month,index)=><tr key={month}><th scope="row">{(index+1)%10}</th><td>{month}</td></tr>)}</tbody></table></div>
           <div><div className={styles.tableWrap}><table><caption>Working days within that month</caption><thead><tr><th scope="col">Second-to-last digit</th><th scope="col">Window</th></tr></thead><tbody>{[['1, 2, 3','1st–7th'],['4, 5, 6','8th–14th'],['7, 8','15th–21st'],['9, 0','22nd–last day']].map(([digit,window])=><tr key={digit}><th scope="row">{digit}</th><td>{window}</td></tr>)}</tbody></table></div>
-          <PlateChecker currentYear={Number(new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: 'Asia/Manila' }).format(new Date()))} /></div>
+          </div>
         </div>
         <p className={styles.source}>Source: <a href={manual}>LTO Filipino Driver’s Manual, volume 2, second edition, printed page 17</a>.</p>
         <aside className={styles.note}><strong>Confirm the year and any exceptions.</strong><p>Check your vehicle record and current <a href="https://lto.gov.ph/">LTO advisories</a> before choosing a date. For first renewals, missing or special plates, holidays or announced extensions, ask LTO which deadline applies.</p></aside>
@@ -101,6 +96,8 @@ export default async function Page() {
 
       <section id="questions" className={`${styles.section} ${styles.faq}`}>
         <h2>Common renewal questions</h2>
+        <details><summary>How do I check my car registration renewal date?</summary><p>Use the <a href="#renewal-calculator">LTO renewal date calculator</a> with your plate’s last two digits and the renewal year from your registration record. It shows the standard month and date window. Confirm your actual deadline with your current documents or LTO, especially for a first renewal or an announced extension.</p></details>
+        <details><summary>Can I check my LTO renewal schedule without entering my full plate number?</summary><p>Yes. The calculator only needs the last two digits. Your entry stays in your browser, and checking the schedule does not require an account.</p></details>
         <details><summary>Which requirements should I prepare?</summary><p>Start with the <a href="#requirements">conditional checklist</a>. The inspection route and online eligibility matter, so confirm those before paying a provider.</p></details>
         <details><summary>Do I need both PMVIC inspection and separate emissions testing?</summary><p>Do not treat the inspection alternatives as a requirement to buy both. Check the <a href="#requirements">inspection and CEC conditions</a> with your chosen provider and LTO.</p></details>
         <details><summary>Can every car owner renew online?</summary><p>Check the <a href="#steps">online eligibility and steps</a> before choosing that route. If the portal cannot process your vehicle, contact LTO for guidance.</p></details>
