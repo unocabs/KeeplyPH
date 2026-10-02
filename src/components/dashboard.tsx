@@ -51,6 +51,23 @@ export function Dashboard({ items, usage, name, today, demo = false }: { items: 
   const nextDue = (item: ItemWithDetails) => dateRows([item])[0]?.occurrence.due_on ?? '9999-12-31';
   const sorted = [...matched].sort((a, b) => sort === 'due' ? nextDue(a).localeCompare(nextDue(b)) || b.created_at.localeCompare(a.created_at) : b.created_at.localeCompare(a.created_at));
 
+  // Use the account-wide saved count so archived reminders do not trigger onboarding.
+  if (!demo && usage.purchases === 0 && items.length === 0) return <div className={styles.dashboard}>
+    <section className={styles.welcome} aria-labelledby="welcome-heading">
+      <span className={styles.welcomeIcon}><Bell size={28} aria-hidden="true" /></span>
+      <div className="eyebrow">A LITTLE LESS TO REMEMBER</div>
+      <h1 id="welcome-heading">Welcome to Keeply.</h1>
+      <h2>What’s one date you don’t want to forget?</h2>
+      <p>Start with a bill, car renewal, or passport expiry. Choose a type, add a date, and decide when to be reminded.</p>
+      <div className={styles.welcomeActions}>
+        <AddItemButton label="Add my first reminder" />
+        <Link className="text-button" href="/demo">Explore a sample account <ArrowRight size={16} aria-hidden="true" /></Link>
+      </div>
+      <p className={styles.welcomeFootnote}>Save unlimited reminders. Get alerts for 3 reminders free.</p>
+    </section>
+    <p className="privacy-note"><ShieldCheck size={15} aria-hidden="true" />Your reminders and files are private to your account.</p>
+  </div>;
+
   return <div className={styles.dashboard}>
     <div className={'page-heading ' + styles.hero}>
       <div><div className="eyebrow">A LITTLE LESS TO REMEMBER</div><h1>Everything in its place.</h1><p>Welcome back, {name.split(' ')[0] || 'there'}. A little peace of mind, all together.</p></div>

@@ -24,6 +24,16 @@
 .hero :global(.button span) { display: inline; }
 .hero :global(.button.primary) { background: var(--primary); box-shadow: 0 4px 12px #6153ca18; }
 .hero :global(.button.primary:hover) { background: var(--primary-dark); transform: none; }
+.welcome { padding: clamp(24px, 5vw, 48px); border: 1px solid #e9e3f8; border-radius: 24px; background: linear-gradient(110deg, #f9f7ff, #eeebfc); }
+.welcomeIcon { display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: 24px; border-radius: 16px; color: var(--primary); background: #e7e0fa; }
+.welcome :global(.eyebrow) { color: #72688f; margin-bottom: 12px; }
+.welcome h1 { font-size: clamp(28px, 4vw, 38px); line-height: 1.15; letter-spacing: -.045em; text-wrap: balance; }
+.welcome h2 { margin-top: 16px; font-size: 20px; line-height: 1.4; text-wrap: balance; }
+.welcome p { max-width: 520px; margin-top: 12px; color: var(--dashboard-muted); font-size: 15px; line-height: 1.6; }
+.welcomeActions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 24px; }
+.welcomeActions :global(.button), .welcomeActions :global(.text-button) { min-height: 48px; }
+.welcomeActions :global(.button) { border-radius: 12px; }
+.welcome .welcomeFootnote { margin-top: 24px; font-size: 13px; }
 .filters { display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 8px 12px; padding: 4px; margin: -4px -4px 20px; }
 .filters::-webkit-scrollbar { display: none; }
 .filters button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border: 1px solid var(--dashboard-line); border-radius: 999px; white-space: nowrap; background: #ffffff80; color: #625d75; font-size: 13px; flex-shrink: 0; }
