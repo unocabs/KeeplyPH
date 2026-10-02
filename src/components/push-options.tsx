@@ -96,16 +96,27 @@ export function PushOptions({ publicKey, initialCount = 0, demo = false }: { pub
   }
   const connected = status.enabled && status.registered;
   return <section className="push-options spaced" aria-labelledby="push-heading">
-    <h3 id="push-heading"><Smartphone size={18} aria-hidden="true"/> Web push notifications</h3>
-    <p className="section-description">Get a heads-up on this device, even when Keeply is closed. Push follows the same alert timings and coverage as email.</p>
+    <h3 id="push-heading"><Smartphone size={18} aria-hidden="true"/> Device notifications</h3>
+    <p className="section-description">Receive reminder notifications on this phone or computer, even when Keeply is closed. They follow your selected reminder timings.</p>
     {support === 'checking' && <p className="hint spaced">Checking this browser…</p>}
-    {support === 'home-screen' && <p className="alert info spaced">On iPhone or iPad, use Share → Add to Home Screen, then open Keeply from that icon and enable web push here. Requires iOS or iPadOS 16.4 or later.</p>}
+    {support === 'home-screen' && (publicKey || demo) && <div className="alert info spaced push-install">
+      <strong>Set up notifications on your iPhone or iPad</strong>
+      <p>First, add Keeply to your Home Screen. Apple requires this for website notifications.</p>
+      <ol>
+        <li>Open <strong>keeplyph.com</strong> in <strong>Safari</strong>.</li>
+        <li>Tap <strong>Share</strong> (the square with an arrow pointing up). If it is hidden, open Safari’s page menu, then tap Share.</li>
+        <li>Scroll down and tap <strong>Add to Home Screen</strong>. If you see <strong>Open as Web App</strong>, leave it turned on. Tap <strong>Add</strong>.</li>
+        <li>Go to your Home Screen and tap the new <strong>Keeply</strong> icon. Sign in if asked.</li>
+        <li>Open <strong>Settings → Alert Options</strong>. Tap <strong>Turn on notifications</strong>, then <strong>Allow</strong>.</li>
+      </ol>
+      <p className="hint">Already added Keeply? Open it from your Home Screen icon to finish. Requires iOS or iPadOS 16.4 or later.</p>
+    </div>}
     {support === 'unsupported' && <p className="alert info spaced">This browser does not support web push here. Try a supported browser on HTTPS, or keep email enabled.</p>}
-    {!publicKey && !demo && <p className="alert info spaced">Web push is not available yet. Email reminders remain available.</p>}
+    {!publicKey && !demo && <div className="alert info spaced"><strong>Device notifications are temporarily unavailable.</strong><p>Keeply’s notification service needs to be enabled before you can connect this device. There is nothing to change on your device yet. You can still receive email reminders if email alerts are on.</p></div>}
     {support === 'supported' && permission === 'denied' && <p className="alert info spaced">Notifications are blocked in this browser. Allow them in browser or device settings to reconnect.</p>}
     {status.deviceCount > 0 && <p className="hint spaced">{status.deviceCount} connected {status.deviceCount === 1 ? 'device' : 'devices'}{connected ? ' · This device is connected' : ' · This device is not connected'}.</p>}
     {support === 'supported' && (publicKey || demo) && <div className="push-actions spaced">
-      {connected ? <><button type="button" className="button secondary" disabled={busy} onClick={()=>void test()}>Send test notification</button><button type="button" className="text-button" disabled={busy} onClick={()=>void disable()}>Turn off this device</button></> : <button type="button" className="button secondary" disabled={busy || (!demo && (!ready || permission === 'denied'))} onClick={()=>void enable()}>{busy ? 'Connecting…' : 'Enable web push on this device'}</button>}
+      {connected ? <><button type="button" className="button secondary" disabled={busy} onClick={()=>void test()}>Send test notification</button><button type="button" className="text-button" disabled={busy} onClick={()=>void disable()}>Turn off this device</button></> : <button type="button" className="button secondary" disabled={busy || (!demo && (!ready || permission === 'denied'))} onClick={()=>void enable()}>{busy ? 'Connecting…' : 'Turn on notifications'}</button>}
     </div>}
     <p className="hint spaced">You choose which devices receive alerts. Notifications can show reminder names on your lock screen; device settings can silence or delay them.</p>
     {error && <p className="alert error spaced" role="alert">{error}</p>}{message && <p className="alert success spaced" role="status">{message}</p>}
