@@ -14,7 +14,7 @@ export function dateRows(items: ItemWithDetails[]): DateRow[] {
 export function comingUp(rows: DateRow[], today: string) { return rows.filter(r => { const days = daysUntil(r.occurrence.due_on, today); return days >= 0 && days <= 30; }); }
 export function dateStatus(row: DateRow, today: string) {
   const days = daysUntil(row.occurrence.due_on, today);
-  if (days < 0) return (['expiration', 'warranty'].includes(row.date.kind) ? 'Expired' : 'Overdue') + ' · ' + Math.abs(days) + ' days ago';
+  if (days < 0) return (['expiration', 'warranty'].includes(row.date.kind) ? 'Expired' : 'Overdue') + ' · ' + Math.abs(days) + (days === -1 ? ' day ago' : ' days ago');
   if (days === 0) return 'Due today';
   if (days >= 365) return Math.floor(days / 365) + ' year' + (days >= 730 ? 's' : '') + ' remaining';
   if (days >= 60) return Math.floor(days / 30.4375) + ' months remaining';

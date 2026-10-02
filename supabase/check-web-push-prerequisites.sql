@@ -1,0 +1,21 @@
+-- Read-only schema readiness check. Run in the existing project's Supabase SQL Editor.
+-- These are schema markers, not a replacement for reviewing migration history/backups.
+with checks(sequence,migration,ready) as (values
+ (1,'202609200001_core.sql',to_regclass('public.profiles') is not null),
+ (2,'202609200002_documents.sql',to_regclass('public.documents') is not null),
+ (3,'202609200003_notifications.sql',to_regclass('private.notification_jobs') is not null),
+ (4,'202609200004_billing_maintenance.sql',to_regclass('private.billing_events') is not null),
+ (5,'202609230005_items.sql',to_regclass('public.important_dates') is not null and to_regclass('public.reminder_offsets') is not null),
+ (6,'202609230006_analytics.sql',to_regclass('private.product_events') is not null),
+ (7,'202609240007_reminder_slots.sql',exists(select 1 from information_schema.columns where table_schema='public' and table_name='items' and column_name='coverage_active')),
+ (8,'202609240008_reminder_pack_billing.sql',to_regclass('private.reminder_packs') is not null),
+ (9,'202609240009_history_measurement.sql',to_regprocedure('public.date_history(uuid,integer)') is not null),
+ (10,'202609260010_feedback.sql',to_regclass('private.feedback') is not null),
+ (11,'202609280011_recurring_dates.sql',to_regprocedure('public.advance_recurring_dates()') is not null),
+ (12,'202610010011_variable_slot_packs.sql',exists(select 1 from information_schema.columns where table_schema='private' and table_name='reminder_packs' and column_name='slot_count')),
+ (13,'202610010012_reminder_categories.sql',to_regprocedure('public.save_item_with_date(uuid,integer,text,text,jsonb,text)') is not null),
+ (14,'202610010013_sms_alerts.sql',to_regprocedure('public.prepare_sms(uuid,uuid)') is not null and to_regclass('private.sms_jobs') is not null),
+ (15,'202610020014_web_push.sql',to_regprocedure('public.register_push_subscription(text,text,text)') is not null and to_regclass('private.push_jobs') is not null
+ and exists(select 1 from information_schema.columns where table_schema='public' and table_name='profiles' and column_name='push_subscription_count'))
+)
+select sequence,migration,case when ready then 'PRESENT — do not rerun' else 'MISSING — review before applying' end as status from checks order by sequence;

@@ -42,6 +42,7 @@ In the project's SQL Editor, apply these migration files **once, in this order**
 12. supabase/migrations/202610010011_variable_slot_packs.sql
 13. supabase/migrations/202610010012_reminder_categories.sql
 14. supabase/migrations/202610010013_sms_alerts.sql
+15. supabase/migrations/202610020014_web_push.sql
 
 They create the application schema, private job/payment tables, RLS policies, transaction functions, and **two private Storage buckets**: upload-staging and purchase-documents. Do not make either bucket public or add broad client write policies. Keep the private schema outside the Data API's exposed schemas.
 
@@ -162,3 +163,7 @@ Deployment verification: confirm migration 011 is applied, POST cron calls succe
 
 
 Reminder categories and optional schedule end dates: apply `supabase/migrations/202610010012_reminder_categories.sql` once in the Supabase SQL Editor before deploying this version. It keeps existing schedules, adds saved reminder types, permits recurring schedules with no end date, and adds category filtering before pagination. Existing custom reminders remain available under Custom reminder. Weekly and custom intervals are deferred.
+
+## Web push notifications
+
+See [web push deployment and device verification](docs/web-push.md). Run the read-only prerequisite check before applying missing migrations in the documented order, then apply migration 014 before deploying. Push requires stable VAPID keys and explicit device opt-in; no paid messaging provider is required. Keep delivery disabled until staging device checks succeed. Local database tests do not apply migrations to hosted Supabase.

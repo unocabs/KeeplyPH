@@ -1,3 +1,5 @@
+import { deliverPushJobs } from '@/lib/push-worker';
+import { pushReady } from '@/lib/web-push';
 import { renewalEmail } from '@/lib/renewal-email';
 import { z } from 'zod';
 import { adminClient } from '@/lib/supabase/admin';
@@ -17,7 +19,9 @@ export async function POST(request: Request) {
     const admin = adminClient();
     const { error: recurrenceError } = await admin.rpc('advance_recurring_dates', {});
     if (recurrenceError) throw new Error('Recurring schedule advancement failed');
-    if (process.env.EMAIL_DELIVERY_ENABLED !== 'true' && !smsReady()) return Response.json({ skipped: 'Alert delivery is disabled' });
+    if (process.env.EMAIL_DELIVERY_ENABLED !== 'true' && !smsReady() && !pushReady()) return Response.json({ skipped: 'Alert delivery is disabled' });
+    let pushAccepted = 0;
+    try { pushAccepted = await deliverPushJobs(started); } catch { console.error('push_worker_failed'); }
     let smsAccepted = 0;
     if (smsReady()) {
       try {
@@ -25,6 +29,7 @@ export async function POST(request: Request) {
         if (error) throw new Error('SMS claim failed');
         const jobs = z.array(z.object({ id: z.string().uuid(), lease_token: z.string().uuid(), phone: z.string(), expiration_date: z.string(), product_name: z.string(), purchase_id: z.string().uuid(), date_id: z.string().uuid(), kind: z.string(), date_kind: z.string() })).parse(data);
         for (const job of jobs) {
+          if (Date.now() - started > 40000) break;
           const message = reminderSms({ product: job.product_name, kind: job.kind, dateKind: job.date_kind, expires: job.expiration_date, purchaseId: job.purchase_id, url: appUrl() });
           const { data: prepared, error } = await admin.rpc('prepare_sms', { p_id: job.id, p_lease: job.lease_token });
           if (error) throw new Error('SMS preparation failed');
@@ -36,9 +41,9 @@ export async function POST(request: Request) {
         }
       } catch { console.error('sms_worker_failed'); }
     }
-    if (process.env.EMAIL_DELIVERY_ENABLED !== 'true') return Response.json({ smsAccepted });
+    if (process.env.EMAIL_DELIVERY_ENABLED !== 'true') return Response.json({ smsAccepted, pushAccepted });
     const apiKey = requireEnv('RESEND_API_KEY'), from = requireEnv('EMAIL_FROM');
-    // Two SMS and three email messages fit within the function duration with provider timeouts.
+    // Push and SMS use independent queues; stop preparing new sends before the function deadline.
     const { data, error } = await admin.rpc('claim_notification_jobs', { p_limit: 2, p_daily_limit: 90 });
     if (error) throw new Error('Claim failed');
     const {data:renewals,error:renewalError}=await admin.rpc('claim_renewal_jobs',{p_limit:1});
@@ -68,6 +73,6 @@ export async function POST(request: Request) {
       // Stay below Resend's default two requests per second.
       await new Promise(resolve => setTimeout(resolve, 600));
     }
-    return Response.json({ claimed: jobs.length, accepted, smsAccepted, deferred });
+    return Response.json({ claimed: jobs.length, accepted, smsAccepted, pushAccepted, deferred });
   } catch { console.error('notification_worker_failed'); return new Response('Retry later', { status: 500 }); }
 }

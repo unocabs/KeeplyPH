@@ -14,6 +14,14 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      register_push_subscription: Rpc<{p_endpoint:string;p_p256dh:string;p_auth:string},undefined>;
+      remove_push_subscription: Rpc<{p_endpoint:string},undefined>;
+      push_device_status: Rpc<{p_endpoint:string|null}>;
+      prepare_push_test: Rpc<{p_endpoint:string}>;
+      claim_push_jobs: Rpc<{p_limit:number}>;
+      prepare_push_job: Rpc<{p_id:string;p_lease:string}>;
+      finish_push_job: Rpc<{p_id:string;p_lease:string;p_status:string;p_error:string|null},undefined>;
+      expire_push_subscription: Rpc<{p_endpoint:string;p_auth:string},undefined>;
       update_alert_preferences: Rpc<{p_phone:string|null;p_sms:boolean;p_email:boolean},undefined>;
       dismiss_phone_prompt: Rpc<Record<string,never>,undefined>;
       begin_phone_verification: Rpc<{p_user:string;p_phone:string;p_hash:string},undefined>;

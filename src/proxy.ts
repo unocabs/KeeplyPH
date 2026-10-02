@@ -9,14 +9,14 @@ export async function proxy(request: NextRequest) {
     "default-src 'self'", "script-src 'self' 'nonce-" + nonce + "' 'strict-dynamic'" + (development ? " 'unsafe-eval'" : ''),
     "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob: " + supabaseOrigin,
     "connect-src 'self' " + supabaseOrigin + (development ? ' ws://localhost:* ws://127.0.0.1:*' : ''),
-    "font-src 'self'", "object-src 'none'", "base-uri 'self'", "form-action 'self' https://accounts.google.com https://checkout.paymongo.com " + supabaseOrigin,
+    "worker-src 'self'", "font-src 'self'", "object-src 'none'", "base-uri 'self'", "form-action 'self' https://accounts.google.com https://checkout.paymongo.com " + supabaseOrigin,
     "frame-ancestors 'none'", ...(development ? [] : ['upgrade-insecure-requests']),
   ].join('; ');
   const headers = new Headers(request.headers);
   headers.set('x-keeply-path', request.nextUrl.pathname + request.nextUrl.search);
   headers.set('x-nonce', nonce); headers.set('Content-Security-Policy', csp);
   let response = NextResponse.next({ request: { headers } });
-  if (isConfigured() && !request.nextUrl.pathname.startsWith('/api/') && !request.nextUrl.pathname.startsWith('/demo')) {
+  if (isConfigured() && !request.nextUrl.pathname.startsWith('/api/') && !request.nextUrl.pathname.startsWith('/demo') && request.nextUrl.pathname !== '/sw.js') {
     const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, {
       cookies: { getAll: () => request.cookies.getAll(), setAll(values) {
         values.forEach(({ name, value }) => request.cookies.set(name, value));

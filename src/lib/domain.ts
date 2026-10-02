@@ -18,7 +18,7 @@ export interface Document {
 export interface Profile {
   phone_number?: string | null; phone_verified_at?: string | null; sms_reminders_enabled?: boolean; phone_prompt_dismissed?: boolean;
   id: string; display_name: string; timezone: string; analytics_enabled?: boolean; renewal_emails_enabled?: boolean; email_reminders_enabled: boolean;
-  email_delivery_blocked: boolean; deletion_requested_at: string | null; created_at: string; updated_at: string;
+  push_reminders_enabled?: boolean; push_subscription_count?: number; email_delivery_blocked: boolean; deletion_requested_at: string | null; created_at: string; updated_at: string;
 }
 export interface PurchaseWithDetails extends Purchase { warranty: Warranty | null; documents: Document[] }
 export interface Usage { active_reminders?: number; purchases: number; reminders: number; storage_bytes: number; premium: boolean; premium_until: string | null; slot_limit?: number; storage_limit_bytes?: number; uncovered?: number; paid_until?: string | null; permanent?: boolean; permanent_slots?: number; renewal_slots?: number; temporary_active?: boolean; renewal_emails_enabled?: boolean; upcoming?: number; overdue?: number }

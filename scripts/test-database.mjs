@@ -706,6 +706,132 @@ try {
     assert.equal((await occurrences(d.id)).filter(o=>o.status==='open').length,0);
   });
 
+  await test('Read-only web push prerequisite check identifies every applied schema marker',async()=>{
+    const checks=(await admin.query(await readFile('supabase/check-web-push-prerequisites.sql','utf8'))).rows;
+    assert.equal(checks.length,15);for(const check of checks)assert.match(check.status,/PRESENT/,check.migration);
+  });
+  const pushKey=Buffer.concat([Buffer.from([4]),Buffer.alloc(64,7)]).toString('base64url');
+  const pushAuth=Buffer.alloc(16,9).toString('base64url');
+  const pushEndpoint=()=> 'https://fcm.googleapis.com/wp/' + randomUUID();
+  async function registerPush(u,endpoint=pushEndpoint(),auth=pushAuth) {
+    await actor(u,'select public.register_push_subscription($1,$2,$3)',[endpoint,pushKey,auth]); return endpoint;
+  }
+  async function pushStatus(u,endpoint=null){return (await actor(u,'select public.push_device_status($1) s',[endpoint])).rows[0].s;}
+  async function pushFixture(){
+    const u=await user();
+    await actor(u,"select public.update_preferences('Push user','Asia/Manila',false)");
+    const id=await newItem(u,'other',{kind:'other',label:'Payment',due_on:'2032-01-31',reminders_enabled:true,interval_months:null,offsets:[{unit:'days',value:7}]});
+    const endpoint=await registerPush(u);
+    const job=(await admin.query('select j.* from private.push_jobs j join public.important_dates d on d.id=j.date_id where d.item_id=$1',[id])).rows[0];
+    await admin.query("update private.push_jobs set next_attempt_at=now()-interval '1 minute' where id=$1",[job.id]);
+    return {u,id,endpoint,job};
+  }
+  async function claimPush(){return (await actor(null,'select public.claim_push_jobs(5) j',[],'service_role')).rows[0].j;}
+  async function preparePush(job,lease){return (await actor(null,'select public.prepare_push_job($1,$2) j',[job,lease],'service_role')).rows[0].j;}
+  async function finishPush(job,lease,status){return actor(null,'select public.finish_push_job($1,$2,$3,null)',[job,lease,status],'service_role');}
+  await test('Push subscriptions are owner-scoped, endpoint-restricted and worker RPCs are service-only',async()=>{
+    const u=await user(),other=await user(),endpoint=await registerPush(u);
+    await registerPush(u,endpoint);
+    assert.deepEqual(await pushStatus(u,endpoint),{enabled:true,registered:true,deviceCount:1});
+    assert.deepEqual(await pushStatus(other,endpoint),{enabled:false,registered:false,deviceCount:0});
+    await assert.rejects(registerPush(other,endpoint),/DEVICE_LINKED/);
+    for(const endpoint of ['https://127.0.0.1/private','https://fcm.googleapis.com.evil.test/wp/token','http://fcm.googleapis.com/wp/token','https://fcm.googleapis.com:443/wp/token','https://user@fcm.googleapis.com/wp/token']) await assert.rejects(registerPush(u,endpoint),/INVALID_INPUT/);
+    await assert.rejects(actor(u,'select * from private.push_subscriptions'),/permission denied/);
+    await assert.rejects(actor(u,'select * from private.push_jobs'),/permission denied/);
+    await assert.rejects(actor(u,'select public.claim_push_jobs(2)'),/permission denied/);
+    await assert.rejects(actor(u,'select public.expire_push_subscription($1,$2)',[endpoint,pushAuth]),/permission denied/);
+    await assert.rejects(actor(u,'select private.schedule_date($1)',[randomUUID()]),/permission denied/);
+    await assert.rejects(actor(null,'select public.push_device_status(null)',[],'anon'),/permission denied/);
+    assert.equal((await actor(other,'select public.prepare_push_test($1) s',[endpoint])).rows[0].s,null);
+  });
+  await test('Concurrent registration enforces five devices and removing one preserves the others',async()=>{
+    const u=await user(),endpoints=Array.from({length:6},pushEndpoint);
+    const results=await Promise.allSettled(endpoints.map(endpoint=>registerPush(u,endpoint)));
+    assert.equal(results.filter(r=>r.status==='fulfilled').length,5);
+    assert.equal((await pushStatus(u)).deviceCount,5);
+    const first=endpoints[results.findIndex(r=>r.status==='fulfilled')];
+    await actor(u,'select public.remove_push_subscription($1)',[first]);
+    assert.equal((await pushStatus(u)).deviceCount,4);assert.equal((await pushStatus(u)).enabled,true);
+    await admin.query('delete from private.push_subscriptions where user_id=$1',[u]);
+    assert.deepEqual(await pushStatus(u),{enabled:false,registered:false,deviceCount:0});
+  });
+  await test('Push-only schedules are visible in previews, concurrent claims are exclusive and acceptance is final',async()=>{
+    const f=await pushFixture();
+    assert.equal((await admin.query('select count(*)::int n from private.notification_jobs where date_id=$1',[f.job.date_id])).rows[0].n,0);
+    const preview=(await actor(f.u,'select public.reminder_preview($1) p',[f.id])).rows[0].p;
+    assert.equal(preview[0].next_scheduled_on,'2032-01-24');
+    const claims=(await Promise.all([claimPush(),claimPush()])).flat().filter(j=>j.id===f.job.id);
+    assert.equal(claims.length,1);
+    const payload=await preparePush(f.job.id,claims[0].lease_token);
+    assert.equal(payload.endpoint,f.endpoint);assert.equal(payload.itemId,f.id);
+    assert.equal(await preparePush(f.job.id,claims[0].lease_token),null);
+    await finishPush(f.job.id,claims[0].lease_token,'accepted');
+    await admin.query('select private.schedule_date($1)',[f.job.date_id]);
+    assert.equal((await admin.query('select status from private.push_jobs where id=$1',[f.job.id])).rows[0].status,'accepted');
+    assert.equal((await claimPush()).some(j=>j.id===f.job.id),false);
+  });
+  await test('Push rechecks completion, archives, coverage, opt-out and deletion after claim',async()=>{
+    for(const change of ['complete','archive','coverage','optout','delete']) {
+      const f=await pushFixture(),lease=(await claimPush()).find(j=>j.id===f.job.id).lease_token;
+      if(change==='complete')await actor(f.u,'select public.complete_date($1,2,current_date,null)',[f.job.date_id]);
+      if(change==='archive')await admin.query('update public.items set archived_at=now() where id=$1',[f.id]);
+      if(change==='coverage')await admin.query('update public.items set coverage_active=false,coverage_requested_at=null where id=$1',[f.id]);
+      if(change==='optout')await admin.query('update public.profiles set push_reminders_enabled=false where id=$1',[f.u]);
+      if(change==='delete')await admin.query('update public.profiles set deletion_requested_at=now() where id=$1',[f.u]);
+      assert.equal(await preparePush(f.job.id,lease),null,change);
+    }
+  });
+  await test('Known push rejections retry at most three times and uncertain prepared sends never replay',async()=>{
+    const f=await pushFixture();
+    for(let attempt=1;attempt<=3;attempt++) {
+      const lease=(await claimPush()).find(j=>j.id===f.job.id).lease_token;
+      assert.ok(await preparePush(f.job.id,lease));await finishPush(f.job.id,lease,'retry');
+      const row=(await admin.query('select * from private.push_jobs where id=$1',[f.job.id])).rows[0];
+      assert.equal(row.attempts,attempt);assert.equal(row.status,attempt===3?'failed':'retry');
+      await admin.query('update private.push_jobs set next_attempt_at=now() where id=$1',[f.job.id]);
+    }
+    assert.equal((await claimPush()).some(j=>j.id===f.job.id),false);
+    const uncertain=await pushFixture(),lease=(await claimPush()).find(j=>j.id===uncertain.job.id).lease_token;
+    assert.ok(await preparePush(uncertain.job.id,lease));
+    await admin.query("update private.push_jobs set lease_until=now()-interval '1 minute' where id=$1",[uncertain.job.id]);
+    assert.equal((await claimPush()).some(j=>j.id===uncertain.job.id),false);
+    assert.equal((await admin.query('select status from private.push_jobs where id=$1',[uncertain.job.id])).rows[0].status,'unknown');
+  });
+  await test('Expired push cleanup compares keys and test notifications are rate limited',async()=>{
+    const u=await user(),endpoint=await registerPush(u);
+    for(let n=0;n<3;n++)assert.ok((await actor(u,'select public.prepare_push_test($1) s',[endpoint])).rows[0].s);
+    await assert.rejects(actor(u,'select public.prepare_push_test($1)',[endpoint]),/RATE_LIMIT/);
+    const replacementAuth=Buffer.alloc(16,8).toString('base64url');
+    await registerPush(u,endpoint,replacementAuth);
+    await actor(null,'select public.expire_push_subscription($1,$2)',[endpoint,pushAuth],'service_role');
+    assert.equal((await pushStatus(u,endpoint)).registered,true);
+    await actor(null,'select public.expire_push_subscription($1,$2)',[endpoint,replacementAuth],'service_role');
+    assert.deepEqual(await pushStatus(u,endpoint),{enabled:false,registered:false,deviceCount:0});
+  });
+  await test('Completing a recurring push-only date schedules its next occurrence exactly once',async()=>{
+    const u=await user();await actor(u,"select public.update_preferences('Push user','Asia/Manila',false)");
+    const id=await newItem(u,'other',{kind:'other',label:'Monthly payment',due_on:'2032-01-31',reminders_enabled:true,interval_months:null,offsets:[{unit:'days',value:7}],recurrence_months:1});
+    await registerPush(u);
+    const date=(await admin.query('select id,revision from public.important_dates where item_id=$1',[id])).rows[0];
+    await actor(u,'select public.complete_date($1,$2,current_date,null)',[date.id,date.revision]);
+    await admin.query('select private.schedule_date($1)',[date.id]);await admin.query('select private.schedule_date($1)',[date.id]);
+    const jobs=(await admin.query("select *,expiration_date::text as expiry from private.push_jobs where date_id=$1 and status='pending'",[date.id])).rows;
+    assert.equal(jobs.length,1);assert.equal(jobs[0].expiry,'2032-02-29');
+    const occurrence=(await admin.query("select * from public.date_occurrences where id=$1",[jobs[0].occurrence_id])).rows[0];
+    assert.equal(occurrence.status,'open');
+  });
+  await test('Push skips past offsets, reschedules timezone changes and cascades device deletion',async()=>{
+    const f=await pushFixture();
+    await admin.query("update private.push_jobs set next_attempt_at=scheduled_at where id=$1",[f.job.id]);
+    await actor(f.u,"select public.update_preferences('Push user','UTC',false)");
+    assert.equal(new Date((await admin.query('select scheduled_at from private.push_jobs where id=$1',[f.job.id])).rows[0].scheduled_at).toISOString(),'2032-01-24T09:00:00.000Z');
+    const due=(await admin.query("select (now() at time zone 'UTC')::date::text due")).rows[0].due;
+    const past=await newItem(f.u,'other',{kind:'other',label:'Past offsets',due_on:due,reminders_enabled:true,interval_months:null,offsets:[{unit:'days',value:7}]});
+    assert.equal((await admin.query('select count(*)::int n from private.push_jobs j join public.important_dates d on d.id=j.date_id where d.item_id=$1',[past])).rows[0].n,0);
+    await actor(f.u,'select public.remove_push_subscription($1)',[f.endpoint]);
+    assert.equal((await admin.query('select count(*)::int n from private.push_jobs where id=$1',[f.job.id])).rows[0].n,0);
+  });
+
   console.log('\n' + passed + ' database integration tests passed.');
 } finally {
   if (admin) await admin.end();

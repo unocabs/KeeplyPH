@@ -8,12 +8,14 @@ export function normalizePhone(value: string): string | null {
 }
 export interface AlertPreferences {
   email_reminders_enabled: boolean;
+  push_reminders_enabled?: boolean;
+  push_subscription_count?: number;
   phone_number?: string | null;
   phone_verified_at?: string | null;
   sms_reminders_enabled?: boolean;
   phone_prompt_dismissed?: boolean;
 }
 export function alertsPaused(profile: AlertPreferences & { email_delivery_blocked: boolean }) {
-  return !(profile.email_reminders_enabled && !profile.email_delivery_blocked) && !(SMS_LAUNCH_ENABLED && profile.sms_reminders_enabled && profile.phone_verified_at);
+  return !(profile.email_reminders_enabled && !profile.email_delivery_blocked) && !(profile.push_reminders_enabled && (profile.push_subscription_count || 0) > 0) && !(SMS_LAUNCH_ENABLED && profile.sms_reminders_enabled && profile.phone_verified_at);
 }
 export const SMS_MONTHLY_LIMIT = 30;

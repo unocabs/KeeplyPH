@@ -43,6 +43,7 @@ export function Dashboard({ items, usage, name, today, demo = false }: { items: 
   const future = rows.filter(row => row.occurrence.due_on >= today).slice(0, 5);
   const near = future.filter(row => soon.includes(row));
   const later = future.filter(row => !soon.includes(row));
+  const overdueRows = rows.filter(row => row.occurrence.due_on < today).slice(0, 3);
   const allRows = dateRows(active);
   const overdue = category === 'all' ? usage.overdue ?? allRows.filter(row => row.occurrence.due_on < today).length : rows.filter(row => row.occurrence.due_on < today).length;
   const completePreview = demo || usage.active_reminders === active.length;
@@ -67,6 +68,7 @@ export function Dashboard({ items, usage, name, today, demo = false }: { items: 
     <section className={'panel ' + styles.dates} aria-labelledby="upcoming-heading">
       <div className="section-heading"><div><h2 id="upcoming-heading">Upcoming</h2><p className="section-description">Important dates, with room to plan ahead.</p></div><Link href={base + '/items?filter=dates'}>View all <ArrowRight size={15} /></Link></div>
       {overdue > 0 && <div className="alert error spaced"><Link href={base + '/items?filter=overdue'}>{overdue} overdue or expired {overdue === 1 ? 'date' : 'dates'} — review →</Link></div>}
+      {overdueRows.length > 0 && <div className={styles.overdueDates}><h3>Needs attention</h3><div className={styles.rows}>{overdueRows.map(row => <ItemDateRow key={row.date.id} row={row} today={today} base={base} compact />)}</div></div>}
       <div className={styles.rows}>{near.map(row => <ItemDateRow key={row.date.id} row={row} today={today} base={base} compact />)}</div>
       {!near.length && <p className={styles.empty}>Nothing due in the next 30 days{category !== 'all' ? ' in this category' : ''}.</p>}
       {!future.length && <Link className="text-button spaced" href={base + '/add'}>Add an important date →</Link>}
