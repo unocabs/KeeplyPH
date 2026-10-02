@@ -1,14 +1,45 @@
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import { formatDate } from '@/lib/domain';
+import { ArrowRight, CalendarDays, BellOff } from 'lucide-react';
+import { daysUntil, formatDate } from '@/lib/domain';
 import { templates, getReminderPreset } from '@/features/templates';
+import { itemCategory, reminderCategories } from '@/features/templates/categories';
 import { alertStatus, dateStatus, type DateRow, type ItemWithDetails, currentOccurrence } from '@/features/items/domain';
 import { ReminderIcon, DateIcon } from './reminder-icon';
 import { AlertIndicator } from './alert-indicator';
-export function ItemCard({ item, base = '' }: { item: ItemWithDetails; base?: string }) {
-  const next = item.dates.flatMap(d => { const o = currentOccurrence(d); return o ? [{ date: d, occurrence: o }] : []; }).sort((a,b) => a.occurrence.due_on.localeCompare(b.occurrence.due_on))[0];
-  return <Link href={base + '/items/' + item.id} className="purchase-card"><div className="purchase-card-top"><ReminderIcon template={item.template_key} category={item.category} preset={item.reminder_preset} /><AlertIndicator status={alertStatus(item)} /></div><span className="category-label">{item.archived_at ? 'Archived' : item.state === 'draft' ? 'Unfinished' : (getReminderPreset(item.template_key, item.reminder_preset || undefined) || templates[item.template_key]).label}</span><h3>{item.product_name || 'Unfinished ' + (getReminderPreset(item.template_key, item.reminder_preset || undefined) || templates[item.template_key]).label}</h3><p>{item.merchant || templates[item.template_key].description}</p><div className="purchase-card-bottom"><span>{next ? next.date.label + ' · ' + formatDate(next.occurrence.due_on, true) : 'Add a date whenever you’re ready'}</span><ArrowRight size={15} /></div></Link>;
+import styles from './dashboard.module.css';
+
+export function categoryLabel(category: string) {
+  const short: Record<string, string> = { vehicles: 'Vehicle', documents: 'Personal', subscriptions: 'Subscriptions', purchases: 'Purchases', bills: 'Bills', loans: 'Loans', maintenance: 'Maintenance', health: 'Health', education: 'Education', custom: 'Custom' };
+  return short[category] || reminderCategories.find(group => group.key === category)?.label || category;
 }
-export function ItemDateRow({ row, today, base = '' }: { row: DateRow; today: string; base?: string }) {
-  return <Link className="expiry-row" href={base + '/items/' + row.item.id + '#date-' + row.date.id}><ReminderIcon template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} size={20} /><div className="expiry-name"><strong className="reminder-name">{row.item.product_name}<AlertIndicator status={alertStatus(row.item, row.date)} /></strong><span className="date-caption"><DateIcon kind={row.date.kind} label={row.date.label} preset={row.item.reminder_preset} size={13}/>{row.date.label}</span></div><div className="expiry-date"><strong>{dateStatus(row, today)}</strong><span>{formatDate(row.occurrence.due_on, true)}</span></div><ArrowRight size={15} /></Link>;
+function CategoryBadge({ item }: { item: ItemWithDetails }) {
+  const category = itemCategory(item);
+  return <span className={styles.category + ' ' + (styles[category] || '')}>{categoryLabel(category)}</span>;
+}
+function CountdownBadge({ row, today }: { row: DateRow; today: string }) {
+  const days = daysUntil(row.occurrence.due_on, today);
+  const tone = days <= 7 ? styles.urgent : days <= 30 ? styles.soon : styles.later;
+  return <span className={styles.countdown + ' ' + tone}>{dateStatus(row, today).replace('remaining', 'left')}</span>;
+}
+function AlertState({ item, date }: { item: ItemWithDetails; date?: DateRow['date'] }) {
+  const status = alertStatus(item, date);
+  return status === 'off' ? <span className={styles.alertOff} role="img" aria-label="Alerts off" title="Alerts off"><BellOff size={16} strokeWidth={1.8} aria-hidden="true" /></span> : <AlertIndicator status={status} />;
+}
+export function ItemCard({ item, base = '', today, compact = false }: { item: ItemWithDetails; base?: string; today?: string; compact?: boolean }) {
+  const next = item.dates.flatMap(date => { const occurrence = currentOccurrence(date); return occurrence ? [{ date, occurrence, item }] : []; }).sort((a, b) => a.occurrence.due_on.localeCompare(b.occurrence.due_on))[0];
+  const template = getReminderPreset(item.template_key, item.reminder_preset || undefined) || templates[item.template_key];
+  if (compact) return <Link href={base + '/items/' + item.id} className={'purchase-card ' + styles.card}>
+    <div className={styles.cardTop}><ReminderIcon template={item.template_key} category={item.category} preset={item.reminder_preset} /><div className={styles.cardIdentity}><CategoryBadge item={item} /></div><AlertState item={item} /></div>
+    <h3>{item.product_name || 'Unfinished ' + template.label}</h3><p>{item.merchant || templates[item.template_key].description}</p>
+    <div className={styles.cardBottom}><span className={styles.cardDate}>{next ? <><CalendarDays size={15} aria-hidden="true" /><span>{formatDate(next.occurrence.due_on, true)}</span></> : 'Add a date whenever you’re ready'}</span>{next && today && <CountdownBadge row={next} today={today} />}<span className={styles.cardArrow}><ArrowRight size={16} aria-hidden="true" /></span></div>
+  </Link>;
+  return <Link href={base + '/items/' + item.id} className="purchase-card"><div className="purchase-card-top"><ReminderIcon template={item.template_key} category={item.category} preset={item.reminder_preset} /><AlertIndicator status={alertStatus(item)} /></div><span className="category-label">{item.archived_at ? 'Archived' : item.state === 'draft' ? 'Unfinished' : template.label}</span><h3>{item.product_name || 'Unfinished ' + template.label}</h3><p>{item.merchant || templates[item.template_key].description}</p><div className="purchase-card-bottom"><span>{next ? next.date.label + ' · ' + formatDate(next.occurrence.due_on, true) : 'Add a date whenever you’re ready'}</span><ArrowRight size={15} /></div></Link>;
+}
+export function ItemDateRow({ row, today, base = '', compact = false }: { row: DateRow; today: string; base?: string; compact?: boolean }) {
+  if (compact) return <Link className={styles.row} href={base + '/items/' + row.item.id + '#date-' + row.date.id}>
+    <ReminderIcon template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} size={20} />
+    <div className={styles.rowContent}><div className={styles.rowTitle}><strong>{row.item.product_name}</strong><CategoryBadge item={row.item} /></div><span className={styles.rowPurpose}><DateIcon kind={row.date.kind} label={row.date.label} preset={row.item.reminder_preset} size={13} />{row.date.label}</span><span className={styles.rowDate}><CalendarDays size={15} aria-hidden="true" />{formatDate(row.occurrence.due_on, true)}</span></div>
+    <div className={styles.rowStatus}><AlertState item={row.item} date={row.date} /><CountdownBadge row={row} today={today} /></div><ArrowRight size={16} aria-hidden="true" />
+  </Link>;
+  return <Link className="expiry-row" href={base + '/items/' + row.item.id + '#date-' + row.date.id}><ReminderIcon template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} size={20} /><div className="expiry-name"><strong className="reminder-name">{row.item.product_name}<AlertIndicator status={alertStatus(row.item, row.date)} /></strong><span className="date-caption"><DateIcon kind={row.date.kind} label={row.date.label} preset={row.item.reminder_preset} size={13} />{row.date.label}</span></div><div className="expiry-date"><strong>{dateStatus(row, today)}</strong><span>{formatDate(row.occurrence.due_on, true)}</span></div><ArrowRight size={15} /></Link>;
 }

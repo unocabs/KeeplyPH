@@ -233,3 +233,10 @@ select {
   .compact-list-filters .filter-toggle { position:relative; }
   .compact-list-filters .filter-toggle .filter-count { position:absolute; top:-5px; right:-4px; }
 }
+
+/* Give the existing mobile brand and navigation a calmer header rhythm. */
+@media(max-width:720px) {
+  .mobile-header { height:72px; padding-inline:24px; background:#fdfdff; border-bottom-color:#efedf5; }
+  .mobile-header .icon-button { width:44px; height:44px; border-radius:12px; }
+  .workspace { padding-top:72px; }
+}
