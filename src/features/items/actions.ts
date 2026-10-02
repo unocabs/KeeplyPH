@@ -60,3 +60,12 @@ export async function dateHistory(id:string,before:number) {
  const {supabase}=await requireUser();const {data,error}=await supabase.rpc('date_history',{p_id:id,p_before:before});
  if(error)throw new Error('Unable to load history.');return data as unknown as import('./domain').Occurrence[];
 }
+
+export async function snoozeDate(id: string, occurrence: string, revision: number, choice: string, on?: string): Promise<ActionResult> {
+  if (!uuidSchema.safeParse(id).success || !uuidSchema.safeParse(occurrence).success || !Number.isInteger(revision) || revision < 1 ||
+    !['tomorrow', 'three_days', 'custom', 'cancel'].includes(choice) || (choice === 'custom' && !requiredDate.safeParse(on).success)) return { error: 'Choose a future reminder date.' };
+  const { supabase } = await requireUser();
+  const { error } = await supabase.rpc('snooze_date', { p_id: id, p_occurrence: occurrence, p_revision: revision, p_choice: choice, p_on: choice === 'custom' ? on : null });
+  if (error) return { error: error.message.includes('ALERTS_UNAVAILABLE') ? 'Enable alert coverage and a delivery channel first.' : error.message.includes('INVALID_INPUT') ? 'Choose a future date at 9 AM in your account timezone.' : errorMessage(error) };
+  refresh(); return { success: choice === 'cancel' ? 'Snooze cancelled.' : 'Reminder snoozed.' };
+}

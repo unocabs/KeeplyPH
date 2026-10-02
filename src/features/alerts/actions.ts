@@ -57,3 +57,12 @@ export async function saveEmailAlertPreference(email: boolean): Promise<ActionRe
   if (error) return { error: 'Unable to save alert options. Please try again.' };
   refresh(); return { success: 'Alert options saved.' };
 }
+
+/** Save independent deadline and discovery preferences atomically. */
+export async function saveEmailPreferences(email: boolean, suggestions: boolean): Promise<ActionResult> {
+  if (typeof email !== 'boolean' || typeof suggestions !== 'boolean') return { error: 'Choose valid email preferences.' };
+  const { supabase } = await requireUser();
+  const { error } = await supabase.rpc('update_email_preferences', { p_email: email, p_suggestions: suggestions });
+  if (error) return { error: 'Unable to save email preferences. Please try again.' };
+  refresh(); return { success: 'Email preferences saved.' };
+}

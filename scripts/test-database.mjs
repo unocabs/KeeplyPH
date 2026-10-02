@@ -42,7 +42,7 @@ try {
   admin = new pg.Client(config); await admin.connect();
   await admin.query("create role anon; create role authenticated; create role service_role bypassrls; create schema auth; create schema storage; grant usage on schema auth,storage,public to anon,authenticated,service_role; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz,last_sign_in_at timestamptz,raw_user_meta_data jsonb default '{}'::jsonb); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]); create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text); alter table storage.objects enable row level security; grant select on storage.objects to authenticated;");
   let migrationSeed, recurrenceMigrationSeed;
-  for (const name of (await readdir('supabase/migrations')).filter(n => n.endsWith('.sql')).sort()) {
+  for (const name of (await readdir('supabase/migrations')).filter(n => n.endsWith('.sql') && (!process.env.PG_TEST_MIGRATION_THROUGH || n <= process.env.PG_TEST_MIGRATION_THROUGH)).sort()) {
     if(name==='202609230005_items.sql') {
       const u=await user(), id=await draft(u); await save(u,id,{expires_on:'2032-03-31',reminders_enabled:true});
       const old=(await admin.query('select id from public.warranties where purchase_id=$1',[id])).rows[0];
@@ -831,6 +831,127 @@ try {
     await actor(f.u,'select public.remove_push_subscription($1)',[f.endpoint]);
     assert.equal((await admin.query('select count(*)::int n from private.push_jobs where id=$1',[f.job.id])).rows[0].n,0);
   });
+
+  // Campaign fixtures use this isolated cluster only; no hosted project is contacted.
+  async function resetIdeas() {
+    await admin.query("update public.profiles set suggestion_emails_enabled=false; update private.reminder_idea_jobs set status='cancelled' where status in ('pending','sending','retry'); update private.notification_jobs set status='cancelled' where status in ('pending','sending','retry'); update private.email_daily_quota set reserved=0,suggestion_reserved=0;");
+  }
+  async function ideaFixture(days=2) {
+    const u=await user();
+    const hour=(await admin.query("select extract(hour from now() at time zone 'UTC')::integer utc_hour")).rows[0].utc_hour;
+    let offset=10-hour; if(offset>12)offset-=24; if(offset< -12)offset+=24;
+    const tz=offset===0?'UTC':'Etc/GMT'+(offset>0?'-':'+')+Math.abs(offset);
+    await admin.query('update public.profiles set timezone=$2 where id=$1',[u,tz]);
+    await actor(u,'select public.update_email_preferences(false,true)');
+    const e=(await admin.query("update private.reminder_idea_enrollments set enrolled_at=now()-make_interval(days=>$2),next_eligible_at=now() where user_id=$1 returning *",[u,days])).rows[0];
+    return {u,e,tz};
+  }
+  async function claimIdeas() { return (await actor(null,'select public.claim_reminder_idea_jobs(2) jobs',[],'service_role')).rows[0].jobs; }
+  function ideaPayload(email) { return {from:'Keeply <test@example.test>',to:email,subject:'Reminder idea',html:'<p>A useful date</p>',text:'A useful date',headers:{'List-Unsubscribe':'<https://keeplyph.com/api/email/unsubscribe?token=test>','List-Unsubscribe-Post':'List-Unsubscribe=One-Click'}}; }
+  async function prepareIdea(j,payload=ideaPayload(j.email)) { return (await actor(null,'select public.prepare_reminder_idea($1,$2,$3) p',[j.id,j.lease_token,payload],'service_role')).rows[0].p; }
+  async function finishIdea(j,status='accepted',provider=null) { await actor(null,'select public.finish_reminder_idea($1,$2,$3,$4,null)',[j.id,j.lease_token,status,provider],'service_role'); }
+  await test('Reminder idea prerequisites are read-only and consent and worker privileges are separate',async()=>{
+    await resetIdeas();
+    const checks=(await admin.query(await readFile('supabase/check-reminder-ideas-prerequisites.sql','utf8'))).rows;
+    assert.equal(checks.length,16); assert.ok(checks.every(c=>c.status.startsWith('PRESENT')));
+    const u=await user(); assert.equal((await actor(u,'select suggestion_emails_enabled from public.profiles')).rows[0].suggestion_emails_enabled,false);
+    for(const sql of ['select public.claim_reminder_idea_jobs(1)',"select public.unsubscribe_reminder_ideas(gen_random_uuid(),gen_random_uuid())",'select * from private.reminder_idea_jobs']) await assert.rejects(actor(u,sql),/permission denied/);
+    await actor(u,'select public.update_email_preferences(false,true)');
+    const p=(await actor(u,'select email_reminders_enabled,suggestion_emails_enabled from public.profiles')).rows[0];
+    assert.deepEqual(p,{email_reminders_enabled:false,suggestion_emails_enabled:true});
+    assert.equal((await admin.query("select next_eligible_at>now()+interval '47 hours' as delayed from private.reminder_idea_enrollments where user_id=$1",[u])).rows[0].delayed,true);
+  });
+  await test('Concurrent idea claims deduplicate and freeze unsubscribe headers across retries',async()=>{
+    await resetIdeas(); const f=await ideaFixture();
+    const claims=(await Promise.all([claimIdeas(),claimIdeas()])).flat(); assert.equal(claims.length,1); const j=claims[0]; assert.equal(j.theme,'start');
+    const original=await prepareIdea(j); assert.deepEqual(original.headers,ideaPayload(j.email).headers);
+    await finishIdea(j,'retry'); await admin.query('update private.reminder_idea_jobs set next_attempt_at=now() where id=$1',[j.id]);
+    const retry=(await claimIdeas())[0]; assert.equal(retry.id,j.id); assert.notEqual(retry.lease_token,j.lease_token);
+    const frozen=await prepareIdea(retry,{...ideaPayload(j.email),subject:'Changed template'}); assert.deepEqual(frozen,original);
+    await actor(null,"select public.record_email_event('idea-early-event','email.delivered')",[],'service_role');
+    await finishIdea(retry,'accepted','idea-early-event');
+    assert.equal((await admin.query('select status from private.reminder_idea_jobs where id=$1',[j.id])).rows[0].status,'delivered');
+    assert.equal((await claimIdeas()).length,0);
+    assert.equal((await admin.query('select step from private.reminder_idea_enrollments where user_id=$1',[f.u])).rows[0].step,1);
+  });
+  await test('Suggestions recheck opt-out, deleted accounts, confirmation, suppression and address after claim',async()=>{
+    for(const change of ['optout','deletion','unconfirmed','suppression','address']) {
+      await resetIdeas(); const f=await ideaFixture(),j=(await claimIdeas())[0];
+      if(change==='address')await prepareIdea(j);
+      if(change==='optout')await actor(null,'select public.unsubscribe_reminder_ideas($1,$2)',[f.u,f.e.id],'service_role');
+      if(change==='deletion')await admin.query('update public.profiles set deletion_requested_at=now() where id=$1',[f.u]);
+      if(change==='unconfirmed')await admin.query('update auth.users set email_confirmed_at=null where id=$1',[f.u]);
+      if(change==='suppression')await admin.query('update public.profiles set email_delivery_blocked=true where id=$1',[f.u]);
+      if(change==='address')await admin.query("update auth.users set email='changed@example.test' where id=$1",[f.u]);
+      assert.equal(await prepareIdea(j),null,change);
+    }
+  });
+  await test('Old unsubscribe links cannot disable a new enrollment and opt-out preserves deadline alerts',async()=>{
+    await resetIdeas(); const f=await ideaFixture(),j=(await claimIdeas())[0];
+    await actor(f.u,'select public.update_email_preferences(true,false)'); assert.equal(await prepareIdea(j),null);
+    assert.equal((await admin.query('select email_reminders_enabled from public.profiles where id=$1',[f.u])).rows[0].email_reminders_enabled,true);
+    await actor(f.u,'select public.update_email_preferences(true,true)');
+    await actor(null,'select public.unsubscribe_reminder_ideas($1,$2)',[f.u,f.e.id],'service_role');
+    assert.equal((await admin.query('select suggestion_emails_enabled from public.profiles where id=$1',[f.u])).rows[0].suggestion_emails_enabled,true);
+  });
+  await test('Ideas prioritize missing categories, rotate examples, and skip stale onboarding steps',async()=>{
+    await resetIdeas(); const f=await ideaFixture(9);
+    await admin.query("insert into public.items(id,user_id,template_key,state,product_name,reminder_preset,created_at) values(gen_random_uuid(),$1,'other','saved','Existing loan','personal-loan',now()-interval '5 days')",[f.u]);
+    const j=(await claimIdeas())[0]; assert.equal(j.theme,'vehicles');
+    await admin.query("insert into private.reminder_idea_jobs(user_id,enrollment_id,step,theme,variant,status,first_attempt_at) values($1,$2,99,'bills',0,'accepted',now()-interval '35 days')",[f.u,f.e.id]);
+    assert.equal((await admin.query("select private.choose_reminder_idea($1,3) theme",[f.u])).rows[0].theme,'bills');
+    await resetIdeas(); const old=await ideaFixture(60),later=(await claimIdeas())[0];
+    assert.notEqual(later.theme,'start');
+    const e=(await admin.query("select step,next_eligible_at>now()+interval '13 days' as delayed from private.reminder_idea_enrollments where user_id=$1",[old.u])).rows[0];
+    assert.ok(e.step>=6); assert.equal(e.delayed,true); assert.equal((await claimIdeas()).length,0);
+  });
+  await test('Category changes cancel stale ideas and older themes rotate their examples',async()=>{
+    await resetIdeas(); const f=await ideaFixture(9);
+    await admin.query("insert into private.reminder_idea_jobs(user_id,enrollment_id,step,theme,status,first_attempt_at,accepted_at) values($1,$2,99,'loans','accepted',now()-interval '35 days',now()-interval '35 days')",[f.u,f.e.id]);
+    const j=(await claimIdeas())[0]; assert.equal(j.theme,'loans'); assert.equal(j.variant,1);
+    await admin.query("insert into public.items(id,user_id,template_key,state,product_name,reminder_preset,created_at) values(gen_random_uuid(),$1,'other','saved','Existing loan','personal-loan',now()-interval '5 days')",[f.u]);
+    assert.equal(await prepareIdea(j),null);
+    await resetIdeas(); const g=await ideaFixture(),k=(await claimIdeas())[0]; await prepareIdea(k);
+    await actor(null,'select public.unsubscribe_reminder_ideas($1,$2)',[g.u,g.e.id],'service_role');
+    await finishIdea(k,'accepted','idea-after-optout');
+    assert.equal((await admin.query('select suggestion_emails_enabled from public.profiles where id=$1',[g.u])).rows[0].suggestion_emails_enabled,false);
+    assert.equal((await admin.query('select status from private.reminder_idea_jobs where id=$1',[k.id])).rows[0].status,'accepted');
+  });
+  await test('Recent activity, account timezone and transactional backlog defer suggestions',async()=>{
+    await resetIdeas(); const f=await ideaFixture();
+    await admin.query("update public.profiles set timezone=$2 where id=$1",[f.u,f.tz==='UTC'?'Etc/GMT-3':'UTC']);
+    if((await admin.query("select (now() at time zone timezone)::time not between time '10:00' and time '12:00' outside from public.profiles where id=$1",[f.u])).rows[0].outside) assert.equal((await claimIdeas()).length,0);
+    await admin.query('update public.profiles set timezone=$2 where id=$1',[f.u,f.tz]);
+    await admin.query("insert into public.items(id,user_id,template_key,state,product_name) values(gen_random_uuid(),$1,'other','saved','Just added')",[f.u]);
+    assert.equal((await claimIdeas()).length,0);
+    await admin.query("update public.items set created_at=now()-interval '5 days' where user_id=$1",[f.u]);
+    // Existing fixture supplies a valid transactional job; a due backlog wins globally.
+    const tx=(await admin.query('select id from private.notification_jobs limit 1')).rows[0];
+    await admin.query("update private.notification_jobs set status='pending',next_attempt_at=now() where id=$1",[tx.id]);
+    assert.equal((await claimIdeas()).length,0);
+    await admin.query("update private.notification_jobs set status='cancelled' where id=$1",[tx.id]);
+    assert.equal((await claimIdeas()).length,1);
+  });
+  await test('Suggestion daily allowance leaves 80 sends reserved for important emails',async()=>{
+    await resetIdeas(); await ideaFixture(); await ideaFixture();
+    await admin.query("insert into private.email_daily_quota(day,reserved,suggestion_reserved) values((now() at time zone 'UTC')::date,9,9) on conflict(day) do update set reserved=9,suggestion_reserved=9");
+    assert.equal((await claimIdeas()).length,1);
+    const quota=(await admin.query("select reserved,suggestion_reserved from private.email_daily_quota where day=(now() at time zone 'UTC')::date")).rows[0];
+    assert.deepEqual(quota,{reserved:10,suggestion_reserved:10}); assert.equal((await claimIdeas()).length,0);
+  });
+  await test('Campaign retry bounds, expired leases and complaint suppression remain durable',async()=>{
+    await resetIdeas(); await ideaFixture(); const j=(await claimIdeas())[0]; await prepareIdea(j);
+    await admin.query("update private.reminder_idea_jobs set first_attempt_at=now()-interval '24 hours',lease_until=now()-interval '1 minute' where id=$1",[j.id]);
+    assert.equal((await claimIdeas()).length,0); assert.equal((await admin.query('select status from private.reminder_idea_jobs where id=$1',[j.id])).rows[0].status,'unknown');
+    await resetIdeas(); const g=await ideaFixture(),k=(await claimIdeas())[0]; await prepareIdea(k); await finishIdea(k,'accepted','idea-complaint');
+    await actor(null,"select public.record_email_event('idea-complaint','email.complained')",[],'service_role');
+    assert.equal((await admin.query('select email_delivery_blocked from public.profiles where id=$1',[g.u])).rows[0].email_delivery_blocked,true);
+    assert.equal((await admin.query('select status from private.reminder_idea_jobs where id=$1',[k.id])).rows[0].status,'failed');
+  });
+
+  if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610020016_occurrence_snooze.sql') {
+    await (await import('../tests/database/snooze.mjs')).testSnooze({admin,actor,user,newItem,registerPush,test});
+  }
 
   console.log('\n' + passed + ' database integration tests passed.');
 } finally {

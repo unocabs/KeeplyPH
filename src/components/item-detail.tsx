@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { recurrenceFrequencies, nextRecurringDate } from '@/features/items/recurrence';
 import { addMonths, formatDate, formatMoney } from '@/lib/domain';
 import { templates, getReminderPreset } from '@/features/templates';
-import { currentOccurrence, dateStatus, type ItemWithDetails, type DateWithDetails } from '@/features/items/domain';
-import { dateHistory, saveDate, completeDate, archiveItem, deleteItem } from '@/features/items/actions';
+import { alertStatus, currentOccurrence, dateStatus, type ItemWithDetails, type DateWithDetails } from '@/features/items/domain';
+import { snoozeDate, dateHistory, saveDate, completeDate, archiveItem, deleteItem } from '@/features/items/actions';
 import { DateFields, initialDate, type DateInput } from './date-fields';
 import { CoverageControl } from './reminder-management';
 import { ReminderIcon, DateIcon } from './reminder-icon';
@@ -26,12 +26,30 @@ function DateCard({ item, date, today, demo }: { item:ItemWithDetails;date:DateW
   const [history,setHistory]=useState(date.occurrences),[hasOlder,setHasOlder]=useState(date.occurrences.length===20);
   async function older(){setBusy(true);try{const rows=await dateHistory(date.id,Math.min(...history.map(o=>o.cycle)));setHistory(h=>[...h,...rows]);setHasOlder(rows.length===20);}catch{setError('Unable to load older history.');}finally{setBusy(false);}}
   async function complete(e:React.FormEvent){e.preventDefault();if(demo){setError('This preview does not store changes.');return;}setBusy(true);setError('');try{const r=await completeDate(date.id,date.revision,completed,next);if(r.error)throw new Error(r.error);setDone(false);router.refresh();}catch(e){setError(e instanceof Error?e.message:'Unable to complete.');}finally{setBusy(false);}}
+  const [snoozeOpen,setSnoozeOpen]=useState(false), [snoozeChoice,setSnoozeChoice]=useState('tomorrow'), [snoozeOn,setSnoozeOn]=useState('');
+  async function snooze(choice=snoozeChoice) {
+    if(demo){setError('This preview does not store changes or send notifications.');return;}
+    if(!current)return;
+    setBusy(true);setError('');
+    try {const result=await snoozeDate(date.id,current.id,date.revision,choice,snoozeOn);if(result.error)throw new Error(result.error);setSnoozeOpen(false);router.refresh();}
+    catch(e){setError(e instanceof Error?e.message:'Unable to snooze.');}finally{setBusy(false);}
+  }
   const alert = nextAlertSummary(item, date, today);
   return <section className="panel spaced" id={'date-'+date.id}><div className="section-heading"><h2 className="date-title"><DateIcon kind={date.kind} label={date.label} preset={item.reminder_preset} size={18}/>{date.label}</h2><button className="text-button" onClick={()=>setEdit(!edit)}>{edit?'Close editor':'Edit date & schedule'}</button></div>
     <div className="reminder-date-summary">
       <div><span className="hint">Due date</span><p className="expiry-big">{current ? formatDate(current.due_on) : date.recurrence_months ? 'Schedule ended' : 'Completed'}</p>{current && <p className={'date-countdown' + (current.due_on <= today ? ' date-countdown-urgent' : '')}>{dateStatus({ item, date, occurrence: current }, today)}</p>}</div>
       <div><span className="hint">{alert.label}</span><p className="next-alert-value">{alert.value}</p>{current && date.next_scheduled_on && current.due_on >= today && alert.label !== 'Alerts paused' && alert.label !== 'Alerts off' && <p className="hint">Delivery follows your account timezone and queue availability.</p>}{alert.label === 'Alerts paused' && item.alert_delivery_paused && <Link className="text-button" href={(demo ? '/demo' : '') + '/settings/alerts'}>Alert Options →</Link>}</div>
     </div>
+    {current?.snoozed_on && <p className="alert info spaced">Snoozed until {formatDate(current.snoozed_on)} · 9 AM in your account timezone. <button type="button" className="text-button" disabled={busy} onClick={()=>void snooze('cancel')}>Cancel snooze</button></p>}
+    {current && <div className="spaced">
+      <div className="date-card-actions"><button type="button" className="button secondary" disabled={busy || alertStatus(item,date)!=='enabled'} aria-expanded={snoozeOpen} aria-controls={'snooze-'+date.id} onClick={()=>setSnoozeOpen(!snoozeOpen)}>Remind me later</button>
+      {demo ? <button type="button" className="button secondary" onClick={()=>setError('Sign in to export your saved dates.')} >Add to calendar</button> : <a className="button secondary" href={`/api/items/${item.id}/calendar?date=${date.id}&occurrence=${current.id}`}>Add to calendar</a>}</div>
+      {alertStatus(item,date)!=='enabled' && <p className="hint spaced">Enable alert coverage and a delivery channel to snooze this date.</p>}
+      <p className="hint spaced">Calendar export saves this due date once. Later Keeply changes do not update your calendar automatically.</p>
+      {snoozeOpen && <form id={'snooze-'+date.id} className="spaced" onSubmit={e=>{e.preventDefault();void snooze();}}><fieldset disabled={busy}><label htmlFor={'snooze-choice-'+date.id}>Remind me later</label><select id={'snooze-choice-'+date.id} value={snoozeChoice} onChange={e=>setSnoozeChoice(e.target.value)}><option value="tomorrow">Tomorrow</option><option value="three_days">In 3 days</option><option value="custom">Pick a date</option></select>
+      {snoozeChoice==='custom' && <label>Reminder date<input type="date" required min={today} max="2200-12-31" value={snoozeOn} onChange={e=>setSnoozeOn(e.target.value)}/></label>}
+      <p className="hint spaced">At 9 AM in your account timezone. Your due date and selected alert timings stay the same.</p><div className="form-actions"><button type="button" className="button secondary" onClick={()=>setSnoozeOpen(false)}>Cancel</button><button className="button primary">{busy?'Saving…':'Snooze reminder'}</button></div></fieldset></form>}
+    </div>}
     {current && current.due_on<today && <p className="alert error spaced">Check whether a renewal, payment or service still needs attention.</p>}
     <p className="hint spaced">Selected timings: {date.offsets.map(timingLabel).join(' · ')}. Delivery follows your alert coverage and account preferences.</p>
     {date.recurrence_months && <div className="spaced"><p><strong>Frequency:</strong> {recurrenceFrequencies.find(f => f.months === date.recurrence_months)?.label}</p><p><strong>End date:</strong> {date.recurrence_ends_on ? formatDate(date.recurrence_ends_on) : 'No end date'}</p><p className="hint">The schedule continues automatically. Dates not marked done remain unconfirmed in history; they are never marked paid automatically. Edit the date to change or stop recurrence.</p></div>}

@@ -75,3 +75,9 @@ describe('next-alert presentation', () => {
     expect(dateStatus({ ...row, date: { ...date, kind: 'warranty' } }, '2026-10-19')).toBe('Expired · 1 day ago');
   });
 });
+
+ it('shows a queued overdue snooze separately from the actual due date', () => {
+   const item = sampleItems()[0], date = item.dates[0];
+   const snoozed = {...date,next_scheduled_on:'2026-10-03',occurrences:[{...date.occurrences[0],due_on:'2026-10-01',snoozed_on:'2026-10-03'}]};
+   expect(nextAlertSummary(item,snoozed,'2026-10-02').value).toBe('October 3, 2026');
+ });

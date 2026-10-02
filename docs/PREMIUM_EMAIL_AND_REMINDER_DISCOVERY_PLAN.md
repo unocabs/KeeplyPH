@@ -1,6 +1,6 @@
 # Premium emails and reminder discovery
 
-Date: 2 October 2026. Status: proposed. This document defines the work; application behavior and scheduled sends have not been changed.
+Date: 2 October 2026. Status: implemented locally; hosted migration, deployment, and controlled inbox tests are pending. See [deployment instructions](EMAIL_DELIVERY_SETUP.md) for rollout order. The series remains disabled until configured.
 
 ## Outcome
 

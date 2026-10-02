@@ -17,6 +17,7 @@ export interface Document {
 }
 export interface Profile {
   phone_number?: string | null; phone_verified_at?: string | null; sms_reminders_enabled?: boolean; phone_prompt_dismissed?: boolean;
+  suggestion_emails_enabled?: boolean;
   id: string; display_name: string; timezone: string; analytics_enabled?: boolean; renewal_emails_enabled?: boolean; email_reminders_enabled: boolean;
   push_reminders_enabled?: boolean; push_subscription_count?: number; email_delivery_blocked: boolean; deletion_requested_at: string | null; created_at: string; updated_at: string;
 }

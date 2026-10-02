@@ -14,6 +14,11 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      update_email_preferences: Rpc<{p_email:boolean;p_suggestions:boolean},undefined>;
+      unsubscribe_reminder_ideas: Rpc<{p_user:string;p_enrollment:string},undefined>;
+      claim_reminder_idea_jobs: Rpc<{p_limit:number}>;
+      prepare_reminder_idea: Rpc<{p_id:string;p_lease:string;p_payload:Json}>;
+      finish_reminder_idea: Rpc<{p_id:string;p_lease:string;p_status:string;p_provider_id:string|null;p_error:string|null},undefined>;
       register_push_subscription: Rpc<{p_endpoint:string;p_p256dh:string;p_auth:string},undefined>;
       remove_push_subscription: Rpc<{p_endpoint:string},undefined>;
       push_device_status: Rpc<{p_endpoint:string|null}>;
@@ -53,6 +58,7 @@ export interface Database {
       create_item_draft: Rpc<{ p_id: string; p_template: string }, string>;
       save_item_with_date: Rpc<{ p_id: string; p_revision: number; p_label: string; p_notes: string; p_date: Json | null }, string>;
       save_important_date: Rpc<{ p_id: string; p_item_id: string; p_revision: number; p_data: Json }, string>;
+      snooze_date: Rpc<{ p_id: string; p_occurrence: string; p_revision: number; p_choice: string; p_on: string | null | undefined }, undefined>;
       complete_date: Rpc<{ p_id: string; p_revision: number; p_completed: string; p_next: string | null }, undefined>;
       archive_item: Rpc<{ p_id: string; p_revision: number; p_archive: boolean }, undefined>;
       delete_item: Rpc<{ p_id: string }, undefined>;

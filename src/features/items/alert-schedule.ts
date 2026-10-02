@@ -36,7 +36,7 @@ export function nextAlertSummary(item: ItemWithDetails, date: DateWithDetails, t
   if (item.coverage === 'paused_capacity') return { label: 'Alerts paused', value: 'No available alert slot' };
   if (alertStatus(item, date) === 'off') return { label: 'Alerts off', value: 'Enable alert coverage for this reminder' };
   if (alertStatus(item, date) === 'paused') return { label: 'Alerts paused', value: 'Review your delivery preferences in Alert Options' };
-  if (occurrence.due_on < today) return { label: 'Next alert', value: 'No further alerts for this past date' };
+  if (occurrence.due_on < today && !occurrence.snoozed_on) return { label: 'Next alert', value: 'No further alerts for this past date' };
   if (!date.next_scheduled_on) return { label: 'Next alert', value: 'No alerts pending for this date' };
   if (date.next_scheduled_on < today) return { label: 'Alert awaiting delivery', value: `Scheduled for ${formatDate(date.next_scheduled_on)}` };
   return { label: 'Next alert', value: date.next_scheduled_on === today ? 'Today' : formatDate(date.next_scheduled_on) };

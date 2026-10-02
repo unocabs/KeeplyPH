@@ -5,8 +5,8 @@ import type { ItemWithDetails } from '@/features/items/domain';
 import type { Usage } from '@/lib/domain';
 import { ReminderIcon } from './reminder-icon';
 
-export function ReminderSaved({ id, usage, coverage, deliveryPaused, created }: {
-  id: string; usage: Usage; coverage: ItemWithDetails['coverage']; deliveryPaused?: boolean; created: boolean;
+export function ReminderSaved({ id, usage, coverage, deliveryPaused, created, ideasEnabled }: {
+  id: string; usage: Usage; coverage: ItemWithDetails['coverage']; deliveryPaused?: boolean; created: boolean; ideasEnabled?: boolean;
 }) {
   const { slots, used, available } = capabilities(usage);
   const first = created && usage.purchases === 1;
@@ -22,6 +22,7 @@ export function ReminderSaved({ id, usage, coverage, deliveryPaused, created }: 
       {coverage === 'covered' && deliveryPaused && <p className="hint">An alert slot is assigned to this reminder, but delivery is paused by your account settings. Check Alert Options.</p>}
     </div>
     {first && <>
+      {!ideasEnabled && <p className="hint spaced">Want occasional ideas for more useful reminders? <Link className="text-button" href="/settings/alerts">Choose Reminder ideas &amp; tips in Alert Options →</Link></p>}
       <h3 className="spaced">What else would you like to remember?</h3>
       <div className="reminder-saved-suggestions">
         <Link href="/add/other?preset=personal-loan"><ReminderIcon template="other" preset="personal-loan" size={20} />Loan payment</Link>

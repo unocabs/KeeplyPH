@@ -1,3 +1,4 @@
+import { deliverReminderIdeas } from '@/lib/reminder-idea-worker';
 import { deliverPushJobs } from '@/lib/push-worker';
 import { pushReady } from '@/lib/web-push';
 import { renewalEmail } from '@/lib/renewal-email';
@@ -73,6 +74,9 @@ export async function POST(request: Request) {
       // Stay below Resend's default two requests per second.
       await new Promise(resolve => setTimeout(resolve, 600));
     }
-    return Response.json({ claimed: jobs.length, accepted, smsAccepted, pushAccepted, deferred });
+    // Finish important messages first and leave spacing before an optional suggestion send.
+    let ideasAccepted = 0;
+    try { ideasAccepted = await deliverReminderIdeas(started); } catch { console.error('reminder_idea_worker_failed'); }
+    return Response.json({ claimed: jobs.length, accepted, smsAccepted, pushAccepted, deferred, ideasAccepted });
   } catch { console.error('notification_worker_failed'); return new Response('Retry later', { status: 500 }); }
 }

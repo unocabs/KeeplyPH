@@ -3,16 +3,17 @@ import { PushOptions } from './push-options';
 import { useState } from 'react';
 import { Bell, Mail, Smartphone } from 'lucide-react';
 import type { AlertPreferences } from '@/lib/alert-options';
-import { saveEmailAlertPreference } from '@/features/alerts/actions';
+import { saveEmailPreferences } from '@/features/alerts/actions';
 
 export function AlertOptions({ initial, demo = false, pushPublicKey = null }: { initial: AlertPreferences; demo?: boolean; pushPublicKey?: string | null }) {
+  const [suggestions, setSuggestions] = useState(initial.suggestion_emails_enabled || false);
   const [email, setEmail] = useState(initial.email_reminders_enabled);
   const [busy, setBusy] = useState(false), [error, setError] = useState(''), [message, setMessage] = useState('');
   async function save(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); setError(''); setMessage('');
     try {
       if (demo) { setMessage('Sample options updated. Sign in to save your own preferences.'); return; }
-      const result = await saveEmailAlertPreference(email);
+      const result = await saveEmailPreferences(email, suggestions);
       if (result.error) setError(result.error);
       else setMessage(result.success || 'Alert options saved.');
     } catch { setError('Unable to save right now. Please try again.'); } finally { setBusy(false); }
@@ -22,8 +23,9 @@ export function AlertOptions({ initial, demo = false, pushPublicKey = null }: { 
     <h2>One helpful heads-up.</h2><p className="section-description">Email is the default. Choose the reminders that matter to you.</p>
     <form onSubmit={save}><fieldset disabled={busy} className="spaced">
       <label className="checkbox-row"><input type="checkbox" checked={email} onChange={e => setEmail(e.target.checked)}/><span><strong><Mail size={16} aria-hidden="true"/> Receive email</strong><p>Full details and a direct link to review, complete or update your reminder.</p></span></label>
+      <label className="checkbox-row spaced"><input type="checkbox" checked={suggestions} onChange={e => setSuggestions(e.target.checked)}/><span><strong><Mail size={16} aria-hidden="true"/> Reminder ideas &amp; tips</strong><p>Optional ideas for loans, car renewals, bills, and other dates. Starts two days after you opt in, weekly in your first month, then every two weeks. Unsubscribe anytime without turning off deadline alerts.</p></span></label>
       <label className="checkbox-row sms-coming-soon"><input type="checkbox" checked={false} disabled readOnly aria-describedby="sms-coming-soon-description"/><span><strong><Smartphone size={16} aria-hidden="true"/> Receive SMS <span className="badge none">Coming soon</span></strong><p id="sms-coming-soon-description">SMS alerts are coming soon. There’s nothing to set up right now.</p></span></label>
-      {!email && <p className="alert info spaced">Email is off. Your reminders stay saved. Connected web push devices can still receive alerts.</p>}
+      {!email && <p className="alert info spaced">Deadline emails are off. Your reminders stay saved. Connected web push devices can still receive alerts.</p>}
       <p className="hint spaced">Email alerts follow your selected timings and available alert coverage.</p>
       {error && <p className="alert error spaced" role="alert">{error}</p>}{message && <p className="alert success spaced" role="status">{message}</p>}
       <button className="button primary spaced">{busy ? 'Saving…' : 'Save alert options'}</button>

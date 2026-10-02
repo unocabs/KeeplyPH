@@ -7,6 +7,7 @@ export function normalizePhone(value: string): string | null {
   return /^\+639\d{9}$/.test(number) ? number : null;
 }
 export interface AlertPreferences {
+  suggestion_emails_enabled?: boolean;
   email_reminders_enabled: boolean;
   push_reminders_enabled?: boolean;
   push_subscription_count?: number;

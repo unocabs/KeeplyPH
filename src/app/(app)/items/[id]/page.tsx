@@ -17,5 +17,5 @@ export default async function Page({params,searchParams}:{params:Promise<{id:str
   if(item.state==='draft')return item.template_key==='receipt'?<PurchaseForm purchase={{...item,warranty:null}}/>:<ItemForm template={item.template_key} item={item}/>;
   const saved = ['created','updated','uncovered'].includes(query.saved || '');
   const usage = saved ? await getUsage() : null;
-  return <>{usage && <ReminderSaved id={id} usage={usage} coverage={item.coverage} deliveryPaused={item.alert_delivery_paused} created={query.saved !== 'updated'}/>}<ItemDetail item={item} today={todayIn(profile.timezone)}/></>;
+  return <>{usage && <ReminderSaved id={id} usage={usage} coverage={item.coverage} deliveryPaused={item.alert_delivery_paused} ideasEnabled={profile.suggestion_emails_enabled} created={query.saved !== 'updated'}/>}<ItemDetail item={item} today={todayIn(profile.timezone)}/></>;
 }

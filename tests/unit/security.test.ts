@@ -37,7 +37,8 @@ describe('Request and email boundaries', () => {
   });
   it('escapes user-controlled names in reminder HTML', () => {
     const mail = reminderEmail({ from: 'keeply@example.test', to: 'test@example.test', product: '<img src=x onerror=alert(1)>', expires: '2026-09-20', purchaseId: 'id', url: 'https://keeplyph.com' });
-    expect(mail.html).not.toContain('<img');
+    expect(mail.html).not.toContain('<img src=x');
+    expect(mail.html.match(/<img /g)).toHaveLength(1); // Only the trusted brand logo is rendered.
     expect(mail.html).toContain('&lt;img');
     expect(mail.text).toContain('<img');
   });
