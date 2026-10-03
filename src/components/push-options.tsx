@@ -21,7 +21,7 @@ function subscribeBrowserState(update: () => void) {
   return () => { window.removeEventListener('focus', update); window.removeEventListener('keeply-push-permission', update); media.removeEventListener('change', update); };
 }
 const browserPermission = () => 'Notification' in window ? Notification.permission : 'default';
-export function PushOptions({ publicKey, initialCount = 0, demo = false, showReward = false, rewardClaimed = false }: { publicKey: string | null; initialCount?: number; demo?: boolean; showReward?: boolean; rewardClaimed?: boolean }) {
+export function PushOptions({ publicKey, initialCount = 0, demo = false, showReward = false, rewardClaimed = false, setupFlow = false, onConnectedChange }: { publicKey: string | null; initialCount?: number; demo?: boolean; showReward?: boolean; rewardClaimed?: boolean; setupFlow?: boolean; onConnectedChange?: (connected: boolean) => void }) {
   const headingId = useId();
   const support = useSyncExternalStore(subscribeBrowserState, browserSupport, () => 'checking');
   const permission = useSyncExternalStore(subscribeBrowserState, browserPermission, () => 'default');
@@ -109,27 +109,28 @@ export function PushOptions({ publicKey, initialCount = 0, demo = false, showRew
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Unable to claim your slots. Please try again.'); }
     finally { setBusy(false); }
   }
-  const connected = status.enabled && status.registered;
+  const connected = status.enabled && status.registered && permission === 'granted';
+  useEffect(() => { if (ready) onConnectedChange?.(connected && permission === 'granted'); }, [ready, connected, permission, onConnectedChange]);
   return <section className="push-options spaced" aria-labelledby={headingId}>
-    <h3 id={headingId}><Smartphone size={18} aria-hidden="true"/> Device notifications</h3>
-    <p className="section-description">Receive reminder notifications on this phone or computer, even when Keeply is closed. They follow your selected reminder timings.</p>
+    <h3 id={headingId} className={setupFlow ? 'sr-only' : undefined}><Smartphone size={18} aria-hidden="true"/> Device notifications</h3>
+    {!setupFlow && <p className="section-description">Receive reminder notifications on this phone or computer, even when Keeply is closed. They follow your selected reminder timings.</p>}
     {support === 'checking' && <p className="hint spaced">Checking this browser…</p>}
     {support === 'home-screen' && (publicKey || demo) && <p className="alert info spaced">On this device, notifications require opening Keeply from its Home Screen icon. Use the device setup guide to add it first.</p>}
     {support === 'unsupported' && <p className="alert info spaced">This browser does not support web push here. Try a supported browser on HTTPS, or keep email enabled.</p>}
     {!publicKey && !demo && <div className="alert info spaced"><strong>Device notifications are temporarily unavailable.</strong><p>Keeply’s notification service needs to be enabled before you can connect this device. There is nothing to change on your device yet. You can still receive email reminders if email alerts are on.</p></div>}
     {support === 'supported' && permission === 'denied' && <p className="alert info spaced">Notifications are blocked in this browser. Allow them in browser or device settings to reconnect.</p>}
-    {status.deviceCount > 0 && <p className="hint spaced">{status.deviceCount} connected {status.deviceCount === 1 ? 'device' : 'devices'}{connected ? ' · This device is connected' : ' · This device is not connected'}.</p>}
-    {support === 'supported' && (publicKey || demo) && <div className="push-actions spaced">
-      {connected ? <><button type="button" className="button secondary" disabled={busy} onClick={()=>void test()}>Send test notification</button><button type="button" className="text-button" disabled={busy} onClick={()=>void disable()}>Turn off this device</button></> : <button type="button" className="button secondary" disabled={busy || (!demo && (!ready || permission === 'denied'))} onClick={()=>void enable()}>{busy ? 'Connecting…' : 'Turn on notifications'}</button>}
+    {!setupFlow && status.deviceCount > 0 && <p className="hint spaced">{status.deviceCount} connected {status.deviceCount === 1 ? 'device' : 'devices'}{connected ? ' · This device is connected' : ' · This device is not connected'}.</p>}
+    {support === 'supported' && (publicKey || demo) && (!setupFlow || !connected) && <div className="push-actions spaced">
+      {connected ? <><button type="button" className="button secondary" disabled={busy} onClick={()=>void test()}>Send test notification</button><button type="button" className="text-button" disabled={busy} onClick={()=>void disable()}>Turn off this device</button></> : <button type="button" className={setupFlow ? 'button primary' : 'button secondary'} disabled={busy || (!demo && (!ready || permission === 'denied'))} onClick={()=>void enable()}>{busy ? 'Connecting…' : 'Turn on notifications'}</button>}
     </div>}
-    <p className="hint spaced">You choose which devices receive alerts. Notifications can show reminder names on your lock screen; device settings can silence or delay them.</p>
+    <p className="hint spaced">{setupFlow ? 'Notifications can show reminder names on your lock screen.' : 'You choose which devices receive alerts. Notifications can show reminder names on your lock screen; device settings can silence or delay them.'}</p>
     {showReward && !demo && <div className="alert info spaced">
-      {rewardClaimed || claimedHere ? <><strong>Your 2 permanent free slots are included.</strong><p>This reward is claimable once per account. Adding another device does not grant more slots.</p></> : <>
-        <strong>Two steps. Two permanent free slots.</strong>
-        <p>{installed ? '✓ Keeply is open as an installed app.' : 'Open Keeply from its installed icon to complete the installation step.'}</p>
-        <p>{connected && permission === 'granted' ? '✓ Notifications are connected on this device.' : 'Turn on notifications on this device to complete the notification step.'}</p>
+      {rewardClaimed || claimedHere ? <><strong>Your 2 permanent free slots are included.</strong><p>Your one-time reward is available across your devices.</p></> : <>
+        <strong>{setupFlow ? 'Your gift: 2 permanent free alert slots.' : 'Two steps. Two permanent free slots.'}</strong>
+        {(!setupFlow || !installed) && <p>{installed ? '✓ Keeply is open as an installed app.' : 'Open Keeply from its installed icon to complete the installation step.'}</p>}
+        {!setupFlow && <p>{connected && permission === 'granted' ? '✓ Notifications are connected on this device.' : 'Turn on notifications on this device to complete the notification step.'}</p>}
         <button type="button" className="button primary spaced" disabled={busy || !installed || !connected || permission !== 'granted'} onClick={() => startTransition(() => { void claim(); })}>{busy ? 'Please wait…' : 'Claim 2 permanent free slots'}</button>
-        <p className="hint spaced">Once per account. No expiry. Your slots stay yours if you later turn notifications off.</p>
+        <p className="hint spaced">Claim once per account. They stay yours permanently.</p>
       </>}
     </div>}
     {error && <p className="alert error spaced" role="alert">{error}</p>}{message && <p className="alert success spaced" role="status">{message}</p>}

@@ -1,8 +1,16 @@
 # Device setup guide and permanent slot reward
 
-Keeply’s private dashboard places a setup card immediately after the welcome/overview section, before category filters and statistics. Alert Options also provides the guide and a direct notification/reward control. The modal always asks which device the user wants help with before showing instructions. It never opens itself or automatically requests notification permission. Dismissing the dashboard card makes it a small return link for that browser session; after claiming, it becomes a link to set up another device.
+Keeply’s private dashboard places a setup card immediately after the welcome/overview section, before category filters and statistics. Alert Options also provides the guide and a direct notification/reward control. In a regular browser, the modal asks which device the user wants help with before showing installation instructions. When opened from Keeply’s installed icon, the setup button goes directly to notification setup. If notification permission and an account-owned registration are already confirmed on that device, the card invites the user to claim their gift instead. After claiming, Set up another device opens the device picker again. It never opens itself or automatically requests notification permission. Dismissing the dashboard card makes it a small return link for that browser session; after claiming, it becomes a link to set up another device.
 
-The guide has Back/Next controls, progress, an already-installed shortcut, full-size screenshot links, native dialog keyboard/focus behavior, iPhone images, and text-only Android/computer instructions. Installation and notification permission must be completed on the target device. A guide viewed on another device does not control that target device remotely.
+The installation guide has Back/Next controls, progress, an already-installed shortcut, full-size screenshot links, native dialog keyboard/focus behavior, iPhone images, and text-only Android/computer instructions. Installation and notification permission must be completed on the target device. A guide viewed on another device does not control that target device remotely.
+
+## Encouraging setup copy and completed steps
+
+The installation card uses **“It’s easy to add Keeply to your device.”** Its copy focuses on feeling more in control with one place for all reminders, staying a tap away, and receiving helpful notifications for approaching deadlines. Installing Keeply and turning on notifications earns a gift of two permanent free alert slots, claimable once per account.
+
+In the installed app, the notification headline is **“Never miss a deadline by turning on your notifications.”** Installation steps, the device picker and step progress are skipped for this entry. If notifications are already connected on this device, the headline becomes **“Your free gift is ready.”** and the button becomes **“Claim your 2 free slots.”** The modal offers the existing claim control directly. It never claims automatically or requests permission just because the guide was opened. A Set up another device link still opens the full picker.
+
+Installation checks use the current standalone/minimal-ui display mode or iOS standalone signal. Merely signing in through a normal browser does not imply installation. Connection checks verify both the local browser subscription and its account ownership; another device’s registration is not enough. Notifications and claim controls keep their existing support/configuration checks and error handling.
 
 ## Reward rules
 
@@ -63,6 +71,12 @@ The modified `scripts/test-database.mjs` runs with **`npm run test:db`**. It cre
 Private app routes retain inherited `noindex,nofollow` metadata. Public page content, titles, canonical URLs, structured data and sitemap files are unchanged. Real device permission dialogs and live push delivery still require staging verification.
 
 Completed locally: production build and TypeScript check, ESLint, 148 unit tests and 91 PostgreSQL integration tests. Chromium browser checks at 390px and 1280px verified explicit device choice, all five iPhone images, Android text, computer instructions, premature-claim disabling, reopening after session dismissal, Escape dismissal and absence of client errors. The temporary preview route used for browser checks was removed before the production build. Rendered production homepage/pricing checks verified canonical URLs, descriptions, indexing and parseable homepage JSON-LD; public pricing retains its three-slot baseline. Robots and sitemap output contain no new private routes. Lighthouse was not run because public page output is unchanged. Native installation, permission prompts and actual push delivery were not tested on physical devices.
+
+## Follow-up verification: skip completed setup
+
+The updated flow was checked in Chromium at 390px and 1280px with simulated iOS standalone and desktop standalone display modes. Browser, installed app, connected notifications, claimed reward, denied permission, and denied permission with a retained registration all opened the intended view. The checks confirmed no repeated installation steps in the installed app, a direct enabled claim control for a connected device, an explicit picker for another device, Escape dismissal, no horizontal overflow, no client errors, and no automatic permission requests. Push status responses were mocked for these browser checks; this does not verify physical device installation or actual push delivery. Existing physical-device staging checks still apply.
+
+The setup modal focuses on permission and the gift; device management remains in Alert Options. Public page files, metadata, robots rules and sitemap entries are unchanged by this follow-up. The temporary browser preview route was removed before the production build. Production build, TypeScript, ESLint and all 148 unit tests passed locally. The reward database schema and its deployment prerequisites were not changed.
 
 ## Screenshot assets and editing prompts
 

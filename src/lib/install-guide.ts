@@ -3,6 +3,15 @@ export interface InstallStep { title: string; text: string; hint?: string; image
 export function installedApp(): boolean {
   return matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: minimal-ui)').matches || Boolean((navigator as Navigator & { standalone?: boolean }).standalone);
 }
+export function subscribeInstalledApp(update: () => void) {
+  const modes = [matchMedia('(display-mode: standalone)'), matchMedia('(display-mode: minimal-ui)')];
+  modes.forEach(mode => mode.addEventListener('change', update));
+  window.addEventListener('focus', update);
+  return () => {
+    modes.forEach(mode => mode.removeEventListener('change', update));
+    window.removeEventListener('focus', update);
+  };
+}
 export const installSteps: Record<InstallDevice, InstallStep[]> = {
   ios: [
     { title: 'Open Keeply and tap Share', text: 'On your iPhone or iPad, open keeplyph.com in Safari and sign in. Tap Share: the square with an arrow pointing up.', image: '/guides/install/ios-share.webp', alt: 'Share icon circled in red in the top-right browser toolbar.', hint: 'The toolbar may be at the top or bottom. If Share is hidden, open the browser’s page menu. Notifications require iOS or iPadOS 16.4 or later.' },
