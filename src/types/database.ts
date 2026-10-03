@@ -22,6 +22,7 @@ export interface Database {
       register_push_subscription: Rpc<{p_endpoint:string;p_p256dh:string;p_auth:string},undefined>;
       remove_push_subscription: Rpc<{p_endpoint:string},undefined>;
       push_device_status: Rpc<{p_endpoint:string|null}>;
+      claim_install_reward: Rpc<{p_endpoint:string;p_installed:boolean}>;
       prepare_push_test: Rpc<{p_endpoint:string}>;
       claim_push_jobs: Rpc<{p_limit:number}>;
       prepare_push_job: Rpc<{p_id:string;p_lease:string}>;

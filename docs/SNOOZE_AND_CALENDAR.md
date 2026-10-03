@@ -1,8 +1,8 @@
-# Snooze and one-time calendar export
+# Snooze
 
-Both features are free. Snooze uses the reminder's existing coverage, selected channels, and 9 AM in the account timezone. The due date, recurrence anchor/end, completion status, and offsets stay unchanged. Snooze applies only to the current open occurrence; recurrence can supersede it automatically. Cancellation restores future normal timings without backfilling past alerts. Disabling a channel cancels the pending snooze; changing timezone keeps the chosen local date and reschedules unattempted jobs as the existing scheduler does. A timezone change that puts delivery in the past does not backfill it.
+Snooze is free. It uses the reminder's existing coverage, selected channels, and 9 AM in the account timezone. The due date, recurrence anchor/end, completion status, and offsets stay unchanged. Snooze applies only to the current open occurrence; recurrence can supersede it automatically. Cancellation restores future normal timings without backfilling past alerts. Disabling a channel cancels the pending snooze; changing timezone keeps the chosen local date and reschedules unattempted jobs as the existing scheduler does. A timezone change that puts delivery in the past does not backfill it.
 
-Calendar export downloads one all-day event for the actual due date, even without alert coverage. It does not synchronize subsequent edits. The owner-only route returns private, non-cacheable downloads. Demo buttons never call real actions; demo calendar export asks the user to sign in.
+Add to Calendar and its ICS endpoint were removed because file download/import workflows do not meet Keeply's premium, hassle-free requirement. Demo buttons never call real actions.
 
 ## Before deployment
 
@@ -30,4 +30,4 @@ npm run test:db
 
 The modified `scripts/test-database.mjs` automatically loads `tests/database/snooze.mjs`; do not run the module directly. The harness starts and removes its own isolated PostgreSQL database and never connects to the hosted project. It defaults to `/opt/homebrew/opt/postgresql@14/bin`; set `PG_TEST_BIN` to another PostgreSQL binary directory if needed. These commands have been run locally.
 
-Coverage includes ownership/revisions, local 9 AM, overdue sends, replacement/cancellation, regular alert suppression at equal times, later alerts, completion/edit/archive/coverage/opt-out invalidation, recurrence advancement, and uncertain delivery leases. Calendar tests cover authentication, ownership filters, private headers, escaping, UTF-8 folding, stable UIDs and exclusive next-day DTEND. Browser checks use sample data; no real provider delivery or calendar application import was performed.
+Coverage includes ownership/revisions, local 9 AM, overdue sends, replacement/cancellation, regular alert suppression at equal times, later alerts, completion/edit/archive/coverage/opt-out invalidation, recurrence advancement, and uncertain delivery leases. Browser checks use sample data; no real provider delivery was performed.

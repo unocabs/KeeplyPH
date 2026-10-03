@@ -22,7 +22,7 @@ export interface Profile {
   push_reminders_enabled?: boolean; push_subscription_count?: number; email_delivery_blocked: boolean; deletion_requested_at: string | null; created_at: string; updated_at: string;
 }
 export interface PurchaseWithDetails extends Purchase { warranty: Warranty | null; documents: Document[] }
-export interface Usage { active_reminders?: number; purchases: number; reminders: number; storage_bytes: number; premium: boolean; premium_until: string | null; slot_limit?: number; storage_limit_bytes?: number; uncovered?: number; paid_until?: string | null; permanent?: boolean; permanent_slots?: number; renewal_slots?: number; temporary_active?: boolean; renewal_emails_enabled?: boolean; upcoming?: number; overdue?: number }
+export interface Usage { install_reward_claimed?: boolean; bonus_slots?: number; active_reminders?: number; purchases: number; reminders: number; storage_bytes: number; premium: boolean; premium_until: string | null; slot_limit?: number; storage_limit_bytes?: number; uncovered?: number; paid_until?: string | null; permanent?: boolean; permanent_slots?: number; renewal_slots?: number; temporary_active?: boolean; renewal_emails_enabled?: boolean; upcoming?: number; overdue?: number }
 export type ActionResult = { error?: string; success?: string; id?: string; uncovered?: boolean };
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
 export const FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];

@@ -953,6 +953,72 @@ try {
     await (await import('../tests/database/snooze.mjs')).testSnooze({admin,actor,user,newItem,registerPush,test});
   }
 
+  if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610040017_install_reward.sql') {
+    const claimSetup = async (u,endpoint,installed=true) => (await actor(u,'select public.claim_install_reward($1,$2) reward',[endpoint,installed])).rows[0].reward;
+    const rewardUsage = async u => (await actor(u,'select public.account_usage() usage')).rows[0].usage;
+    await test('Installation reward requires authentication, installed signal and an owned enabled push device',async()=>{
+      const u=await user(),other=await user(),endpoint=await registerPush(u);
+      await assert.rejects(actor(null,'select public.claim_install_reward($1,true)',[endpoint],'anon'),/permission denied/);
+      await assert.rejects(claimSetup(other,endpoint),/SETUP_REQUIRED/);
+      await assert.rejects(claimSetup(u,endpoint,false),/SETUP_REQUIRED/);
+      await assert.rejects(claimSetup(u,endpoint,null),/SETUP_REQUIRED/);
+      await actor(u,'select public.remove_push_subscription($1)',[endpoint]);
+      await assert.rejects(claimSetup(u,endpoint),/SETUP_REQUIRED/);
+      assert.equal((await rewardUsage(u)).slot_limit,3);
+      await assert.rejects(actor(u,'select * from private.install_reward_claims'),/permission denied/);
+      await assert.rejects(actor(u,'insert into private.install_reward_claims(user_id) values($1)',[u]),/permission denied/);
+    });
+    await test('Concurrent reward claims grant exactly two slots once across devices and reconnects',async()=>{
+      const u=await user(),first=await registerPush(u),second=await registerPush(u);
+      const results=await Promise.all([claimSetup(u,first),claimSetup(u,second),claimSetup(u,first)]);
+      assert.equal(results.filter(r=>r.granted).length,1);
+      assert.ok(results.every(r=>r.claimed));
+      let usage=await rewardUsage(u);
+      assert.equal(usage.slot_limit,5);assert.equal(usage.bonus_slots,2);assert.equal(usage.install_reward_claimed,true);
+      assert.equal(usage.permanent,false,'Reward is independent of paid permanent pack ownership');
+      await actor(u,'select public.remove_push_subscription($1)',[first]);
+      await actor(u,'select public.remove_push_subscription($1)',[second]);
+      assert.equal((await rewardUsage(u)).slot_limit,5,'Turning off notifications preserves reward');
+      const third=await registerPush(u);
+      assert.deepEqual(await claimSetup(u,third),{claimed:true,granted:false});
+      assert.equal((await rewardUsage(u)).slot_limit,5);
+      assert.equal((await admin.query('select count(*)::integer n from private.install_reward_claims where user_id=$1',[u])).rows[0].n,1);
+    });
+    await test('Reward restores selected reminder coverage and creates future push jobs without backfilling',async()=>{
+      const u=await user(),ids=[],pack=await packOrder(u);await pay(pack);
+      for(let n=0;n<5;n++)ids.push(await newItem(u,'car',input('registration','2032-03-31',true)));
+      await admin.query("update private.reminder_packs set paid_until=now()-interval '1 day' where user_id=$1",[u]);
+      const endpoint=await registerPush(u);
+      assert.equal((await rewardUsage(u)).reminders,3);
+      await claimSetup(u,endpoint);
+      const usage=await rewardUsage(u);assert.equal(usage.reminders,5);
+      const covered=(await admin.query('select coverage_active from public.items where id=any($1)',[ids])).rows;
+      assert.ok(covered.every(i=>i.coverage_active));
+      const jobs=(await admin.query("select count(distinct d.item_id)::integer n from private.push_jobs j join public.important_dates d on d.id=j.date_id where d.user_id=$1 and j.status='pending'",[u])).rows[0].n;
+      assert.equal(jobs,5);
+    });
+    await test('Permanent reward survives temporary pack expiry and purchased permanent pack refunds',async()=>{
+      const u=await user(),endpoint=await registerPush(u);await claimSetup(u,endpoint);
+      const temporary=await packOrder(u);await pay(temporary);
+      assert.equal((await rewardUsage(u)).slot_limit,10);
+      await admin.query("update private.reminder_packs set paid_until=now()-interval '1 day' where user_id=$1",[u]);
+      assert.equal((await rewardUsage(u)).slot_limit,5);
+      const permanent=await packOrder(u,'slots_permanent',10);await pay(permanent,'slots_permanent',undefined,10);
+      const usage=await rewardUsage(u);assert.equal(usage.slot_limit,15);assert.equal(usage.permanent_slots,10);
+      await actor(null,'select public.revoke_refunded_order($1)',['pay_'+permanent.replaceAll('-','')],'service_role');
+      // Temporary purchase still exists; the reward always remains additive.
+      assert.equal((await rewardUsage(u)).bonus_slots,2);
+      await actor(null,'select public.revoke_refunded_order($1)',['pay_'+temporary.replaceAll('-','')],'service_role');
+      assert.equal((await rewardUsage(u)).slot_limit,5);
+      await admin.query('delete from auth.users where id=$1',[u]);
+      assert.equal((await admin.query('select count(*)::integer n from private.install_reward_claims where user_id=$1',[u])).rows[0].n,0);
+    });
+    await test('Read-only setup prerequisite check includes all migrations through the reward',async()=>{
+      const checks=(await admin.query(await readFile('supabase/check-install-reward-prerequisites.sql','utf8'))).rows;
+      assert.equal(checks.length,18);for(const check of checks)assert.match(check.status,/PRESENT/,check.migration);
+    });
+  }
+
   console.log('\n' + passed + ' database integration tests passed.');
 } finally {
   if (admin) await admin.end();

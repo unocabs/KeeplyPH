@@ -1,7 +1,8 @@
 'use client';
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { startTransition, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 import { Smartphone } from 'lucide-react';
-import { pushDeviceStatus, registerPushSubscription, removePushSubscription, sendPushTest } from '@/features/alerts/push-actions';
+import { claimInstallReward, pushDeviceStatus, registerPushSubscription, removePushSubscription, sendPushTest } from '@/features/alerts/push-actions';
+import { installedApp } from '@/lib/install-guide';
 import type { PushDeviceStatus } from '@/lib/push-subscription';
 
 function applicationKey(value: string): Uint8Array<ArrayBuffer> {
@@ -20,9 +21,12 @@ function subscribeBrowserState(update: () => void) {
   return () => { window.removeEventListener('focus', update); window.removeEventListener('keeply-push-permission', update); media.removeEventListener('change', update); };
 }
 const browserPermission = () => 'Notification' in window ? Notification.permission : 'default';
-export function PushOptions({ publicKey, initialCount = 0, demo = false }: { publicKey: string | null; initialCount?: number; demo?: boolean }) {
+export function PushOptions({ publicKey, initialCount = 0, demo = false, showReward = false, rewardClaimed = false }: { publicKey: string | null; initialCount?: number; demo?: boolean; showReward?: boolean; rewardClaimed?: boolean }) {
+  const headingId = useId();
   const support = useSyncExternalStore(subscribeBrowserState, browserSupport, () => 'checking');
   const permission = useSyncExternalStore(subscribeBrowserState, browserPermission, () => 'default');
+  const installed = useSyncExternalStore(subscribeBrowserState, installedApp, () => false);
+  const [claimedHere, setClaimedHere] = useState(false);
   const [status, setStatus] = useState<PushDeviceStatus>({ enabled: false, registered: false, deviceCount: initialCount });
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState(''), [message, setMessage] = useState('');
   const worker = useRef<ServiceWorkerRegistration | null>(null);
@@ -94,23 +98,23 @@ export function PushOptions({ publicKey, initialCount = 0, demo = false }: { pub
       else setMessage(result.success || 'Test sent.');
     } catch { setError('Unable to send the test. Please try again.'); } finally { setBusy(false); }
   }
+  async function claim() {
+    setBusy(true); setError(''); setMessage('');
+    try {
+      const subscription = await worker.current?.pushManager.getSubscription();
+      if (!installedApp() || Notification.permission !== 'granted' || !subscription) throw new Error('Open Keeply from its installed icon and turn on notifications here first.');
+      const result = await claimInstallReward(subscription.endpoint, installedApp());
+      if (result.error) setError(result.error);
+      else { setClaimedHere(true); setMessage(result.success || 'Your 2 permanent free slots are included.'); }
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Unable to claim your slots. Please try again.'); }
+    finally { setBusy(false); }
+  }
   const connected = status.enabled && status.registered;
-  return <section className="push-options spaced" aria-labelledby="push-heading">
-    <h3 id="push-heading"><Smartphone size={18} aria-hidden="true"/> Device notifications</h3>
+  return <section className="push-options spaced" aria-labelledby={headingId}>
+    <h3 id={headingId}><Smartphone size={18} aria-hidden="true"/> Device notifications</h3>
     <p className="section-description">Receive reminder notifications on this phone or computer, even when Keeply is closed. They follow your selected reminder timings.</p>
     {support === 'checking' && <p className="hint spaced">Checking this browser…</p>}
-    {support === 'home-screen' && (publicKey || demo) && <div className="alert info spaced push-install">
-      <strong>Set up notifications on your iPhone or iPad</strong>
-      <p>First, add Keeply to your Home Screen. Apple requires this for website notifications.</p>
-      <ol>
-        <li>Open <strong>keeplyph.com</strong> in <strong>Safari</strong>.</li>
-        <li>Tap <strong>Share</strong> (the square with an arrow pointing up). If it is hidden, open Safari’s page menu, then tap Share.</li>
-        <li>Scroll down and tap <strong>Add to Home Screen</strong>. If you see <strong>Open as Web App</strong>, leave it turned on. Tap <strong>Add</strong>.</li>
-        <li>Go to your Home Screen and tap the new <strong>Keeply</strong> icon. Sign in if asked.</li>
-        <li>Open <strong>Settings → Alert Options</strong>. Tap <strong>Turn on notifications</strong>, then <strong>Allow</strong>.</li>
-      </ol>
-      <p className="hint">Already added Keeply? Open it from your Home Screen icon to finish. Requires iOS or iPadOS 16.4 or later.</p>
-    </div>}
+    {support === 'home-screen' && (publicKey || demo) && <p className="alert info spaced">On this device, notifications require opening Keeply from its Home Screen icon. Use the device setup guide to add it first.</p>}
     {support === 'unsupported' && <p className="alert info spaced">This browser does not support web push here. Try a supported browser on HTTPS, or keep email enabled.</p>}
     {!publicKey && !demo && <div className="alert info spaced"><strong>Device notifications are temporarily unavailable.</strong><p>Keeply’s notification service needs to be enabled before you can connect this device. There is nothing to change on your device yet. You can still receive email reminders if email alerts are on.</p></div>}
     {support === 'supported' && permission === 'denied' && <p className="alert info spaced">Notifications are blocked in this browser. Allow them in browser or device settings to reconnect.</p>}
@@ -119,6 +123,15 @@ export function PushOptions({ publicKey, initialCount = 0, demo = false }: { pub
       {connected ? <><button type="button" className="button secondary" disabled={busy} onClick={()=>void test()}>Send test notification</button><button type="button" className="text-button" disabled={busy} onClick={()=>void disable()}>Turn off this device</button></> : <button type="button" className="button secondary" disabled={busy || (!demo && (!ready || permission === 'denied'))} onClick={()=>void enable()}>{busy ? 'Connecting…' : 'Turn on notifications'}</button>}
     </div>}
     <p className="hint spaced">You choose which devices receive alerts. Notifications can show reminder names on your lock screen; device settings can silence or delay them.</p>
+    {showReward && !demo && <div className="alert info spaced">
+      {rewardClaimed || claimedHere ? <><strong>Your 2 permanent free slots are included.</strong><p>This reward is claimable once per account. Adding another device does not grant more slots.</p></> : <>
+        <strong>Two steps. Two permanent free slots.</strong>
+        <p>{installed ? '✓ Keeply is open as an installed app.' : 'Open Keeply from its installed icon to complete the installation step.'}</p>
+        <p>{connected && permission === 'granted' ? '✓ Notifications are connected on this device.' : 'Turn on notifications on this device to complete the notification step.'}</p>
+        <button type="button" className="button primary spaced" disabled={busy || !installed || !connected || permission !== 'granted'} onClick={() => startTransition(() => { void claim(); })}>{busy ? 'Please wait…' : 'Claim 2 permanent free slots'}</button>
+        <p className="hint spaced">Once per account. No expiry. Your slots stay yours if you later turn notifications off.</p>
+      </>}
+    </div>}
     {error && <p className="alert error spaced" role="alert">{error}</p>}{message && <p className="alert success spaced" role="status">{message}</p>}
   </section>;
 }

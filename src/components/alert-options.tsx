@@ -5,7 +5,7 @@ import { Bell, Mail, Smartphone } from 'lucide-react';
 import type { AlertPreferences } from '@/lib/alert-options';
 import { saveEmailPreferences } from '@/features/alerts/actions';
 
-export function AlertOptions({ initial, demo = false, pushPublicKey = null }: { initial: AlertPreferences; demo?: boolean; pushPublicKey?: string | null }) {
+export function AlertOptions({ initial, demo = false, pushPublicKey = null, rewardClaimed = false }: { initial: AlertPreferences; demo?: boolean; pushPublicKey?: string | null; rewardClaimed?: boolean }) {
   const [suggestions, setSuggestions] = useState(initial.suggestion_emails_enabled || false);
   const [email, setEmail] = useState(initial.email_reminders_enabled);
   const [busy, setBusy] = useState(false), [error, setError] = useState(''), [message, setMessage] = useState('');
@@ -30,6 +30,6 @@ export function AlertOptions({ initial, demo = false, pushPublicKey = null }: { 
       {error && <p className="alert error spaced" role="alert">{error}</p>}{message && <p className="alert success spaced" role="status">{message}</p>}
       <button className="button primary spaced">{busy ? 'Saving…' : 'Save alert options'}</button>
     </fieldset></form>
-    <PushOptions publicKey={pushPublicKey} initialCount={initial.push_subscription_count} demo={demo}/>
+    <PushOptions publicKey={pushPublicKey} initialCount={initial.push_subscription_count} demo={demo} showReward={!demo} rewardClaimed={rewardClaimed}/>
   </div>;
 }

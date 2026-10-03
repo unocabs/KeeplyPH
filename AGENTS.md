@@ -8,6 +8,16 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Premium feature quality
+
+The owner wants Keeply to feel premium. Do not add extra or new features unless they provide a complete, polished, reliable experience. Prefer fewer finished features over half-baked ideas, placeholders, or functionality that requires awkward workarounds.
+
+Before implementing a feature, check whether the entire intended user flow will actually work on the devices, browsers, and environments where it will be offered. Validate platform limitations and integration prerequisites. File downloads followed by manual imports, such as ICS calendar exports, do not meet the owner's hassle-free requirement.
+
+Before considering a feature ready, verify its end-to-end behavior, including success, cancellation, errors, and relevant device/browser differences. Unit tests or a successful build alone do not establish that a real device or external integration works. State what was tested and any remaining limitations honestly; never describe untested behavior as verified.
+
+If a feature cannot meet this standard, omit it or remove the incomplete functionality. Offer it only in contexts where its complete experience has been verified; hide unsupported or unverified actions. Do not add replacement features or expand scope just to compensate for a removal.
+
 ## Preserve SEO
 
 When changing public pages, preserve or intentionally update titles, descriptions, canonical URLs, indexing directives, structured data, and sitemap entries. Verify the rendered output. Run Lighthouse for changes that could affect public-page SEO or performance, and validate affected structured data. Report what was checked and any limitations. Private dashboard changes only require checking that public pages and indexing rules remain unaffected.

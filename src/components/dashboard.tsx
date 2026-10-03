@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowRight, Bell, CalendarDays, ReceiptText, ShieldCheck, LayoutDashboard } from 'lucide-react';
 import { type Usage } from '@/lib/domain';
 import { dateRows, comingUp, isActiveReminder, type ItemWithDetails } from '@/features/items/domain';
@@ -32,7 +32,7 @@ function ActiveReminderValue({ count }: { count: number }) {
   return <strong ref={value} className={styles.activeValue} aria-label={`${count} active reminders / unlimited`}><span aria-hidden="true">{count}</span><small aria-hidden="true" className={styles.unlimited + (fits ? ' ' + styles.fits : '')}>/ unlimited</small></strong>;
 }
 
-export function Dashboard({ items, usage, name, today, demo = false }: { items: ItemWithDetails[]; usage: Usage; name: string; today: string; demo?: boolean }) {
+export function Dashboard({ items, usage, name, today, demo = false, setup }: { items: ItemWithDetails[]; usage: Usage; name: string; today: string; demo?: boolean; setup?: ReactNode }) {
   const [category, setCategory] = useState('all');
   const [sort, setSort] = useState('recent');
   const base = demo ? '/demo' : '';
@@ -63,8 +63,9 @@ export function Dashboard({ items, usage, name, today, demo = false }: { items: 
         <AddItemButton label="Add my first reminder" />
         <Link className="text-button" href="/demo">Explore a sample account <ArrowRight size={16} aria-hidden="true" /></Link>
       </div>
-      <p className={styles.welcomeFootnote}>Save unlimited reminders. Get alerts for 3 reminders free.</p>
+      <p className={styles.welcomeFootnote}>Save unlimited reminders. Get alerts for {3 + (usage.bonus_slots ?? 0)} reminders free.</p>
     </section>
+    {setup}
     <p className="privacy-note"><ShieldCheck size={15} aria-hidden="true" />Your reminders and files are private to your account.</p>
   </div>;
 
@@ -73,6 +74,7 @@ export function Dashboard({ items, usage, name, today, demo = false }: { items: 
       <div><div className="eyebrow">A LITTLE LESS TO REMEMBER</div><h1>Everything in its place.</h1><p>Welcome back, {name.split(' ')[0] || 'there'}. A little peace of mind, all together.</p></div>
       <AddItemButton demo={demo} />
     </div>
+    {setup}
     <div className={styles.filters} role="group" aria-label="Filter overview by category">
       <button type="button" aria-pressed={category === 'all'} onClick={() => setCategory('all')}><LayoutDashboard size={18} aria-hidden="true" />All{completePreview && <span>{active.length}</span>}</button>
       {categories.map(group => <button key={group.key} type="button" aria-pressed={category === group.key} onClick={() => setCategory(group.key)}><TemplateIcon template="other" group={group.key} size={18} />{categoryLabel(group.key)}{completePreview && <span>{active.filter(item => itemCategory(item) === group.key).length}</span>}</button>)}
