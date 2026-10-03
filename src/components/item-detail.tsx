@@ -12,12 +12,13 @@ import { CoverageControl } from './reminder-management';
 import { ReminderIcon, DateIcon } from './reminder-icon';
 import { ItemDocuments } from './item-documents';
 import { nextAlertSummary, timingLabel } from '@/features/items/alert-schedule';
+import { paymentDate, presetCategory } from '@/features/templates/categories';
 function DateEditor({ item, date, demo, onClose }: { item: ItemWithDetails; date?: DateWithDetails; demo: boolean; onClose: () => void }) {
   const router=useRouter(), id=useRef(date?.id || '');
-  const [value,setValue]=useState<DateInput>(date ? { kind:date.kind,label:date.label,due_on:currentOccurrence(date)?.due_on || '',reminders_enabled:date.reminders_enabled,offsets:date.offsets,interval_months:date.interval_months, recurrence_months:date.recurrence_months, recurrence_ends_on:date.recurrence_ends_on, recurrence_anchor:date.recurrence_anchor, payment_amount_minor:date.payment_amount_minor } : { ...initialDate(item.template_key), ...(getReminderPreset(item.template_key, item.reminder_preset || undefined) ? { label: getReminderPreset(item.template_key, item.reminder_preset || undefined)!.dateLabel } : {}) });
+  const [value,setValue]=useState<DateInput>(date ? { kind:date.kind,label:date.label,due_on:currentOccurrence(date)?.due_on || '',reminders_enabled:date.reminders_enabled,offsets:date.offsets,interval_months:date.interval_months, recurrence_months:date.recurrence_months, recurrence_ends_on:date.recurrence_ends_on, recurrence_anchor:date.recurrence_anchor, payment_amount_minor:date.payment_amount_minor } : initialDate(item.template_key, undefined, item.reminder_preset));
   const [error,setError]=useState(''), [busy,setBusy]=useState(false);
   async function submit(e: React.FormEvent) { e.preventDefault(); if(demo){ setError('This preview does not store changes. Sign in to save your dates.'); return; } setBusy(true);setError(''); try { id.current ||= crypto.randomUUID(); const r=await saveDate(id.current,item.id,date?.revision || 0,value);if(r.error) throw new Error(r.error);onClose();router.refresh(); }catch(e){setError(e instanceof Error ? e.message : 'Unable to save.');}finally{setBusy(false);} }
-  return <form onSubmit={submit} className="panel spaced"><fieldset disabled={busy}><h3>{date ? 'Edit date & alerts' : 'Add an important date'}</h3><DateFields preset={item.reminder_preset} template={item.template_key} value={value} onChange={setValue}/>{error && <p className="alert error" role="alert">{error}</p>}<div className="form-actions"><button type="button" className="button secondary" onClick={onClose}>Cancel</button><button className="button primary">{busy ? 'Saving…' : 'Save date'}</button></div></fieldset></form>;
+  return <form onSubmit={submit} className="panel spaced"><fieldset disabled={busy}><h3>{date ? 'Edit date & schedule' : 'Add an important date'}</h3><DateFields preset={item.reminder_preset} template={item.template_key} value={value} onChange={setValue}/>{error && <p className="alert error" role="alert">{error}</p>}<div className="form-actions"><button type="button" className="button secondary" onClick={onClose}>Cancel</button><button className="button primary">{busy ? 'Saving…' : 'Save date'}</button></div></fieldset></form>;
 }
 function DateCard({ item, date, today, demo }: { item:ItemWithDetails;date:DateWithDetails;today:string;demo:boolean }) {
   const intent = useSearchParams();
@@ -35,11 +36,16 @@ function DateCard({ item, date, today, demo }: { item:ItemWithDetails;date:DateW
     catch(e){setError(e instanceof Error?e.message:'Unable to snooze.');}finally{setBusy(false);}
   }
   const alert = nextAlertSummary(item, date, today);
+  const payment = paymentDate(item.reminder_preset, date.kind, date.label);
+  const service = date.kind === 'service' || presetCategory(item.reminder_preset) === 'maintenance';
+  const frequency = recurrenceFrequencies.find(f => f.months === date.recurrence_months)?.label;
+  const scheduleLabel = payment ? 'Recurring payment' : service ? 'Recurring service' : 'Repeats';
   return <section className="panel spaced" id={'date-'+date.id}><div className="section-heading"><h2 className="date-title"><DateIcon kind={date.kind} label={date.label} preset={item.reminder_preset} size={18}/>{date.label}</h2><button className="text-button" onClick={()=>setEdit(!edit)}>{edit?'Close editor':'Edit date & schedule'}</button></div>
     <div className="reminder-date-summary">
       <div><span className="hint">Due date</span><p className="expiry-big">{current ? formatDate(current.due_on) : date.recurrence_months ? 'Schedule ended' : 'Completed'}</p>{current && <p className={'date-countdown' + (current.due_on <= today ? ' date-countdown-urgent' : '')}>{dateStatus({ item, date, occurrence: current }, today)}</p>}</div>
       <div><span className="hint">{alert.label}</span><p className="next-alert-value">{alert.value}</p>{current && date.next_scheduled_on && current.due_on >= today && alert.label !== 'Alerts paused' && alert.label !== 'Alerts off' && <p className="hint">Delivery follows your account timezone and queue availability.</p>}{alert.label === 'Alerts paused' && item.alert_delivery_paused && <Link className="text-button" href={(demo ? '/demo' : '') + '/settings/alerts'}>Alert Options →</Link>}</div>
     </div>
+    {date.kind !== 'warranty' && <p className="spaced"><strong>{date.recurrence_months ? scheduleLabel + ' · ' + frequency : payment ? 'One-time payment' : service ? 'One-time service' : 'Does not repeat'}</strong> · <button className="text-button" type="button" onClick={()=>setEdit(true)}>{payment ? 'Change payment schedule' : 'Change schedule'}</button></p>}
     {current?.snoozed_on && <p className="alert info spaced">Snoozed until {formatDate(current.snoozed_on)} · 9 AM in your account timezone. <button type="button" className="text-button" disabled={busy} onClick={()=>void snooze('cancel')}>Cancel snooze</button></p>}
     {current && <div className="spaced">
       <div className="date-card-actions"><button type="button" className="button secondary" disabled={busy || alertStatus(item,date)!=='enabled'} aria-expanded={snoozeOpen} aria-controls={'snooze-'+date.id} onClick={()=>setSnoozeOpen(!snoozeOpen)}>Remind me later</button>

@@ -6,8 +6,46 @@ import { dateStatus } from '@/features/items/domain';
 import { dateSchema } from '@/features/items/validation';
 import { DateFields, initialDate } from '@/components/date-fields';
 import { sampleItems } from '@/lib/demo';
+import { reminderCategories, paymentPreset } from '@/features/templates/categories';
 
 describe('alert schedules', () => {
+  it('renders recurrence and valid defaults for every category choice', () => {
+    for (const group of reminderCategories) {
+      for (const choice of group.choices) {
+        const value = { ...initialDate(choice.template, choice.focus, choice.preset), due_on: '2026-10-31' };
+        const html = renderToStaticMarkup(createElement(DateFields, { template: choice.template, preset: choice.preset, value, onChange: () => {} }));
+        expect(dateSchema.safeParse(value).success).toBe(true);
+        if (value.kind === 'warranty') {
+          expect(html).not.toContain('Recurring payment');
+          expect(html).not.toContain('Repeat frequency');
+        } else {
+          expect(html).toContain(paymentPreset(choice.preset) ? 'Recurring payment' : group.key === 'maintenance' ? 'Recurring service' : 'Repeat frequency');
+          expect(html).toContain('Monthly');
+          expect(html).toContain('Yearly');
+        }
+      }
+    }
+  });
+  it('preselects monthly streaming and previews month-end payment dates', () => {
+    const value = { ...initialDate('other', undefined, 'streaming'), due_on: '2031-01-31' };
+    const html = renderToStaticMarkup(createElement(DateFields, { template: 'other', preset: 'streaming', value, onChange: () => {} }));
+    expect(value.recurrence_months).toBe(1);
+    expect(html).toContain('value="1" selected');
+    expect(html).toContain('Upcoming dates');
+    expect(html).toContain('Feb 28, 2031');
+    expect(html).toContain('Mar 31, 2031');
+    expect(html).toContain('Amount per payment');
+    expect(html.indexOf('Next payment')).toBeLessThan(html.indexOf('Recurring payment'));
+    expect(html.indexOf('Recurring payment')).toBeLessThan(html.indexOf('Send me alerts'));
+  });
+  it('renders existing one-time and yearly streaming schedules without applying new defaults', () => {
+    for (const months of [null, 12]) {
+      const value = { ...initialDate('other'), label: 'Streaming Subscription payment', due_on: '2026-10-31', recurrence_months: months, offsets: presetOffsets('gentle', Boolean(months)) };
+      const html = renderToStaticMarkup(createElement(DateFields, { template: 'other', preset: 'streaming', value, onChange: () => {} }));
+      expect(html).toContain(`value="${months || ''}" selected`);
+      expect(value.recurrence_months).toBe(months);
+    }
+  });
   it('offers presets accepted by the scheduler for one-time and recurring dates', () => {
     for (const recurring of [false, true]) {
       for (const mode of ['gentle', 'standard'] as const) {

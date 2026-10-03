@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { reminderCategories, choiceHref, itemCategory, paymentPreset } from '@/features/templates/categories';
+import { reminderCategories, choiceHref, itemCategory, paymentPreset, defaultRecurrenceMonths, paymentDate } from '@/features/templates/categories';
 import { reminderPresets, addIntent } from '@/features/templates';
 import { safeAuthIntent } from '@/lib/auth-intent';
 
@@ -23,5 +23,22 @@ describe('reminder categories', () => {
     expect(paymentPreset('tuition')).toBe(true);
     expect(paymentPreset('medical-appointment')).toBe(false);
     expect(paymentPreset('enrollment')).toBe(false);
+  });
+  it('defaults predictable payments to monthly while leaving variable schedules optional', () => {
+    const monthly = ['electric-bill', 'water-bill', 'internet-bill', 'mobile-bill', 'rent', 'association-dues', 'streaming', 'software', 'gym'];
+    for (const group of reminderCategories) {
+      for (const choice of group.choices) {
+        expect(defaultRecurrenceMonths(choice.preset)).toBe(group.key === 'loans' || monthly.includes(choice.preset || '') ? 1 : null);
+      }
+    }
+    expect(defaultRecurrenceMonths('car-payment')).toBe(1);
+  });
+  it('labels premium payments separately from policy renewal dates', () => {
+    for (const [key, preset] of Object.entries(reminderPresets)) {
+      expect(paymentDate(key, 'other', preset.dateLabel)).toBe(paymentPreset(key));
+      expect(paymentDate(key, 'warranty', preset.dateLabel)).toBe(false);
+    }
+    expect(paymentDate('life-insurance', 'other', 'Policy renewal / review')).toBe(false);
+    expect(paymentDate(undefined, 'other', 'My appointment')).toBe(false);
   });
 });

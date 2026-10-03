@@ -31,6 +31,15 @@ export function presetCategory(preset?: string | null) {
 export function paymentPreset(preset?: string | null) {
   return ['insurance', 'bills', 'loans', 'subscriptions'].includes(presetCategory(preset) || '') || ['tuition', 'school-fees'].includes(preset || '');
 }
+/** Defaults apply only to new dates; existing schedules remain as saved. */
+export function defaultRecurrenceMonths(preset?: string | null): number | null {
+  if (presetCategory(preset) === 'loans') return 1;
+  return ['electric-bill', 'water-bill', 'internet-bill', 'mobile-bill', 'rent', 'association-dues', 'streaming', 'software', 'gym'].includes(preset || '') ? 1 : null;
+}
+export function paymentDate(preset: string | null | undefined, kind: string, label: string): boolean {
+  if (kind !== 'other' || !paymentPreset(preset)) return false;
+  return presetCategory(preset) !== 'insurance' || label === reminderPresets[preset as ReminderPreset]?.dateLabel;
+}
 export function itemCategory(item: { template_key: TemplateKey; reminder_preset?: string | null }) {
   return presetCategory(item.reminder_preset) || ({ receipt: 'purchases', car: 'vehicles', motorcycle: 'vehicles', licence: 'documents', passport: 'documents', aircon: 'maintenance', other: 'custom' }[item.template_key]);
 }
