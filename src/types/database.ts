@@ -47,6 +47,7 @@ export interface Database {
       item_coverage: Rpc<{ p_id: string }>;
       list_items: Rpc<{ p_filter?: string; p_query?: string; p_template?: string; p_cursor?: string | null; p_cursor_id?: string | null }>;
       dashboard_items: Rpc<Record<string, never>>;
+      dashboard_timeline_items: Rpc<Record<string, never>>;
       set_item_coverage: Rpc<{ p_id: string; p_revision: number; p_enabled: boolean; p_replace: string | null; p_replace_revision: number | null }, undefined>;
       create_pack_order: Rpc<{ p_user: string; p_id: string; p_product: string; p_live: boolean }>;
       pending_checkouts: Rpc<{ p_live: boolean }>;

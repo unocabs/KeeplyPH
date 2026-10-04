@@ -949,6 +949,52 @@ try {
     assert.equal((await admin.query('select status from private.reminder_idea_jobs where id=$1',[k.id])).rows[0].status,'failed');
   });
 
+  if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610050020_dashboard_timeline.sql') {
+    await test('Dashboard timeline prerequisite check is read-only and complete', async () => {
+      const rows=(await admin.query(await readFile('supabase/check-dashboard-timeline-prerequisites.sql','utf8'))).rows;
+      assert.equal(rows.length,21);
+      assert.ok(rows.every(row=>row.status.startsWith('PRESENT')));
+    });
+    await test('Dashboard timeline exposes actual eligible queue days and protects ownership', async () => {
+      const u=await user(), outsider=await user();
+      const today=(await admin.query("select (now() at time zone 'Asia/Manila')::date::text today")).rows[0].today;
+      const due=new Date(today+'T00:00:00Z');due.setUTCDate(due.getUTCDate()+14);
+      await actor(u,"select public.update_preferences('Timeline','Asia/Manila',true)");
+      const id=await newItem(u,'other',{kind:'other',label:'Monthly payment',due_on:due.toISOString().slice(0,10),reminders_enabled:true,interval_months:null,offsets:[{unit:'days',value:7},{unit:'days',value:1},{unit:'days',value:0}],recurrence_months:1});
+      await registerPush(u);
+      await registerPush(u);
+      const load=async(owner=u)=>(await actor(owner,'select public.dashboard_timeline_items() items')).rows[0].items;
+      const item=(await load()).find(item=>item.id===id);
+      const alerts=item.dates[0].scheduled_alerts;
+      assert.equal(alerts.length,6); // Three days, email + push, devices deduplicated.
+      assert.deepEqual([...new Set(alerts.map(alert=>alert.channel))].sort(),['email','push']);
+      const dates=(await admin.query("select distinct (j.scheduled_at at time zone 'Asia/Manila')::date::text as alert_day from private.notification_jobs j join public.important_dates d on d.id=j.date_id where d.item_id=$1 and j.status='pending' order by alert_day",[id])).rows.map(row=>row.alert_day);
+      assert.deepEqual([...new Set(alerts.map(alert=>alert.on))],dates);
+      assert.ok(!(await load(outsider)).some(item=>item.id===id));
+      await assert.rejects(actor(null,'select public.dashboard_timeline_items()',[],'anon'),/permission denied/);
+      await admin.query("update private.notification_jobs set status='accepted' where date_id=$1",[item.dates[0].id]);
+      assert.ok((await load()).find(item=>item.id===id).dates[0].scheduled_alerts.every(alert=>alert.channel==='push'));
+      await admin.query('update public.important_dates set reminders_enabled=false where id=$1',[item.dates[0].id]);
+      assert.equal((await load()).find(item=>item.id===id).dates[0].scheduled_alerts.length,0);
+    });
+    await test('Dashboard timeline includes six distinct nearest reminders despite multi-date items', async () => {
+      const u=await user();
+      const today=(await admin.query("select (now() at time zone 'Asia/Manila')::date::text today")).rows[0].today;
+      const ids=[];
+      for(let n=0;n<8;n++) {
+        const due=new Date(today+'T00:00:00Z');due.setUTCDate(due.getUTCDate()+n);
+        ids.push(await newItem(u,'other',{kind:'other',label:'Due date',due_on:due.toISOString().slice(0,10),reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]}));
+      }
+      // One item consumes all five rows of the original dashboard date selection.
+      for(let n=0;n<4;n++) await newDate(u,ids[0],{kind:'other',label:'Extra due date '+n,due_on:today,reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]});
+      // Hide these early reminders from the recent-six selection.
+      await admin.query("update public.items set created_at=now()-interval '1 year' where id=any($1::uuid[])",[ids]);
+      await admin.query("insert into public.items(user_id,state,product_name,template_key) select $1,'saved','Recent receipt','receipt' from generate_series(1,6)",[u]);
+      const items=(await actor(u,'select public.dashboard_timeline_items() items')).rows[0].items;
+      for(const id of ids.slice(0,6)) assert.ok(items.some(item=>item.id===id));
+      assert.ok(!items.some(item=>item.id===ids[6]));
+    });
+  }
   if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610020016_occurrence_snooze.sql') {
     await (await import('../tests/database/snooze.mjs')).testSnooze({admin,actor,user,newItem,registerPush,test});
   }

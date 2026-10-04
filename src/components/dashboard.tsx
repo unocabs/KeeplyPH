@@ -10,6 +10,8 @@ import { ItemCard, ItemDateRow, categoryLabel } from './item-ui';
 import { TemplateIcon } from './reminder-icon';
 import { AddItemButton } from './template-picker';
 import { HeroReminders } from './hero-reminders';
+import { UpcomingTimeline } from './upcoming-timeline';
+import { timelineRows } from '@/features/items/timeline';
 import styles from './dashboard.module.css';
 
 function ActiveReminderValue({ count }: { count: number }) {
@@ -46,6 +48,7 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
   const later = future.filter(row => !soon.includes(row));
   const overdueRows = rows.filter(row => row.occurrence.due_on < today).slice(0, 3);
   const allRows = dateRows(active);
+  const timeline = demo ? [] : timelineRows(active, today);
   const overdue = category === 'all' ? usage.overdue ?? allRows.filter(row => row.occurrence.due_on < today).length : rows.filter(row => row.occurrence.due_on < today).length;
   const completePreview = demo || usage.active_reminders === active.length;
   const categories = reminderCategories.filter(group => active.some(item => itemMatchesCategory(item, group.key)));
@@ -72,11 +75,11 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
   </div>;
 
   return <div className={styles.dashboard}>
-    <div className={'page-heading ' + styles.hero}>
+    {timeline.length ? <UpcomingTimeline rows={timeline} today={today} base={base} /> : <div className={'page-heading ' + styles.hero}>
       <HeroReminders variant="dashboard" />
       <div><div className="eyebrow">A LITTLE LESS TO REMEMBER</div><h1>Everything in its place.</h1><p>Welcome back, {name.split(' ')[0] || 'there'}. A little peace of mind, all together.</p></div>
       <AddItemButton demo={demo} />
-    </div>
+    </div>}
     {setup}
     <div className={styles.filters} role="group" aria-label="Filter overview by category">
       <button type="button" aria-pressed={category === 'all'} onClick={() => setCategory('all')}><LayoutDashboard size={18} aria-hidden="true" />All{completePreview && <span>{active.length}</span>}</button>

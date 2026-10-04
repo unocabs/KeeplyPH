@@ -10,7 +10,7 @@ export async function getItems(query:ItemQuery={}): Promise<ItemWithDetails[]> {
  if(error)throw new Error('Unable to load your reminders.');return (data as unknown as ItemWithDetails[]).map(item => ({ ...item, alert_delivery_paused: alertsPaused(profile) }));
 }
 export async function getDashboardItems():Promise<ItemWithDetails[]> {
- const {supabase,profile}=await requireUser();const {data,error}=await supabase.rpc('dashboard_items',{});
+ const {supabase,profile}=await requireUser();const {data,error}=await supabase.rpc('dashboard_timeline_items',{});
  if(error)throw new Error('Unable to load overview.');return (data as unknown as ItemWithDetails[]).map(item => ({ ...item, alert_delivery_paused: alertsPaused(profile) }));
 }
 export async function getItem(id: string): Promise<ItemWithDetails | null> {
