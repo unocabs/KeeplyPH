@@ -256,6 +256,16 @@ select {
 /* Car identity stays inside the established category container. */
 .reminder-icon .car-brand-logo{width:82%;height:82%;object-fit:contain}
 
+/* The shared brand keeps today's date beneath the wordmark on every surface. */
+.brand-lockup{position:relative;display:inline-flex;align-items:center;vertical-align:middle;flex-shrink:0}
+.brand-lockup .brand>span{transform:translateY(-4px)}
+.brand-today{position:absolute;left:51px;bottom:-7px;color:var(--muted);font-size:10px;font-weight:400;line-height:14px;letter-spacing:0;white-space:nowrap}
+.mobile-header .brand-logo{width:58px;height:58px}
+.mobile-header .brand-today{left:45px}
+.auth-card .brand{margin-bottom:0}
+.auth-card .brand-lockup{margin-bottom:35px}
+@media(max-width:600px){.brand-today{left:45px}}
+
 /* Floating reminders frame the homepage copy without changing its backdrop. */
 .landing-home .landing-hero{position:relative;isolation:isolate}
 @media(max-width:720px){.landing-home .landing-hero{padding-block:45px 48px}}

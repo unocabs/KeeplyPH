@@ -80,7 +80,12 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
     {setup}
     <div className={styles.filters} role="group" aria-label="Filter overview by category">
       <button type="button" aria-pressed={category === 'all'} onClick={() => setCategory('all')}><LayoutDashboard size={18} aria-hidden="true" />All{completePreview && <span>{active.length}</span>}</button>
-      {categories.map(group => <button key={group.key} type="button" aria-pressed={category === group.key} onClick={() => setCategory(group.key)}><TemplateIcon template="other" group={group.key} size={18} />{categoryLabel(group.key)}{completePreview && <span>{active.filter(item => itemMatchesCategory(item, group.key)).length}</span>}</button>)}
+      {categories.map(group => {
+        const selected = category === group.key;
+        const label = categoryLabel(group.key);
+        const count = active.filter(item => itemMatchesCategory(item, group.key)).length;
+        return <button key={group.key} type="button" className={selected ? undefined : styles.iconFilter} aria-label={label + (completePreview ? `, ${count} reminders` : '')} title={label} aria-pressed={selected} onClick={() => setCategory(group.key)}><TemplateIcon template="other" group={group.key} size={18} />{selected && label}{completePreview && <span aria-hidden="true">{count}</span>}</button>;
+      })}
     </div>
     {['maintenance', 'insurance'].includes(category) && <p className="hint space-bottom">Showing {category === 'maintenance' ? 'maintenance' : 'insurance'} dates across your reminders. Each reminder stays in its original category.</p>}
     <div className={'stat-grid ' + styles.stats}>

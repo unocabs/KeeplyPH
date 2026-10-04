@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { AddItemButton } from './template-picker';
 import { Brand } from './brand';
 import { signOut } from '@/features/account/actions';
+
 export function AppShell({ children, name, hasExtraSlots, demo = false, signedIn = false }: { children: React.ReactNode; name: string; hasExtraSlots: boolean; demo?: boolean; signedIn?: boolean }) {
   const pathname = usePathname();
   const filter = useSearchParams().get('filter');

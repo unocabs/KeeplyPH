@@ -38,6 +38,7 @@
 .filters { display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 8px 12px; padding: 4px; margin: -4px -4px 20px; }
 .filters::-webkit-scrollbar { display: none; }
 .filters button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border: 1px solid var(--dashboard-line); border-radius: 999px; white-space: nowrap; background: #ffffff80; color: #625d75; font-size: 13px; flex-shrink: 0; }
+.filters button.iconFilter { justify-content: center; min-width: 44px; padding: 8px; }
 .filters button:hover { background: #f3f0fc; }
 .filters button[aria-pressed=true] { background: #efebfc; border-color: #cfc4ef; color: #5142ad; font-weight: 600; }
 .filters button span { display: grid; place-items: center; min-width: 24px; height: 24px; padding-inline: 4px; background: #efedf5; border-radius: 999px; font-size: 12px; }
