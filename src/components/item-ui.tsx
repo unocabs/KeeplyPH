@@ -4,6 +4,7 @@ import { daysUntil, formatDate } from '@/lib/domain';
 import { templates, getReminderPreset } from '@/features/templates';
 import { itemCategory, reminderCategories } from '@/features/templates/categories';
 import { alertStatus, dateStatus, type DateRow, type ItemWithDetails, currentOccurrence } from '@/features/items/domain';
+import { dateAction } from '@/features/items/date-action';
 import { ReminderIcon, DateIcon } from './reminder-icon';
 import { AlertIndicator } from './alert-indicator';
 import styles from './dashboard.module.css';
@@ -36,10 +37,18 @@ export function ItemCard({ item, base = '', today, compact = false }: { item: It
   return <Link href={base + '/items/' + item.id} className="purchase-card"><div className="purchase-card-top"><ReminderIcon template={item.template_key} category={item.category} preset={item.reminder_preset} /><AlertIndicator status={alertStatus(item)} /></div><span className="category-label">{item.archived_at ? 'Archived' : item.state === 'draft' ? 'Unfinished' : template.label}</span><h3>{item.product_name || 'Unfinished ' + template.label}</h3><p>{item.merchant || (base === '/demo' ? item.notes : null) || templates[item.template_key].description}</p><div className="purchase-card-bottom"><span>{next ? next.date.label + ' · ' + formatDate(next.occurrence.due_on, true) : 'Add a date whenever you’re ready'}</span><ArrowRight size={15} /></div></Link>;
 }
 export function ItemDateRow({ row, today, base = '', compact = false }: { row: DateRow; today: string; base?: string; compact?: boolean }) {
-  if (compact) return <Link className={styles.row} href={base + '/items/' + row.item.id + '#date-' + row.date.id}>
-    <ReminderIcon template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} size={20} />
-    <div className={styles.rowContent}><div className={styles.rowTitle}><strong>{row.item.product_name}</strong><CategoryBadge item={row.item} /></div><span className={styles.rowPurpose}><DateIcon kind={row.date.kind} label={row.date.label} preset={row.item.reminder_preset} size={13} />{row.date.label}</span><span className={styles.rowDate}><CalendarDays size={15} aria-hidden="true" />{formatDate(row.occurrence.due_on, true)}</span></div>
-    <div className={styles.rowStatus}><AlertState item={row.item} date={row.date} /><CountdownBadge row={row} today={today} /></div><ArrowRight size={16} aria-hidden="true" />
-  </Link>;
+  if (compact) {
+    const action = dateAction(row, base);
+    return <div className={styles.row}>
+      <Link className={styles.rowMain} href={base + '/items/' + row.item.id + '#date-' + row.date.id}>
+        <ReminderIcon template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} size={20} />
+        <div className={styles.rowContent}><div className={styles.rowTitle}><strong>{row.item.product_name}</strong><CategoryBadge item={row.item} /></div><span className={styles.rowPurpose}><DateIcon kind={row.date.kind} label={row.date.label} preset={row.item.reminder_preset} size={13} />{row.date.label}</span><span className={styles.rowDate}><CalendarDays size={15} aria-hidden="true" />{formatDate(row.occurrence.due_on, true)}{alertStatus(row.item, row.date) === 'enabled' && <AlertState item={row.item} date={row.date} />}</span></div>
+      </Link>
+      <div className={styles.rowStatus}>
+        <Link className={styles.rowAction} href={action.href} aria-label={`${action.label} for ${row.item.product_name} — ${row.date.label}`}>{action.label}</Link>
+        <CountdownBadge row={row} today={today} />
+      </div>
+    </div>;
+  }
   return <Link className="expiry-row" href={base + '/items/' + row.item.id + '#date-' + row.date.id}><ReminderIcon template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} size={20} /><div className="expiry-name"><strong className="reminder-name">{row.item.product_name}<AlertIndicator status={alertStatus(row.item, row.date)} /></strong><span className="date-caption"><DateIcon kind={row.date.kind} label={row.date.label} preset={row.item.reminder_preset} size={13} />{row.date.label}</span></div><div className="expiry-date"><strong>{dateStatus(row, today)}</strong><span>{formatDate(row.occurrence.due_on, true)}</span></div><ArrowRight size={15} /></Link>;
 }
