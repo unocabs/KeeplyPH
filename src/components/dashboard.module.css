@@ -42,8 +42,10 @@
 .filters button[aria-pressed=true] { background: #efebfc; border-color: #cfc4ef; color: #5142ad; font-weight: 600; }
 .filters button span { display: grid; place-items: center; min-width: 24px; height: 24px; padding-inline: 4px; background: #efedf5; border-radius: 999px; font-size: 12px; }
 .filters button[aria-pressed=true] span { color: white; background: var(--primary); }
-.stats { gap: 16px; margin-bottom: 24px; }
-.stats :global(.stat-card) { display: block; padding: 20px; border-color: #eae5f6; box-shadow: none; border-radius: var(--dashboard-radius); background: #f8f6ff; }
+.stats { gap: 0 16px; grid-template-rows: repeat(4, auto); margin-bottom: 24px; }
+/* Shared rows keep values aligned when one card's label or description wraps. */
+.stats :global(.stat-card) { display: grid; grid-template-rows: subgrid; grid-row: span 4; row-gap: 0; min-width: 0; padding: 20px; border-color: #eae5f6; box-shadow: none; border-radius: var(--dashboard-radius); background: #f8f6ff; }
+.stats :global(.stat-card > div) { display: contents; }
 .stats :global(.stat-card:nth-child(2)) { background: #f2faf7; border-color: #e2f0e9; }
 .stats :global(.stat-card:nth-child(3)) { background: #fffbf3; border-color: #f3eadb; }
 .stats :global(.stat-card:hover) { border-color: #cfc4e9; }
@@ -110,7 +112,7 @@
   .hero :global(.eyebrow) { padding-right: 0; font-size: 10px; }
   .hero p { font-size: 14px; max-width: none; }
   .hero :global(.button) { position: static; margin-top: 16px; padding: 12px 16px; font-size: 14px; }
-  .stats { gap: 8px; }
+  .stats { column-gap: 8px; }
   .stats :global(.stat-card) { padding: 16px 12px; }
   .stats :global(.stat-card > div > span) { font-size: 12px; }
   .stats :global(.stat-card strong) { font-size: 32px; }
