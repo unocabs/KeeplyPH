@@ -167,3 +167,5 @@ Reminder categories and optional schedule end dates: apply `supabase/migrations/
 ## Web push notifications
 
 See [web push deployment and device verification](docs/web-push.md). Run the read-only prerequisite check before applying missing migrations in the documented order, then apply migration 014 before deploying. Push requires stable VAPID keys and explicit device opt-in; no paid messaging provider is required. Keep delivery disabled until staging device checks succeed. Local database tests do not apply migrations to hosted Supabase.
+
+Car brand selection: see [deployment prerequisites and verification](docs/car-brands.md). Run the read-only car-brand check, apply only missing migrations in the documented order, and apply migration 019 before deploying this version. Local database tests do not update hosted Supabase.

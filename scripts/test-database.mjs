@@ -1067,6 +1067,58 @@ try {
     assert.equal(presets.length,1); assert.equal(presets[0].id,id);
   });
 
+  await test('Car brands persist across detail, list, dashboard, old-client saves and dates', async () => {
+    const owner = await user(), id = randomUUID();
+    await actor(owner, "select public.create_item_draft($1,'car')", [id]);
+    await actor(owner, "select public.save_item_with_date($1,1,'Kia Stonic','',null,null,'kia')", [id]);
+    const detail = async () => (await actor(owner, 'select public.item_detail($1) item', [id])).rows[0].item;
+    assert.equal((await detail()).car_brand, 'kia');
+    assert.equal((await actor(owner, "select public.list_items('all') items")).rows[0].items[0].car_brand, 'kia');
+    assert.equal((await actor(owner, 'select public.dashboard_items() items')).rows[0].items[0].car_brand, 'kia');
+    await actor(owner, "select public.save_item_with_date($1,2,'Kia Stonic updated','')", [id]);
+    assert.equal((await detail()).car_brand, 'kia', 'omitted brand preserves selection');
+    await actor(owner, 'select public.save_important_date($1,$2,0,$3)', [randomUUID(),id,{kind:'registration',label:'Registration',due_on:'2032-01-31',reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]}]);
+    assert.equal((await detail()).car_brand, 'kia', 'adding a date inherits vehicle identity');
+    await actor(owner, "select public.save_item_with_date($1,3,'Kia Stonic updated','',null,null,'toyota')", [id]);
+    assert.equal((await detail()).car_brand, 'toyota');
+    await actor(owner, "select public.save_item_with_date($1,4,'Kia Stonic updated','',null,null,'')", [id]);
+    assert.equal((await detail()).car_brand, null);
+    assert.equal((await detail()).dates.length, 1);
+  });
+  await test('Car brand writes enforce ownership, supported identifiers and atomic revision checks', async () => {
+    const owner = await user(), outsider = await user(), id = randomUUID();
+    await actor(owner, "select public.create_item_draft($1,'car')", [id]);
+    await actor(owner, "select public.save_item_with_date($1,1,'Original','',null,null,'kia')", [id]);
+    await assert.rejects(actor(outsider, "select public.save_item_with_date($1,2,'Tampered','',null,null,'toyota')", [id]), /NOT_FOUND/);
+    await assert.rejects(actor(owner, "select public.save_item_with_date($1,1,'Stale','',null,null,'toyota')", [id]), /CONFLICT/);
+    await assert.rejects(actor(owner, "select public.save_item_with_date($1,2,'Invalid','',null,null,'fake-brand')", [id]), /valid_car_brand/);
+    const item = (await actor(owner, 'select public.item_detail($1) item',[id])).rows[0].item;
+    assert.equal(item.product_name, 'Original'); assert.equal(item.car_brand, 'kia'); assert.equal(item.revision, 2);
+    await assert.rejects(actor(owner, "update public.items set car_brand='toyota' where id=$1", [id]), /permission denied/);
+    await assert.rejects(actor(null, "select public.save_item_with_date($1,2,'Anon','',null,null,'toyota')", [id], 'anon'), /permission denied/);
+  });
+  await test('Car loans and legacy payments support brands; other types reject and clear them', async () => {
+    const owner = await user();
+    for (const preset of ['car-loan','car-payment']) {
+      const id = randomUUID(); await actor(owner, "select public.create_item_draft($1,'other')", [id]);
+      const date = {kind:'other',label:'Monthly payment',due_on:'2032-01-31',reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]};
+      await actor(owner, "select public.save_item_with_date($1,1,'Car loan','',$2,$3,'kia')", [id,date,preset]);
+      assert.equal((await actor(owner,'select public.item_detail($1) item',[id])).rows[0].item.car_brand,'kia');
+      await actor(owner, "select public.save_item_with_date($1,2,'Personal loan','',null,'personal-loan')", [id]);
+      assert.equal((await actor(owner,'select public.item_detail($1) item',[id])).rows[0].item.car_brand,null);
+      await assert.rejects(actor(owner, "select public.save_item_with_date($1,3,'Personal loan','',null,null,'kia')", [id]), /INVALID_INPUT/);
+    }
+    const id = randomUUID(); await actor(owner, "select public.create_item_draft($1,'motorcycle')", [id]);
+    await assert.rejects(actor(owner, "select public.save_item_with_date($1,1,'Motorcycle','',null,null,'kia')", [id]), /INVALID_INPUT/);
+    const car = randomUUID(); await actor(owner, "select public.create_item_draft($1,'car')", [car]);
+    await actor(owner, "select public.save_item_with_date($1,1,'Unlisted car','',null,null,'other')", [car]);
+    assert.equal((await actor(owner,'select public.item_detail($1) item',[car])).rows[0].item.car_brand,'other');
+  });
+  await test('Car-brand prerequisite check recognizes the complete schema without rerunning it', async () => {
+    const checks=(await admin.query(await readFile('supabase/check-car-brand-prerequisites.sql','utf8'))).rows;
+    assert.equal(checks.length,20); for(const check of checks) assert.match(check.status,/PRESENT/,check.migration);
+  });
+
   console.log('\n' + passed + ' database integration tests passed.');
 } finally {
   if (admin) await admin.end();

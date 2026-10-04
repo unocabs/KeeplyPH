@@ -14,7 +14,7 @@ with checks(sequence,migration,ready) as (values
  (10,'202609260010_feedback.sql',to_regclass('private.feedback') is not null),
  (11,'202609280011_recurring_dates.sql',to_regprocedure('public.advance_recurring_dates()') is not null),
  (12,'202610010011_variable_slot_packs.sql',exists(select 1 from information_schema.columns where table_schema='private' and table_name='reminder_packs' and column_name='slot_count')),
- (13,'202610010012_reminder_categories.sql',to_regprocedure('public.save_item_with_date(uuid,integer,text,text,jsonb,text)') is not null),
+ (13,'202610010012_reminder_categories.sql',(to_regprocedure('public.save_item_with_date(uuid,integer,text,text,jsonb,text)') is not null or to_regprocedure('public.save_item_with_date(uuid,integer,text,text,jsonb,text,text)') is not null)),
  (14,'202610010013_sms_alerts.sql',to_regprocedure('public.prepare_sms(uuid,uuid)') is not null and to_regclass('private.sms_jobs') is not null),
  (15,'202610020014_web_push.sql',to_regprocedure('public.register_push_subscription(text,text,text)') is not null and to_regclass('private.push_jobs') is not null
  and exists(select 1 from information_schema.columns where table_schema='public' and table_name='profiles' and column_name='push_subscription_count')),

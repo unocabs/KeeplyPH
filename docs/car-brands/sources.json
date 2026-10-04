@@ -1,0 +1,347 @@
+[
+  {
+    "id": "abarth",
+    "label": "Abarth",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/abarth.png"
+  },
+  {
+    "id": "aito",
+    "label": "Aito",
+    "source": "https://brandlogos.sgp1.digitaloceanspaces.com/svg/cbi/aito.svg"
+  },
+  {
+    "id": "alfa-romeo",
+    "label": "Alfa Romeo",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/alfa-romeo-logo.svg"
+  },
+  {
+    "id": "aston-martin",
+    "label": "Aston Martin",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/aston-martin-logo.svg"
+  },
+  {
+    "id": "audi",
+    "label": "Audi",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/audi-logo.svg"
+  },
+  {
+    "id": "baic",
+    "label": "BAIC",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/baic-logo.svg"
+  },
+  {
+    "id": "bentley",
+    "label": "Bentley",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/bentley.png"
+  },
+  {
+    "id": "bestune",
+    "label": "Bestune",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/bestune.png"
+  },
+  {
+    "id": "bmw",
+    "label": "BMW",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/bmw-logo.svg"
+  },
+  {
+    "id": "byd",
+    "label": "BYD",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/byd-logo.svg"
+  },
+  {
+    "id": "changan",
+    "label": "Changan",
+    "source": "https://www.carlogos.org/car-logos/changan-logo.png"
+  },
+  {
+    "id": "chery",
+    "label": "Chery",
+    "source": "https://www.carlogos.org/car-logos/chery-logo.png"
+  },
+  {
+    "id": "chevrolet",
+    "label": "Chevrolet",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/chevrolet.png"
+  },
+  {
+    "id": "deepal",
+    "label": "Deepal",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/deepal-logo.svg"
+  },
+  {
+    "id": "denza",
+    "label": "Denza",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/denza-logo.svg"
+  },
+  {
+    "id": "dfsk",
+    "label": "DFSK",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/dfsk-logo.svg"
+  },
+  {
+    "id": "dodge",
+    "label": "Dodge",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/dodge-logo.png"
+  },
+  {
+    "id": "dongfeng",
+    "label": "Dongfeng",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/dongfeng.png"
+  },
+  {
+    "id": "faw",
+    "label": "FAW",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/faw.png"
+  },
+  {
+    "id": "ferrari",
+    "label": "Ferrari",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/ferrari-logo.svg"
+  },
+  {
+    "id": "fiat",
+    "label": "Fiat",
+    "source": "https://www.carlogos.org/car-logos/fiat-logo.png"
+  },
+  {
+    "id": "ford",
+    "label": "Ford",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/ford-logo.png"
+  },
+  {
+    "id": "foton",
+    "label": "Foton",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/foton.png"
+  },
+  {
+    "id": "gac",
+    "label": "GAC",
+    "source": "https://www.carlogos.org/car-logos/gac-logo.png"
+  },
+  {
+    "id": "gaz",
+    "label": "GAZ",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/gaz.png"
+  },
+  {
+    "id": "geely",
+    "label": "Geely",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/geely-logo.svg"
+  },
+  {
+    "id": "gwm",
+    "label": "GWM",
+    "source": "https://www.gwm.com.my/content/dam/gwm/pages/my/en/mediacenter/logos/logo-4.png"
+  },
+  {
+    "id": "haima",
+    "label": "Haima",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/haima.png"
+  },
+  {
+    "id": "honda",
+    "label": "Honda",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/honda.png"
+  },
+  {
+    "id": "hongqi",
+    "label": "Hongqi",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/hongqi-logo.png"
+  },
+  {
+    "id": "hyundai",
+    "label": "Hyundai",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/hyundai-logo.svg"
+  },
+  {
+    "id": "isuzu",
+    "label": "Isuzu",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/isuzu-logo.svg"
+  },
+  {
+    "id": "jac",
+    "label": "JAC",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/jac-logo.png"
+  },
+  {
+    "id": "jaecoo",
+    "label": "Jaecoo",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/jaecoo-logo.svg"
+  },
+  {
+    "id": "jaguar",
+    "label": "Jaguar",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/jaguar-logo.svg"
+  },
+  {
+    "id": "jeep",
+    "label": "Jeep",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/jeep-logo.svg"
+  },
+  {
+    "id": "jetour",
+    "label": "Jetour",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/jetour-logo.svg"
+  },
+  {
+    "id": "kaicene",
+    "label": "Kaicene",
+    "source": "https://thzpihfbglhksxsimprj.supabase.co/storage/v1/object/public/brand-logos/1760267311877-dplhxwtsdpm.png"
+  },
+  {
+    "id": "kaiyi",
+    "label": "Kaiyi",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/6/63/Kaiyi_logo.png"
+  },
+  {
+    "id": "kia",
+    "label": "Kia",
+    "source": "https://raw.githubusercontent.com/cardog-ai/icons/master/core/optimized/Kia%20Logo.svg"
+  },
+  {
+    "id": "lamborghini",
+    "label": "Lamborghini",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/lamborghini-logo.png"
+  },
+  {
+    "id": "land-rover",
+    "label": "Land Rover",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/land-rover-logo.svg"
+  },
+  {
+    "id": "lexus",
+    "label": "Lexus",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/lexus.png"
+  },
+  {
+    "id": "li-auto",
+    "label": "Li Auto",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/li-auto.png"
+  },
+  {
+    "id": "lotus",
+    "label": "Lotus",
+    "source": "https://raw.githubusercontent.com/cardog-ai/icons/master/core/optimized/Lotus%20Logo.svg"
+  },
+  {
+    "id": "lynk-co",
+    "label": "Lynk & Co",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/lynk-and-co.png"
+  },
+  {
+    "id": "mahindra",
+    "label": "Mahindra",
+    "source": "https://www.carlogos.org/car-logos/mahindra-logo.png"
+  },
+  {
+    "id": "maserati",
+    "label": "Maserati",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/maserati.png"
+  },
+  {
+    "id": "mazda",
+    "label": "Mazda",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/mazda-logo.svg"
+  },
+  {
+    "id": "mercedes-benz",
+    "label": "Mercedes-Benz",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/mercedes-benz-logo.svg"
+  },
+  {
+    "id": "mg",
+    "label": "MG",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/mg-logo.png"
+  },
+  {
+    "id": "mini",
+    "label": "MINI",
+    "source": "https://www.carlogos.org/car-logos/mini-logo.png"
+  },
+  {
+    "id": "mitsubishi",
+    "label": "Mitsubishi",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/mitsubishi-logo.svg"
+  },
+  {
+    "id": "nissan",
+    "label": "Nissan",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/nissan-logo.svg"
+  },
+  {
+    "id": "omoda",
+    "label": "Omoda",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Omoda_wordmark.svg"
+  },
+  {
+    "id": "porsche",
+    "label": "Porsche",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/porsche.png"
+  },
+  {
+    "id": "radar",
+    "label": "Radar",
+    "source": "https://upload.wikimedia.org/wikipedia/commons/1/12/Radar_Auto_logo.png"
+  },
+  {
+    "id": "ram",
+    "label": "RAM",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/ram-logo.svg"
+  },
+  {
+    "id": "rolls-royce",
+    "label": "Rolls-Royce",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/rolls-royce-logo.svg"
+  },
+  {
+    "id": "subaru",
+    "label": "Subaru",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/subaru.png"
+  },
+  {
+    "id": "suzuki",
+    "label": "Suzuki",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/suzuki-logo.svg"
+  },
+  {
+    "id": "tata",
+    "label": "Tata",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/tata.png"
+  },
+  {
+    "id": "tesla",
+    "label": "Tesla",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/tesla-logo.svg"
+  },
+  {
+    "id": "toyota",
+    "label": "Toyota",
+    "source": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/toyota-logo.svg"
+  },
+  {
+    "id": "vinfast",
+    "label": "VinFast",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/vinfast.png"
+  },
+  {
+    "id": "volvo",
+    "label": "Volvo",
+    "source": "https://www.carlogos.org/car-logos/volvo-logo.png"
+  },
+  {
+    "id": "voyah",
+    "label": "Voyah",
+    "source": "https://brandlogos.sgp1.digitaloceanspaces.com/svg/cbi/voyah.svg"
+  },
+  {
+    "id": "xpeng",
+    "label": "XPeng",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/xpeng.png"
+  },
+  {
+    "id": "zeekr",
+    "label": "Zeekr",
+    "source": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/zeekr.png"
+  }
+]

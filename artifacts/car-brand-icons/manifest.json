@@ -1,0 +1,1047 @@
+{
+  "brands": [
+    {
+      "brand": "Abarth",
+      "slug": "abarth",
+      "original": "originals/abarth.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/abarth.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/Abarth-logo-1920x1080.png",
+      "png": "png/abarth.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 156239,
+        "transparent_pixels": 105905
+      }
+    },
+    {
+      "brand": "Aito",
+      "slug": "aito",
+      "original": "originals/aito.svg",
+      "source_url": "https://brandlogos.sgp1.digitaloceanspaces.com/svg/cbi/aito.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/aito.png",
+      "preparation": "Removed only the full-canvas white SVG background path; brand artwork and colors retained.",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 45138,
+        "transparent_pixels": 217006
+      }
+    },
+    {
+      "brand": "Alfa Romeo",
+      "slug": "alfa-romeo",
+      "original": "originals/alfa-romeo.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/alfa-romeo-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/alfa-romeo.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 159586,
+        "transparent_pixels": 102558
+      }
+    },
+    {
+      "brand": "Aston Martin",
+      "slug": "aston-martin",
+      "original": "originals/aston-martin.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/aston-martin-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/aston-martin.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 22723,
+        "transparent_pixels": 239421
+      }
+    },
+    {
+      "brand": "Audi",
+      "slug": "audi",
+      "original": "originals/audi.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/audi-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/audi.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 31339,
+        "transparent_pixels": 230805
+      }
+    },
+    {
+      "brand": "BAIC",
+      "slug": "baic",
+      "original": "originals/baic.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/baic-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/baic.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 66204,
+        "transparent_pixels": 195940
+      }
+    },
+    {
+      "brand": "Bentley",
+      "slug": "bentley",
+      "original": "originals/bentley.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/bentley.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/car-logos/bentley-logo-2002-640.png",
+      "png": "png/bentley.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 46956,
+        "transparent_pixels": 215188
+      }
+    },
+    {
+      "brand": "Bestune",
+      "slug": "bestune",
+      "original": "originals/bestune.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/bestune.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/car-logos/bestune-logo-2400x1200-show.png",
+      "png": "png/bestune.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 37735,
+        "transparent_pixels": 224409
+      }
+    },
+    {
+      "brand": "BMW",
+      "slug": "bmw",
+      "original": "originals/bmw.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/bmw-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/bmw.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 159595,
+        "transparent_pixels": 102549
+      }
+    },
+    {
+      "brand": "BYD",
+      "slug": "byd",
+      "original": "originals/byd.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/byd-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/byd.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 18247,
+        "transparent_pixels": 243897
+      }
+    },
+    {
+      "brand": "Changan",
+      "slug": "changan",
+      "original": "originals/changan.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/changan.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/Changan-logo-2010-2560x1440.png",
+      "png": "png/changan.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 30941,
+        "transparent_pixels": 231203
+      },
+      "note": "Collected source variant may be a legacy identity; not certified as the latest Philippine-market logo."
+    },
+    {
+      "brand": "Chery",
+      "slug": "chery",
+      "original": "originals/chery.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/chery.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/Chery-logo-2013-3840x2160.png",
+      "png": "png/chery.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 55939,
+        "transparent_pixels": 206205
+      },
+      "note": "Collected source variant may be a legacy identity; not certified as the latest Philippine-market logo."
+    },
+    {
+      "brand": "Chevrolet",
+      "slug": "chevrolet",
+      "original": "originals/chevrolet.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/chevrolet.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/Chevrolet-logo-2013-2560x1440.png",
+      "png": "png/chevrolet.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 56435,
+        "transparent_pixels": 205709
+      }
+    },
+    {
+      "brand": "Deepal",
+      "slug": "deepal",
+      "original": "originals/deepal.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/deepal-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/deepal.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 81042,
+        "transparent_pixels": 181102
+      }
+    },
+    {
+      "brand": "Denza",
+      "slug": "denza",
+      "original": "originals/denza.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/denza-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/denza.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 158244,
+        "transparent_pixels": 103900
+      }
+    },
+    {
+      "brand": "DFSK",
+      "slug": "dfsk",
+      "original": "originals/dfsk.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/dfsk-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/dfsk.png",
+      "preparation": "Removed only the full-canvas white SVG background path; brand artwork and colors retained.",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 159399,
+        "transparent_pixels": 102745
+      }
+    },
+    {
+      "brand": "Dodge",
+      "slug": "dodge",
+      "original": "originals/dodge.png",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/dodge-logo.png",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/dodge.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 13499,
+        "transparent_pixels": 248645
+      }
+    },
+    {
+      "brand": "Dongfeng",
+      "slug": "dongfeng",
+      "original": "originals/dongfeng.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/dongfeng.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/Dongfeng-logo-2560x1440.png",
+      "png": "png/dongfeng.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 20535,
+        "transparent_pixels": 241609
+      }
+    },
+    {
+      "brand": "FAW",
+      "slug": "faw",
+      "original": "originals/faw.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/faw.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/FAW-logo-1920x1080.png",
+      "png": "png/faw.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 106482,
+        "transparent_pixels": 155662
+      }
+    },
+    {
+      "brand": "Ferrari",
+      "slug": "ferrari",
+      "original": "originals/ferrari.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/ferrari-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/ferrari.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 107003,
+        "transparent_pixels": 155141
+      }
+    },
+    {
+      "brand": "Fiat",
+      "slug": "fiat",
+      "original": "originals/fiat.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/fiat-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/fiat.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 160155,
+        "transparent_pixels": 101989
+      },
+      "note": "Collected source variant may be a legacy identity; not certified as the latest Philippine-market logo."
+    },
+    {
+      "brand": "Ford",
+      "slug": "ford",
+      "original": "originals/ford.png",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/ford-logo.png",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/ford.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 61276,
+        "transparent_pixels": 200868
+      }
+    },
+    {
+      "brand": "Foton",
+      "slug": "foton",
+      "original": "originals/foton.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/foton.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/Foton-logo-1920x1080.png",
+      "png": "png/foton.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 20657,
+        "transparent_pixels": 241487
+      }
+    },
+    {
+      "brand": "GAC",
+      "slug": "gac",
+      "original": "originals/gac.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/gac-group.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/GAC-Group-logo-2560x1440.png",
+      "png": "png/gac.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 22464,
+        "transparent_pixels": 239680
+      }
+    },
+    {
+      "brand": "GAZ",
+      "slug": "gaz",
+      "original": "originals/gaz.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/gaz.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/GAZ-logo-2015-1920x1080.png",
+      "png": "png/gaz.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 77623,
+        "transparent_pixels": 184521
+      }
+    },
+    {
+      "brand": "Geely",
+      "slug": "geely",
+      "original": "originals/geely.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/geely-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/geely.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 49222,
+        "transparent_pixels": 212922
+      }
+    },
+    {
+      "brand": "GWM",
+      "slug": "gwm",
+      "original": "originals/gwm.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/great-wall.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/Great-Wall-logo-2007-2048x2048.png",
+      "png": "png/gwm.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 88179,
+        "transparent_pixels": 173965
+      },
+      "note": "Collected source variant may be a legacy identity; not certified as the latest Philippine-market logo."
+    },
+    {
+      "brand": "Haima",
+      "slug": "haima",
+      "original": "originals/haima.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/haima.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/Haima-logo-3840x2160.png",
+      "png": "png/haima.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 42963,
+        "transparent_pixels": 219181
+      }
+    },
+    {
+      "brand": "Honda",
+      "slug": "honda",
+      "original": "originals/honda.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/honda.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/car-logos/honda-logo-2000-full-640.png",
+      "png": "png/honda.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 46623,
+        "transparent_pixels": 215521
+      }
+    },
+    {
+      "brand": "Hongqi",
+      "slug": "hongqi",
+      "original": "originals/hongqi.png",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/hongqi-logo.png",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/hongqi.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 96171,
+        "transparent_pixels": 165973
+      }
+    },
+    {
+      "brand": "Hyundai",
+      "slug": "hyundai",
+      "original": "originals/hyundai.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/hyundai-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/hyundai.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 48869,
+        "transparent_pixels": 213275
+      }
+    },
+    {
+      "brand": "Isuzu",
+      "slug": "isuzu",
+      "original": "originals/isuzu.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/isuzu-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/isuzu.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 20021,
+        "transparent_pixels": 242123
+      }
+    },
+    {
+      "brand": "JAC",
+      "slug": "jac",
+      "original": "originals/jac.png",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/jac-logo.png",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/jac.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 62402,
+        "transparent_pixels": 199742
+      }
+    },
+    {
+      "brand": "Jaecoo",
+      "slug": "jaecoo",
+      "original": "originals/jaecoo.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/jaecoo-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/jaecoo.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 13333,
+        "transparent_pixels": 248811
+      }
+    },
+    {
+      "brand": "Jaguar",
+      "slug": "jaguar",
+      "original": "originals/jaguar.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/jaguar-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/jaguar.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 18779,
+        "transparent_pixels": 243365
+      }
+    },
+    {
+      "brand": "Jeep",
+      "slug": "jeep",
+      "original": "originals/jeep.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/jeep-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/jeep.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 36294,
+        "transparent_pixels": 225850
+      }
+    },
+    {
+      "brand": "Jetour",
+      "slug": "jetour",
+      "original": "originals/jetour.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/jetour-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/jetour.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 11187,
+        "transparent_pixels": 250957
+      }
+    },
+    {
+      "brand": "Kaicene",
+      "slug": "kaicene",
+      "original": "originals/kaicene.png",
+      "source_url": "https://thzpihfbglhksxsimprj.supabase.co/storage/v1/object/public/brand-logos/1760267311877-dplhxwtsdpm.png",
+      "collection": "https://www.chinaevpro.com/brands/kaicene",
+      "png": "png/kaicene.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 113245,
+        "transparent_pixels": 148899
+      }
+    },
+    {
+      "brand": "Kaiyi",
+      "slug": "kaiyi",
+      "original": "originals/kaiyi.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Kaiyi_logo.png",
+      "collection": "https://commons.wikimedia.org/wiki/File:Kaiyi_logo.png",
+      "png": "png/kaiyi.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 10066,
+        "transparent_pixels": 252078
+      }
+    },
+    {
+      "brand": "Kia",
+      "slug": "kia",
+      "original": "originals/kia.svg",
+      "source_url": "https://raw.githubusercontent.com/cardog-ai/icons/master/core/optimized/Kia%20Logo.svg",
+      "collection": "https://github.com/cardog-ai/icons",
+      "upstream_url": "https://www.carlogos.org/logo/Kia-logo-2560x1440.png",
+      "png": "png/kia.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 25611,
+        "transparent_pixels": 236533
+      }
+    },
+    {
+      "brand": "Lamborghini",
+      "slug": "lamborghini",
+      "original": "originals/lamborghini.png",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/lamborghini-logo.png",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/lamborghini.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 134074,
+        "transparent_pixels": 128070
+      }
+    },
+    {
+      "brand": "Land Rover",
+      "slug": "land-rover",
+      "original": "originals/land-rover.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/land-rover-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/land-rover.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 84381,
+        "transparent_pixels": 177763
+      }
+    },
+    {
+      "brand": "Lexus",
+      "slug": "lexus",
+      "original": "originals/lexus.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/lexus.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/Lexus-logo-1988-1920x1080.png",
+      "png": "png/lexus.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 24398,
+        "transparent_pixels": 237746
+      }
+    },
+    {
+      "brand": "Li Auto",
+      "slug": "li-auto",
+      "original": "originals/li-auto.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/li-auto.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/car-logos/lixiang-logo-1050x300-show.png",
+      "png": "png/li-auto.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 23501,
+        "transparent_pixels": 238643
+      }
+    },
+    {
+      "brand": "Lotus",
+      "slug": "lotus",
+      "original": "originals/lotus.svg",
+      "source_url": "https://raw.githubusercontent.com/cardog-ai/icons/master/core/optimized/Lotus%20Logo.svg",
+      "collection": "https://github.com/cardog-ai/icons",
+      "upstream_url": "https://www.carlogos.org/logo/Lotus-logo-2019-1800x1800.png",
+      "png": "png/lotus.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 159204,
+        "transparent_pixels": 102940
+      }
+    },
+    {
+      "brand": "Lynk & Co",
+      "slug": "lynk-co",
+      "original": "originals/lynk-co.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/lynk-and-co.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/car-logos/lynkco-logo-2150x400-show.png",
+      "png": "png/lynk-co.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 10445,
+        "transparent_pixels": 251699
+      }
+    },
+    {
+      "brand": "Mahindra",
+      "slug": "mahindra",
+      "original": "originals/mahindra.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/mahindra.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/Mahindra-logo-2560x1440.png",
+      "png": "png/mahindra.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 32405,
+        "transparent_pixels": 229739
+      },
+      "note": "Collected source variant may be a legacy identity; not certified as the latest Philippine-market logo."
+    },
+    {
+      "brand": "Maserati",
+      "slug": "maserati",
+      "original": "originals/maserati.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/maserati.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/car-logos/maserati-logo-2020-640.png",
+      "png": "png/maserati.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 13070,
+        "transparent_pixels": 249074
+      }
+    },
+    {
+      "brand": "Mazda",
+      "slug": "mazda",
+      "original": "originals/mazda.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/mazda-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/mazda.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 46307,
+        "transparent_pixels": 215837
+      }
+    },
+    {
+      "brand": "Mercedes-Benz",
+      "slug": "mercedes-benz",
+      "original": "originals/mercedes-benz.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/mercedes-benz-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/mercedes-benz.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 70391,
+        "transparent_pixels": 191753
+      }
+    },
+    {
+      "brand": "MG",
+      "slug": "mg",
+      "original": "originals/mg.png",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/mg-logo.png",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/mg.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 166656,
+        "transparent_pixels": 95488
+      }
+    },
+    {
+      "brand": "MINI",
+      "slug": "mini",
+      "original": "originals/mini.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/mini-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/mini.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 48018,
+        "transparent_pixels": 214126
+      },
+      "note": "Collected source variant may be a legacy identity; not certified as the latest Philippine-market logo."
+    },
+    {
+      "brand": "Mitsubishi",
+      "slug": "mitsubishi",
+      "original": "originals/mitsubishi.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/mitsubishi-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/mitsubishi.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 59785,
+        "transparent_pixels": 202359
+      }
+    },
+    {
+      "brand": "Nissan",
+      "slug": "nissan",
+      "original": "originals/nissan.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/nissan-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/nissan.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 33681,
+        "transparent_pixels": 228463
+      }
+    },
+    {
+      "brand": "Omoda",
+      "slug": "omoda",
+      "original": "originals/omoda.svg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Omoda_wordmark.svg",
+      "collection": "https://commons.wikimedia.org/wiki/File:Omoda_wordmark.svg",
+      "upstream_url": "/Users/filip.popranec/Develop/car-logos-dataset/local-logos/omoda.png",
+      "png": "png/omoda.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 13289,
+        "transparent_pixels": 248855
+      }
+    },
+    {
+      "brand": "Porsche",
+      "slug": "porsche",
+      "original": "originals/porsche.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/porsche.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/car-logos/porsche-logo-2014-full-640.png",
+      "png": "png/porsche.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 29599,
+        "transparent_pixels": 232545
+      }
+    },
+    {
+      "brand": "Radar",
+      "slug": "radar",
+      "original": "originals/radar.png",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/1/12/Radar_Auto_logo.png",
+      "collection": "https://commons.wikimedia.org/wiki/File:Radar_Auto_logo.png",
+      "png": "png/radar.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 36263,
+        "transparent_pixels": 225881
+      }
+    },
+    {
+      "brand": "RAM",
+      "slug": "ram",
+      "original": "originals/ram.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/ram-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/ram.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 166785,
+        "transparent_pixels": 95359
+      }
+    },
+    {
+      "brand": "Rolls-Royce",
+      "slug": "rolls-royce",
+      "original": "originals/rolls-royce.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/rolls-royce-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/rolls-royce.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 112079,
+        "transparent_pixels": 150065
+      }
+    },
+    {
+      "brand": "Subaru",
+      "slug": "subaru",
+      "original": "originals/subaru.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/subaru.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/car-logos/subaru-logo-2019-640.png",
+      "png": "png/subaru.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 67022,
+        "transparent_pixels": 195122
+      }
+    },
+    {
+      "brand": "Suzuki",
+      "slug": "suzuki",
+      "original": "originals/suzuki.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/suzuki-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/suzuki.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 105953,
+        "transparent_pixels": 156191
+      }
+    },
+    {
+      "brand": "Tata",
+      "slug": "tata",
+      "original": "originals/tata.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/tata.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/logo/Tata-logo-2000-2560x1440.png",
+      "png": "png/tata.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 82384,
+        "transparent_pixels": 179760
+      }
+    },
+    {
+      "brand": "Tesla",
+      "slug": "tesla",
+      "original": "originals/tesla.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/tesla-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/tesla.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 54330,
+        "transparent_pixels": 207814
+      }
+    },
+    {
+      "brand": "Toyota",
+      "slug": "toyota",
+      "original": "originals/toyota.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/toyota-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/toyota.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 54725,
+        "transparent_pixels": 207419
+      }
+    },
+    {
+      "brand": "VinFast",
+      "slug": "vinfast",
+      "original": "originals/vinfast.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/vinfast.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/car-logos/vinfast-logo-900x850-show.png",
+      "png": "png/vinfast.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 45063,
+        "transparent_pixels": 217081
+      }
+    },
+    {
+      "brand": "Volvo",
+      "slug": "volvo",
+      "original": "originals/volvo.svg",
+      "source_url": "https://raw.githubusercontent.com/vehiclespecs/brand-logos/main/volvo-logo.svg",
+      "collection": "https://github.com/vehiclespecs/brand-logos",
+      "upstream_url": null,
+      "png": "png/volvo.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 131153,
+        "transparent_pixels": 130991
+      },
+      "note": "Collected source variant may be a legacy identity; not certified as the latest Philippine-market logo."
+    },
+    {
+      "brand": "Voyah",
+      "slug": "voyah",
+      "original": "originals/voyah.svg",
+      "source_url": "https://brandlogos.sgp1.digitaloceanspaces.com/svg/cbi/voyah.svg",
+      "collection": "https://superdevpro.com/brands/voyah",
+      "png": "png/voyah.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 33393,
+        "transparent_pixels": 228751
+      }
+    },
+    {
+      "brand": "XPeng",
+      "slug": "xpeng",
+      "original": "originals/xpeng.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/xpeng.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/car-logos/xpeng-logo-2021-2700x1100-show.png",
+      "png": "png/xpeng.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 16324,
+        "transparent_pixels": 245820
+      }
+    },
+    {
+      "brand": "Zeekr",
+      "slug": "zeekr",
+      "original": "originals/zeekr.png",
+      "source_url": "https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/original/zeekr.png",
+      "collection": "https://github.com/filippofilip95/car-logos-dataset",
+      "upstream_url": "https://www.carlogos.org/car-logos/zeekr-logo-2300x700-show.png",
+      "png": "png/zeekr.png",
+      "validation": {
+        "width": 512,
+        "height": 512,
+        "visible_pixels": 11678,
+        "transparent_pixels": 250466
+      }
+    }
+  ],
+  "missing": [],
+  "collected_date": "2026-10-04",
+  "description": "69 brand logos from the preceding Philippine brand list, with transparent 512x512 PNG icons and selected source files."
+}

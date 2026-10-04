@@ -65,7 +65,7 @@ export function sampleItems(today = todayIn()): ItemWithDetails[] {
       merchant: sample.merchant || null, price_minor: sample.price ?? null, currency: 'PHP',
       category: template === 'receipt' ? (id === ids.headphones ? 'electronics' : 'appliances') : null,
       notes: sample.note, revision: 1, created_at: timestamp, updated_at: timestamp,
-      template_key: template, reminder_preset: sample.preset || null, template_version: 1,
+      template_key: template, car_brand: template === 'car' ? 'toyota' : null, reminder_preset: sample.preset || null, template_version: 1,
       archived_at: null, coverage: covered ? 'covered' : 'off', dates: [], documents: [],
     };
     function addDate(kind: DateKind, label: string, offset: number, options: { recurrence?: number; amount?: number; history?: boolean } = {}) {

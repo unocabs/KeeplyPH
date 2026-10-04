@@ -1,0 +1,85 @@
+import type { TemplateKey } from '@/features/templates';
+
+// Stable identifiers are also validated in the car-brand migration.
+export const carBrands = [
+  { id: 'abarth', label: "Abarth", logo: '/car-brands/abarth.webp' },
+  { id: 'aito', label: "Aito", logo: '/car-brands/aito.webp' },
+  { id: 'alfa-romeo', label: "Alfa Romeo", logo: '/car-brands/alfa-romeo.webp' },
+  { id: 'aston-martin', label: "Aston Martin", logo: '/car-brands/aston-martin.webp' },
+  { id: 'audi', label: "Audi", logo: '/car-brands/audi.webp' },
+  { id: 'baic', label: "BAIC", logo: '/car-brands/baic.webp' },
+  { id: 'bentley', label: "Bentley", logo: '/car-brands/bentley.webp' },
+  { id: 'bestune', label: "Bestune", logo: '/car-brands/bestune.webp' },
+  { id: 'bmw', label: "BMW", logo: '/car-brands/bmw.webp' },
+  { id: 'byd', label: "BYD", logo: '/car-brands/byd.webp' },
+  { id: 'changan', label: "Changan", logo: '/car-brands/changan.webp' },
+  { id: 'chery', label: "Chery", logo: '/car-brands/chery.webp' },
+  { id: 'chevrolet', label: "Chevrolet", logo: '/car-brands/chevrolet.webp' },
+  { id: 'deepal', label: "Deepal", logo: '/car-brands/deepal.webp' },
+  { id: 'denza', label: "Denza", logo: '/car-brands/denza.webp' },
+  { id: 'dfsk', label: "DFSK", logo: '/car-brands/dfsk.webp' },
+  { id: 'dodge', label: "Dodge", logo: '/car-brands/dodge.webp' },
+  { id: 'dongfeng', label: "Dongfeng", logo: '/car-brands/dongfeng.webp' },
+  { id: 'faw', label: "FAW", logo: '/car-brands/faw.webp' },
+  { id: 'ferrari', label: "Ferrari", logo: '/car-brands/ferrari.webp' },
+  { id: 'fiat', label: "Fiat", logo: '/car-brands/fiat.webp' },
+  { id: 'ford', label: "Ford", logo: '/car-brands/ford.webp' },
+  { id: 'foton', label: "Foton", logo: '/car-brands/foton.webp' },
+  { id: 'gac', label: "GAC", logo: '/car-brands/gac.webp' },
+  { id: 'gaz', label: "GAZ", logo: '/car-brands/gaz.webp' },
+  { id: 'geely', label: "Geely", logo: '/car-brands/geely.webp' },
+  { id: 'gwm', label: "GWM", logo: '/car-brands/gwm.webp' },
+  { id: 'haima', label: "Haima", logo: '/car-brands/haima.webp' },
+  { id: 'honda', label: "Honda", logo: '/car-brands/honda.webp' },
+  { id: 'hongqi', label: "Hongqi", logo: '/car-brands/hongqi.webp' },
+  { id: 'hyundai', label: "Hyundai", logo: '/car-brands/hyundai.webp' },
+  { id: 'isuzu', label: "Isuzu", logo: '/car-brands/isuzu.webp' },
+  { id: 'jac', label: "JAC", logo: '/car-brands/jac.webp' },
+  { id: 'jaecoo', label: "Jaecoo", logo: '/car-brands/jaecoo.webp' },
+  { id: 'jaguar', label: "Jaguar", logo: '/car-brands/jaguar.webp' },
+  { id: 'jeep', label: "Jeep", logo: '/car-brands/jeep.webp' },
+  { id: 'jetour', label: "Jetour", logo: '/car-brands/jetour.webp' },
+  { id: 'kaicene', label: "Kaicene", logo: '/car-brands/kaicene.webp' },
+  { id: 'kaiyi', label: "Kaiyi", logo: '/car-brands/kaiyi.webp' },
+  { id: 'kia', label: "Kia", logo: '/car-brands/kia.webp' },
+  { id: 'lamborghini', label: "Lamborghini", logo: '/car-brands/lamborghini.webp' },
+  { id: 'land-rover', label: "Land Rover", logo: '/car-brands/land-rover.webp' },
+  { id: 'lexus', label: "Lexus", logo: '/car-brands/lexus.webp' },
+  { id: 'li-auto', label: "Li Auto", logo: '/car-brands/li-auto.webp' },
+  { id: 'lotus', label: "Lotus", logo: '/car-brands/lotus.webp' },
+  { id: 'lynk-co', label: "Lynk & Co", logo: '/car-brands/lynk-co.webp' },
+  { id: 'mahindra', label: "Mahindra", logo: '/car-brands/mahindra.webp' },
+  { id: 'maserati', label: "Maserati", logo: '/car-brands/maserati.webp' },
+  { id: 'mazda', label: "Mazda", logo: '/car-brands/mazda.webp' },
+  { id: 'mercedes-benz', label: "Mercedes-Benz", logo: '/car-brands/mercedes-benz.webp' },
+  { id: 'mg', label: "MG", logo: '/car-brands/mg.webp' },
+  { id: 'mini', label: "MINI", logo: '/car-brands/mini.webp' },
+  { id: 'mitsubishi', label: "Mitsubishi", logo: '/car-brands/mitsubishi.webp' },
+  { id: 'nissan', label: "Nissan", logo: '/car-brands/nissan.webp' },
+  { id: 'omoda', label: "Omoda", logo: '/car-brands/omoda.webp' },
+  { id: 'porsche', label: "Porsche", logo: '/car-brands/porsche.webp' },
+  { id: 'radar', label: "Radar", logo: '/car-brands/radar.webp' },
+  { id: 'ram', label: "RAM", logo: '/car-brands/ram.webp' },
+  { id: 'rolls-royce', label: "Rolls-Royce", logo: '/car-brands/rolls-royce.webp' },
+  { id: 'subaru', label: "Subaru", logo: '/car-brands/subaru.webp' },
+  { id: 'suzuki', label: "Suzuki", logo: '/car-brands/suzuki.webp' },
+  { id: 'tata', label: "Tata", logo: '/car-brands/tata.webp' },
+  { id: 'tesla', label: "Tesla", logo: '/car-brands/tesla.webp' },
+  { id: 'toyota', label: "Toyota", logo: '/car-brands/toyota.webp' },
+  { id: 'vinfast', label: "VinFast", logo: '/car-brands/vinfast.webp' },
+  { id: 'volvo', label: "Volvo", logo: '/car-brands/volvo.webp' },
+  { id: 'voyah', label: "Voyah", logo: '/car-brands/voyah.webp' },
+  { id: 'xpeng', label: "XPeng", logo: '/car-brands/xpeng.webp' },
+  { id: 'zeekr', label: "Zeekr", logo: '/car-brands/zeekr.webp' },
+ ] as const;
+
+export type CarBrandId = typeof carBrands[number]['id'] | 'other';
+export function getCarBrand(value?: string | null) {
+  return carBrands.find(brand => brand.id === value);
+}
+export function isCarBrand(value: string): value is CarBrandId {
+  return value === 'other' || Boolean(getCarBrand(value));
+}
+export function supportsCarBrand(template: TemplateKey, preset?: string | null) {
+  return template === 'car' || (template === 'other' && ['car-loan', 'car-payment'].includes(preset || ''));
+}

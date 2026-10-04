@@ -252,3 +252,6 @@ select {
 .push-options{padding-top:24px;border-top:1px solid var(--line)}.push-options h3{display:flex;align-items:center;gap:8px}.push-install ol{padding-left:24px;margin:16px 0}.push-install li{padding-left:4px;margin:12px 0;line-height:1.6}.push-install p{margin-top:12px}.push-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.push-actions .button{white-space:normal}@media(max-width:600px){.push-actions{align-items:stretch;flex-direction:column}}
 
 .date-card-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+
+/* Car identity stays inside the established category container. */
+.reminder-icon .car-brand-logo{width:82%;height:82%;object-fit:contain}
