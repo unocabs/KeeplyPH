@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowRight, Bell, CalendarDays, ReceiptText, ShieldCheck, LayoutDashboard } from 'lucide-react';
 import { type Usage } from '@/lib/domain';
-import { dateRows, comingUp, isActiveReminder, type ItemWithDetails } from '@/features/items/domain';
-import { itemCategory, reminderCategories } from '@/features/templates/categories';
+import { dateRows, comingUp, itemsForCategory, itemMatchesCategory, isActiveReminder, type ItemWithDetails } from '@/features/items/domain';
+import { reminderCategories } from '@/features/templates/categories';
 import { ItemCard, ItemDateRow, categoryLabel } from './item-ui';
 import { TemplateIcon } from './reminder-icon';
 import { AddItemButton } from './template-picker';
@@ -37,7 +37,7 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
   const [sort, setSort] = useState('recent');
   const base = demo ? '/demo' : '';
   const active = items.filter(isActiveReminder);
-  const matched = active.filter(item => category === 'all' || itemCategory(item) === category);
+  const matched = itemsForCategory(active, category);
   const rows = dateRows(matched);
   const soon = comingUp(rows, today);
   const future = rows.filter(row => row.occurrence.due_on >= today).slice(0, 5);
@@ -47,7 +47,8 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
   const allRows = dateRows(active);
   const overdue = category === 'all' ? usage.overdue ?? allRows.filter(row => row.occurrence.due_on < today).length : rows.filter(row => row.occurrence.due_on < today).length;
   const completePreview = demo || usage.active_reminders === active.length;
-  const categories = reminderCategories.filter(group => active.some(item => itemCategory(item) === group.key));
+  const categories = reminderCategories.filter(group => active.some(item => itemMatchesCategory(item, group.key)));
+  const browseQuery = category === 'all' ? '' : '&template=' + encodeURIComponent('category:' + category);
   const nextDue = (item: ItemWithDetails) => dateRows([item])[0]?.occurrence.due_on ?? '9999-12-31';
   const sorted = [...matched].sort((a, b) => sort === 'due' ? nextDue(a).localeCompare(nextDue(b)) || b.created_at.localeCompare(a.created_at) : b.created_at.localeCompare(a.created_at));
 
@@ -77,16 +78,17 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
     {setup}
     <div className={styles.filters} role="group" aria-label="Filter overview by category">
       <button type="button" aria-pressed={category === 'all'} onClick={() => setCategory('all')}><LayoutDashboard size={18} aria-hidden="true" />All{completePreview && <span>{active.length}</span>}</button>
-      {categories.map(group => <button key={group.key} type="button" aria-pressed={category === group.key} onClick={() => setCategory(group.key)}><TemplateIcon template="other" group={group.key} size={18} />{categoryLabel(group.key)}{completePreview && <span>{active.filter(item => itemCategory(item) === group.key).length}</span>}</button>)}
+      {categories.map(group => <button key={group.key} type="button" aria-pressed={category === group.key} onClick={() => setCategory(group.key)}><TemplateIcon template="other" group={group.key} size={18} />{categoryLabel(group.key)}{completePreview && <span>{active.filter(item => itemMatchesCategory(item, group.key)).length}</span>}</button>)}
     </div>
+    {['maintenance', 'insurance'].includes(category) && <p className="hint space-bottom">Showing {category === 'maintenance' ? 'maintenance' : 'insurance'} dates across your reminders. Each reminder stays in its original category.</p>}
     <div className={'stat-grid ' + styles.stats}>
       <Link href={base + '/items'} className="stat-card"><span className="stat-icon violet"><ReceiptText size={21} /></span><div><span>Active reminders</span><ActiveReminderValue count={usage.active_reminders ?? active.length} /><p>Your current reminders</p></div></Link>
       <Link href={base + '/items?filter=reminders'} className="stat-card"><span className="stat-icon green"><Bell size={21} /></span><div><span>Alert coverage</span><strong>{usage.reminders}<small> / {usage.slot_limit ?? 3}</small></strong><p>Alert slots in use</p></div></Link>
       <Link href={base + '/items?filter=upcoming'} className="stat-card"><span className="stat-icon amber"><CalendarDays size={21} /></span><div><span>Coming up</span><strong>{usage.upcoming ?? comingUp(allRows, today).length}</strong><p>Next 30 days</p></div></Link>
     </div>
     <section className={'panel ' + styles.dates} aria-labelledby="upcoming-heading">
-      <div className="section-heading"><div><h2 id="upcoming-heading">Upcoming</h2><p className="section-description">Important dates, with room to plan ahead.</p></div><Link href={base + '/items?filter=dates'}>View all <ArrowRight size={15} /></Link></div>
-      {overdue > 0 && <div className="alert error spaced"><Link href={base + '/items?filter=overdue'}>{overdue} overdue or expired {overdue === 1 ? 'date' : 'dates'} — review →</Link></div>}
+      <div className="section-heading"><div><h2 id="upcoming-heading">Upcoming</h2><p className="section-description">Important dates, with room to plan ahead.</p></div><Link href={base + '/items?filter=dates' + browseQuery}>View all <ArrowRight size={15} /></Link></div>
+      {overdue > 0 && <div className="alert error spaced"><Link href={base + '/items?filter=overdue' + browseQuery}>{overdue} overdue or expired {overdue === 1 ? 'date' : 'dates'} — review →</Link></div>}
       {overdueRows.length > 0 && <div className={styles.overdueDates}><h3>Needs attention</h3><div className={styles.rows}>{overdueRows.map(row => <ItemDateRow key={row.date.id} row={row} today={today} base={base} compact />)}</div></div>}
       <div className={styles.rows}>{near.map(row => <ItemDateRow key={row.date.id} row={row} today={today} base={base} compact />)}</div>
       {!near.length && <p className={styles.empty}>Nothing due in the next 30 days{category !== 'all' ? ' in this category' : ''}.</p>}
@@ -97,7 +99,7 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
       <div className={'section-heading ' + styles.libraryHeading}><div><h2 id="all-reminders-heading">All reminders</h2><p className="section-description">Your recently added reminders.</p></div><label className={styles.sort}><span className="sr-only">Sort overview reminders</span><select value={sort} onChange={event => setSort(event.target.value)}><option value="recent">Recently added</option><option value="due">Due soon</option></select></label></div>
       <div className={'purchase-grid ' + styles.cards}>{sorted.slice(0, 6).map(item => <ItemCard key={item.id} item={item} base={base} today={today} compact />)}</div>
       {!matched.length && <p className={styles.empty}>{active.length ? 'No reminders in this category.' : 'Add your first reminder. A name is a good start.'}</p>}
-      <div className={styles.browse}><p>{completePreview && matched.length <= 6 ? 'Everything in this overview, ready when you need it.' : 'This overview shows a selection of your reminders.'}</p><Link href={base + '/items'}>Browse all reminders <ArrowRight size={15} /></Link></div>
+      <div className={styles.browse}><p>{completePreview && matched.length <= 6 ? 'Everything in this overview, ready when you need it.' : 'This overview shows a selection of your reminders.'}</p><Link href={base + '/items' + (browseQuery ? '?' + browseQuery.slice(1) : '')}>Browse all reminders <ArrowRight size={15} /></Link></div>
     </section>
     <p className="privacy-note"><ShieldCheck size={15} />Your reminders and files are private to your account.</p>
   </div>;

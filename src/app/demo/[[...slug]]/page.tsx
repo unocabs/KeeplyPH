@@ -16,7 +16,7 @@ import { SettingsForm } from '@/components/settings-form';
 import { Billing } from '@/components/billing';
 import { notFound } from 'next/navigation';
 export const metadata = { title: 'Sample preview', robots: { index: false, follow: false } };
-export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string }> }) {
+export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string; template?: string }> }) {
   const { slug = [] } = await params;
   const query = await searchParams;
   const purchases = samplePurchases();
@@ -26,10 +26,10 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   if (slug[0] === 'add') {
     if(!slug[1]) content = <><h1>What do you want to keep?</h1><TemplateChoices demo /></>;
     else if(!isTemplate(slug[1])) notFound();
-    else content = slug[1] === 'receipt' ? <PurchaseForm demo initialCategory={categories.includes(query.category as Category) ? query.category as Category : undefined} /> : <ItemForm template={slug[1]} preset={query.preset} focus={query.focus} renewalDate={query.renewalDate} demo />;
+    else content = slug[1] === 'receipt' ? <PurchaseForm demo initialCategory={categories.includes(query.category as Category) ? query.category as Category : undefined} /> : <ItemForm template={slug[1]} vehicles={items.filter(item => item.template_key === slug[1])} preset={query.preset} focus={query.focus} renewalDate={query.renewalDate} demo />;
   }
   else if(slug[0] === 'items') {
-    if(!slug[1]) content = <ItemList key={query.filter} items={items} today={today} initialFilter={query.filter} demo />;
+    if(!slug[1]) content = <ItemList key={JSON.stringify(query)} serverQuery={{template:query.template}} items={items} today={today} initialFilter={query.filter} demo />;
     else { const item = items.find(i=>i.id===slug[1]); if(!item)notFound();content = slug[2] === 'edit' ? <ItemForm template={item.template_key} item={item} demo/> : <ItemDetail item={item} today={today} demo/>; }
   }
   else if (slug[0] === 'purchases' && !slug[1]) content = <PurchaseList key={query.filter} purchases={purchases} today={today} initialFilter={query.filter} demo />;

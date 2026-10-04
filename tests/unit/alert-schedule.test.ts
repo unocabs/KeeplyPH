@@ -15,11 +15,12 @@ describe('alert schedules', () => {
         const value = { ...initialDate(choice.template, choice.focus, choice.preset), due_on: '2026-10-31' };
         const html = renderToStaticMarkup(createElement(DateFields, { template: choice.template, preset: choice.preset, value, onChange: () => {} }));
         expect(dateSchema.safeParse(value).success).toBe(true);
+        expect(value.reminders_enabled).toBe(true);
         if (value.kind === 'warranty') {
           expect(html).not.toContain('Recurring payment');
           expect(html).not.toContain('Repeat frequency');
         } else {
-          expect(html).toContain(paymentPreset(choice.preset) ? 'Recurring payment' : group.key === 'maintenance' ? 'Recurring service' : 'Repeat frequency');
+          expect(html).toContain(paymentPreset(choice.preset) ? 'Recurring payment' : (value.kind === 'service' || group.key === 'maintenance') ? 'Recurring service' : 'Repeat frequency');
           expect(html).toContain('Monthly');
           expect(html).toContain('Yearly');
         }

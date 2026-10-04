@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { reminderCategories, choiceHref, itemCategory, paymentPreset, defaultRecurrenceMonths, paymentDate } from '@/features/templates/categories';
+import { reminderCategories, choiceHref, itemCategory, paymentPreset, defaultRecurrenceMonths, paymentDate, matchingReminderChoices } from '@/features/templates/categories';
 import { reminderPresets, addIntent } from '@/features/templates';
 import { safeAuthIntent } from '@/lib/auth-intent';
 
@@ -41,4 +41,28 @@ describe('reminder categories', () => {
     expect(paymentDate('life-insurance', 'other', 'Policy renewal / review')).toBe(false);
     expect(paymentDate(undefined, 'other', 'My appointment')).toBe(false);
   });
+});
+
+// These paths must reach the same vehicle flow without changing its saved home.
+describe('vehicle discovery', () => {
+  it('offers the same maintenance and renewal links from either relevant section', () => {
+    for (const template of ['car', 'motorcycle']) {
+      const vehicle = reminderCategories.find(group => group.key === 'vehicles')!;
+      for (const [category, focus] of [['maintenance', 'service'], ['insurance', 'insurance']]) {
+        const cross = reminderCategories.find(group => group.key === category)!;
+        const original = vehicle.choices.find(choice => choice.template === template && choice.focus === focus)!;
+        expect(choiceHref(cross.choices.find(choice => choice.template === template && choice.focus === focus)!)).toBe(choiceHref(original));
+        expect(itemCategory({ template_key: template as 'car' | 'motorcycle' })).toBe('vehicles');
+      }
+    }
+  });
+});
+
+it('searches all sections and returns each destination once for PMS and car service', () => {
+  for (const search of ['PMS', 'car service', 'oil change']) {
+    const results = matchingReminderChoices(search, 'documents').flatMap(group => group.choices);
+    expect(results.some(choice => choice.template === 'car' && choice.focus === 'service')).toBe(true);
+    expect(new Set(results.map(choiceHref)).size).toBe(results.length);
+  }
+  expect(matchingReminderChoices('', 'maintenance').every(group => group.key === 'maintenance')).toBe(true);
 });

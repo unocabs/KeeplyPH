@@ -1019,6 +1019,54 @@ try {
     });
   }
 
+  await test('Vehicle activity filters use the matching date for overdue/upcoming and retain ownership', async () => {
+    const owner = await user(), outsider = await user(), id = randomUUID();
+    const today = (await admin.query("select (now() at time zone 'Asia/Manila')::date::text t")).rows[0].t;
+    const add = days => new Date(Date.parse(today + 'T00:00:00Z') + days * 86400000).toISOString().slice(0, 10);
+    const date = (kind, days) => ({ kind, label: kind, due_on: add(days), reminders_enabled: false, interval_months: null, offsets: [{ unit: 'days', value: 7 }] });
+    await actor(owner, "select public.create_item_draft($1,'car')", [id]);
+    await actor(owner, 'select public.save_item_with_date($1,1,$2,$3,$4)', [id, 'Shared vehicle', '', date('registration', -2)]);
+    const serviceId = randomUUID();
+    await actor(owner, 'select public.save_important_date($1,$2,0,$3)', [serviceId, id, date('service', 7)]);
+    await actor(owner, 'select public.save_important_date($1,$2,0,$3)', [randomUUID(), id, date('insurance', 60)]);
+    const list = async (filter, category, userId = owner) => (await actor(userId, "select public.list_items($1,'',$2) items", [filter, 'category:' + category])).rows[0].items;
+    assert.equal((await list('all', 'vehicles')).length, 1);
+    assert.equal((await list('all', 'maintenance')).length, 1);
+    assert.equal((await list('upcoming', 'maintenance')).length, 1);
+    assert.equal((await list('overdue', 'maintenance')).length, 0, 'overdue registration must not make PMS overdue');
+    assert.equal((await list('upcoming', 'insurance')).length, 0, 'upcoming PMS must not make insurance upcoming');
+    assert.equal((await list('dates', 'insurance')).length, 1);
+    const irrelevantSearch = (await actor(owner, "select public.list_items('dates','registration','category:maintenance') items")).rows[0].items;
+    assert.equal(irrelevantSearch.length,0,'activity searches must not match unrelated date labels');
+    assert.equal((await list('all', 'maintenance', outsider)).length, 0);
+    await assert.rejects(actor(outsider, 'select public.save_important_date($1,$2,0,$3)', [randomUUID(), id, date('service', 10)]), /NOT_FOUND/);
+    const row = (await actor(owner, 'select public.item_detail($1) item', [id])).rows[0].item;
+    assert.equal(row.template_key, 'car'); assert.equal(row.dates.length, 3);
+    const revision = (await admin.query('select revision from public.important_dates where id=$1',[serviceId])).rows[0].revision;
+    await actor(owner, 'select public.complete_date($1,$2,$3,null)', [serviceId, revision, today]);
+    assert.equal((await list('upcoming', 'maintenance')).length, 0);
+    assert.equal((await list('dates', 'maintenance')).length, 0);
+    assert.equal((await list('all', 'maintenance')).length, 1, 'service history stays discoverable');
+  });
+  await test('Cross-category filters paginate before rendering and retain canonical maintenance presets', async () => {
+    const owner = await user();
+    await admin.query("insert into public.items(user_id,template_key,state,product_name) select $1,'car','saved','Vehicle ' || n from generate_series(1,28) n", [owner]);
+    const ids = (await admin.query('select id from public.items where user_id=$1 order by id', [owner])).rows;
+    for (const {id} of ids) {
+      await actor(owner, 'select public.save_important_date($1,$2,0,$3)', [randomUUID(), id, {kind:'service',label:'PMS',due_on:'2032-01-31',reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]}]);
+    }
+    const page = (await actor(owner, "select public.list_items('dates','','category:maintenance') items")).rows[0].items;
+    assert.equal(page.length, 25);
+    const last = page.at(-1);
+    const next = (await actor(owner, "select public.list_items('dates','','category:maintenance',$1,$2) items", [last.created_at,last.id])).rows[0].items;
+    assert.equal(next.length,3); assert.equal(new Set([...page,...next].map(item=>item.id)).size,28);
+    const id = randomUUID();
+    await actor(owner, "select public.create_item_draft($1,'other')", [id]);
+    await actor(owner, "select public.save_item_with_date($1,1,'Appliance service','',$2,'appliance-service')", [id, {kind:'other',label:'Appliance Maintenance date',due_on:'2032-01-31',reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]}]);
+    const presets = (await actor(owner, "select public.list_items('dates','Appliance','category:maintenance') items")).rows[0].items;
+    assert.equal(presets.length,1); assert.equal(presets[0].id,id);
+  });
+
   console.log('\n' + passed + ' database integration tests passed.');
 } finally {
   if (admin) await admin.end();

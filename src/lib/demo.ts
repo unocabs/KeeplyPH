@@ -35,5 +35,14 @@ export function sampleItems(): import('@/features/items/domain').ItemWithDetails
     ['cccccccc-cccc-4ccc-8ccc-cccccccccccc','aircon','Bedroom aircon','service','Aircon cleaning',-3],
   ] as const;
   for(const [id,template,name,kind,label,days] of examples){const due=new Date(Date.parse(today+'T00:00:00Z')+days*86400000).toISOString().slice(0,10);items.push({...purchases[0],id,product_name:name,merchant:null,price_minor:null,category:null,purchased_on:null,template_key:template,template_version:1,archived_at:null,notes:'Illustrative sample only. Your own reminders are private.',documents:[],dates:[{id,item_id:id,user_id:'sample',kind,label,starts_on:null,serial_number:null,notes:null,reminders_enabled:template==='car',reminders_enabled_at:null,reminder_disabled_reason:null,interval_months:template==='aircon'?6:null,revision:1,created_at:'',updated_at:'',offsets:template==='passport'?[12,6,3].map(value=>({unit:'months',value})):[30,7,1].map(value=>({unit:'days',value})),occurrences:[{id,date_id:id,user_id:'sample',cycle:1,due_on:due,status:'open',completed_on:null,created_at:''}]}]});}
+  const car = items.find(item => item.template_key === 'car')!;
+  for (const [id, kind, label, days] of [
+    ['eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', 'service', 'Maintenance / PMS', 14],
+    ['ffffffff-ffff-4fff-8fff-ffffffffffff', 'insurance', 'Insurance renewal', 45],
+  ] as const) {
+    const due = new Date(Date.parse(today + 'T00:00:00Z') + days * 86400000).toISOString().slice(0, 10);
+    car.dates.push({ ...car.dates[0], id, kind, label, reminders_enabled: kind === 'service', offsets: [{unit:'days',value:7}],
+      occurrences: [{ ...car.dates[0].occurrences[0], id, date_id: id, due_on: due }] });
+  }
   return items.map((item,index)=>({...item,coverage: [0,1,4].includes(index)?'covered':'off'}));
 }

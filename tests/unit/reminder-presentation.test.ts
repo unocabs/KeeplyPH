@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { sampleItems } from '@/lib/demo';
-import { alertStatus, isActiveReminder } from '@/features/items/domain';
+import { alertStatus, isActiveReminder, itemsForCategory } from '@/features/items/domain';
 
 describe('reminder and alert presentation', () => {
   it('keeps overdue records active, but excludes archives and drafts', () => {
@@ -32,4 +32,17 @@ describe('reminder and alert presentation', () => {
     expect(alertStatus(multipleDates, offDate)).toBe('off');
     expect(alertStatus(multipleDates, item.dates[0])).toBe('enabled');
   });
+});
+
+it('filters individual vehicle dates without moving the vehicle or altering its dates', () => {
+  const sample = sampleItems().find(item => item.template_key === 'car')!;
+  const car = { ...sample, dates: sample.dates.filter(date => date.kind === 'registration') };
+  const maintenance = { ...car.dates[0], id: 'service', kind: 'service' as const, label: 'PMS' };
+  const insurance = { ...car.dates[0], id: 'insurance', kind: 'insurance' as const, label: 'Insurance renewal' };
+  const item = { ...car, dates: [...car.dates, maintenance, insurance] };
+  expect(itemsForCategory([item], 'maintenance')[0].dates.map(date => date.kind)).toEqual(['service']);
+  expect(itemsForCategory([item], 'insurance')[0].dates.map(date => date.kind)).toEqual(['insurance']);
+  expect(itemsForCategory([item], 'vehicles')[0].dates).toHaveLength(3);
+  expect(itemsForCategory([car], 'maintenance')).toHaveLength(0);
+  expect(item.dates).toHaveLength(3);
 });

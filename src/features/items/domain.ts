@@ -1,3 +1,4 @@
+import { itemCategory } from '@/features/templates/categories';
 import type { RecurrenceFields } from './recurrence';
 import { daysUntil, type Purchase, type Document } from '@/lib/domain';
 import type { TemplateKey, DateKind, Offset } from '@/features/templates';
@@ -31,4 +32,20 @@ export function alertStatus(item: ItemWithDetails, date?: DateWithDetails): Aler
   if (item.coverage === 'paused_capacity') return 'paused';
   if (item.coverage !== 'covered') return 'off';
   return item.alert_delivery_paused ? 'paused' : 'enabled';
+}
+
+/** Activity views select dates, while each item keeps its original category. */
+export function dateMatchesCategory(item: ItemWithDetails, date: DateWithDetails, category: string) {
+  if (category === 'all') return true;
+  if (category === 'maintenance') return date.kind === 'service' || itemCategory(item) === 'maintenance';
+  if (category === 'insurance') return date.kind === 'insurance' || itemCategory(item) === 'insurance';
+  return itemCategory(item) === category;
+}
+export function itemMatchesCategory(item: ItemWithDetails, category: string) {
+  return category === 'all' || itemCategory(item) === category || item.dates.some(date => dateMatchesCategory(item, date, category));
+}
+export function itemsForCategory(items: ItemWithDetails[], category: string): ItemWithDetails[] {
+  return items.filter(item => itemMatchesCategory(item, category)).map(item => category === 'all' ? item : ({
+    ...item, dates: item.dates.filter(date => dateMatchesCategory(item, date, category)),
+  }));
 }

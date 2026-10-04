@@ -5,8 +5,8 @@ import type { ItemWithDetails } from '@/features/items/domain';
 import type { Usage } from '@/lib/domain';
 import { ReminderIcon } from './reminder-icon';
 
-export function ReminderSaved({ id, usage, coverage, deliveryPaused, created, ideasEnabled }: {
-  id: string; usage: Usage; coverage: ItemWithDetails['coverage']; deliveryPaused?: boolean; created: boolean; ideasEnabled?: boolean;
+export function ReminderSaved({ id, usage, coverage, deliveryPaused, created, ideasEnabled, dateAlertsEnabled }: {
+  id: string; usage: Usage; coverage: ItemWithDetails['coverage']; deliveryPaused?: boolean; created: boolean; ideasEnabled?: boolean; dateAlertsEnabled?: boolean;
 }) {
   const { slots, used, available } = capabilities(usage);
   const first = created && usage.purchases === 1;
@@ -17,6 +17,7 @@ export function ReminderSaved({ id, usage, coverage, deliveryPaused, created, id
       <p className="reminder-saved-usage">You’re using <strong>{used} of {slots}{slots === 3 ? ' free' : ''} alert slots</strong>. {full
         ? 'All your alert slots are in use.'
         : <>You have <strong>{available} {available === 1 ? 'slot' : 'slots'} available</strong> for more reminders.</>}</p>
+      {dateAlertsEnabled === false && coverage !== 'off' && <p className="hint">Alerts are off for the date you just added. Your other dates keep their alert settings.</p>}
       {coverage === 'off' && <p className="hint">Alerts are off for this reminder. Saving it does not use an alert slot.</p>}
       {coverage === 'paused_capacity' && <p className="hint">This reminder is saved, but it needs an available alert slot before it can send alerts.</p>}
       {coverage === 'covered' && deliveryPaused && <p className="hint">An alert slot is assigned to this reminder, but delivery is paused by your account settings. Check Alert Options.</p>}

@@ -33,7 +33,7 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
   const [error, setError] = useState('');
   const [savedPreview, setSavedPreview] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [alerts, setAlerts] = useState(Boolean(purchase?.warranty?.reminders_enabled));
+  const [alerts, setAlerts] = useState(purchase?.warranty?.reminders_enabled ?? true);
   const [hasWarranty, setHasWarranty] = useState(Boolean(purchase?.warranty) || warrantyFocus);
   const [starts, setStarts] = useState(purchase?.warranty?.starts_on || purchase?.purchased_on || todayIn());
   const [expires, setExpires] = useState(purchase?.warranty?.expires_on || '');

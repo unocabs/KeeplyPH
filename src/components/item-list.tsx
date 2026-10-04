@@ -1,18 +1,18 @@
 'use client';
-import { reminderCategories, itemCategory } from '@/features/templates/categories';
+import { reminderCategories } from '@/features/templates/categories';
 import Link from 'next/link';
 import type { ItemQuery } from '@/features/items/queries';
 import { useState } from 'react';
 import { templates, getReminderPreset } from '@/features/templates';
-import { dateRows, comingUp, type ItemWithDetails } from '@/features/items/domain';
+import { dateRows, comingUp, itemsForCategory, type ItemWithDetails } from '@/features/items/domain';
 import { ItemCard, ItemDateRow } from './item-ui';
 import { AddItemButton } from './template-picker';
 import { ListFilterFields } from './list-filter-fields';
 export function ItemList({ items, today, initialFilter = 'all', demo = false, serverQuery }: { items: ItemWithDetails[]; today: string; initialFilter?: string; demo?: boolean; serverQuery?: ItemQuery }) {
-  const [query,setQuery] = useState(''), [type,setType] = useState('all'), [filter,setFilter] = useState(initialFilter);
+  const [query,setQuery] = useState(''), [type,setType] = useState(serverQuery?.template || 'all'), [filter,setFilter] = useState(initialFilter);
   if(!demo) return <PagedItems items={items} today={today} query={serverQuery||{filter:initialFilter}}/>;
   const base = demo ? '/demo' : '';
-  const matched = items.filter(i => (type === 'all' || 'category:' + itemCategory(i) === type) && [i.product_name, (getReminderPreset(i.template_key, i.reminder_preset || undefined) || templates[i.template_key]).label, ...i.dates.flatMap(d => [d.label, ...d.occurrences.map(o => o.due_on)])].join(' ').toLowerCase().includes(query.toLowerCase()));
+  const matched = itemsForCategory(items, type.startsWith('category:') ? type.slice(9) : 'all').filter(i => [i.product_name, (getReminderPreset(i.template_key, i.reminder_preset || undefined) || templates[i.template_key]).label, ...i.dates.flatMap(d => [d.label, ...d.occurrences.map(o => o.due_on)])].join(' ').toLowerCase().includes(query.toLowerCase()));
   const rows = dateRows(matched);
   const shownDates = filter === 'upcoming' ? comingUp(rows,today) : filter === 'overdue' ? rows.filter(r => r.occurrence.due_on < today) : filter === 'reminders' ? rows.filter(r => r.item.coverage==='covered' && r.date.reminders_enabled && r.occurrence.due_on >= today) : rows;
   const dateView = ['upcoming','overdue','dates'].includes(filter);
@@ -21,11 +21,11 @@ export function ItemList({ items, today, initialFilter = 'all', demo = false, se
 }
 
 function PagedItems({items,today,query}:{items:ItemWithDetails[];today:string;query:ItemQuery}) {
- const filter=query.filter||'all'; const rows=dateRows(items);const dates=['dates','upcoming','overdue'].includes(filter);
+ const filter=query.filter||'all'; const visible=itemsForCategory(items,query.template?.startsWith('category:') ? query.template.slice(9) : 'all'); const rows=dateRows(visible);const dates=['dates','upcoming','overdue'].includes(filter);
  const shown=filter==='upcoming'?comingUp(rows,today):filter==='overdue'?rows.filter(r=>r.occurrence.due_on<today):rows;
  const next=new URLSearchParams({filter,q:query.q||'',template:query.template||'all'});const last=items.at(-1);if(last){next.set('cursor',last.created_at);next.set('cursorId',last.id);}
  return <><div className="page-heading"><div><h1>{filter === 'all' ? 'Active Reminders' : filter === 'archived' ? 'Archived Reminders' : filter === 'drafts' ? 'Unfinished Reminders' : 'Reminders'}</h1><p>Your active reminders, with alerts you choose.</p></div><AddItemButton/></div>
  <form action="/items" className="filter-panel compact-list-filters"><label className="filter-search"><span className="filter-search-label">Search</span><input name="q" type="search" maxLength={160} defaultValue={query.q} placeholder="Name, type or date"/></label><ListFilterFields activeCount={Number(Boolean(query.template && query.template !== 'all')) + Number(filter !== 'all')}><label>Category<select aria-label="Category" name="template" defaultValue={query.template||'all'}><option value="all">All categories</option>{reminderCategories.map(group => <option key={group.key} value={'category:' + group.key}>{group.label}</option>)}</select></label><label>Show<select aria-label="Show" name="filter" defaultValue={filter}>{[['all','Active Reminders'],['reminders','With alert coverage'],['uncovered','Without alert coverage'],['upcoming','Next 30 days'],['overdue','Overdue / expired'],['dates','All dates'],['archived','Archived'],['drafts','Unfinished']].map(([k,l])=><option key={k} value={k}>{l}</option>)}</select></label></ListFilterFields><button className="button secondary filter-submit">Find reminders</button></form>
- <p className="hint space-bottom">Showing {items.length} reminders on this page.</p>{dates?<section className="panel">{shown.map(r=><ItemDateRow key={r.date.id} row={r} today={today}/>)}{!shown.length&&<p>No dates here.</p>}</section>:<div className="purchase-grid">{items.map(i=><ItemCard key={i.id} item={i}/>)}{!items.length&&<p>No reminders match this view.</p>}</div>}
+ <p className="hint space-bottom">Showing {items.length} reminders on this page.</p>{dates?<section className="panel">{shown.map(r=><ItemDateRow key={r.date.id} row={r} today={today}/>)}{!shown.length&&<p>No dates here.</p>}</section>:<div className="purchase-grid">{visible.map(i=><ItemCard key={i.id} item={i}/>)}{!items.length&&<p>No reminders match this view.</p>}</div>}
  <div className="form-actions">{query.cursor&&<Link className="button secondary" href={'/items?'+new URLSearchParams({filter,q:query.q||'',template:query.template||'all'})}>First page</Link>}{items.length===25&&<Link className="button secondary" href={'/items?'+next}>Next page →</Link>}</div></>;
 }

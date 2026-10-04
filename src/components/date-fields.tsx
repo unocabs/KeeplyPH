@@ -11,7 +11,7 @@ export function initialDate(template: TemplateKey, focus?: string, preset?: stri
   const choice = getReminderPreset(template, preset || undefined);
   const months = choice ? defaultRecurrenceMonths(preset) : null;
   const offsets = choice && presetCategory(preset) === 'loans' ? [{ unit: 'days' as const, value: 7 }] : defaultOffsets(template, kind);
-  return { kind, label: choice?.dateLabel || dateLabels[kind], due_on: '', reminders_enabled: false, offsets: months ? offsetsForRecurrence(offsets) : offsets, interval_months: null, recurrence_months: months, recurrence_ends_on: null, payment_amount_minor: null };
+  return { kind, label: choice?.dateLabel || dateLabels[kind], due_on: '', reminders_enabled: true, offsets: months ? offsetsForRecurrence(offsets) : offsets, interval_months: null, recurrence_months: months, recurrence_ends_on: null, payment_amount_minor: null };
 }
 export function DateFields({ template, value, onChange, preset }: { template: TemplateKey; value: DateInput; onChange: (v: DateInput) => void; preset?: string | null }) {
   const [last, setLast] = useState(value.last_completed_on || '');

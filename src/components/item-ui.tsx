@@ -9,7 +9,7 @@ import { AlertIndicator } from './alert-indicator';
 import styles from './dashboard.module.css';
 
 export function categoryLabel(category: string) {
-  const short: Record<string, string> = { vehicles: 'Vehicle', documents: 'Personal', subscriptions: 'Subscriptions', purchases: 'Purchases', bills: 'Bills', loans: 'Loans', maintenance: 'Maintenance', health: 'Health', education: 'Education', custom: 'Custom' };
+  const short: Record<string, string> = { vehicles: 'Vehicles', documents: 'Personal', subscriptions: 'Subscriptions', purchases: 'Purchases', bills: 'Bills', loans: 'Loans', maintenance: 'Maintenance', health: 'Health', education: 'Education', custom: 'Custom' };
   return short[category] || reminderCategories.find(group => group.key === category)?.label || category;
 }
 function CategoryBadge({ item }: { item: ItemWithDetails }) {
