@@ -39,7 +39,7 @@ describe('reminder detail save confirmation', () => {
     mocks.getItem.mockResolvedValue({ ...sampleItems()[0], state: 'draft' });
     const html = await render('created');
     expect(html).not.toContain('Your reminder is saved');
-    expect(html).toContain('draft form');
+    expect(html).toContain('Draft form');
     expect(mocks.getUsage).not.toHaveBeenCalled();
   });
 });

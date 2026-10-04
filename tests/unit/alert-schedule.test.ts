@@ -86,7 +86,7 @@ describe('alert schedules', () => {
 
 describe('next-alert presentation', () => {
   const item = sampleItems()[0];
-  const date = { ...item.dates[0], next_scheduled_on: '2026-10-11', occurrences: [{ ...item.dates[0].occurrences[0], due_on: '2026-10-18' }] };
+  const date = { ...item.dates[0], next_scheduled_on: '2026-10-11', occurrences: [{ ...item.dates[0].occurrences.find(o => o.status === 'open')!, due_on: '2026-10-18' }] };
   const today = '2026-10-02';
 
   it('uses the queued alert date and exposes missing or delayed jobs accurately', () => {
@@ -117,6 +117,6 @@ describe('next-alert presentation', () => {
 
  it('shows a queued overdue snooze separately from the actual due date', () => {
    const item = sampleItems()[0], date = item.dates[0];
-   const snoozed = {...date,next_scheduled_on:'2026-10-03',occurrences:[{...date.occurrences[0],due_on:'2026-10-01',snoozed_on:'2026-10-03'}]};
+   const snoozed = {...date,next_scheduled_on:'2026-10-03',occurrences:[{...date.occurrences.find(o => o.status === 'open')!,due_on:'2026-10-01',snoozed_on:'2026-10-03'}]};
    expect(nextAlertSummary(item,snoozed,'2026-10-02').value).toBe('October 3, 2026');
  });

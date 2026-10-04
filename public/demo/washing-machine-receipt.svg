@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="720" viewBox="0 0 640 720" role="img" aria-labelledby="title description">
+  <title id="title">Sample washing machine receipt</title>
+  <desc id="description">Fictional receipt for the Keeply demo. Washing machine, 23,995 Philippine pesos. Not valid for a purchase, payment, or warranty claim.</desc>
+  <rect width="640" height="720" fill="#f5f3fa"/>
+  <rect x="40" y="40" width="560" height="640" rx="20" fill="white"/>
+  <g font-family="Arial, sans-serif" fill="#252236">
+    <text x="80" y="100" font-size="16" fill="#7156c9">KEEPLY SAMPLE DOCUMENT</text>
+    <text x="80" y="158" font-size="32" font-weight="bold">Purchase receipt</text>
+    <text x="80" y="202" font-size="18">Illustrative purchase at SM Appliance</text>
+    <path d="M80 240H560" stroke="#ddd9e8"/>
+    <text x="80" y="286" font-size="16" fill="#686176">ITEM</text>
+    <text x="80" y="324" font-size="24">Washing machine</text>
+    <text x="80" y="376" font-size="18">Quantity: 1</text>
+    <path d="M80 420H560" stroke="#ddd9e8"/>
+    <text x="80" y="468" font-size="20">Sample total</text>
+    <text x="560" y="468" text-anchor="end" font-size="26" font-weight="bold">PHP 23,995</text>
+    <text x="80" y="550" font-size="18" fill="#7156c9">Fictional receipt for demonstration only.</text>
+    <text x="80" y="584" font-size="16" fill="#686176">Not proof of purchase or payment.</text>
+    <text x="80" y="614" font-size="16" fill="#686176">Not valid for a warranty claim.</text>
+  </g>
+</svg>

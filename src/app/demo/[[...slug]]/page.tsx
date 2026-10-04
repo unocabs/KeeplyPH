@@ -7,7 +7,7 @@ import { ItemDetail } from '@/components/item-detail';
 import { ItemForm } from '@/components/item-form';
 import { TemplateChoices } from '@/components/template-picker';
 import { isTemplate } from '@/features/templates';
-import { samplePurchases, sampleItems } from '@/lib/demo';
+import { samplePurchases, sampleItems, sampleUsage } from '@/lib/demo';
 import { todayIn, categories, type Category } from '@/lib/domain';
 import { PurchaseForm } from '@/components/purchase-form';
 import { PurchaseDetail } from '@/components/purchase-detail';
@@ -19,9 +19,10 @@ export const metadata = { title: 'Sample preview', robots: { index: false, follo
 export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string; template?: string }> }) {
   const { slug = [] } = await params;
   const query = await searchParams;
-  const purchases = samplePurchases();
-  const items = sampleItems();
   const today = todayIn();
+  const items = sampleItems(today);
+  const purchases = samplePurchases(items);
+  const usage = sampleUsage(items, today);
   let content;
   if (slug[0] === 'add') {
     if(!slug[1]) content = <><h1>What do you want to keep?</h1><TemplateChoices demo /></>;
@@ -39,9 +40,9 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
     if (!purchase) notFound();
     content = slug[2] === 'edit' ? <PurchaseForm purchase={purchase} demo /> : <PurchaseDetail purchase={purchase} today={today} demo />;
   }
-  else if (slug[0] === 'settings' && slug[1] === 'billing') content = <Billing demo usage={{ purchases: 8, reminders: 3, storage_bytes: 0, premium: false, premium_until: null }} />;
+  else if (slug[0] === 'settings' && slug[1] === 'billing') content = <Billing demo usage={usage} />;
   else if (slug[0] === 'settings' && slug[1] === 'alerts') content = <><div className="page-heading"><div><h1>Alert Options</h1><p>Your alerts, in this sample preview.</p></div></div><section className="panel narrow-form"><AlertOptions demo initial={{email_reminders_enabled:true}}/></section></>;
   else if (slug[0] === 'settings') content = <><div className="page-heading"><div><h1>Make yourself at home.</h1><p>Your preferences, in this sample preview.</p></div></div><SettingsForm demo profile={{ id: 'sample', display_name: 'Alex Reyes', timezone: 'Asia/Manila', email_reminders_enabled: true, email_delivery_blocked: false, deletion_requested_at: null, created_at: '', updated_at: '' }} /></>;
-  else content = <Dashboard items={items} usage={{ purchases: 8, reminders: 3, storage_bytes: 0, premium: false, premium_until: null }} name="Alex" today={today} demo />;
+  else content = <Dashboard items={items} usage={usage} name="Alex" today={today} demo />;
   return <AppShell name="Alex Reyes" hasExtraSlots={false} demo signedIn={await isSignedIn()}>{content}</AppShell>;
 }

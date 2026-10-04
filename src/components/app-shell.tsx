@@ -26,7 +26,7 @@ export function AppShell({ children, name, hasExtraSlots, demo = false, signedIn
       </div>
     </aside>
     <div className="workspace">
-      {demo ? <div className="demo-banner">You’re exploring sample data. <Link href={signedIn ? "/dashboard" : "/login"}>{signedIn ? "Open your vault" : "Sign in to start your own vault"} <ArrowUpRight size={14} /></Link></div> : <div className="workspace-top"><span><LockKeyhole size={13} /> Your reminders, kept private</span><span>Made for everyday peace of mind</span></div>}
+      {demo ? <div className="demo-banner">You’re exploring fictional sample data. No alerts are sent. <Link href={signedIn ? "/dashboard" : "/login"}>{signedIn ? "Open your vault" : "Sign in to start your own vault"} <ArrowUpRight size={14} /></Link></div> : <div className="workspace-top"><span><LockKeyhole size={13} /> Your reminders, kept private</span><span>Made for everyday peace of mind</span></div>}
       <main className="main-content" id="main-content">{children}</main>
       {!pathname.includes('/settings') && !pathname.includes('/add') && !pathname.endsWith('/edit') && !pathname.endsWith('/new') && <AddItemButton demo={demo} floating />}<footer className="app-footer"><span>One less thing to worry about.</span><div><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><span>Keeply © {new Date().getFullYear()}</span></div></footer>
     </div>

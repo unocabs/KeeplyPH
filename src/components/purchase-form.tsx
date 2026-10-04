@@ -129,9 +129,9 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
       </label>
       <label className="text-button camera-button"><Camera size={15} /> Take a photo<input type="file" accept="image/jpeg,image/png,image/webp" capture="environment" disabled={busy} className="visually-hidden" onChange={e => { if (e.target.files) void addFiles(e.target.files, kind); e.target.value = ''; }} /></label>
       <div className="file-list">{uploads.filter(u => u.kind === kind).map(item => <div className="file-row" key={item.id}>
-        <FileText size={20} /><div><strong>{item.name}</strong><small role="status">{item.phase === 'ready' ? 'Saved privately' : item.phase === 'processing' ? 'Checking and optimizing…' : item.phase === 'error' ? item.error : 'Uploading · ' + item.progress + '%'}</small>{item.phase === 'uploading' && <progress value={item.progress} max={100} aria-label={'Uploading ' + item.name} />}</div>
+        <FileText size={20} /><div><strong>{item.name}</strong><small role="status">{item.phase === 'ready' ? (demo ? 'Fictional sample document' : 'Saved privately') : item.phase === 'processing' ? 'Checking and optimizing…' : item.phase === 'error' ? item.error : 'Uploading · ' + item.progress + '%'}</small>{item.phase === 'uploading' && <progress value={item.progress} max={100} aria-label={'Uploading ' + item.name} />}</div>
         {item.phase === 'error' && <button type="button" className="text-button" disabled={busy} onClick={() => void processUpload(item)}>Retry</button>}
-        {['ready', 'error'].includes(item.phase) && <button className="icon-button" type="button" aria-label={'Remove ' + item.name} disabled={busy} onClick={() => void remove(item)}><Trash2 size={16} /></button>}
+        {!demo && ['ready', 'error'].includes(item.phase) && <button className="icon-button" type="button" aria-label={'Remove ' + item.name} disabled={busy} onClick={() => void remove(item)}><Trash2 size={16} /></button>}
       </div>)}</div>
     </div>;
   }
