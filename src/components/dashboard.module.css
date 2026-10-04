@@ -10,17 +10,18 @@
 .hero {
   position: relative;
   display: block;
-  padding: 32px;
+  padding: 32px 32px 88px;
   margin-bottom: 24px;
   min-height: 184px;
   border: 1px solid #e9e3f8;
   border-radius: 24px;
   background: linear-gradient(110deg, #f9f7ff, #eeebfc);
 }
+.hero > div:not([aria-hidden]) { position: relative; z-index: 1; }
 .hero :global(.eyebrow) { color: #72688f; margin-bottom: 12px; font-size: 11px; letter-spacing: .16em; padding-right: 180px; }
 .hero h1 { max-width: calc(100% - 180px); font-size: 34px; line-height: 1.15; letter-spacing: -.045em; font-weight: 700; text-wrap: balance; }
 .hero p { font-size: 15px; color: var(--dashboard-muted); margin-top: 12px; max-width: 480px; }
-.hero :global(.button) { position: absolute; top: 28px; right: 24px; margin-top: 0; min-height: 48px; border-radius: 12px; padding: 12px 20px; gap: 8px; font-size: 14px; }
+.hero :global(.button) { position: absolute; z-index: 1; top: 28px; right: 24px; margin-top: 0; min-height: 48px; border-radius: 12px; padding: 12px 20px; gap: 8px; font-size: 14px; }
 .hero :global(.button span) { display: inline; }
 .hero :global(.button.primary) { background: var(--primary); box-shadow: 0 4px 12px #6153ca18; }
 .hero :global(.button.primary:hover) { background: var(--primary-dark); transform: none; }
@@ -104,7 +105,7 @@
 .empty { color: var(--dashboard-muted); padding-block: 16px; font-size: 14px; }
 .dashboard :global(.privacy-note) { font-size: 12px; margin: 32px 0 8px; color: var(--dashboard-muted); }
 @container (max-width: 599px) {
-  .hero { padding: 24px; min-height: 0; }
+  .hero { padding: 24px 24px 80px; min-height: 0; }
   .hero h1 { font-size: 28px; max-width: none; }
   .hero :global(.eyebrow) { padding-right: 0; font-size: 10px; }
   .hero p { font-size: 14px; max-width: none; }

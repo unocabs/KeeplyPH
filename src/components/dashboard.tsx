@@ -9,6 +9,7 @@ import { reminderCategories } from '@/features/templates/categories';
 import { ItemCard, ItemDateRow, categoryLabel } from './item-ui';
 import { TemplateIcon } from './reminder-icon';
 import { AddItemButton } from './template-picker';
+import { HeroReminders } from './hero-reminders';
 import styles from './dashboard.module.css';
 
 function ActiveReminderValue({ count }: { count: number }) {
@@ -72,6 +73,7 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
 
   return <div className={styles.dashboard}>
     <div className={'page-heading ' + styles.hero}>
+      <HeroReminders variant="dashboard" />
       <div><div className="eyebrow">A LITTLE LESS TO REMEMBER</div><h1>Everything in its place.</h1><p>Welcome back, {name.split(' ')[0] || 'there'}. A little peace of mind, all together.</p></div>
       <AddItemButton demo={demo} />
     </div>

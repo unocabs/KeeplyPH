@@ -255,3 +255,7 @@ select {
 
 /* Car identity stays inside the established category container. */
 .reminder-icon .car-brand-logo{width:82%;height:82%;object-fit:contain}
+
+/* Floating reminders frame the homepage copy without changing its backdrop. */
+.landing-home .landing-hero{position:relative;isolation:isolate}
+@media(max-width:720px){.landing-home .landing-hero{padding-block:45px 48px}}
