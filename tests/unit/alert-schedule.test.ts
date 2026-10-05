@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { alertMode, nextAlertSummary, offsetsForRecurrence, presetOffsets, timingLabel } from '@/features/items/alert-schedule';
+import { alertMode, nextAlertSummary, offsetsForRecurrence, presetOffsets, timingLabel, withDueDateAlert } from '@/features/items/alert-schedule';
 import { dateStatus } from '@/features/items/domain';
 import { dateSchema } from '@/features/items/validation';
 import { DateFields, initialDate } from '@/components/date-fields';
@@ -16,6 +16,8 @@ describe('alert schedules', () => {
         const html = renderToStaticMarkup(createElement(DateFields, { template: choice.template, preset: choice.preset, value, onChange: () => {} }));
         expect(dateSchema.safeParse(value).success).toBe(true);
         expect(value.reminders_enabled).toBe(true);
+        expect(value.offsets.filter(o => o.unit === 'days' && o.value === 0)).toHaveLength(1);
+        expect(html).toContain('Alert me on the due date');
         if (value.kind === 'warranty') {
           expect(html).not.toContain('Recurring payment');
           expect(html).not.toContain('Repeat frequency');
@@ -55,15 +57,15 @@ describe('alert schedules', () => {
         expect(alertMode([...offsets].reverse(), recurring)).toBe(mode);
       }
     }
-    expect(presetOffsets('standard', false).map(o => o.value)).toEqual([30, 7, 1]);
-    expect(presetOffsets('standard', true).map(o => o.value)).toEqual([14, 7, 1]);
+    expect(presetOffsets('standard', false).map(o => o.value)).toEqual([30, 7, 1, 0]);
+    expect(presetOffsets('standard', true).map(o => o.value)).toEqual([14, 7, 1, 0]);
   });
 
   it('preserves valid custom recurrence offsets, including due-day alerts', () => {
     const custom = [{ unit: 'days' as const, value: 3 }, { unit: 'days' as const, value: 0 }];
     expect(offsetsForRecurrence(custom)).toEqual(custom);
     expect(alertMode(custom, true)).toBe('custom');
-    expect(offsetsForRecurrence([{ unit: 'months', value: 6 }])).toEqual(presetOffsets('standard', true));
+    expect(offsetsForRecurrence([{ unit: 'months', value: 6 }])).toEqual(presetOffsets('standard', true, false));
     expect(offsetsForRecurrence(presetOffsets('standard', false))).toEqual(presetOffsets('standard', true));
     expect(alertMode([{ unit: 'months', value: 6 }], false)).toBe('custom');
   });
@@ -80,7 +82,7 @@ describe('alert schedules', () => {
     expect(html).toContain('value="custom" selected');
     expect(html).toContain('12 calendar months before');
     expect(html).toContain('value="2027-10-18"');
-    expect(value.offsets.map(o => o.value)).toEqual([12, 6, 3]);
+    expect(value.offsets.map(o => o.value)).toEqual([12, 6, 3, 0]);
   });
 });
 
@@ -120,3 +122,32 @@ describe('next-alert presentation', () => {
    const snoozed = {...date,next_scheduled_on:'2026-10-03',occurrences:[{...date.occurrences.find(o => o.status === 'open')!,due_on:'2026-10-01',snoozed_on:'2026-10-03'}]};
    expect(nextAlertSummary(item,snoozed,'2026-10-02').value).toBe('October 3, 2026');
  });
+
+
+describe('due-date alert preferences', () => {
+  const value = { ...initialDate('other'), due_on: '2032-01-31' };
+  it('adds due-date timing without replacing any advance timings or duplicating zero', () => {
+    const offsets = presetOffsets('standard', false);
+    expect(withDueDateAlert(offsets)).toEqual(offsets);
+    expect(withDueDateAlert(withDueDateAlert(offsets, false))).toEqual(offsets);
+    expect(dateSchema.safeParse(value).success).toBe(true);
+  });
+  it('preserves opting out through presets and recurring schedule changes', () => {
+    const offsets = withDueDateAlert(initialDate('passport').offsets, false);
+    expect(offsetsForRecurrence(offsets)).toEqual(presetOffsets('standard', true, false));
+    expect(presetOffsets('gentle', true, false)).toEqual([{unit:'days',value:7}]);
+    expect(alertMode(presetOffsets('standard', false, false), false)).toBe('standard');
+  });
+  it('accepts three advance alerts and a due-date alert, but rejects four advance alerts', () => {
+    expect(dateSchema.safeParse({ ...value, offsets:[1,3,7,14].map(value => ({unit:'days',value})) }).success).toBe(false);
+    expect(dateSchema.safeParse({ ...value, offsets:[{unit:'days',value:0}] }).success).toBe(true);
+    expect(dateSchema.safeParse({ ...value, offsets:[] }).success).toBe(false);
+    expect(dateSchema.safeParse({ ...value, reminders_enabled:false, offsets:[] }).success).toBe(true);
+  });
+  it('does not expose zero as an editable advance timing', () => {
+    const html = renderToStaticMarkup(createElement(DateFields, {template:'passport',value:{...initialDate('passport'),due_on:'2032-01-31'},onChange:()=>{}}));
+    expect(html).toContain('Advance timing 3');
+    expect(html).not.toContain('Advance timing 4');
+    expect(html).toContain('On the due date');
+  });
+});

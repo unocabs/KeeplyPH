@@ -44,7 +44,7 @@ export function UpcomingTimeline({ rows, today, base = '' }: { rows: DateRow[]; 
             const span = daysUntil(last, first);
             const labels = group.map(alert => `${alert.channels.map(channel => channelNames[channel]).join(' / ')} alert · ${formatDate(alert.on)}`);
             const position = timelinePosition(first, today);
-            return <span className={styles.alertMarker + (group.some(alert => Math.abs(daysUntil(due, alert.on)) <= 2) ? ' ' + styles.sameDay : '')} style={{ left: `${position}%`, width: `calc(${span / 30 * 100}% + 24px)` }} key={first} data-edge={position < 20 ? 'start' : timelinePosition(last, today) > 80 ? 'end' : undefined}>
+            return <span className={styles.alertMarker} style={{ left: `${position}%`, width: `calc(${span / 30 * 100}% + 24px)` }} key={first} data-edge={position < 20 ? 'start' : timelinePosition(last, today) > 80 ? 'end' : undefined}>
               <button type="button" className={styles.alert} aria-label={`${row.item.product_name}: ${labels.join('; ')}`} aria-describedby={`${row.date.id}-alert-${first}`}>
                 {group.map(alert => <span key={alert.on} aria-hidden="true" style={{ left: `calc(12px + (100% - 24px) * ${span ? daysUntil(alert.on, first) / span : 0})` }} />)}
               </button>

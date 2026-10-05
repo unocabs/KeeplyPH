@@ -4,13 +4,19 @@ import { alertStatus, currentOccurrence, type DateWithDetails, type ItemWithDeta
 
 export type AlertMode = 'gentle' | 'standard' | 'custom';
 
-export function presetOffsets(mode: Exclude<AlertMode, 'custom'>, recurring: boolean): Offset[] {
-  return (mode === 'gentle' ? [7] : recurring ? [14, 7, 1] : [30, 7, 1]).map(value => ({ unit: 'days', value }));
+export function withDueDateAlert(offsets: Offset[], enabled = true): Offset[] {
+  const advance = offsets.filter(offset => offset.unit !== 'days' || offset.value !== 0);
+  return enabled ? [...advance, { unit: 'days', value: 0 }] : advance;
+}
+
+export function presetOffsets(mode: Exclude<AlertMode, 'custom'>, recurring: boolean, dueDateAlert = true): Offset[] {
+  return withDueDateAlert((mode === 'gentle' ? [7] : recurring ? [14, 7, 1] : [30, 7, 1]).map(value => ({ unit: 'days', value })), dueDateAlert);
 }
 
 export function alertMode(offsets: Offset[], recurring: boolean): AlertMode {
+  offsets = withDueDateAlert(offsets, false);
   for (const mode of ['gentle', 'standard'] as const) {
-    const preset = presetOffsets(mode, recurring);
+    const preset = presetOffsets(mode, recurring, false);
     if (offsets.length === preset.length && preset.every(p => offsets.some(o => o.unit === p.unit && o.value === p.value))) return mode;
   }
   return 'custom';
@@ -18,7 +24,7 @@ export function alertMode(offsets: Offset[], recurring: boolean): AlertMode {
 
 /** Preserve valid custom timings when changing the repeat frequency. */
 export function offsetsForRecurrence(offsets: Offset[]): Offset[] {
-  return offsets.every(o => o.unit === 'days' && o.value <= 27) ? offsets : presetOffsets('standard', true);
+  return offsets.every(o => o.unit === 'days' && o.value <= 27) ? offsets : presetOffsets('standard', true, offsets.some(o => o.unit === 'days' && o.value === 0));
 }
 
 export function timingLabel(offset: Offset): string {

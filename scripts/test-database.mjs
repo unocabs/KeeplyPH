@@ -41,7 +41,7 @@ try {
   command('pg_ctl', ['-D', join(folder, 'data'), '-l', join(folder, 'server.log'), '-o', "-k " + folder + " -p " + port + " -c listen_addresses='' -c unix_socket_permissions=0700", '-w', 'start']); started = true;
   admin = new pg.Client(config); await admin.connect();
   await admin.query("create role anon; create role authenticated; create role service_role bypassrls; create schema auth; create schema storage; grant usage on schema auth,storage,public to anon,authenticated,service_role; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz,last_sign_in_at timestamptz,raw_user_meta_data jsonb default '{}'::jsonb); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]); create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text); alter table storage.objects enable row level security; grant select on storage.objects to authenticated;");
-  let migrationSeed, recurrenceMigrationSeed;
+  let migrationSeed, recurrenceMigrationSeed, dueDateMigrationSeed;
   for (const name of (await readdir('supabase/migrations')).filter(n => n.endsWith('.sql') && (!process.env.PG_TEST_MIGRATION_THROUGH || n <= process.env.PG_TEST_MIGRATION_THROUGH)).sort()) {
     if(name==='202609230005_items.sql') {
       const u=await user(), id=await draft(u); await save(u,id,{expires_on:'2032-03-31',reminders_enabled:true});
@@ -55,7 +55,28 @@ try {
       await actor(u,'select public.save_item_with_date($1,1,$2,$3,$4)',[id,'Existing loan','',{kind:'other',label:'Existing payment',due_on:'2032-01-31',reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}],recurrence_months:1,recurrence_ends_on:'2032-03-31',payment_amount_minor:845000}]);
       recurrenceMigrationSeed=(await admin.query('select * from public.important_dates where item_id=$1',[id])).rows[0];
     }
+    if (name==='202610050023_due_date_alerts.sql') {
+      const before=(await admin.query('select * from public.important_dates where id=$1',[migrationSeed.warranty])).rows[0];
+      const occurrence=(await admin.query("select * from public.date_occurrences where date_id=$1 and status='open'",[before.id])).rows[0];
+      await actor(before.user_id,"select public.snooze_date($1,$2,$3,'tomorrow',null)",[before.id,occurrence.id,before.revision]);
+      dueDateMigrationSeed={
+        date:(await admin.query('select * from public.important_dates where id=$1',[before.id])).rows[0],
+        occurrence:(await admin.query('select * from public.date_occurrences where id=$1',[occurrence.id])).rows[0],
+        accepted:(await admin.query('select * from private.notification_jobs where id=$1',[migrationSeed.job.id])).rows[0],
+        offsets:(await admin.query('select unit,value from public.reminder_offsets where date_id=$1 order by unit,value',[before.id])).rows,
+        recurring:(await admin.query('select * from public.important_dates where id=$1',[recurrenceMigrationSeed.id])).rows[0],
+      };
+    }
     await admin.query(await readFile(join('supabase/migrations', name), 'utf8'));
+    if (name==='202610050023_due_date_alerts.sql') {
+      dueDateMigrationSeed.after={
+        date:(await admin.query('select * from public.important_dates where id=$1',[dueDateMigrationSeed.date.id])).rows[0],
+        occurrence:(await admin.query('select * from public.date_occurrences where id=$1',[dueDateMigrationSeed.occurrence.id])).rows[0],
+        accepted:(await admin.query('select * from private.notification_jobs where id=$1',[dueDateMigrationSeed.accepted.id])).rows[0],
+        recurring:(await admin.query('select * from public.important_dates where id=$1',[dueDateMigrationSeed.recurring.id])).rows[0],
+        offsets:(await admin.query('select unit,value from public.reminder_offsets where date_id=$1 order by unit,value',[dueDateMigrationSeed.date.id])).rows,
+      };
+    }
     console.log('Applied ' + name);
   }
   await test('Cutover preserves purchase/warranty UUIDs and accepted job identity/payload',async()=>{
@@ -161,7 +182,7 @@ try {
     await save(u, p, { expires_on: tomorrow, reminders_enabled: true });
     await save(u, p, { expires_on: tomorrow, reminders_enabled: true }, 2);
     const w = (await admin.query('select id from public.important_dates where item_id=$1', [p])).rows[0].id;
-    assert.equal((await admin.query('select count(*)::int n from private.notification_jobs where date_id=$1', [w])).rows[0].n, 3);
+    assert.equal((await admin.query('select count(*)::int n from private.notification_jobs where date_id=$1', [w])).rows[0].n, (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610050023_due_date_alerts.sql') ? 4 : 3);
     await admin.query("update private.notification_jobs set scheduled_at=now()-interval '1 minute',next_attempt_at=now()-interval '1 minute' where date_id=$1 and offset_value=30", [w]);
     const first = (await actor(null, 'select public.claim_notification_jobs(5,1) jobs', [], 'service_role')).rows[0].jobs;
     assert.equal(first.length, 1);
@@ -243,7 +264,7 @@ try {
     const u=await user(),p=await newItem(u);for(let n=0;n<10;n++)await newDate(u,p);
     await assert.rejects(newDate(u,p),/DATE_LIMIT/);
     const p2=await newItem(u);
-    await assert.rejects(newDate(u,p2,{...input(),offsets:[]}),/INVALID_INPUT/);
+    await assert.rejects(newDate(u,p2,{...input(),reminders_enabled:true,offsets:[]}),/INVALID_INPUT/);
     await assert.rejects(newDate(u,p2,{...input(),offsets:[{unit:'months',value:25}]}),/check constraint/);
   });
   await test('A claimed reminder cannot be prepared after its occurrence is completed',async()=>{
@@ -1257,6 +1278,10 @@ try {
     const checks=(await admin.query(await readFile('supabase/check-subscription-brand-prerequisites.sql','utf8'))).rows;
     assert.equal(checks.length,23);for(const check of checks)assert.match(check.status,/PRESENT/,check.migration);
   });
+
+  if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610050023_due_date_alerts.sql') {
+    await (await import('../tests/database/due-date-alerts.mjs')).testDueDateAlerts({admin,actor,user,newItem,registerPush,test,dueDateMigrationSeed});
+  }
 
   console.log('\n' + passed + ' database integration tests passed.');
 } finally {

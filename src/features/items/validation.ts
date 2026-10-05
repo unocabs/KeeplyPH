@@ -4,13 +4,15 @@ export const requiredDate = dateValue.refine(v => Boolean(v) && v >= '1900-01-01
 export const offsetSchema = z.object({ unit: z.enum(['days','months']), value: z.number().int().min(0).max(365) }).refine(v => v.unit === 'days' || (v.value >= 1 && v.value <= 24), 'Choose 1–24 months.');
 export const dateSchema = z.object({
   kind: z.enum(['warranty','registration','insurance','service','expiration','other']), label: z.string().trim().min(1).max(160),
-  due_on: requiredDate, reminders_enabled: z.boolean(), offsets: z.array(offsetSchema).min(1).max(3).refine(v => new Set(v.map(o => o.unit + o.value)).size === v.length, 'Choose distinct alert timings.'),
+  due_on: requiredDate, reminders_enabled: z.boolean(), offsets: z.array(offsetSchema).max(4).refine(v => new Set(v.map(o => o.unit + o.value)).size === v.length, 'Choose distinct alert timings.'),
   last_completed_on: dateValue.optional(),
   recurrence_months: z.union([z.literal(1), z.literal(3), z.literal(6), z.literal(12)]).nullable().optional(),
   recurrence_ends_on: requiredDate.nullable().optional(),
   payment_amount_minor: z.number().int().min(0).max(99999999999).nullable().optional(),
   interval_months: z.number().int().min(1).max(120).nullable(),
 }).superRefine((value, ctx) => {
+  if (value.reminders_enabled && !value.offsets.length) ctx.addIssue({ code: 'custom', message: 'Choose an alert timing or turn alerts off for this date.', path: ['offsets'] });
+  if (value.offsets.filter(o => o.unit !== 'days' || o.value !== 0).length > 3) ctx.addIssue({ code: 'custom', message: 'Choose up to 3 advance alerts plus the due-date alert.', path: ['offsets'] });
   if (value.kind === 'warranty' && value.recurrence_months) ctx.addIssue({ code: 'custom', message: 'Warranty coverage ends on its expiry date and cannot repeat.', path: ['recurrence_months'] });
   if (!value.recurrence_months) return;
   if (value.recurrence_ends_on && value.recurrence_ends_on < value.due_on) ctx.addIssue({ code: 'custom', message: 'Choose an end date on or after the next date.', path: ['recurrence_ends_on'] });

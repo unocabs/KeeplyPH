@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { addMonths, formatDate } from '@/lib/domain';
 import { templates, dateLabels, defaultOffsets, getReminderPreset, type DateKind, type TemplateKey, type Offset } from '@/features/templates';
 import { defaultRecurrenceMonths, paymentDate, presetCategory } from '@/features/templates/categories';
-import { alertMode, offsetsForRecurrence, presetOffsets, timingLabel } from '@/features/items/alert-schedule';
+import { alertMode, offsetsForRecurrence, presetOffsets, timingLabel, withDueDateAlert } from '@/features/items/alert-schedule';
 export interface DateInput extends RecurrenceFields { kind: DateKind; label: string; due_on: string; reminders_enabled: boolean; offsets: Offset[]; interval_months: number | null; last_completed_on?: string }
 export function initialDate(template: TemplateKey, focus?: string, preset?: string | null): DateInput {
   const kind = templates[template].kinds.includes(focus as DateKind) ? focus as DateKind : templates[template].kinds[0];
   const choice = getReminderPreset(template, preset || undefined);
   const months = choice ? defaultRecurrenceMonths(preset) : null;
-  const offsets = choice && presetCategory(preset) === 'loans' ? [{ unit: 'days' as const, value: 7 }] : defaultOffsets(template, kind);
+  const offsets = choice && presetCategory(preset) === 'loans' ? [{ unit: 'days' as const, value: 7 }, { unit: 'days' as const, value: 0 }] : defaultOffsets(template, kind);
   return { kind, label: choice?.dateLabel || dateLabels[kind], due_on: '', reminders_enabled: true, offsets: months ? offsetsForRecurrence(offsets) : offsets, interval_months: null, recurrence_months: months, recurrence_ends_on: null, payment_amount_minor: null };
 }
 export function DateFields({ template, value, onChange, preset }: { template: TemplateKey; value: DateInput; onChange: (v: DateInput) => void; preset?: string | null }) {
@@ -18,6 +18,8 @@ export function DateFields({ template, value, onChange, preset }: { template: Te
   const [ends, setEnds] = useState(Boolean(value.recurrence_ends_on));
   const [amountOpen, setAmountOpen] = useState(value.payment_amount_minor != null);
   const [customTimings, setCustomTimings] = useState(false);
+  const dueDateAlert = value.offsets.some(offset => offset.unit === 'days' && offset.value === 0);
+  const advanceOffsets = withDueDateAlert(value.offsets, false);
   const mode = customTimings ? 'custom' : alertMode(value.offsets, Boolean(value.recurrence_months));
   const choice = getReminderPreset(template, preset || undefined);
   const insurance = presetCategory(preset) === 'insurance';
@@ -49,12 +51,13 @@ export function DateFields({ template, value, onChange, preset }: { template: Te
     <label>Alert schedule<select value={mode} onChange={e => {
       const selected = e.target.value;
       setCustomTimings(selected === 'custom');
-      if (selected === 'gentle' || selected === 'standard') patch({ offsets: presetOffsets(selected, Boolean(value.recurrence_months)) });
+      if (selected === 'gentle' || selected === 'standard') patch({ offsets: presetOffsets(selected, Boolean(value.recurrence_months), dueDateAlert) });
     }}><option value="gentle">Gentle · 7 days before</option><option value="standard">Standard · {value.recurrence_months ? '14' : '30'}, 7 and 1 day before</option><option value="custom">Custom · choose your timings</option></select></label>
+    <label className="checkbox-row"><input type="checkbox" checked={dueDateAlert} onChange={e => patch({ offsets: withDueDateAlert(value.offsets, e.target.checked) })}/><span><strong>Alert me on the due date</strong><p>Included by default, alongside your advance alerts. Uses the same alert slot and your enabled delivery channels.</p></span></label>
     <div className="schedule-preview" aria-live="polite"><strong>{value.reminders_enabled ? 'Selected alert timings' : 'Alert timings · alerts are off'}</strong><ul className="alert-timings">{value.offsets.map((offset, n) => <li key={n}>{timingLabel(offset)}</li>)}</ul><p className="hint">Around 9 AM in your account timezone. Past alert times are skipped. The due date stays the same.</p></div>
-    {mode === 'custom' ? <div>{value.offsets.map((offset, n) => <div className="offset-row" key={n}><label>Timing {n+1}<input type="number" min={offset.unit === 'months' ? 1 : 0} max={value.recurrence_months ? 27 : offset.unit === 'months' ? 24 : 365} value={offset.value} onChange={e => patch({ offsets: value.offsets.map((o,i) => i === n ? { ...o, value: Number(e.target.value) } : o) })} /></label><label>Unit<select value={offset.unit} onChange={e => patch({ offsets: value.offsets.map((o,i) => i === n ? { unit: e.target.value as Offset['unit'], value: 1 } : o) })}><option value="days">Days before</option>{!value.recurrence_months && <option value="months">Calendar months before</option>}</select></label><button className="text-button" type="button" disabled={value.offsets.length === 1} onClick={() => patch({ offsets: value.offsets.filter((_,i) => i !== n) })}>Remove</button></div>)}{value.offsets.length < 3 && <button type="button" className="text-button" onClick={() => {
-      const next = [1, 0, 7, 3, 14].find(day => !value.offsets.some(offset => offset.unit === 'days' && offset.value === day))!;
-      patch({ offsets: [...value.offsets, { unit: 'days', value: next }] });
-    }}>Add a timing</button>}<p className="hint">Choose up to 3 timings. Use 0 days for an alert on the due date.</p></div> : <button type="button" className="text-button" onClick={() => setCustomTimings(true)}>Customize timings</button>}
+    {mode === 'custom' ? <div>{advanceOffsets.map((offset, n) => <div className="offset-row" key={n}><label>Advance timing {n+1}<input type="number" min={1} max={value.recurrence_months ? 27 : offset.unit === 'months' ? 24 : 365} value={offset.value} onChange={e => patch({ offsets: value.offsets.map(o => o === offset ? { ...o, value: Number(e.target.value) } : o) })} /></label><label>Unit<select value={offset.unit} onChange={e => patch({ offsets: value.offsets.map(o => o === offset ? { unit: e.target.value as Offset['unit'], value: 1 } : o) })}><option value="days">Days before</option>{!value.recurrence_months && <option value="months">Calendar months before</option>}</select></label><button className="text-button" type="button" disabled={advanceOffsets.length === 1 && !dueDateAlert} onClick={() => patch({ offsets: value.offsets.filter(o => o !== offset) })}>Remove</button></div>)}{advanceOffsets.length < 3 && <button type="button" className="text-button" onClick={() => {
+      const next = [1, 7, 3, 14].find(day => !value.offsets.some(offset => offset.unit === 'days' && offset.value === day))!;
+      patch({ offsets: withDueDateAlert([...advanceOffsets, { unit: 'days', value: next }], dueDateAlert) });
+    }}>Add a timing</button>}<p className="hint">Choose up to 3 advance alerts. The due-date alert is separate.</p></div> : <button type="button" className="text-button" onClick={() => setCustomTimings(true)}>Customize timings</button>}
   </div>;
 }

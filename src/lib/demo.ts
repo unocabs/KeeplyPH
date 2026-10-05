@@ -73,7 +73,7 @@ export function sampleItems(today = todayIn()): ItemWithDetails[] {
       const due = day(today, offset);
       const frequency = options.recurrence;
       const anchor = frequency ? addMonths(due, -frequency * 2) : null;
-      const timings = frequency ? [14, 7, 1].map(value => ({ unit: 'days' as const, value })) : defaultOffsets(template, kind);
+      const timings = frequency ? [14, 7, 1, 0].map(value => ({ unit: 'days' as const, value })) : defaultOffsets(template, kind);
       const nextAlert = covered && offset >= 0 ? timings.map(t => t.unit === 'months' ? addMonths(due, -t.value) : day(due, -t.value)).filter(d => d >= today).sort()[0] || null : null;
       const date: DateWithDetails = {
         id: dateId, item_id: id, user_id: 'sample', kind, label,

@@ -20,7 +20,7 @@
 .grid > span.todayLine { border-left: 1.5px solid #8b74de; }
 .todayLine::before { content: ''; position: absolute; top: -3px; left: -4px; width: 7px; height: 7px; border-radius: 50%; background: #8163dc; }
 .rows { position: relative; display: grid; }
-.row { --row-color: #7b659b; --row-tint: #e9e1f6; align-items: center; min-height: 60px; }
+.row { --row-color: #7b659b; --row-tint: #e9e1f6; align-items: center; min-height: 72px; }
 .row[data-category=vehicles], .row[data-category=bills], .row[data-category=documents] { --row-color: #597196; --row-tint: #dfe9f7; }
 .row[data-category=insurance] { --row-color: #4e7860; --row-tint: #dceee6; }
 .row[data-category=purchases], .row[data-category=education] { --row-color: #93764c; --row-tint: #f6e9ce; }
@@ -30,17 +30,15 @@
 .identity { min-width: 0; padding-block: 6px; }
 .identity strong { font-size: 13px; font-weight: 650; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; line-height: 1.35; }
 .identity > span { display: block; font-size: 11px; color: var(--dashboard-muted); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.track { height: 60px; }
-.track::before { content: ''; position: absolute; inset-inline: 0; top: 26px; height: 4px; border-radius: 999px; background: var(--row-tint); }
-.due { position: absolute; top: 6px; transform: translateX(-50%); display: grid; place-items: center; width: 44px; height: 44px; border: 0; padding: 0; border-radius: 12px; background: transparent; z-index: 2; }
+.track { height: 72px; }
+/* Separate the due icon's touch target from the alert lane below it. */
+.track::before { content: ''; position: absolute; inset-inline: 0; top: 54px; height: 4px; border-radius: 999px; background: var(--row-tint); }
+.due { position: absolute; top: 0; transform: translateX(-50%); display: grid; place-items: center; width: 44px; height: 44px; border: 0; padding: 0; border-radius: 12px; background: transparent; z-index: 2; }
 .due :global(.reminder-icon) { width: 32px; height: 32px; border-radius: 10px; border: 2px solid #fff; box-shadow: 0 2px 6px #59457c12; }
 .due:hover :global(.reminder-icon) { box-shadow: 0 0 0 3px var(--row-tint); }
-.alertMarker { position: absolute; top: 16px; transform: translateX(-12px); z-index: 3; }
+.alertMarker { position: absolute; top: 44px; transform: translateX(-12px); z-index: 3; }
 .alert { position: relative; display: block; width: 100%; height: 24px; background: transparent; padding: 0; border: 0; border-radius: 8px; }
 .alert > span { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 6px; height: 6px; border-radius: 50%; background: var(--row-color); box-shadow: 0 0 0 2px #fff; }
-/* Near a due icon, a short stem attaches the alert to its exact calendar date. */
-.sameDay { top: 36px; }
-.sameDay .alert > span::before { pointer-events: none; content: ''; position: absolute; left: 2.5px; bottom: 8px; height: 15px; width: 1px; background: var(--row-color); opacity: .5; }
 .tooltip { display: none; position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); width: max-content; max-width: 180px; padding: 8px 10px; border: 1px solid #dfd5ee; border-radius: 10px; background: #fff; color: #514461; font-size: 11px; box-shadow: 0 4px 16px #35254d18; pointer-events: none; }
 .tooltip > span { display: block; }
 .alertMarker[data-edge=start] .tooltip { left: -8px; transform: none; }

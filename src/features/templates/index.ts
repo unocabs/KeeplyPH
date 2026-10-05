@@ -15,8 +15,8 @@ export const templates: Record<TemplateKey, { label: string; example: string; de
 };
 export function isTemplate(value: string): value is TemplateKey { return (templateKeys as readonly string[]).includes(value); }
 export function defaultOffsets(template: TemplateKey, kind: DateKind): Offset[] {
-  if (template === 'passport' && kind === 'expiration') return [12, 6, 3].map(value => ({ unit: 'months', value }));
-  return (template === 'licence' ? [90, 30, 7] : kind === 'service' ? [7, 1] : [30, 7, 1]).map(value => ({ unit: 'days', value }));
+  if (template === 'passport' && kind === 'expiration') return [...[12, 6, 3].map(value => ({ unit: 'months' as const, value })), { unit: 'days', value: 0 }];
+  return (template === 'licence' ? [90, 30, 7, 0] : kind === 'service' ? [7, 1, 0] : [30, 7, 1, 0]).map(value => ({ unit: 'days', value }));
 }
 // Only supported, non-private intent survives the OAuth round trip.
 export function addIntent(template: TemplateKey, focus?: string, category?: string, preset?: string, renewalDate?: string): string {
