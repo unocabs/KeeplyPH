@@ -3,11 +3,11 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { sampleItems } from '@/lib/demo';
 
-const mocks = vi.hoisted(() => ({ getItem: vi.fn(), getUsage: vi.fn(), requireUser: vi.fn() }));
+const mocks = vi.hoisted(() => ({ getItem: vi.fn(), getUsage: vi.fn(), requireUser: vi.fn(), detail: vi.fn() }));
 vi.mock('@/features/items/queries', () => ({ getItem: mocks.getItem }));
 vi.mock('@/features/purchases/queries', () => ({ getUsage: mocks.getUsage }));
 vi.mock('@/lib/auth', () => ({ requireUser: mocks.requireUser }));
-vi.mock('@/components/item-detail', () => ({ ItemDetail: () => 'Reminder details' }));
+vi.mock('@/components/item-detail', () => ({ ItemDetail: (props: unknown) => { mocks.detail(props); return 'Reminder details'; } }));
 vi.mock('@/components/item-form', () => ({ ItemForm: () => 'Draft form' }));
 vi.mock('@/components/purchase-form', () => ({ PurchaseForm: () => 'Receipt draft form' }));
 import Page from '@/app/(app)/items/[id]/page';
@@ -25,7 +25,9 @@ beforeEach(() => {
 describe('reminder detail save confirmation', () => {
   it('shows guidance only when arriving from a save', async () => {
     expect(await render()).not.toContain('Your reminder is saved');
-    expect(mocks.getUsage).not.toHaveBeenCalled();
+    expect(mocks.getUsage).toHaveBeenCalledOnce();
+    expect(mocks.detail).toHaveBeenCalledWith(expect.objectContaining({ usage: { purchases: 1, reminders: 1, slot_limit: 3 } }));
+    vi.clearAllMocks();
     expect(await render('created')).toContain('What else would you like to remember?');
     expect(mocks.getUsage).toHaveBeenCalledOnce();
   });

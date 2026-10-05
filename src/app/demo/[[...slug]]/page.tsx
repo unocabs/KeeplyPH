@@ -31,7 +31,7 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   }
   else if(slug[0] === 'items') {
     if(!slug[1]) content = <ItemList key={JSON.stringify(query)} serverQuery={{template:query.template}} items={items} today={today} initialFilter={query.filter} demo />;
-    else { const item = items.find(i=>i.id===slug[1]); if(!item)notFound();content = slug[2] === 'edit' ? <ItemForm template={item.template_key} item={item} demo/> : <ItemDetail item={item} today={today} demo/>; }
+    else { const item = items.find(i=>i.id===slug[1]); if(!item)notFound();content = slug[2] === 'edit' ? <ItemForm template={item.template_key} item={item} demo/> : <ItemDetail item={item} usage={usage} today={today} demo/>; }
   }
   else if (slug[0] === 'purchases' && !slug[1]) content = <PurchaseList key={query.filter} purchases={purchases} today={today} initialFilter={query.filter} demo />;
   else if (slug[0] === 'purchases' && slug[1] === 'new') content = <PurchaseForm demo />;

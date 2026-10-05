@@ -269,3 +269,22 @@ select {
 /* Floating reminders frame the homepage copy without changing its backdrop. */
 .landing-home .landing-hero{position:relative;isolation:isolate}
 @media(max-width:720px){.landing-home .landing-hero{padding-block:45px 48px}}
+
+/* Compact reminder controls keep the date's primary action in focus. */
+.reminder-quick-actions{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;margin-bottom:20px;align-items:start}
+.reminder-quick-card{display:flex;align-items:center;gap:14px;padding:16px 18px;min-height:108px;box-shadow:none}
+.reminder-quick-card h2{font-size:14px;letter-spacing:-.02em}
+.quick-action-icon{display:flex;align-items:center;justify-content:center;flex:0 0 40px;height:40px;border-radius:12px;background:var(--lavender);color:var(--primary)}
+.quick-action-body{min-width:0;flex:1}.quick-action-body>.hint{margin-top:5px;font-size:12px}
+.quick-action-link{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:32px;padding:4px 0;font-size:12px;font-weight:600;color:var(--primary);text-align:left}
+.coverage-enabled{background:#f2faf6;border-color:#d8eee3}.coverage-enabled .quick-action-icon{background:#e7f7ee;color:var(--green)}
+.coverage-heading,.coverage-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.coverage-meta{margin-top:4px}.alert-slot-count{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}.alert-slot-count>span{font-weight:400;color:var(--muted)}
+.coverage-details>summary{min-height:0;width:fit-content;padding:2px 0;font-size:11px;color:var(--muted)}
+.coverage-details[open]{margin-top:8px}.coverage-details[open]>summary{margin-bottom:8px}.coverage-controls{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}.coverage-controls>button{min-height:32px}
+.important-dates-quick>.quick-action-link{flex-shrink:0}
+.date-primary-action{width:200px;margin-top:24px}
+@media(max-width:1050px){.reminder-quick-actions{grid-template-columns:1fr}.reminder-quick-card{min-height:0}.coverage-quick .quick-action-body{display:grid;grid-template-columns:1fr auto;column-gap:18px}.coverage-meta{margin-top:0}.coverage-details,.coverage-quick [role=status]{grid-column:1/-1}.important-dates-quick{min-height:96px}}
+@media(max-width:600px){.reminder-quick-actions{gap:10px;margin-bottom:16px}.reminder-quick-card{padding:14px;gap:12px}.coverage-quick .quick-action-body{display:block}.coverage-meta{margin-top:4px}.reminder-quick-card h2{font-size:13px}.quick-action-link{font-size:11px}.coverage-meta{gap:6px}.alert-slot-count{font-size:11px}.important-dates-quick{min-height:84px}.date-primary-action{width:100%;margin-top:20px}.reminder-date-summary>div+div{border-top:1px solid var(--line);padding-top:16px}}
+
+.reminder-details>section>.panel:first-child{margin-top:0}
