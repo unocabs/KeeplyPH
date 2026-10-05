@@ -9,8 +9,11 @@ import type { ComponentType } from 'react';
 import { isReminderPreset, type TemplateKey, type ReminderPreset, type DateKind } from '@/features/templates';
 import { itemCategory, paymentPreset } from '@/features/templates/categories';
 import type { Category } from '@/lib/domain';
+import { supportsMotorcycleBrand } from '@/features/items/motorcycle-brands';
 import { supportsCarBrand } from '@/features/items/car-brands';
 import { CarBrandLogo } from './car-brand-logo';
+import { getSubscriptionBrand } from '@/features/items/subscription-brands';
+import { SubscriptionBrandLogo } from './subscription-brand-logo';
 
 type GlyphProps = { size?: number; strokeWidth?: number; 'aria-hidden'?: boolean };
 type Glyph = ComponentType<GlyphProps>;
@@ -71,6 +74,8 @@ interface IconProps {
   preset?: string | null;
   group?: string;
   brand?: string | null;
+  motorcycleBrand?: string | null;
+  subscriptionBrand?: string | null;
   size?: number;
 }
 /** Shared identity across category choices, saved reminders and date lists. */
@@ -83,7 +88,9 @@ export function TemplateIcon({ template, category, preset, group, size = 22 }: I
 }
 export function ReminderIcon(props: IconProps) {
   const group = props.group || itemCategory({ template_key: props.template, reminder_preset: props.preset });
-  return <span className={'reminder-icon group-' + group} aria-hidden="true">{supportsCarBrand(props.template, props.preset) && props.brand ? <CarBrandLogo brand={props.brand} fallback={<TemplateIcon {...props} />} /> : <TemplateIcon {...props} />}</span>;
+  const subscription = getSubscriptionBrand(props.template, props.preset, props.subscriptionBrand);
+  if (subscription) return <span className={'reminder-icon group-' + group} aria-hidden="true"><SubscriptionBrandLogo brand={subscription} fallback={<TemplateIcon {...props} />} /></span>;
+  return <span className={'reminder-icon group-' + group} aria-hidden="true">{supportsMotorcycleBrand(props.template, props.preset) && props.motorcycleBrand ? <CarBrandLogo kind="motorcycle" brand={props.motorcycleBrand} fallback={<TemplateIcon {...props} />} /> : supportsCarBrand(props.template, props.preset) && props.brand ? <CarBrandLogo brand={props.brand} fallback={<TemplateIcon {...props} />} /> : <TemplateIcon {...props} />}</span>;
 }
 /** A date's purpose is separate from the item it belongs to. */
 export function DateIcon({ kind, label, preset, size = 16 }: { kind: DateKind; label?: string; preset?: string | null; size?: number }) {

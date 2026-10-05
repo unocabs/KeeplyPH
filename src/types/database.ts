@@ -58,7 +58,9 @@ export interface Database {
       record_funnel_count: Rpc<{ p_page: string; p_event: string; p_template: string }, undefined>;
       reminder_preview: Rpc<{ p_item_id: string }>;
       create_item_draft: Rpc<{ p_id: string; p_template: string }, string>;
-      save_item_with_date: Rpc<{ p_id: string; p_revision: number; p_label: string; p_notes: string; p_date: Json | null }, string>;
+      save_item_with_date: Rpc<{ p_id: string; p_revision: number; p_label: string; p_notes: string; p_date: Json | null; p_preset?: string | null; p_car_brand?: string | null }, string>;
+      save_subscription_item_with_date: Rpc<{ p_id: string; p_revision: number; p_label: string; p_notes: string; p_date: Json | null; p_preset?: string | null; p_subscription_brand?: string | null }, string>;
+      save_motorcycle_item_with_date: Rpc<{ p_id: string; p_revision: number; p_label: string; p_notes: string; p_date: Json | null; p_preset?: string | null; p_motorcycle_brand?: string | null }, string>;
       save_important_date: Rpc<{ p_id: string; p_item_id: string; p_revision: number; p_data: Json }, string>;
       snooze_date: Rpc<{ p_id: string; p_occurrence: string; p_revision: number; p_choice: string; p_on: string | null | undefined }, undefined>;
       complete_date: Rpc<{ p_id: string; p_revision: number; p_completed: string; p_next: string | null }, undefined>;

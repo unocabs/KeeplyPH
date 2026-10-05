@@ -254,6 +254,8 @@ select {
 .date-card-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 
 /* Car identity stays inside the established category container. */
+.subscription-brand-monochrome{filter:brightness(0) saturate(100%)}
+.reminder-icon .subscription-brand-logo{width:86%;height:86%;object-fit:contain}
 .reminder-icon .car-brand-logo{width:82%;height:82%;object-fit:contain}
 
 /* The shared brand keeps today's date beneath the wordmark on every surface. */

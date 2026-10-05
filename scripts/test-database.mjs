@@ -1165,6 +1165,99 @@ try {
     assert.equal(checks.length,20); for(const check of checks) assert.match(check.status,/PRESENT/,check.migration);
   });
 
+  await test('Motorcycle brands persist through detail, cards, timeline, old clients and inherited dates', async () => {
+    const owner = await user(), id = randomUUID();
+    await actor(owner, "select public.create_item_draft($1,'motorcycle')", [id]);
+    const date = {kind:'registration',label:'Registration',due_on:'2032-01-31',reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]};
+    await actor(owner, "select public.save_motorcycle_item_with_date($1,1,'Honda Click','',$2,null,'honda')", [id,date]);
+    const detail = async () => (await actor(owner,'select public.item_detail($1) item',[id])).rows[0].item;
+    assert.equal((await detail()).motorcycle_brand,'honda'); assert.equal((await detail()).car_brand,null);
+    for(const rpc of ["public.list_items('all')",'public.dashboard_items()','public.dashboard_timeline_items()']) {
+      const items=(await actor(owner,'select '+rpc+' items')).rows[0].items;
+      assert.equal(items.find(item=>item.id===id).motorcycle_brand,'honda');
+    }
+    await actor(owner,"select public.save_item_with_date($1,2,'Honda Click updated','')",[id]);
+    assert.equal((await detail()).motorcycle_brand,'honda','old clients preserve motorcycle identity');
+    await actor(owner,'select public.save_important_date($1,$2,0,$3)',[randomUUID(),id,{...date,kind:'service',label:'Oil change'}]);
+    assert.equal((await detail()).motorcycle_brand,'honda');
+    await actor(owner,"select public.save_motorcycle_item_with_date($1,3,'Honda Click updated','',null,null,'yamaha')",[id]);
+    assert.equal((await detail()).motorcycle_brand,'yamaha');
+    await actor(owner,"select public.save_motorcycle_item_with_date($1,4,'Honda Click updated','',null,null,'')",[id]);
+    assert.equal((await detail()).motorcycle_brand,null); assert.equal((await detail()).dates.length,2);
+  });
+  await test('Motorcycle saves enforce ownership, supported brands, revision conflicts and rollback', async () => {
+    const owner=await user(), outsider=await user(), id=randomUUID();
+    await actor(owner,"select public.create_item_draft($1,'motorcycle')",[id]);
+    await actor(owner,"select public.save_motorcycle_item_with_date($1,1,'Original','',null,null,'honda')",[id]);
+    await assert.rejects(actor(outsider,"select public.save_motorcycle_item_with_date($1,2,'Tampered','',null,null,'yamaha')",[id]),/NOT_FOUND/);
+    await assert.rejects(actor(owner,"select public.save_motorcycle_item_with_date($1,1,'Stale','',null,null,'yamaha')",[id]),/CONFLICT/);
+    const date={kind:'service',label:'Oil change',due_on:'2032-01-31',reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]};
+    await assert.rejects(actor(owner,"select public.save_motorcycle_item_with_date($1,2,'Invalid','',$2,null,'kia')",[id,date]),/valid_motorcycle_brand/);
+    const item=(await actor(owner,'select public.item_detail($1) item',[id])).rows[0].item;
+    assert.equal(item.motorcycle_brand,'honda'); assert.equal(item.revision,2); assert.equal(item.product_name,'Original'); assert.equal(item.dates.length,0);
+    await assert.rejects(actor(owner,"update public.items set motorcycle_brand='yamaha' where id=$1",[id]),/permission denied/);
+    await assert.rejects(actor(null,"select public.save_motorcycle_item_with_date($1,2,'Anonymous','',null,null,'yamaha')",[id],'anon'),/permission denied/);
+  });
+  await test('Motorcycle loan type changes clear the previous vehicle brand atomically', async () => {
+    const owner=await user(),id=randomUUID(); await actor(owner,"select public.create_item_draft($1,'other')",[id]);
+    const date={kind:'other',label:'Monthly payment',due_on:'2032-01-31',reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]};
+    await actor(owner,"select public.save_item_with_date($1,1,'Car loan','',$2,'car-loan','kia')",[id,date]);
+    await actor(owner,"select public.save_motorcycle_item_with_date($1,2,'Motorcycle loan','',null,'motorcycle-loan','honda')",[id]);
+    const detail=async()=>(await actor(owner,'select public.item_detail($1) item',[id])).rows[0].item;
+    assert.equal((await detail()).car_brand,null); assert.equal((await detail()).motorcycle_brand,'honda');
+    await actor(owner,"select public.save_item_with_date($1,3,'Car loan','',null,'car-loan','toyota')",[id]);
+    assert.equal((await detail()).car_brand,'toyota'); assert.equal((await detail()).motorcycle_brand,null);
+    await assert.rejects(actor(owner,"select public.save_motorcycle_item_with_date($1,4,'Car loan','',null,null,'honda')",[id]),/INVALID_INPUT/);
+    await actor(owner,"select public.save_motorcycle_item_with_date($1,4,'Motorcycle loan','',null,'motorcycle-loan','other')",[id]);
+    assert.equal((await detail()).motorcycle_brand,'other');
+    await actor(owner,"select public.save_item_with_date($1,5,'Personal loan','',null,'personal-loan')",[id]);
+    assert.equal((await detail()).motorcycle_brand,null);
+  });
+  await test('Motorcycle prerequisite check recognizes all applied migrations', async () => {
+    const checks=(await admin.query(await readFile('supabase/check-motorcycle-brand-prerequisites.sql','utf8'))).rows;
+    assert.equal(checks.length,22);for(const check of checks)assert.match(check.status,/PRESENT/,check.migration);
+  });
+
+  await test('Subscription brand persists independently, preserves omitted values and clears explicitly', async () => {
+    const owner=await user(), id=randomUUID();
+    await actor(owner,"select public.create_item_draft($1,'other')",[id]);
+    await actor(owner,"select public.save_subscription_item_with_date($1,1,'Family entertainment','',$2,'streaming','netflix')",[id,{kind:'other',label:'Subscription payment',due_on:'2032-01-31',reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]}]);
+    const detail=async ()=>(await actor(owner,'select public.item_detail($1) as item',[id])).rows[0].item;
+    assert.equal((await detail()).subscription_brand,'netflix');
+    await actor(owner,"select public.save_item_with_date($1,2,'Weekend viewing','',null,null)",[id]);
+    assert.equal((await detail()).subscription_brand,'netflix');
+    assert.equal((await detail()).product_name,'Weekend viewing');
+    await actor(owner,"select public.save_subscription_item_with_date($1,3,'Renamed again','',null,null)",[id]);
+    assert.equal((await detail()).subscription_brand,'netflix');
+    await actor(owner,"select public.save_subscription_item_with_date($1,4,'Renamed again','',null,null,'')",[id]);
+    assert.equal((await detail()).subscription_brand,null);
+    await actor(owner,"select public.save_subscription_item_with_date($1,5,'Local provider','',null,null,'other')",[id]);
+    assert.equal((await detail()).subscription_brand,'other');
+    await actor(owner,"select public.save_item_with_date($1,6,'Gym','',null,'gym')",[id]);
+    assert.equal((await detail()).subscription_brand,null);
+    await actor(owner,"select public.save_subscription_item_with_date($1,7,'My fitness plan','',null,'gym','anytime-fitness')",[id]);
+    assert.equal((await detail()).subscription_brand,'anytime-fitness');
+    await actor(owner,"select public.save_item_with_date($1,8,'Software','',null,'software')",[id]);
+    assert.equal((await detail()).subscription_brand,null);
+  });
+  await test('Subscription brand rejects wrong categories, cross-account saves, stale revisions and invalid values atomically', async () => {
+    const owner=await user(), outsider=await user(), id=randomUUID();
+    await actor(owner,"select public.create_item_draft($1,'other')",[id]);
+    await actor(owner,"select public.save_subscription_item_with_date($1,1,'Family entertainment','',$2,'streaming','netflix')",[id,{kind:'other',label:'Subscription payment',due_on:'2032-01-31',reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]}]);
+    await assert.rejects(actor(outsider,"select public.save_subscription_item_with_date($1,2,'Tampered','',null,null,'spotify')",[id]),/NOT_FOUND/);
+    await assert.rejects(actor(owner,"select public.save_subscription_item_with_date($1,1,'Stale','',null,null,'spotify')",[id]),/CONFLICT/);
+    for(const brand of ['unknown','anytime-fitness']) await assert.rejects(actor(owner,"select public.save_subscription_item_with_date($1,2,'Invalid','',null,null,$2)",[id,brand]),/INVALID_INPUT/);
+    await assert.rejects(actor(owner,"select public.save_subscription_item_with_date($1,2,'Invalid','',null,'software','netflix')",[id]),/INVALID_INPUT/);
+    await assert.rejects(actor(owner,"update public.items set subscription_brand='spotify' where id=$1",[id]),/permission denied/);
+    await assert.rejects(actor(null,"select public.save_subscription_item_with_date($1,2,'Anonymous','',null,null,'spotify')",[id],'anon'),/permission denied/);
+    const item=(await actor(owner,'select public.item_detail($1) as item',[id])).rows[0].item;
+    assert.equal(item.subscription_brand,'netflix');assert.equal(item.revision,2);assert.equal(item.product_name,'Family entertainment');
+  });
+  await test('Subscription schema prerequisite check recognizes all applied migrations', async () => {
+    const checks=(await admin.query(await readFile('supabase/check-subscription-brand-prerequisites.sql','utf8'))).rows;
+    assert.equal(checks.length,23);for(const check of checks)assert.match(check.status,/PRESENT/,check.migration);
+  });
+
   console.log('\n' + passed + ' database integration tests passed.');
 } finally {
   if (admin) await admin.end();

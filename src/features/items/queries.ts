@@ -24,13 +24,13 @@ export async function getItem(id: string): Promise<ItemWithDetails | null> {
   return { ...item, alert_delivery_paused: alertsPaused(profile), dates: item.dates.map(date => ({ ...date, next_scheduled_on: schedule.find(s=>s.date_id===date.id)?.next_scheduled_on || null })) };
 }
 
-export interface VehicleChoice { id: string; product_name: string | null; car_brand?: string | null }
+export interface VehicleChoice { id: string; product_name: string | null; car_brand?: string | null; motorcycle_brand?: string | null }
 export async function getVehicleChoices(template: 'car' | 'motorcycle'): Promise<VehicleChoice[]> {
   const { supabase, userId } = await requireUser();
   const choices: VehicleChoice[] = [];
   // Read every page so older vehicles remain available in the add flow.
   for (let start = 0; ; start += 200) {
-    const { data, error } = await supabase.from('items').select('id,product_name,car_brand')
+    const { data, error } = await supabase.from('items').select('id,product_name,car_brand,motorcycle_brand')
       .eq('user_id', userId).eq('template_key', template).eq('state', 'saved').is('archived_at', null)
       .order('created_at', { ascending: false }).order('id', { ascending: false }).range(start, start + 199);
     if (error) throw new Error('Unable to load your vehicles. Please retry.');

@@ -1,0 +1,344 @@
+[
+  {
+    "id": "aprilia",
+    "label": "Aprilia",
+    "source": "https://logotyp.us/file/aprilia.svg",
+    "vector": true
+  },
+  {
+    "id": "bajaj",
+    "label": "Bajaj",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/bajaj-1773914323.png"
+  },
+  {
+    "id": "benelli",
+    "label": "Benelli",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/benelli.png"
+  },
+  {
+    "id": "benda",
+    "label": "Benda",
+    "source": "https://bendamoto.com/wp-content/uploads/2024/04/logo-white.svg",
+    "ext": "svg",
+    "vector": true,
+    "file": "benda-positive.svg",
+    "preparation": "Native SVG positive variant in black for the light UI."
+  },
+  {
+    "id": "beta",
+    "label": "Beta",
+    "source": "https://www.betamotor.com/wp-content/uploads/2025/10/betamoto-logo-dark.png",
+    "file": "beta-official.png",
+    "vector": false
+  },
+  {
+    "id": "bmw-motorrad",
+    "label": "BMW Motorrad",
+    "source": "https://i.logos-download.com/114514/33284-11398cd41e7c9b19e5a8ffef3f089050.svg/BMW_Motorrad_Logo_2020.svg",
+    "ext": "svg",
+    "vector": true
+  },
+  {
+    "id": "bristol",
+    "label": "Bristol",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/bristol-1652086331.png"
+  },
+  {
+    "id": "bsa",
+    "label": "BSA",
+    "source": "https://images.seeklogo.com/logo-png/20/2/bsa-motorcycles-logo-png_seeklogo-202195.png",
+    "file": "bsa-transparent.png",
+    "vector": false
+  },
+  {
+    "id": "cfmoto",
+    "label": "CFMOTO",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/cfmoto.png"
+  },
+  {
+    "id": "ducati",
+    "label": "Ducati",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/ducati.png"
+  },
+  {
+    "id": "ecooter",
+    "label": "Ecooter",
+    "source": "https://ecooter.gr/wp-content/uploads/2020/10/ECOOTER_LOGO_black.png",
+    "ext": "png",
+    "vector": false
+  },
+  {
+    "id": "euro",
+    "label": "Euro",
+    "source": "http://mitsukoshishop.ph/attachments/shop_brand/EURO-M.png",
+    "ext": "png",
+    "vector": false
+  },
+  {
+    "id": "fkm",
+    "label": "FKM",
+    "source": "https://fkm.com.ph/landing_page/img/logo/logo-dark.png",
+    "ext": "png",
+    "vector": false
+  },
+  {
+    "id": "harley-davidson",
+    "label": "Harley-Davidson",
+    "source": "https://www.logo.wine/a/logo/Harley-Davidson/Harley-Davidson-Logo.wine.svg",
+    "ext": "svg",
+    "vector": true
+  },
+  {
+    "id": "hatasu",
+    "label": "HATASU",
+    "source": "https://imgcdn.zigwheels.ph/brochures/198/3173/6701/hatasu-haru-electric-615860.pdf",
+    "preparation": "Logo extracted from brochure page 1, original embedded image 13; imagegen cutout in brand red.",
+    "file": "hatasu-cutout.png"
+  },
+  {
+    "id": "hero",
+    "label": "Hero",
+    "source": "https://logotyp.us/file/hero.svg",
+    "vector": true
+  },
+  {
+    "id": "honda",
+    "label": "Honda",
+    "source": "https://powersports.honda.com/-/media/feature/powersports/site-modules/shared/logo.svg",
+    "ext": "svg",
+    "vector": true,
+    "file": "honda-positive.svg",
+    "preparation": "Native SVG positive variant: remove panel; use original Honda red for wing/wordmark."
+  },
+  {
+    "id": "husqvarna",
+    "label": "Husqvarna",
+    "source": "https://seekvectorlogo.com/wp-content/uploads/2018/03/husqvarna-motorcycles-vector-logo.png",
+    "vector": false,
+    "file": "husqvarna-cutout.png",
+    "preparation": "Imagegen-assisted removal of white panel, visually checked against motorcycle source."
+  },
+  {
+    "id": "indian-motorcycle",
+    "label": "Indian Motorcycle",
+    "source": "https://logotyp.us/file/indian-motorcycle.svg",
+    "vector": true
+  },
+  {
+    "id": "italjet",
+    "label": "Italjet",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/italjet-1652086491.png"
+  },
+  {
+    "id": "kawasaki",
+    "label": "Kawasaki",
+    "source": "https://logotyp.us/file/kawasaki.svg",
+    "vector": true
+  },
+  {
+    "id": "keeway",
+    "label": "Keeway",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/keeway.png"
+  },
+  {
+    "id": "kidlat",
+    "label": "Kidlat",
+    "source": "https://kidlatev.com/wp-content/uploads/2022/06/KIDLATEVlogo2.webp",
+    "ext": "webp",
+    "vector": false
+  },
+  {
+    "id": "kove",
+    "label": "KOVE",
+    "source": "https://www.kovemoto.com/wp-content/uploads/2026/06/logo-5.png",
+    "ext": "png",
+    "vector": false
+  },
+  {
+    "id": "ktm",
+    "label": "KTM",
+    "source": "https://logotyp.us/file/ktm.svg",
+    "vector": true
+  },
+  {
+    "id": "kymco",
+    "label": "KYMCO",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/kymco.png"
+  },
+  {
+    "id": "lambretta",
+    "label": "Lambretta",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/-1628662653.png"
+  },
+  {
+    "id": "monarch",
+    "label": "Monarch",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/monarch-1745575479.png",
+    "file": "monarch-cutout.png",
+    "preparation": "Imagegen assisted background cutout and navy positive variant, visually checked against source."
+  },
+  {
+    "id": "morbidelli",
+    "label": "Morbidelli",
+    "source": "https://www.morbidelli.com/_nuxt/morbidelli-dark.CUzgpJZS.png",
+    "ext": "png",
+    "vector": false
+  },
+  {
+    "id": "moto-guzzi",
+    "label": "Moto Guzzi",
+    "source": "https://www.logo.wine/a/logo/Moto_Guzzi/Moto_Guzzi-Logo.wine.svg",
+    "ext": "svg",
+    "vector": true,
+    "file": "moto-guzzi-positive.svg",
+    "preparation": "Remove SVG background panel; preserve original artwork."
+  },
+  {
+    "id": "moto-morini",
+    "label": "Moto Morini",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/-1628247005.png"
+  },
+  {
+    "id": "motoposh",
+    "label": "Motoposh",
+    "source": "https://www.motoposh.ph/images/motoposh%20new%20logo.png",
+    "ext": "png",
+    "vector": false
+  },
+  {
+    "id": "motorstar",
+    "label": "MotorStar",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/motorstar.png"
+  },
+  {
+    "id": "mv-agusta",
+    "label": "MV Agusta",
+    "source": "https://www.logo.wine/a/logo/MV_Agusta/MV_Agusta-Logo.wine.svg",
+    "ext": "svg",
+    "vector": true
+  },
+  {
+    "id": "nwow",
+    "label": "NWOW",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/nwow.png"
+  },
+  {
+    "id": "peugeot-motocycles",
+    "label": "Peugeot Motocycles",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/-1658815706.png"
+  },
+  {
+    "id": "qjmotor",
+    "label": "QJMOTOR",
+    "source": "https://static.wixstatic.com/media/1b1bcd_68358b33023c45feba017f12d15b8f3f~mv2.png",
+    "ext": "png",
+    "vector": false
+  },
+  {
+    "id": "royal-enfield",
+    "label": "Royal Enfield",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/royal-enfield.png"
+  },
+  {
+    "id": "rusi",
+    "label": "Rusi",
+    "source": "https://images.seeklogo.com/logo-png/37/2/rusi-logo-png_seeklogo-373178.png",
+    "ext": "png",
+    "vector": false,
+    "file": "rusi-transparent.png"
+  },
+  {
+    "id": "segway",
+    "label": "Segway",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/segway-1713263786.png"
+  },
+  {
+    "id": "skygo",
+    "label": "Skygo",
+    "source": "https://images.seeklogo.com/logo-png/21/2/skygo-logo-png_seeklogo-214729.png",
+    "ext": "png",
+    "vector": false,
+    "file": "skygo-positive.png"
+  },
+  {
+    "id": "sunra",
+    "label": "SUNRA",
+    "source": "https://imgs-data-brwq.bcdn8.com/sunraev0728/xinri/t/xri/images/logo.svg",
+    "file": "sunra-positive.svg",
+    "vector": true,
+    "preparation": "Native SVG dark positive wordmark; preserve yellow emblem."
+  },
+  {
+    "id": "suzuki",
+    "label": "Suzuki",
+    "source": "https://www.logo.wine/a/logo/Suzuki/Suzuki-Logo.wine.svg",
+    "ext": "svg",
+    "vector": true
+  },
+  {
+    "id": "sym",
+    "label": "SYM",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/sym-1652086571.png"
+  },
+  {
+    "id": "triumph",
+    "label": "Triumph",
+    "source": "https://logotyp.us/file/triumph.svg",
+    "vector": true
+  },
+  {
+    "id": "tvs",
+    "label": "TVS",
+    "source": "https://logotyp.us/file/tvs.svg",
+    "vector": true
+  },
+  {
+    "id": "um",
+    "label": "UM",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/um.png"
+  },
+  {
+    "id": "ural",
+    "label": "Ural",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/ural-1628075097.png"
+  },
+  {
+    "id": "vespa",
+    "label": "Vespa",
+    "source": "https://logotyp.us/file/vespa.svg",
+    "vector": true
+  },
+  {
+    "id": "vinfast",
+    "label": "VinFast",
+    "source": "https://imgcdn.zigwheels.ph/brandlogo/motorcycles/vinfast-1716371850.png"
+  },
+  {
+    "id": "voge",
+    "label": "VOGE",
+    "source": "https://cdn.prod.website-files.com/687da27145ede448e0fe4d19/68c0ffc0109f56bcfbaa549a_a51e1df623c8a3c756b59290994ebd13_voge%20logo%20-%20vertical.webp",
+    "ext": "webp",
+    "vector": false
+  },
+  {
+    "id": "yamaha",
+    "label": "Yamaha",
+    "source": "https://logotyp.us/file/yamaha.svg",
+    "vector": true
+  },
+  {
+    "id": "zeeho",
+    "label": "ZEEHO",
+    "source": "https://www.zeehoev.com/content/dam/zeeho/global/home/ZEEHO_Logo_Black.png",
+    "ext": "png",
+    "vector": false
+  },
+  {
+    "id": "zontes",
+    "label": "Zontes",
+    "source": "https://images.seeklogo.com/logo-png/44/2/zontes-benelux-logo-png_seeklogo-444653.png",
+    "ext": "png",
+    "vector": false,
+    "file": "zontes-transparent.png"
+  }
+]

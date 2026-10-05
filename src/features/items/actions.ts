@@ -6,6 +6,8 @@ import { uuidSchema } from '@/lib/validation';
 import { errorMessage } from '@/lib/errors';
 import { isTemplate, isReminderPreset } from '@/features/templates';
 import { dateSchema, requiredDate } from './validation';
+import { isMotorcycleBrand } from './motorcycle-brands';
+import { isSubscriptionBrand } from './subscription-brands';
 import { isCarBrand } from './car-brands';
 function refresh() { revalidatePath('/dashboard'); revalidatePath('/items', 'layout'); revalidatePath('/purchases','layout'); revalidatePath('/settings/billing'); }
 export async function createItemDraft(id: string, template: string): Promise<ActionResult> {
@@ -21,12 +23,23 @@ export async function saveItem(form: FormData): Promise<ActionResult> {
   if (preset && !isReminderPreset(preset)) return { error: 'Choose a supported reminder type.' };
   const brand = form.has('car_brand') ? String(form.get('car_brand') || '') : null;
   if (brand && !isCarBrand(brand)) return { error: 'Choose a supported car brand.' };
+  const motorcycleBrand = form.has('motorcycle_brand') ? String(form.get('motorcycle_brand') || '') : null;
+  if (motorcycleBrand && !isMotorcycleBrand(motorcycleBrand)) return { error: 'Choose a supported motorcycle brand.' };
+  if (brand && motorcycleBrand) return { error: 'Choose a brand for this vehicle type.' };
+  const subscriptionBrand = form.has('subscription_brand') ? String(form.get('subscription_brand') || '') : null;
+  if (subscriptionBrand && !isSubscriptionBrand(subscriptionBrand, preset)) return { error: 'Choose a supported service or gym brand.' };
+  if (subscriptionBrand && (brand || motorcycleBrand)) return { error: 'Choose a brand for this reminder type.' };
   let date = null;
   if (form.get('date')) {
     try { const parsed = dateSchema.safeParse(JSON.parse(String(form.get('date')))); if (!parsed.success) return { error: parsed.error.issues[0].message }; date = parsed.data; } catch { return { error: 'Check the date details.' }; }
   }
   const { supabase } = await requireUser();
-  const { error } = await supabase.rpc('save_item_with_date', { p_id: id, p_revision: revision, p_label: label, p_notes: notes, p_date: date, p_preset: preset || (form.has('preset') ? '' : null), p_car_brand: brand });
+  const parameters = { p_id: id, p_revision: revision, p_label: label, p_notes: notes, p_date: date, p_preset: preset || (form.has('preset') ? '' : null) };
+  const { error } = subscriptionBrand !== null
+    ? await supabase.rpc('save_subscription_item_with_date', { ...parameters, p_subscription_brand: subscriptionBrand })
+    : motorcycleBrand !== null
+    ? await supabase.rpc('save_motorcycle_item_with_date', { ...parameters, p_motorcycle_brand: motorcycleBrand })
+    : await supabase.rpc('save_item_with_date', { ...parameters, p_car_brand: brand });
   if (error) return { error: errorMessage(error) }; refresh();
   const {data:coverage}=await supabase.rpc('item_coverage',{p_id:id});
   return { id, uncovered: Boolean(date?.reminders_enabled && (coverage as {coverage?:string})?.coverage !== 'covered') };
