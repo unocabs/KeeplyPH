@@ -1,0 +1,64 @@
+[
+  {
+    "engine": "chrome",
+    "width": 1280,
+    "choicesVerified": 67,
+    "checks": [
+      "all category labels and links",
+      "purpose modifiers",
+      "search and empty state",
+      "form identity",
+      "dialog close and Escape",
+      "provider image failure",
+      "no horizontal overflow",
+      "no page exceptions"
+    ]
+  },
+  {
+    "engine": "chrome",
+    "width": 390,
+    "choicesVerified": 67,
+    "checks": [
+      "all category labels and links",
+      "purpose modifiers",
+      "search and empty state",
+      "form identity",
+      "dialog close and Escape",
+      "provider image failure",
+      "no horizontal overflow",
+      "no page exceptions"
+    ]
+  },
+  {
+    "engine": "webkit",
+    "width": 1280,
+    "choicesVerified": 67,
+    "checks": [
+      "all category labels and links",
+      "purpose modifiers",
+      "search and empty state",
+      "form identity",
+      "dialog close and Escape",
+      "provider image failure",
+      "no horizontal overflow",
+      "no page exceptions"
+    ],
+    "localHttpAdjustment": "Removed only upgrade-insecure-requests from intercepted document CSP; application source and production headers unchanged."
+  },
+  {
+    "engine": "webkit",
+    "width": 390,
+    "choicesVerified": 67,
+    "checks": [
+      "all category labels and links",
+      "purpose modifiers",
+      "search and empty state",
+      "form identity",
+      "dialog close and Escape",
+      "provider image failure",
+      "no horizontal overflow",
+      "no page exceptions"
+    ],
+    "localHttpAdjustment": "Removed only upgrade-insecure-requests from intercepted document CSP; application source and production headers unchanged."
+  }
+]

@@ -57,7 +57,7 @@ export function UpcomingTimeline({ rows, today, base = '' }: { rows: DateRow[]; 
             </span>;
           })}
           <button type="button" className={styles.due} style={{ left: `${timelinePosition(due, today)}%` }} title={[reminderProviderLabel(row.item), row.date.label].filter(Boolean).join(' · ')} aria-label={`${row.item.product_name}${reminderProviderLabel(row.item) ? ' · ' + reminderProviderLabel(row.item) + ' · ' + categoryLabel(itemCategory(row.item)) : ''} due ${formatDate(due)}. View reminder details`} aria-haspopup="dialog" onClick={event => { event.currentTarget.focus(); setSelected(row); dialog.current?.showModal(); }}>
-            <ReminderIcon template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} brand={row.item.car_brand} motorcycleBrand={row.item.motorcycle_brand} subscriptionBrand={row.item.subscription_brand} insurerId={row.item.insurer_id} lenderId={row.item.lender_id} size={20} />
+            <ReminderIcon template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} brand={row.item.car_brand} motorcycleBrand={row.item.motorcycle_brand} subscriptionBrand={row.item.subscription_brand} utilityId={row.item.utility_id} insurerId={row.item.insurer_id} lenderId={row.item.lender_id} size={20} />
           </button>
         </div>
       </div>;

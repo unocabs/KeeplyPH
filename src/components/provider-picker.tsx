@@ -44,6 +44,6 @@ export function ProviderPicker({ value, onChange, title, fieldName, choices, log
       {!results.length && <div className={styles.empty}><p role="status">No matching provider found.</p><button type="button" className="text-button" onMouseDown={event => event.preventDefault()} onClick={() => select('other')}>Use {choices.find(choice => choice.id === 'other')?.label}</button></div>}
     </div>}
     {note && <p className={styles.dealerNote}>{note}</p>}
-    {value && <div className={styles.help}><button type="button" className="text-button" onClick={() => select('')}>Clear {fieldName === 'lender_id' ? 'lender' : 'insurer'}</button></div>}
+    {value && <div className={styles.help}><button type="button" className="text-button" onClick={() => select('')}>Clear {fieldName === 'lender_id' ? 'lender' : fieldName === 'utility_id' ? 'biller' : 'insurer'}</button></div>}
   </div>;
 }

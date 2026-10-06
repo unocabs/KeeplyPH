@@ -1,0 +1,83 @@
+{
+  "/": {
+    "status": 200,
+    "title": "All-in-One Loan, Bill, Warranty & ID Reminders",
+    "description": "Track loan payments, bills, warranties, IDs and any important date in one place. Set recurring payment reminders through your end date with Keeply PH.",
+    "canonical": "https://www.keeplyph.com/",
+    "jsonLd": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "name": "Keeply PH",
+            "url": "https://www.keeplyph.com",
+            "inLanguage": "en-PH"
+          },
+          {
+            "@type": "WebApplication",
+            "name": "Keeply",
+            "url": "https://www.keeplyph.com",
+            "applicationCategory": "LifestyleApplication",
+            "operatingSystem": "Web browser",
+            "description": "Track loan payments, bills, warranties, IDs and any important date in one place. Set recurring payment reminders through your end date with Keeply PH.",
+            "featureList": [
+              "Warranty and appliance reminders",
+              "Recurring loan payment reminders",
+              "Car payment and renewal reminders",
+              "ID and passport date reminders",
+              "NBI and Police Clearance reminders",
+              "Water and electric bill reminders",
+              "Optional alerts"
+            ],
+            "inLanguage": "en-PH"
+          }
+        ]
+      }
+    ]
+  },
+  "/loan-payment-reminder": {
+    "status": 200,
+    "title": "Loan Payment Reminders Philippines · Keeply PH",
+    "description": "Remember personal, home, car, government and online loan payments with Keeply PH. Set monthly reminders, an optional peso amount and your loan end date.",
+    "canonical": "https://www.keeplyph.com/loan-payment-reminder",
+    "jsonLd": []
+  },
+  "/warranty-tracker": {
+    "status": 200,
+    "title": "Receipt & warranty tracker Philippines · Keeply PH",
+    "description": "Keep purchase receipts and warranty dates together. Optional private files and alerts you choose, with a free Keeply account.",
+    "canonical": "https://www.keeplyph.com/warranty-tracker",
+    "jsonLd": []
+  },
+  "/vehicle-registration-reminder": {
+    "status": 200,
+    "title": "Car & motorcycle registration alerts Philippines · Keeply PH",
+    "description": "Remember user-confirmed vehicle registration, insurance renewal and service dates with Keeply. Car and motorcycle templates, optional alerts.",
+    "canonical": "https://www.keeplyph.com/vehicle-registration-reminder",
+    "jsonLd": []
+  },
+  "/document-expiry-tracker": {
+    "status": 200,
+    "title": "Passport & driver’s license expiry alerts Philippines · Keeply PH",
+    "description": "Remember passport and driver’s license expiration with Keeply. Store a label and printed expiry date without uploading an identity scan.",
+    "canonical": "https://www.keeplyph.com/document-expiry-tracker",
+    "jsonLd": []
+  },
+  "/demo": {
+    "status": 200,
+    "title": "Sample preview · Keeply PH",
+    "description": "Your all-in-one place for recurring loan payments, warranties, IDs, passports, bills and other important dates, with email alerts you choose.",
+    "robots": "noindex, nofollow",
+    "jsonLd": []
+  },
+  "/demo/add": {
+    "status": 200,
+    "title": "Sample preview · Keeply PH",
+    "description": "Your all-in-one place for recurring loan payments, warranties, IDs, passports, bills and other important dates, with email alerts you choose.",
+    "robots": "noindex, nofollow",
+    "jsonLd": []
+  },
+  "/robots.txt": "User-Agent: *\nAllow: /\n\nSitemap: https://www.keeplyph.com/sitemap.xml\n",
+  "/sitemap.xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n<url>\n<loc>https://www.keeplyph.com</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/pricing</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/loan-payment-reminder</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/warranty-tracker</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/vehicle-registration-reminder</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/lto-registration-renewal</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/aircon-cleaning-schedule</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/document-expiry-tracker</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/privacy</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/terms</loc>\n</url>\n</urlset>\n"
+}

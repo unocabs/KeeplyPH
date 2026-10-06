@@ -11,6 +11,7 @@ import { isSubscriptionBrand } from './subscription-brands';
 import { isCarBrand } from './car-brands';
 import { isLender } from './lenders';
 import { isInsurer, insurancePreset } from './insurers';
+import { isUtility, utilityPreset } from './utilities';
 function refresh() { revalidatePath('/dashboard'); revalidatePath('/items', 'layout'); revalidatePath('/purchases','layout'); revalidatePath('/settings/billing'); }
 export async function createItemDraft(id: string, template: string): Promise<ActionResult> {
   if (!uuidSchema.safeParse(id).success || !isTemplate(template)) return { error: 'Choose a supported reminder type.' };
@@ -39,13 +40,19 @@ export async function saveItem(form: FormData): Promise<ActionResult> {
   const insurerName = form.has('insurer_name') ? String(form.get('insurer_name') || '').trim() : null;
   if (insurerId !== null && (!insurancePreset('other', preset) || (insurerId && !isInsurer(insurerId, preset)))) return { error: 'Choose an insurer for this insurance type.' };
   if ((insurerName && (insurerId !== 'other' || insurerName.length > 160)) || (insurerId !== null && (lenderId !== null || subscriptionBrand || brand || motorcycleBrand))) return { error: 'Please check the insurer details.' };
+  const utilityId = form.has('utility_id') ? String(form.get('utility_id') || '') : null;
+  const utilityName = form.has('utility_name') ? String(form.get('utility_name') || '').trim() : null;
+  if (utilityId !== null && (!utilityPreset('other', preset) || (utilityId && !isUtility(utilityId, preset)))) return { error: 'Choose a biller for this bill type.' };
+  if ((utilityName && (utilityId !== 'other' || utilityName.length > 160)) || (utilityId !== null && (insurerId !== null || lenderId !== null || subscriptionBrand || brand || motorcycleBrand))) return { error: 'Please check the biller details.' };
   let date = null;
   if (form.get('date')) {
     try { const parsed = dateSchema.safeParse(JSON.parse(String(form.get('date')))); if (!parsed.success) return { error: parsed.error.issues[0].message }; date = parsed.data; } catch { return { error: 'Check the date details.' }; }
   }
   const { supabase } = await requireUser();
   const parameters = { p_id: id, p_revision: revision, p_label: label, p_notes: notes, p_date: date, p_preset: preset || (form.has('preset') ? '' : null) };
-  const { error } = insurerId !== null
+  const { error } = utilityId !== null
+    ? await supabase.rpc('save_utility_item_with_date', { ...parameters, p_utility_id: utilityId, p_utility_name: utilityName })
+    : insurerId !== null
     ? await supabase.rpc('save_insurance_item_with_date', { ...parameters, p_insurer_id: insurerId, p_insurer_name: insurerName })
     : lenderId !== null
     ? await supabase.rpc('save_loan_item_with_date', { ...parameters, p_lender_id: lenderId, p_lender_name: lenderName, p_car_brand: brand, p_motorcycle_brand: motorcycleBrand })
