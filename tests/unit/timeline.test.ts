@@ -25,6 +25,39 @@ function fixture(due = '2027-01-03') {
 }
 
 describe('dashboard timeline', () => {
+  it('keeps saved brand artwork consistent between the timeline and Upcoming list', () => {
+    const identities = [
+      { template_key: 'other' as const, reminder_preset: 'streaming', subscription_brand: 'youtube-premium', source: '/subscription-brands/youtube-premium.webp' },
+      { template_key: 'other' as const, reminder_preset: 'streaming', subscription_brand: 'netflix', source: '/subscription-brands/netflix.webp' },
+      { template_key: 'other' as const, reminder_preset: 'gym', subscription_brand: 'anytime-fitness', source: '/subscription-brands/anytime-fitness.webp' },
+      { template_key: 'car' as const, reminder_preset: null, car_brand: 'kia', source: '/car-brands/kia.webp' },
+      { template_key: 'motorcycle' as const, reminder_preset: null, motorcycle_brand: 'honda', source: '/motorcycle-brands/honda.webp' },
+      { template_key: 'other' as const, reminder_preset: 'motorcycle-loan', motorcycle_brand: 'yamaha', source: '/motorcycle-brands/yamaha.webp' },
+    ];
+    for (const { source, ...identity } of identities) {
+      const item = { ...fixture(), car_brand: null, motorcycle_brand: null, subscription_brand: null, ...identity, product_name: 'My reminder' };
+      const timeline = renderToStaticMarkup(createElement(UpcomingTimeline, { rows: timelineRows([item], today), today }));
+      expect(timeline).toContain(source);
+      const dashboard = renderToStaticMarkup(createElement(Dashboard, { items: [item], today, name: 'Test', usage }));
+      // Timeline, Upcoming, and the reminder card share the same saved identity.
+      expect(dashboard.split(`src="${source}"`)).toHaveLength(4);
+    }
+  });
+  it('keeps generic icons for missing, unknown, and incompatible saved brands', () => {
+    for (const identity of [
+      { reminder_preset: 'streaming', subscription_brand: null },
+      { reminder_preset: 'streaming', subscription_brand: 'unknown' },
+      { reminder_preset: 'streaming', subscription_brand: 'anytime-fitness' },
+      { reminder_preset: 'life-insurance', subscription_brand: 'netflix' },
+      { reminder_preset: 'motorcycle-loan', motorcycle_brand: 'unknown' },
+    ]) {
+      const item = { ...fixture(), template_key: 'other' as const, car_brand: null, motorcycle_brand: null, subscription_brand: null, ...identity };
+      const html = renderToStaticMarkup(createElement(UpcomingTimeline, { rows: timelineRows([item], today), today }));
+      expect(html).not.toContain('-brands/');
+      expect(html).toContain('reminder-icon');
+      expect(html).toContain('<svg');
+    }
+  });
   it('retains the exact fallback hero and Add Reminder when no dates qualify', () => {
     for (const items of [[], [fixture('2027-01-20')], [fixture('2026-12-19')]]) {
       const html = renderToStaticMarkup(createElement(Dashboard, { items, today, name: 'Test', usage }));

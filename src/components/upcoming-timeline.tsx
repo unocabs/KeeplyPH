@@ -52,7 +52,7 @@ export function UpcomingTimeline({ rows, today, base = '' }: { rows: DateRow[]; 
             </span>;
           })}
           <button type="button" className={styles.due} style={{ left: `${timelinePosition(due, today)}%` }} aria-label={`${row.item.product_name} due ${formatDate(due)}. View reminder details`} aria-haspopup="dialog" onClick={event => { event.currentTarget.focus(); setSelected(row); dialog.current?.showModal(); }}>
-            <ReminderIcon template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} brand={row.item.car_brand} size={20} />
+            <ReminderIcon template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} brand={row.item.car_brand} motorcycleBrand={row.item.motorcycle_brand} subscriptionBrand={row.item.subscription_brand} size={20} />
           </button>
         </div>
       </div>;
