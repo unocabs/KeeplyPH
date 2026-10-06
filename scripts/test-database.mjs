@@ -1301,6 +1301,10 @@ try {
     await (await import('../tests/database/lenders.mjs')).testLenders({admin,actor,user,test});
   }
 
+  if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610060026_insurance_providers.sql') {
+    await (await import('../tests/database/insurers.mjs')).testInsurers({admin,actor,user,test});
+  }
+
   console.log('\n' + passed + ' database integration tests passed.');
 } finally {
   if (admin) await admin.end();

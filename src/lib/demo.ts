@@ -65,6 +65,7 @@ export function sampleItems(today = todayIn()): ItemWithDetails[] {
       merchant: sample.merchant || null, price_minor: sample.price ?? null, currency: 'PHP',
       category: template === 'receipt' ? (id === ids.headphones ? 'electronics' : 'appliances') : null,
       notes: sample.note, revision: 1, created_at: timestamp, updated_at: timestamp,
+      insurer_id: sample.preset === 'life-insurance' ? 'sun-life' : null, insurer_name: null,
       lender_id: sample.preset === 'credit-card-installment' ? 'home-credit' : null, lender_name: null,
       template_key: template, subscription_brand: sample.preset === 'streaming' ? 'netflix' : null, car_brand: template === 'car' ? 'toyota' : null, motorcycle_brand: template === 'motorcycle' ? 'honda' : null, reminder_preset: sample.preset || null, template_version: 1,
       archived_at: null, coverage: covered ? 'covered' : 'off', dates: [], documents: [],

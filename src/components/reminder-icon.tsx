@@ -16,6 +16,8 @@ import { getSubscriptionBrand } from '@/features/items/subscription-brands';
 import { SubscriptionBrandLogo } from './subscription-brand-logo';
 import { getLender, loanPreset } from '@/features/items/lenders';
 import { LenderLogo } from './lender-logo';
+import { getInsurer } from '@/features/items/insurers';
+import { ProviderLogo } from './provider-logo';
 
 type GlyphProps = { size?: number; strokeWidth?: number; 'aria-hidden'?: boolean };
 type Glyph = ComponentType<GlyphProps>;
@@ -78,6 +80,7 @@ interface IconProps {
   brand?: string | null;
   motorcycleBrand?: string | null;
   subscriptionBrand?: string | null;
+  insurerId?: string | null;
   lenderId?: string | null;
   size?: number;
 }
@@ -91,6 +94,8 @@ export function TemplateIcon({ template, category, preset, group, size = 22 }: I
 }
 export function ReminderIcon(props: IconProps) {
   const group = props.group || itemCategory({ template_key: props.template, reminder_preset: props.preset });
+  const insurer = getInsurer(props.template, props.preset, props.insurerId);
+  if (insurer) return <span className="reminder-icon group-insurance lender-icon" aria-hidden="true"><ProviderLogo source={'/insurers/' + insurer.logo + '.webp'} fallback={<TemplateIcon {...props} />} badge={<span className="loan-badge insurance-badge"><ShieldCheck strokeWidth={1.8} /></span>} /></span>;
   const lender = getLender(props.template, props.preset, props.lenderId);
   if (lender) return <span className="reminder-icon group-loans lender-icon" aria-hidden="true"><LenderLogo lender={lender} fallback={<HandCoins size={props.size || 22} strokeWidth={1.7} />} badge={<span className="loan-badge"><HandCoins strokeWidth={1.8} /></span>} /></span>;
   // Saved loan reminders use loan identity; manufacturer artwork stays on vehicle reminders.

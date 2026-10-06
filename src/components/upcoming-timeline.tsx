@@ -8,7 +8,7 @@ import { alertStatus, dateStatus, type DateRow } from '@/features/items/domain';
 import { timelineAlerts, timelineAlertGroups, timelinePosition } from '@/features/items/timeline';
 import { itemCategory } from '@/features/templates/categories';
 import { categoryLabel } from './item-ui';
-import { lenderLabel } from '@/features/items/lenders';
+import { reminderProviderLabel } from '@/features/items/provider-label';
 import { ReminderIcon } from './reminder-icon';
 import { AddItemButton } from './template-picker';
 import styles from './upcoming-timeline.module.css';
@@ -41,7 +41,7 @@ export function UpcomingTimeline({ rows, today, base = '' }: { rows: DateRow[]; 
     {visible.map(row => {
       const due = row.occurrence.due_on;
       return <div className={styles.row} key={row.item.id} data-category={itemCategory(row.item)}>
-        <div className={styles.identity}><strong>{row.item.product_name}</strong><span>{lenderLabel(row.item) && <>{lenderLabel(row.item)} · </>}{row.date.label} · {daysUntil(due, today) === 0 ? 'Today' : shortDate(due)}</span></div>
+        <div className={styles.identity}><strong>{row.item.product_name}</strong><span>{reminderProviderLabel(row.item) && <>{reminderProviderLabel(row.item)} · </>}{row.date.label} · {daysUntil(due, today) === 0 ? 'Today' : shortDate(due)}</span></div>
         <div className={styles.track}>
           {timelineAlertGroups(row, today).map(group => {
             const first = group[0].on;
@@ -56,8 +56,8 @@ export function UpcomingTimeline({ rows, today, base = '' }: { rows: DateRow[]; 
               <span role="tooltip" id={`${row.date.id}-alert-${first}`} className={styles.tooltip}>{labels.map(label => <span key={label}>{label}</span>)}</span>
             </span>;
           })}
-          <button type="button" className={styles.due} style={{ left: `${timelinePosition(due, today)}%` }} title={[lenderLabel(row.item), row.date.label].filter(Boolean).join(' · ')} aria-label={`${row.item.product_name}${lenderLabel(row.item) ? ' · ' + lenderLabel(row.item) + ' · Loan' : ''} due ${formatDate(due)}. View reminder details`} aria-haspopup="dialog" onClick={event => { event.currentTarget.focus(); setSelected(row); dialog.current?.showModal(); }}>
-            <ReminderIcon template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} brand={row.item.car_brand} motorcycleBrand={row.item.motorcycle_brand} subscriptionBrand={row.item.subscription_brand} lenderId={row.item.lender_id} size={20} />
+          <button type="button" className={styles.due} style={{ left: `${timelinePosition(due, today)}%` }} title={[reminderProviderLabel(row.item), row.date.label].filter(Boolean).join(' · ')} aria-label={`${row.item.product_name}${reminderProviderLabel(row.item) ? ' · ' + reminderProviderLabel(row.item) + ' · ' + categoryLabel(itemCategory(row.item)) : ''} due ${formatDate(due)}. View reminder details`} aria-haspopup="dialog" onClick={event => { event.currentTarget.focus(); setSelected(row); dialog.current?.showModal(); }}>
+            <ReminderIcon template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} brand={row.item.car_brand} motorcycleBrand={row.item.motorcycle_brand} subscriptionBrand={row.item.subscription_brand} insurerId={row.item.insurer_id} lenderId={row.item.lender_id} size={20} />
           </button>
         </div>
       </div>;
@@ -69,7 +69,7 @@ export function UpcomingTimeline({ rows, today, base = '' }: { rows: DateRow[]; 
     </div>
     <dialog ref={dialog} className={styles.dialog} aria-labelledby={titleId} onClick={event => { if (event.target === event.currentTarget) dialog.current?.close(); }}>
       <div className="section-heading"><h2 id={titleId}>{selected?.item.product_name}</h2><button type="button" className="icon-button" aria-label="Close reminder details" onClick={() => dialog.current?.close()}><X size={21} aria-hidden="true" /></button></div>
-      {selected && <><p className={styles.caption}>{[categoryLabel(itemCategory(selected.item)), lenderLabel(selected.item), selected.date.label].filter(Boolean).join(' · ')}</p>
+      {selected && <><p className={styles.caption}>{[categoryLabel(itemCategory(selected.item)), reminderProviderLabel(selected.item), selected.date.label].filter(Boolean).join(' · ')}</p>
         <div className={styles.detailDue}><span>Due {formatDate(selected.occurrence.due_on)}</span><strong>{dateStatus(selected, today).replace('remaining', 'left')}</strong></div>
         <h3>Alerts {alertStatus(selected.item, selected.date) === 'enabled' ? 'enabled' : alertStatus(selected.item, selected.date) === 'paused' ? 'paused' : 'off'}</h3>
         {alerts.length ? <ul className={styles.alertList}>{alerts.map(alert => <li key={alert.on}><span>{formatDate(alert.on)}</span><small>{alert.channels.map(channel => channelNames[channel]).join(' / ')}</small></li>)}</ul> : <p className={styles.caption}>No alerts scheduled in the next 30 days.</p>}
