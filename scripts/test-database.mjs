@@ -43,6 +43,11 @@ try {
   await admin.query("create role anon; create role authenticated; create role service_role bypassrls; create schema auth; create schema storage; grant usage on schema auth,storage,public to anon,authenticated,service_role; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz,last_sign_in_at timestamptz,raw_user_meta_data jsonb default '{}'::jsonb); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]); create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text); alter table storage.objects enable row level security; grant select on storage.objects to authenticated;");
   let migrationSeed, recurrenceMigrationSeed, dueDateMigrationSeed;
   for (const name of (await readdir('supabase/migrations')).filter(n => n.endsWith('.sql') && (!process.env.PG_TEST_MIGRATION_THROUGH || n <= process.env.PG_TEST_MIGRATION_THROUGH)).sort()) {
+    if (name === '202610060024_expand_dashboard_timeline.sql') {
+      const checks = (await admin.query(await readFile('supabase/check-timeline-expansion-prerequisites.sql', 'utf8'))).rows;
+      assert.ok(checks.slice(0, -1).every(row => row.status.startsWith('PRESENT')));
+      assert.ok(checks.at(-1).status.startsWith('MISSING'));
+    }
     if(name==='202609230005_items.sql') {
       const u=await user(), id=await draft(u); await save(u,id,{expires_on:'2032-03-31',reminders_enabled:true});
       const old=(await admin.query('select id from public.warranties where purchase_id=$1',[id])).rows[0];
@@ -998,11 +1003,15 @@ try {
       await admin.query('update public.important_dates set reminders_enabled=false where id=$1',[item.dates[0].id]);
       assert.equal((await load()).find(item=>item.id===id).dates[0].scheduled_alerts.length,0);
     });
-    await test('Dashboard timeline includes six distinct nearest reminders despite multi-date items', async () => {
+    await test('Dashboard timeline guarantees distinct nearest reminders despite multi-date items', async () => {
+      const expanded = !process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610060024_expand_dashboard_timeline.sql';
+      const limit = expanded ? 11 : 6;
       const u=await user();
       const today=(await admin.query("select (now() at time zone 'Asia/Manila')::date::text today")).rows[0].today;
       const ids=[];
-      for(let n=0;n<8;n++) {
+      for(let n=0;n<limit+2;n++) {
+        // This selection fixture exceeds the normal per-minute draft allowance.
+        await admin.query("delete from private.rate_limit_buckets where user_id=$1 and action='draft'", [u]);
         const due=new Date(today+'T00:00:00Z');due.setUTCDate(due.getUTCDate()+n);
         ids.push(await newItem(u,'other',{kind:'other',label:'Due date',due_on:due.toISOString().slice(0,10),reminders_enabled:false,interval_months:null,offsets:[{unit:'days',value:7}]}));
       }
@@ -1012,8 +1021,13 @@ try {
       await admin.query("update public.items set created_at=now()-interval '1 year' where id=any($1::uuid[])",[ids]);
       await admin.query("insert into public.items(user_id,state,product_name,template_key) select $1,'saved','Recent receipt','receipt' from generate_series(1,6)",[u]);
       const items=(await actor(u,'select public.dashboard_timeline_items() items')).rows[0].items;
-      for(const id of ids.slice(0,6)) assert.ok(items.some(item=>item.id===id));
-      assert.ok(!items.some(item=>item.id===ids[6]));
+      for(const id of ids.slice(0,limit)) assert.ok(items.some(item=>item.id===id));
+      assert.ok(!items.some(item=>item.id===ids[limit]));
+      if (expanded) {
+        const checks = (await admin.query(await readFile('supabase/check-timeline-expansion-prerequisites.sql','utf8'))).rows;
+        assert.equal(checks.length,25);
+        assert.ok(checks.every(row=>row.status.startsWith('PRESENT')));
+      }
     });
   }
   if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610020016_occurrence_snooze.sql') {
@@ -1281,6 +1295,10 @@ try {
 
   if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610050023_due_date_alerts.sql') {
     await (await import('../tests/database/due-date-alerts.mjs')).testDueDateAlerts({admin,actor,user,newItem,registerPush,test,dueDateMigrationSeed});
+  }
+
+  if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610060025_loan_lenders.sql') {
+    await (await import('../tests/database/lenders.mjs')).testLenders({admin,actor,user,test});
   }
 
   console.log('\n' + passed + ' database integration tests passed.');

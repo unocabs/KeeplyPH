@@ -59,6 +59,7 @@ export interface Database {
       reminder_preview: Rpc<{ p_item_id: string }>;
       create_item_draft: Rpc<{ p_id: string; p_template: string }, string>;
       save_item_with_date: Rpc<{ p_id: string; p_revision: number; p_label: string; p_notes: string; p_date: Json | null; p_preset?: string | null; p_car_brand?: string | null }, string>;
+      save_loan_item_with_date: Rpc<{ p_id: string; p_revision: number; p_label: string; p_notes: string; p_date: Json | null; p_preset?: string | null; p_lender_id?: string | null; p_lender_name?: string | null; p_car_brand?: string | null; p_motorcycle_brand?: string | null }, string>;
       save_subscription_item_with_date: Rpc<{ p_id: string; p_revision: number; p_label: string; p_notes: string; p_date: Json | null; p_preset?: string | null; p_subscription_brand?: string | null }, string>;
       save_motorcycle_item_with_date: Rpc<{ p_id: string; p_revision: number; p_label: string; p_notes: string; p_date: Json | null; p_preset?: string | null; p_motorcycle_brand?: string | null }, string>;
       save_important_date: Rpc<{ p_id: string; p_item_id: string; p_revision: number; p_data: Json }, string>;

@@ -1,10 +1,10 @@
 # Coming Up dashboard hero
 
-The signed-in hero shows up to five actual reminders (four on narrow screens), each represented by its nearest open due date within the account-local inclusive today–30-day window. Existing onboarding, the fallback hero, the demo, public pages, and the detailed Upcoming section remain. Archived/draft reminders are excluded; disabling alerts does not hide a saved deadline.
+The signed-in hero shows five actual reminders initially on all screen sizes, with a temporary expansion to at most ten, each represented by its nearest open due date within the account-local inclusive today–30-day window. Existing onboarding, the fallback hero, the demo, public pages, and the detailed Upcoming section remain. Archived/draft reminders are excluded; disabling alerts does not hide a saved deadline.
 
 The database preview reads eligible pending/retry/sending email and push jobs using the delivery workers' eligibility helpers. Accepted, failed, cancelled, stale occurrences and unavailable push subscriptions are excluded. SMS is postponed and is not shown. Dates are converted using the account timezone; channels and multiple devices on the same day are grouped. No timeline dates are derived from configured offsets. Recurring reminders show their current open occurrence; future cycles are not invented. Account-local calendar day differences position markers without DST-sensitive local timestamp subtraction.
 
-Due icons open a native dialog, styled as a mobile bottom sheet, with category, date purpose, due date, countdown, alert state, scheduled dates/channels and a link to the existing reminder detail. Escape, close and backdrop dismissal restore focus. Nearby alert dots share one touch target with a tooltip listing every scheduled day; dots retain their exact proportional date positions. Alerts near a due icon use a secondary lane while retaining their horizontal date position. Alert tooltips appear on hover, focus or tap and do not navigate.
+Due icons open a native dialog, styled as a mobile bottom sheet, with category, date purpose, due date, countdown, alert state, scheduled dates/channels and a link to the existing reminder detail. Escape, close and backdrop dismissal restore focus. Nearby alert dots share one touch target with a tooltip listing every scheduled day; dots retain their exact proportional date positions. Alert dots share the horizontal track; lowered due icons meet same-day dots without connector stems. Alert tooltips appear on hover, focus or tap and do not navigate.
 
 ## Before deployment
 

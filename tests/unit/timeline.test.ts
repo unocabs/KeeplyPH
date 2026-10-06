@@ -11,6 +11,7 @@ const today = '2026-12-20';
 const usage = { purchases: 1, reminders: 1, storage_bytes: 0, premium: false, premium_until: null } as Usage;
 function fixture(due = '2027-01-03') {
   const item = structuredClone(sampleItems(today)[0]);
+  item.lender_id = null; item.lender_name = null;
   item.dates = [item.dates[0]];
   item.dates[0].occurrences = [{ ...item.dates[0].occurrences.at(-1)!, due_on: due }];
   item.dates[0].scheduled_alerts = [
@@ -32,7 +33,7 @@ describe('dashboard timeline', () => {
       { template_key: 'other' as const, reminder_preset: 'gym', subscription_brand: 'anytime-fitness', source: '/subscription-brands/anytime-fitness.webp' },
       { template_key: 'car' as const, reminder_preset: null, car_brand: 'kia', source: '/car-brands/kia.webp' },
       { template_key: 'motorcycle' as const, reminder_preset: null, motorcycle_brand: 'honda', source: '/motorcycle-brands/honda.webp' },
-      { template_key: 'other' as const, reminder_preset: 'motorcycle-loan', motorcycle_brand: 'yamaha', source: '/motorcycle-brands/yamaha.webp' },
+      { template_key: 'other' as const, reminder_preset: 'motorcycle-loan', motorcycle_brand: 'yamaha', lender_id: 'bpi', source: '/lenders/bpi.webp' },
     ];
     for (const { source, ...identity } of identities) {
       const item = { ...fixture(), car_brand: null, motorcycle_brand: null, subscription_brand: null, ...identity, product_name: 'My reminder' };
@@ -113,12 +114,17 @@ describe('dashboard timeline', () => {
     expect(timelineAlertGroups(row, today).map(group => group.map(alert => alert.on))).toEqual([[today, '2026-12-21', '2026-12-22'], ['2026-12-30']]);
   });
   it('renders one/five rows, overflow navigation, accessible dates, and preserves Upcoming below', () => {
-    for (const count of [1, 4, 5, 8]) {
+    for (const count of [1, 4, 5, 6, 10, 12]) {
       const items = Array.from({ length: count }, (_, index) => ({ ...fixture(), id: String(index), product_name: `Real reminder ${index}` }));
       const rows = timelineRows(items, today);
       const html = renderToStaticMarkup(createElement(UpcomingTimeline, { rows, today }));
       expect(html.match(/aria-haspopup="dialog"/g)).toHaveLength(Math.min(count, 5));
-      expect(html.includes('View all upcoming')).toBe(count > 4);
+      expect(html.includes('View all upcoming')).toBe(count > 5);
+      expect(html.includes('Show more')).toBe(count > 5);
+      if (count > 5) {
+        expect(html).toContain(`Show more · ${Math.min(count, 10) - 5} more`);
+        expect(html).toContain('aria-expanded="false"');
+      }
       expect(html).toContain('Real reminder 0 due January 3, 2027');
       expect(html).toContain('Email / Device alert');
       expect(html).toContain('role="tooltip"');

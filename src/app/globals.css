@@ -290,3 +290,9 @@ select {
 @media(max-width:600px){.reminder-quick-actions{gap:10px;margin-bottom:16px}.reminder-quick-card{padding:14px;gap:12px}.coverage-quick .quick-action-body{display:block}.coverage-meta{margin-top:4px}.reminder-quick-card h2{font-size:13px}.quick-action-link{font-size:11px}.coverage-meta{gap:6px}.alert-slot-count{font-size:11px}.important-dates-quick{min-height:84px}.date-primary-action{width:100%;margin-top:20px}.reminder-date-summary>div+div{border-top:1px solid var(--line);padding-top:16px}}
 
 .reminder-details>section>.panel:first-child{margin-top:0}
+
+/* Shared lender identity: the tile dimensions and calendar tracks stay unchanged. */
+.reminder-icon.lender-icon{position:relative;overflow:visible}
+.reminder-icon .lender-logo{width:80%;height:80%;object-fit:contain}
+.loan-badge{position:absolute;right:-3px;bottom:-2px;width:48%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:#f2eef8;color:#7b659b;border:2px solid #fff;box-shadow:0 1px 3px #59457c16}
+.loan-badge svg{width:78%;height:78%}

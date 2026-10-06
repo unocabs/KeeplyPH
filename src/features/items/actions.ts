@@ -9,6 +9,7 @@ import { dateSchema, requiredDate } from './validation';
 import { isMotorcycleBrand } from './motorcycle-brands';
 import { isSubscriptionBrand } from './subscription-brands';
 import { isCarBrand } from './car-brands';
+import { isLender } from './lenders';
 function refresh() { revalidatePath('/dashboard'); revalidatePath('/items', 'layout'); revalidatePath('/purchases','layout'); revalidatePath('/settings/billing'); }
 export async function createItemDraft(id: string, template: string): Promise<ActionResult> {
   if (!uuidSchema.safeParse(id).success || !isTemplate(template)) return { error: 'Choose a supported reminder type.' };
@@ -29,13 +30,19 @@ export async function saveItem(form: FormData): Promise<ActionResult> {
   const subscriptionBrand = form.has('subscription_brand') ? String(form.get('subscription_brand') || '') : null;
   if (subscriptionBrand && !isSubscriptionBrand(subscriptionBrand, preset)) return { error: 'Choose a supported service or gym brand.' };
   if (subscriptionBrand && (brand || motorcycleBrand)) return { error: 'Choose a brand for this reminder type.' };
+  const lenderId = form.has('lender_id') ? String(form.get('lender_id') || '') : null;
+  const lenderName = form.has('lender_name') ? String(form.get('lender_name') || '').trim() : null;
+  if (lenderId && !isLender(lenderId, preset)) return { error: 'Choose a lender for this loan type.' };
+  if ((lenderName && (lenderId !== 'other' || lenderName.length > 160)) || (lenderId !== null && subscriptionBrand)) return { error: 'Please check the lender details.' };
   let date = null;
   if (form.get('date')) {
     try { const parsed = dateSchema.safeParse(JSON.parse(String(form.get('date')))); if (!parsed.success) return { error: parsed.error.issues[0].message }; date = parsed.data; } catch { return { error: 'Check the date details.' }; }
   }
   const { supabase } = await requireUser();
   const parameters = { p_id: id, p_revision: revision, p_label: label, p_notes: notes, p_date: date, p_preset: preset || (form.has('preset') ? '' : null) };
-  const { error } = subscriptionBrand !== null
+  const { error } = lenderId !== null
+    ? await supabase.rpc('save_loan_item_with_date', { ...parameters, p_lender_id: lenderId, p_lender_name: lenderName, p_car_brand: brand, p_motorcycle_brand: motorcycleBrand })
+    : subscriptionBrand !== null
     ? await supabase.rpc('save_subscription_item_with_date', { ...parameters, p_subscription_brand: subscriptionBrand })
     : motorcycleBrand !== null
     ? await supabase.rpc('save_motorcycle_item_with_date', { ...parameters, p_motorcycle_brand: motorcycleBrand })
