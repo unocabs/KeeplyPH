@@ -19,6 +19,18 @@ export async function createItemDraft(id: string, template: string): Promise<Act
   const { error } = await supabase.rpc('create_item_draft', { p_id: id, p_template: template });
   return error ? { error: errorMessage(error) } : { id };
 }
+// A new reminder keeps the same ID across retries. If a response was lost after
+// saving, return the existing reminder rather than replaying a stale revision.
+export async function createAndSaveItem(form: FormData, template: string): Promise<ActionResult> {
+  const id = String(form.get('id') || '');
+  const draft = await createItemDraft(id, template);
+  if (draft.error) return draft;
+  const { supabase, userId } = await requireUser();
+  const { data, error } = await supabase.from('items').select('state').eq('id', id).eq('user_id', userId).single();
+  if (error || !data) return { error: 'Unable to check this reminder. Your details are kept; please try saving again.' };
+  if (data.state === 'saved') return { id };
+  return saveItem(form);
+}
 export async function saveItem(form: FormData): Promise<ActionResult> {
   const id = String(form.get('id') || ''), label = String(form.get('label') || '').trim(), notes = String(form.get('notes') || ''), revision = Number(form.get('revision'));
   if (!uuidSchema.safeParse(id).success || !label || label.length > 160 || notes.length > 5000 || !Number.isInteger(revision) || revision < 1) return { error: 'Please check the name and details.' };

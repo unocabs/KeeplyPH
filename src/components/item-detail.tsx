@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { CalendarDays, Plus } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { actionError } from '@/lib/action-error';
 import { recurrenceFrequencies, nextRecurringDate } from '@/features/items/recurrence';
 import { addMonths, formatDate, formatMoney, type Usage } from '@/lib/domain';
 import { templates, getReminderPreset } from '@/features/templates';
@@ -20,7 +21,7 @@ function DateEditor({ item, date, demo, onClose }: { item: ItemWithDetails; date
   const router=useRouter(), id=useRef(date?.id || '');
   const [value,setValue]=useState<DateInput>(date ? { kind:date.kind,label:date.label,due_on:currentOccurrence(date)?.due_on || '',reminders_enabled:date.reminders_enabled,offsets:date.offsets,interval_months:date.interval_months, recurrence_months:date.recurrence_months, recurrence_ends_on:date.recurrence_ends_on, recurrence_anchor:date.recurrence_anchor, payment_amount_minor:date.payment_amount_minor } : initialDate(item.template_key, undefined, item.reminder_preset));
   const [error,setError]=useState(''), [busy,setBusy]=useState(false);
-  async function submit(e: React.FormEvent) { e.preventDefault(); if(demo){ setError('This preview does not store changes. Sign in to save your dates.'); return; } setBusy(true);setError(''); try { id.current ||= crypto.randomUUID(); const r=await saveDate(id.current,item.id,date?.revision || 0,value);if(r.error) throw new Error(r.error);onClose();router.refresh(); }catch(e){setError(e instanceof Error ? e.message : 'Unable to save.');}finally{setBusy(false);} }
+  async function submit(e: React.FormEvent) { e.preventDefault(); if(demo){ setError('This preview does not store changes. Sign in to save your dates.'); return; } setBusy(true);setError(''); try { id.current ||= crypto.randomUUID(); const r=await saveDate(id.current,item.id,date?.revision || 0,value);if(r.error) throw new Error(r.error);onClose();router.refresh(); }catch(e){setError(actionError(e));}finally{setBusy(false);} }
   return <form onSubmit={submit} className="panel spaced"><fieldset disabled={busy}><h3>{date ? 'Edit date & schedule' : 'Add an important date'}</h3><DateFields preset={item.reminder_preset} template={item.template_key} value={value} onChange={setValue}/>{error && <p className="alert error" role="alert">{error}</p>}<div className="form-actions"><button type="button" className="button secondary" onClick={onClose}>Cancel</button><button className="button primary">{busy ? 'Saving…' : 'Save date'}</button></div></fieldset></form>;
 }
 function DateCard({ item, date, today, demo }: { item:ItemWithDetails;date:DateWithDetails;today:string;demo:boolean }) {

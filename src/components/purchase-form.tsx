@@ -6,6 +6,7 @@ import { ArrowLeft, Camera, FileText, Lightbulb, Trash2, UploadCloud } from 'luc
 import { addMonths, categories, FILE_TYPES, MAX_FILE_BYTES, todayIn, type Document, type PurchaseWithDetails } from '@/lib/domain';
 import { ProductTypePicker } from './product-type-picker';
 import { isProductType } from '@/features/purchases/product-types';
+import { actionError } from '@/lib/action-error';
 import { type Category } from '@/lib/domain';
 import { createDraft, savePurchase, deletePurchase } from '@/features/purchases/actions';
 import { prepareUpload, removeDocument } from '@/features/documents/actions';
@@ -55,8 +56,11 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
     if (!draft.current) {
       idRef.current ||= crypto.randomUUID();
       draft.current = createDraft(idRef.current).then(result => {
-        if (result.error) { draft.current = null; throw new Error(result.error); }
+        if (result.error) throw new Error(result.error);
         return idRef.current;
+      }).catch(error => {
+        draft.current = null;
+        throw error;
       });
     }
     return draft.current;
@@ -114,7 +118,7 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
       if (result.error) throw new Error(result.error);
       const saved = purchase?.state === 'saved' ? 'updated' : 'created';
       dirty.current = false; router.push('/items/' + result.id + '?saved=' + saved); router.refresh();
-    } catch (e) { setError(e instanceof Error ? e.message : 'Unable to save. Please retry.'); }
+    } catch (e) { setError(actionError(e)); }
     finally { setSaving(false); }
   }
   async function discardDraft() {
