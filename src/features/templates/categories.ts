@@ -16,7 +16,7 @@ const presetGroups: Record<string, readonly ReminderPreset[]> = {
   insurance: ['life-insurance', 'health-insurance', 'vehicle-insurance', 'home-insurance', 'travel-insurance', 'other-insurance'],
   bills: ['electric-bill', 'water-bill', 'internet-bill', 'mobile-bill', 'rent', 'association-dues', 'other-bill'],
   loans: [...loanPresetKeys, 'car-payment'],
-  subscriptions: ['streaming', 'software', 'gym', 'professional-membership', 'other-subscription'],
+  subscriptions: ['streaming', 'ai-subscription', 'software', 'gym', 'professional-membership', 'other-subscription'],
   documents: ['prc-license', 'postal-id', 'pwd-solo-parent-id', 'umid', 'national-id', 'other-id', 'nbi-clearance', 'police-clearance'],
   maintenance: ['appliance-service', 'home-maintenance', 'pest-control', 'other-service'],
   health: ['medical-appointment', 'dental-appointment', 'checkup', 'vaccination', 'other-appointment'],
@@ -27,7 +27,7 @@ export const reminderCategories: { key: string; label: string; description: stri
   { key: 'insurance', label: 'Insurance', description: 'Premium payments, policy renewals and reviews.', choices: [...vehicleInsurance, ...presets('life-insurance', 'health-insurance', 'vehicle-insurance', 'home-insurance', 'travel-insurance', 'other-insurance')] },
   { key: 'bills', label: 'Bills & household', description: 'Utilities, rent and household dues.', choices: presets('electric-bill', 'water-bill', 'internet-bill', 'mobile-bill', 'rent', 'association-dues', 'other-bill') },
   { key: 'loans', label: 'Loans & installments', description: 'Payment dates for every kind of loan.', choices: presets(...loanPresetKeys) },
-  { key: 'subscriptions', label: 'Subscriptions & memberships', description: 'Streaming, software, gym and membership payments.', choices: presets('streaming', 'software', 'gym', 'professional-membership', 'other-subscription') },
+  { key: 'subscriptions', label: 'Subscriptions & memberships', description: 'Streaming, AI, software, gym and membership payments.', choices: presets('streaming', 'ai-subscription', 'software', 'gym', 'professional-membership', 'other-subscription').map(choice => choice.preset === 'ai-subscription' ? { ...choice, aliases: ['artificial intelligence', 'ChatGPT', 'Claude', 'Gemini', 'Perplexity', 'Grok', 'Poe', 'GitHub Copilot', 'Cursor', 'Devin', 'Midjourney', 'Leonardo', 'Leonardo.Ai', 'Runway', 'ElevenLabs', 'Suno'] } : choice) },
   { key: 'documents', label: 'IDs, documents & clearances', description: 'Expiration, renewal and appointment dates.', choices: [template('licence'), template('passport'), ...presets('prc-license', 'postal-id', 'pwd-solo-parent-id', 'umid', 'national-id', 'other-id', 'nbi-clearance', 'police-clearance')] },
   { key: 'purchases', label: 'Purchases & warranties', description: 'Receipts and coverage for your purchases.', choices: ['electronics', 'appliances', 'home', 'clothing', 'other'].map(category => ({ label: category[0].toUpperCase() + category.slice(1), description: 'Keep your receipt and warranty dates.', template: 'receipt' as const, category })) },
   { key: 'maintenance', label: 'Maintenance & services', description: 'Vehicle servicing, aircon, appliances and home upkeep.', choices: [...vehicleMaintenance, template('aircon'), ...presets('appliance-service', 'home-maintenance', 'pest-control', 'other-service')] },
@@ -51,7 +51,7 @@ export function paymentPreset(preset?: string | null) {
 /** Defaults apply only to new dates; existing schedules remain as saved. */
 export function defaultRecurrenceMonths(preset?: string | null): number | null {
   if (presetCategory(preset) === 'loans') return 1;
-  return ['electric-bill', 'water-bill', 'internet-bill', 'mobile-bill', 'rent', 'association-dues', 'streaming', 'software', 'gym'].includes(preset || '') ? 1 : null;
+  return ['electric-bill', 'water-bill', 'internet-bill', 'mobile-bill', 'rent', 'association-dues', 'streaming', 'ai-subscription', 'software', 'gym'].includes(preset || '') ? 1 : null;
 }
 export function paymentDate(preset: string | null | undefined, kind: string, label: string): boolean {
   if (kind !== 'other' || !paymentPreset(preset)) return false;

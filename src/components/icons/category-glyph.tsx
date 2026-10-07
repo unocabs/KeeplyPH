@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 export type IconModifier = 'insurance' | 'maintenance' | 'payment' | 'warranty' | 'renewal' | 'registration' | 'verified' | 'medical' | 'school' | 'plus' | 'clock' | 'electric' | 'water' | 'wifi' | 'professional';
-export type IconName = 'car' | 'motorcycle' | 'house' | 'shield' | 'shield-heart' | 'shield-medical' | 'shield-check' | 'document' | 'wallet' | 'receipt' | 'calendar' | 'id' | 'passport' | 'stethoscope' | 'school' | 'book' | 'appliance' | 'aircon' | 'cloud' | 'card' | 'building' | 'bank' | 'laptop' | 'shirt' | 'plane' | 'briefcase' | 'repeat' | 'play' | 'dumbbell' | 'badge' | 'wrench' | 'bug' | 'heart' | 'tooth' | 'syringe' | 'cap' | 'checklist' | 'accessibility' | 'hand-coins' | 'phone' | 'envelope';
+export type IconName = 'sparkles' | 'car' | 'motorcycle' | 'house' | 'shield' | 'shield-heart' | 'shield-medical' | 'shield-check' | 'document' | 'wallet' | 'receipt' | 'calendar' | 'id' | 'passport' | 'stethoscope' | 'school' | 'book' | 'appliance' | 'aircon' | 'cloud' | 'card' | 'building' | 'bank' | 'laptop' | 'shirt' | 'plane' | 'briefcase' | 'repeat' | 'play' | 'dumbbell' | 'badge' | 'wrench' | 'bug' | 'heart' | 'tooth' | 'syringe' | 'cap' | 'checklist' | 'accessibility' | 'hand-coins' | 'phone' | 'envelope';
 export interface IconSpec { icon: IconName; modifier?: IconModifier }
 
 // Secondary planes share the primary hue. No gradients, filters, masks or IDs:
@@ -47,6 +47,7 @@ function BaseShape({ icon, omitDetail = false }: { icon: IconName; omitDetail?: 
     case 'plane': return <><Tone><path d="m21 3-7 8 1 7-3 2-3-7-5-2-1-3 8 1 7-7Z" /></Tone><path d="m21 3-7 8 1 7-3 2-3-7-5-2-1-3 8 1 7-7ZM5 16l-2 4 4-2" /></>;
     case 'briefcase': return <><Tone><rect x="3" y="8" width="18" height="13" rx="2" /></Tone><rect x="3" y="8" width="18" height="13" rx="2" /><path d="M8 8V4h8v4M3 12l9 4 9-4m-9 2v3" /></>;
     case 'repeat': return <><Tone><path d="m19 5-3-3v6Zm-14 14 3-3v6Z" /></Tone><path d="M4 10V5h15l-3-3m3 3-3 3m4 6v5H5l3 3m-3-3 3-3" /></>;
+    case 'sparkles': return <><Tone><path d="m10 5 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" /></Tone><path d="m10 5 2 5 5 2-5 2-2 5-2-5-5-2 5-2Zm9-3 1 2 2 1-2 1-1 2-1-2-2-1 2-1Zm0 15 .7 1.3 1.3.7-1.3.7-.7 1.3-.7-1.3-1.3-.7 1.3-.7Z" /></>;
     case 'play': return <><Tone><circle cx="12" cy="12" r="9" /></Tone><circle cx="12" cy="12" r="9" /><path d="m10 8 6 4-6 4Z" /></>;
     case 'dumbbell': return <><Tone><rect x="4" y="5" width="4" height="14" rx="1" /><rect x="16" y="5" width="4" height="14" rx="1" /></Tone><rect x="4" y="5" width="4" height="14" rx="1" /><rect x="16" y="5" width="4" height="14" rx="1" /><path d="M8 12h8M2 9v6m20-6v6" /></>;
     case 'badge': return <><Tone><path d="m12 2 3 2 4 .5 1 4 2 3.5-2 3.5-1 4-4 .5-3 2-3-2-4-.5-1-4L2 12l2-3.5 1-4L9 4Z" /></Tone><path d="m12 2 3 2 4 .5 1 4 2 3.5-2 3.5-1 4-4 .5-3 2-3-2-4-.5-1-4L2 12l2-3.5 1-4L9 4Z" /><path d="m8 12 3 3 5-6" /></>;

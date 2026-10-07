@@ -31,8 +31,8 @@ describe('subscription identity', () => {
     }
     expect(renderToStaticMarkup(createElement(ReminderIcon, { template: 'other', preset: 'gym', subscriptionBrand: 'anytime-fitness' }))).toContain('/subscription-brands/anytime-fitness.webp');
   });
-  it('ships visible transparent artwork for all 26 brands within a small storage budget', async () => {
-    expect(new Set(subscriptionBrands.map(brand => brand.id)).size).toBe(26);
+  it('ships visible transparent artwork for all 40 brands within a small storage budget', async () => {
+    expect(new Set(subscriptionBrands.map(brand => brand.id)).size).toBe(40);
     let totalBytes = 0;
     for (const brand of subscriptionBrands) {
       const image = sharp('public/subscription-brands/' + brand.id + '.webp');
@@ -43,6 +43,6 @@ describe('subscription identity', () => {
       expect(alpha.some(value => value === 0), brand.label).toBe(true);
       expect(alpha.some(value => value === 255), brand.label).toBe(true);
     }
-    expect(totalBytes).toBeLessThan(250_000);
+    expect(totalBytes).toBeLessThan(350_000);
   });
 });

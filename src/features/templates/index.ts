@@ -43,6 +43,7 @@ export const reminderPresets = {
   'association-dues': { label: 'Association Dues', example: 'My association dues', dateLabel: 'Association Dues payment', description: 'Choose your next date and an optional repeat schedule.', identity: false },
   'other-bill': { label: 'Other Bill', example: 'My other bill', dateLabel: 'Other Bill payment', description: 'Choose your next date and an optional repeat schedule.', identity: false },
   'streaming': { label: 'Streaming Subscription', example: 'My streaming subscription', dateLabel: 'Streaming Subscription payment', description: 'Choose your next date and an optional repeat schedule.', identity: false },
+  'ai-subscription': { label: 'AI Subscription', example: 'My AI subscription', dateLabel: 'AI Subscription payment', description: 'Remember your next AI service payment or renewal.', identity: false },
   'software': { label: 'Software / Cloud Storage', example: 'My software / cloud storage', dateLabel: 'Software / Cloud Storage payment', description: 'Choose your next date and an optional repeat schedule.', identity: false },
   'gym': { label: 'Gym Membership', example: 'My gym membership', dateLabel: 'Gym Membership payment', description: 'Choose your next date and an optional repeat schedule.', identity: false },
   'professional-membership': { label: 'Professional Membership', example: 'My professional membership', dateLabel: 'Professional Membership payment', description: 'Choose your next date and an optional repeat schedule.', identity: false },

@@ -27,11 +27,25 @@ export const subscriptionBrands = [
   { id: 'slimmers-world', label: 'Slimmers World', preset: 'gym' },
   { id: 'ufc-gym', label: 'UFC Gym', preset: 'gym' },
   { id: 'kinetix-lab', label: 'Kinetix Lab', preset: 'gym' },
+  { id: 'chatgpt', label: 'ChatGPT', preset: 'ai-subscription' },
+  { id: 'claude', label: 'Claude', preset: 'ai-subscription' },
+  { id: 'gemini', label: 'Gemini', preset: 'ai-subscription' },
+  { id: 'perplexity', label: 'Perplexity', preset: 'ai-subscription' },
+  { id: 'grok', label: 'Grok', preset: 'ai-subscription' },
+  { id: 'poe', label: 'Poe', preset: 'ai-subscription' },
+  { id: 'github-copilot', label: 'GitHub Copilot', preset: 'ai-subscription' },
+  { id: 'cursor', label: 'Cursor', preset: 'ai-subscription' },
+  { id: 'devin', label: 'Devin', preset: 'ai-subscription' },
+  { id: 'midjourney', label: 'Midjourney', preset: 'ai-subscription' },
+  { id: 'leonardo-ai', label: 'Leonardo.Ai', preset: 'ai-subscription' },
+  { id: 'runway', label: 'Runway', preset: 'ai-subscription' },
+  { id: 'elevenlabs', label: 'ElevenLabs', preset: 'ai-subscription' },
+  { id: 'suno', label: 'Suno', preset: 'ai-subscription' },
 ] as const;
 
 export type SubscriptionBrand = typeof subscriptionBrands[number];
 export function supportsSubscriptionBrand(template: TemplateKey, preset?: string | null) {
-  return template === 'other' && (preset === 'streaming' || preset === 'gym');
+  return template === 'other' && (preset === 'streaming' || preset === 'gym' || preset === 'ai-subscription');
 }
 export type SubscriptionBrandId = SubscriptionBrand['id'] | 'other';
 export function getSubscriptionBrand(template: TemplateKey, preset?: string | null, value?: string | null): SubscriptionBrand | undefined {
@@ -40,4 +54,8 @@ export function getSubscriptionBrand(template: TemplateKey, preset?: string | nu
 }
 export function isSubscriptionBrand(value: string, preset?: string | null): value is SubscriptionBrandId {
   return value === 'other' || subscriptionBrands.some(brand => brand.id === value && (!preset || brand.preset === preset));
+}
+
+export function aiSubscriptionLabel(item: { template_key: TemplateKey; reminder_preset?: string | null; subscription_brand?: string | null }) {
+  return item.reminder_preset === 'ai-subscription' ? getSubscriptionBrand(item.template_key, item.reminder_preset, item.subscription_brand)?.label : undefined;
 }

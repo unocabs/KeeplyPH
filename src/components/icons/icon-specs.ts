@@ -32,7 +32,7 @@ export const presetIcons: Record<ReminderPreset, IconSpec> = {
   'salary-government-loan': { icon: 'bank', modifier: 'payment' }, 'credit-card-installment': { icon: 'card', modifier: 'payment' },
   'business-loan': { icon: 'briefcase', modifier: 'payment' }, 'digital-online-loan': { icon: 'laptop', modifier: 'payment' },
   'other-loan': { icon: 'document', modifier: 'payment' }, 'car-payment': { icon: 'car', modifier: 'payment' },
-  streaming: { icon: 'play' }, software: { icon: 'cloud' }, gym: { icon: 'dumbbell' },
+  streaming: { icon: 'play' }, 'ai-subscription': { icon: 'sparkles' }, software: { icon: 'cloud' }, gym: { icon: 'dumbbell' },
   'professional-membership': { icon: 'badge' }, 'other-subscription': { icon: 'card', modifier: 'renewal' },
   umid: { icon: 'id' }, 'national-id': { icon: 'id' }, 'prc-license': { icon: 'id' },
   'postal-id': { icon: 'id' }, 'pwd-solo-parent-id': { icon: 'accessibility' }, 'other-id': { icon: 'id' },

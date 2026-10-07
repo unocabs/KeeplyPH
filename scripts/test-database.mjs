@@ -1309,6 +1309,10 @@ try {
     await (await import('../tests/database/utilities.mjs')).testUtilities({admin,actor,user,test});
   }
 
+  if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610070028_ai_subscriptions.sql') {
+    await (await import('../tests/database/ai-subscriptions.mjs')).testAiSubscriptions({admin,actor,user,test});
+  }
+
   console.log('\n' + passed + ' database integration tests passed.');
 } finally {
   if (admin) await admin.end();

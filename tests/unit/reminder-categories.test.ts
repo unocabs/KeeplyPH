@@ -25,7 +25,7 @@ describe('reminder categories', () => {
     expect(paymentPreset('enrollment')).toBe(false);
   });
   it('defaults predictable payments to monthly while leaving variable schedules optional', () => {
-    const monthly = ['electric-bill', 'water-bill', 'internet-bill', 'mobile-bill', 'rent', 'association-dues', 'streaming', 'software', 'gym'];
+    const monthly = ['electric-bill', 'water-bill', 'internet-bill', 'mobile-bill', 'rent', 'association-dues', 'streaming', 'ai-subscription', 'software', 'gym'];
     for (const group of reminderCategories) {
       for (const choice of group.choices) {
         expect(defaultRecurrenceMonths(choice.preset)).toBe(group.key === 'loans' || monthly.includes(choice.preset || '') ? 1 : null);
