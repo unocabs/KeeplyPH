@@ -77,7 +77,8 @@ export function sampleItems(today = todayIn()): ItemWithDetails[] {
       const frequency = options.recurrence;
       const anchor = frequency ? addMonths(due, -frequency * 2) : null;
       const timings = frequency ? [14, 7, 1, 0].map(value => ({ unit: 'days' as const, value })) : defaultOffsets(template, kind);
-      const nextAlert = covered && offset >= 0 ? timings.map(t => t.unit === 'months' ? addMonths(due, -t.value) : day(due, -t.value)).filter(d => d >= today).sort()[0] || null : null;
+      const alertDays = covered && offset >= 0 ? [...new Set(timings.map(t => t.unit === 'months' ? addMonths(due, -t.value) : day(due, -t.value)))].filter(d => d >= today).sort() : [];
+      const nextAlert = alertDays[0] || null;
       const date: DateWithDetails = {
         id: dateId, item_id: id, user_id: 'sample', kind, label,
         starts_on: kind === 'warranty' ? item.purchased_on : null, serial_number: null, notes: null,
@@ -87,6 +88,7 @@ export function sampleItems(today = todayIn()): ItemWithDetails[] {
         recurrence_months: frequency || null, recurrence_anchor: anchor,
         recurrence_ends_on: index === 0 ? addMonths(due, 7) : null,
         payment_amount_minor: options.amount ?? null, next_scheduled_on: nextAlert,
+        scheduled_alerts: alertDays.map(on => ({ on, channel: 'email' as const })),
         occurrences: [],
       };
       if (options.history) {

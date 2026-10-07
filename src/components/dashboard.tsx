@@ -48,7 +48,7 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
   const later = future.filter(row => !soon.includes(row));
   const overdueRows = rows.filter(row => row.occurrence.due_on < today).slice(0, 3);
   const allRows = dateRows(active);
-  const timeline = demo ? [] : timelineRows(active, today);
+  const timeline = timelineRows(active, today);
   const overdue = category === 'all' ? usage.overdue ?? allRows.filter(row => row.occurrence.due_on < today).length : rows.filter(row => row.occurrence.due_on < today).length;
   const completePreview = demo || usage.active_reminders === active.length;
   const categories = reminderCategories.filter(group => active.some(item => itemMatchesCategory(item, group.key)));

@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { sampleItems } from '@/lib/demo';
+import { sampleItems, sampleUsage } from '@/lib/demo';
 import { timelineAlerts, timelineAlertGroups, timelinePosition, timelineRows } from '@/features/items/timeline';
 import { Dashboard } from '@/components/dashboard';
 import { UpcomingTimeline } from '@/components/upcoming-timeline';
@@ -26,6 +26,17 @@ function fixture(due = '2027-01-03') {
 }
 
 describe('dashboard timeline', () => {
+  it('shows the sample calendar with alerts and navigation contained in the demo', () => {
+    const items = sampleItems(today);
+    const html = renderToStaticMarkup(createElement(Dashboard, { items, today, name: 'Alex', usage: sampleUsage(items, today), demo: true }));
+    expect(html).toContain('coming-up-title');
+    expect(html).toContain('Email alert');
+    expect(html).toContain('href="/demo/items?filter=upcoming"');
+    expect(html).toContain('aria-label="Add Reminder"');
+    expect(html).toContain('Show more · 3 more');
+    expect(html).toContain('upcoming-heading');
+    expect(html).not.toContain('Everything in its place.');
+  });
   it('keeps saved brand artwork consistent between the timeline and Upcoming list', () => {
     const identities = [
       { template_key: 'other' as const, reminder_preset: 'streaming', subscription_brand: 'youtube-premium', source: '/subscription-brands/youtube-premium.webp' },

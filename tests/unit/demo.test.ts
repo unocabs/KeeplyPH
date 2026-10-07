@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addMonths } from '@/lib/domain';
+import { addMonths, daysUntil } from '@/lib/domain';
 import { sampleItems, samplePurchases, sampleUsage } from '@/lib/demo';
 import { sampleDocumentUrl } from '@/lib/demo-documents';
 import { templateKeys } from '@/features/templates';
@@ -21,6 +21,17 @@ describe('expanded demo account', () => {
       expect(new Set(items.map(itemCategory))).toEqual(new Set(reminderCategories.map(group => group.key)));
       expect(new Set(items.map(item => item.template_key))).toEqual(new Set(templateKeys));
       const rows = dateRows(items);
+      expect(items[0].dates[0].scheduled_alerts?.map(alert => daysUntil(alert.on, today))).toEqual([2, 3]);
+      expect(items[1].dates[0].scheduled_alerts?.map(alert => daysUntil(alert.on, today))).toEqual([4, 5]);
+      for (const item of items) for (const date of item.dates) {
+        const due = currentOccurrence(date)!.due_on;
+        if (alertStatus(item, date) !== 'enabled' || due < today) expect(date.scheduled_alerts).toEqual([]);
+        for (const alert of date.scheduled_alerts ?? []) {
+          expect(alert.on >= today && alert.on <= due).toBe(true);
+          expect(alert.channel).toBe('email');
+        }
+        expect(date.next_scheduled_on).toBe(date.scheduled_alerts?.[0]?.on ?? null);
+      }
       expect(rows.filter(row => row.occurrence.due_on >= today).slice(0, 5).map(row => row.item.product_name)).toEqual([
         'Home Credit — phone installment', 'Meralco — bahay', 'Mama — follow-up checkup', 'Tuition ni Mia — next installment', 'Family car — Toyota Vios',
       ]);
