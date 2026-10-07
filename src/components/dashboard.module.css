@@ -142,9 +142,6 @@
   .rowMain > :global(.reminder-icon) { width: 32px; height: 40px; }
 }
 
-.stats .activeValue { position: relative; display: flex; align-items: baseline; gap: 4px; white-space: nowrap; }
-.stats .activeValue .unlimited { position: absolute; visibility: hidden; width: max-content; font-size: 13px; letter-spacing: 0; }
-.stats .activeValue .unlimited.fits { position: static; visibility: visible; }
 
 .overdueDates{margin-top:20px;padding:16px;border:1px solid #f2d2ce;border-radius:12px;background:#fffaf9}
 .overdueDates h3{font-size:13px;color:#a84f49;margin-bottom:6px}

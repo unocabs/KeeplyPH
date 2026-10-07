@@ -32,7 +32,7 @@ export function ReminderSaved({ id, usage, coverage, deliveryPaused, created, id
         <Link href="/add"><ReminderIcon template="other" size={20} />Another important date</Link>
       </div>
     </>}
-    {full && <p className="reminder-saved-usage">You can keep saving unlimited reminders. To enable alerts for more, view alert packs or manage your active alerts.</p>}
+    {full && <p className="reminder-saved-usage">You can keep saving unlimited items. To enable alerts for more, view alert packs or manage your active alerts.</p>}
     <div className="reminder-saved-actions">
       {created && <Link className="button secondary" href="/add">Add another reminder</Link>}
       {full && <><Link className="button primary" href="/pricing">View alert packs</Link><Link className="text-button" href="/items?filter=reminders">Manage active alerts</Link></>}

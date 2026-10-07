@@ -5,6 +5,7 @@ import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { isConfigured } from '@/lib/env';
 import { serverClient } from '@/lib/supabase/server';
+import { googleAccountAvatar } from './account-avatar';
 export const requireUser = cache(async function requireUser() {
   const intent = safeAuthIntent((await headers()).get('x-keeply-path'));
   const login = '/login?next=' + encodeURIComponent(intent);
@@ -14,7 +15,7 @@ export const requireUser = cache(async function requireUser() {
   if (error || !data?.claims.sub) redirect(login);
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.claims.sub).single();
   if (!profile) redirect('/login?error=account');
-  return { supabase, userId: data.claims.sub, profile };
+  return { supabase, userId: data.claims.sub, profile, avatarUrl: googleAccountAvatar(data.claims.user_metadata) };
 });
 
 export const isSignedIn = cache(async function isSignedIn() {

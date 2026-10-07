@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { ArrowRight, Bell, CalendarDays, ReceiptText, ShieldCheck, LayoutDashboard } from 'lucide-react';
 import { type Usage } from '@/lib/domain';
 import { dateRows, comingUp, itemsForCategory, itemMatchesCategory, isActiveReminder, type ItemWithDetails } from '@/features/items/domain';
@@ -13,27 +13,6 @@ import { HeroReminders } from './hero-reminders';
 import { UpcomingTimeline } from './upcoming-timeline';
 import { timelineRows } from '@/features/items/timeline';
 import styles from './dashboard.module.css';
-
-function ActiveReminderValue({ count }: { count: number }) {
-  const value = useRef<HTMLElement>(null);
-  const [fits, setFits] = useState(false);
-  useEffect(() => {
-    const element = value.current;
-    if (!element) return;
-    const measure = () => {
-      const number = element.firstElementChild as HTMLElement;
-      const suffix = element.lastElementChild as HTMLElement;
-      setFits(number.getBoundingClientRect().width + suffix.getBoundingClientRect().width + 4 <= element.clientWidth);
-    };
-    const observer = new ResizeObserver(measure);
-    observer.observe(element);
-    observer.observe(element.firstElementChild!);
-    observer.observe(element.lastElementChild!);
-    measure();
-    return () => observer.disconnect();
-  }, [count]);
-  return <strong ref={value} className={styles.activeValue} aria-label={`${count} active reminders / unlimited`}><span aria-hidden="true">{count}</span><small aria-hidden="true" className={styles.unlimited + (fits ? ' ' + styles.fits : '')}>/ unlimited</small></strong>;
-}
 
 export function Dashboard({ items, usage, name, today, demo = false, setup }: { items: ItemWithDetails[]; usage: Usage; name: string; today: string; demo?: boolean; setup?: ReactNode }) {
   const [category, setCategory] = useState('all');
@@ -68,7 +47,7 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
         <AddItemButton label="Add my first reminder" />
         <Link className="text-button" href="/demo">Explore a sample account <ArrowRight size={16} aria-hidden="true" /></Link>
       </div>
-      <p className={styles.welcomeFootnote}>Save unlimited reminders. Get alerts for {3 + (usage.bonus_slots ?? 0)} reminders free.</p>
+      <p className={styles.welcomeFootnote}>Save unlimited items. Get alerts for {3 + (usage.bonus_slots ?? 0)} items free.</p>
     </section>
     {setup}
     <p className="privacy-note"><ShieldCheck size={15} aria-hidden="true" />Your reminders and files are private to your account.</p>
@@ -92,7 +71,7 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
     </div>
     {['maintenance', 'insurance'].includes(category) && <p className="hint space-bottom">Showing {category === 'maintenance' ? 'maintenance' : 'insurance'} dates across your reminders. Each reminder stays in its original category.</p>}
     <div className={'stat-grid ' + styles.stats}>
-      <Link href={base + '/items'} className="stat-card"><span className="stat-icon violet"><ReceiptText size={21} /></span><div><span>Active reminders</span><ActiveReminderValue count={usage.active_reminders ?? active.length} /><p>Your current reminders</p></div></Link>
+      <Link href={base + '/items'} className="stat-card"><span className="stat-icon violet"><ReceiptText size={21} /></span><div><span>Active reminders</span><strong>{usage.active_reminders ?? active.length}</strong><p>Your current reminders</p></div></Link>
       <Link href={base + '/items?filter=reminders'} className="stat-card"><span className="stat-icon green"><Bell size={21} /></span><div><span>Alert coverage</span><strong>{usage.reminders}<small> / {usage.slot_limit ?? 3}</small></strong><p>Alert slots in use</p></div></Link>
       <Link href={base + '/items?filter=upcoming'} className="stat-card"><span className="stat-icon amber"><CalendarDays size={21} /></span><div><span>Coming up</span><strong>{usage.upcoming ?? comingUp(allRows, today).length}</strong><p>Next 30 days</p></div></Link>
     </div>

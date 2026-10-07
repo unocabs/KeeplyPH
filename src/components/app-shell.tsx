@@ -6,8 +6,9 @@ import { useState } from 'react';
 import { AddItemButton } from './template-picker';
 import { Brand } from './brand';
 import { signOut } from '@/features/account/actions';
+import { AccountAvatar } from './account-avatar';
 
-export function AppShell({ children, name, hasExtraSlots, demo = false, signedIn = false }: { children: React.ReactNode; name: string; hasExtraSlots: boolean; demo?: boolean; signedIn?: boolean }) {
+export function AppShell({ children, name, avatarUrl, alertCoverage, hasExtraSlots, demo = false, signedIn = false }: { children: React.ReactNode; name: string; avatarUrl?: string | null; alertCoverage?: { covered: number; total: number }; hasExtraSlots: boolean; demo?: boolean; signedIn?: boolean }) {
   const pathname = usePathname();
   const filter = useSearchParams().get('filter');
   const [open, setOpen] = useState(false);
@@ -23,7 +24,7 @@ export function AppShell({ children, name, hasExtraSlots, demo = false, signedIn
         {!hasExtraSlots && <div className="upgrade-card"><span className="mini-icon"><ShieldCheck size={18} /></span><strong>A little more peace of mind</strong><p>Five extra alert slots.<br />₱29 for 30 days or ₱249 once.</p><Link href={base + '/settings/billing'}>Explore alert packs <ArrowUpRight size={15} /></Link></div>}
         {!demo && <Link href="/feedback" className={'nav-link ' + (pathname === '/feedback' ? 'active' : '')} onClick={() => setOpen(false)}><MessageSquare size={19} aria-hidden="true"/>Add feedback</Link>}
         <Link href={base + '/settings'} className="nav-link" onClick={() => setOpen(false)}><Settings size={19} />Settings</Link>
-        <div className="account-row"><span className="avatar">{(name || 'K').slice(0, 1).toUpperCase()}</span><div><strong>{name || 'Your account'}</strong><span>{demo ? 'Sample account' : hasExtraSlots ? 'Extra alert slots' : 'Free plan'}</span></div>{!demo && <form action={signOut}><button className="icon-button" aria-label="Sign out"><LogOut size={17} /></button></form>}</div>
+        <div className="account-row"><AccountAvatar name={name} src={demo ? null : avatarUrl}/><div><strong>{name || 'Your account'}</strong><span>{demo ? 'Sample account' : alertCoverage ? `Alerts on ${alertCoverage.covered} of ${alertCoverage.total} ${alertCoverage.total === 1 ? 'item' : 'items'}` : 'Your account'}</span></div>{!demo && <form action={signOut}><button className="icon-button" aria-label="Sign out"><LogOut size={17} /></button></form>}</div>
       </div>
     </aside>
     <div className="workspace">

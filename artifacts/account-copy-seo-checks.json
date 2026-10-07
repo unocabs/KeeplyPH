@@ -1,0 +1,204 @@
+[
+  {
+    "path": "/",
+    "title": "All-in-One Loan, Bill, Warranty & ID Reminders",
+    "description": "Track loan payments, bills, warranties, IDs and any important date in one place. Set recurring payment reminders through your end date with Keeply PH.",
+    "canonical": "https://www.keeplyph.com/",
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "name": "Keeply PH",
+            "url": "https://www.keeplyph.com",
+            "inLanguage": "en-PH"
+          },
+          {
+            "@type": "WebApplication",
+            "name": "Keeply",
+            "url": "https://www.keeplyph.com",
+            "applicationCategory": "LifestyleApplication",
+            "operatingSystem": "Web browser",
+            "description": "Track loan payments, bills, warranties, IDs and any important date in one place. Set recurring payment reminders through your end date with Keeply PH.",
+            "featureList": [
+              "Warranty and appliance reminders",
+              "Recurring loan payment reminders",
+              "Car payment and renewal reminders",
+              "ID and passport date reminders",
+              "NBI and Police Clearance reminders",
+              "Water and electric bill reminders",
+              "Optional alerts"
+            ],
+            "inLanguage": "en-PH"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": "/pricing",
+    "title": "Pricing — free alerts & extra slots · Keeply PH",
+    "description": "Save unlimited items with 3 free alert slots. Choose 5–100 extra slots, from ₱29 per 30 days or ₱249 permanently. Manual renewal, no automatic charges.",
+    "canonical": "https://www.keeplyph.com/pricing",
+    "schemas": []
+  },
+  {
+    "path": "/loan-payment-reminder",
+    "title": "Loan Payment Reminders Philippines · Keeply PH",
+    "description": "Remember personal, home, car, government and online loan payments with Keeply PH. Set monthly reminders, an optional peso amount and your loan end date.",
+    "canonical": "https://www.keeplyph.com/loan-payment-reminder",
+    "schemas": []
+  },
+  {
+    "path": "/warranty-tracker",
+    "title": "Receipt & warranty tracker Philippines · Keeply PH",
+    "description": "Keep purchase receipts and warranty dates together. Optional private files and alerts you choose, with a free Keeply account.",
+    "canonical": "https://www.keeplyph.com/warranty-tracker",
+    "schemas": []
+  },
+  {
+    "path": "/vehicle-registration-reminder",
+    "title": "Car & motorcycle registration alerts Philippines · Keeply PH",
+    "description": "Remember user-confirmed vehicle registration, insurance renewal and service dates with Keeply. Car and motorcycle templates, optional alerts.",
+    "canonical": "https://www.keeplyph.com/vehicle-registration-reminder",
+    "schemas": []
+  },
+  {
+    "path": "/document-expiry-tracker",
+    "title": "Passport & driver’s license expiry alerts Philippines · Keeply PH",
+    "description": "Remember passport and driver’s license expiration with Keeply. Store a label and printed expiry date without uploading an identity scan.",
+    "canonical": "https://www.keeplyph.com/document-expiry-tracker",
+    "schemas": []
+  },
+  {
+    "path": "/lto-registration-renewal",
+    "title": "LTO Car Registration Renewal & Date Calculator",
+    "description": "Check your LTO car registration renewal schedule with a free plate number calculator. Find requirements, fees, online steps and answers for your next renewal.",
+    "canonical": "https://www.keeplyph.com/lto-registration-renewal",
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Article",
+            "@id": "https://www.keeplyph.com/lto-registration-renewal#guide",
+            "headline": "LTO Car Registration Renewal & Date Calculator",
+            "description": "Check your LTO car registration renewal schedule with a free plate number calculator. Find requirements, fees, online steps and answers for your next renewal.",
+            "url": "https://www.keeplyph.com/lto-registration-renewal",
+            "mainEntityOfPage": "https://www.keeplyph.com/lto-registration-renewal",
+            "inLanguage": "en-PH",
+            "dateModified": "2026-10-01",
+            "author": {
+              "@type": "Organization",
+              "name": "Keeply PH",
+              "url": "https://www.keeplyph.com"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Keeply PH",
+              "url": "https://www.keeplyph.com"
+            },
+            "citation": [
+              "https://lto.gov.ph/wp-content/uploads/2025/11/MV-CC-2025.pdf",
+              "https://lto.gov.ph/wp-content/uploads/2025/09/LTO-CC-2025-External.pdf",
+              "https://lto.gov.ph/wp-content/uploads/2023/10/FDM-vol.-2-2nd-Edition.pdf",
+              "https://www.ltoncr.com/renewal-of-motor-vehicle-mv-registration/",
+              "https://lto.gov.ph/wp-content/uploads/2023/08/Memo_04122023_.pdf"
+            ]
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://www.keeplyph.com/lto-registration-renewal#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.keeplyph.com"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "LTO registration renewal",
+                "item": "https://www.keeplyph.com/lto-registration-renewal"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": "/aircon-cleaning-schedule",
+    "title": "Aircon Cleaning Schedule Philippines: When, What & Cost · Keeply PH",
+    "description": "When should you clean your aircon? Compare filter care and professional servicing, schedules by daily use, published Philippine prices and a booking checklist.",
+    "canonical": "https://www.keeplyph.com/aircon-cleaning-schedule",
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Article",
+            "@id": "https://www.keeplyph.com/aircon-cleaning-schedule#guide",
+            "headline": "Aircon Cleaning Schedule Philippines: When, What & Cost",
+            "description": "When should you clean your aircon? Compare filter care and professional servicing, schedules by daily use, published Philippine prices and a booking checklist.",
+            "url": "https://www.keeplyph.com/aircon-cleaning-schedule",
+            "mainEntityOfPage": "https://www.keeplyph.com/aircon-cleaning-schedule",
+            "inLanguage": "en-PH",
+            "datePublished": "2026-10-04",
+            "dateModified": "2026-10-04",
+            "author": {
+              "@type": "Organization",
+              "name": "Keeply PH",
+              "url": "https://www.keeplyph.com"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Keeply PH",
+              "url": "https://www.keeplyph.com"
+            },
+            "citation": [
+              "https://www.midea.com/ph/news/aircon-cleaning-schedule-in-the-philippines--filters--self-cleaning--and-professional-deep-cleaning",
+              "https://www.daikin.com/products/ac/services/maintenance_tips",
+              "https://www.panasonic.com/ph/air-solutions/learn-more/how-to-clean-your-ac-unit-servicing.html",
+              "https://www.teko.ph/accredited-aircon-cleaning-services"
+            ]
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://www.keeplyph.com/aircon-cleaning-schedule#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.keeplyph.com"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Aircon cleaning schedule",
+                "item": "https://www.keeplyph.com/aircon-cleaning-schedule"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "path": "/terms",
+    "title": "Terms · Keeply PH",
+    "description": "Your all-in-one place for recurring loan payments, warranties, IDs, passports, bills and other important dates, with email alerts you choose.",
+    "canonical": "https://www.keeplyph.com/terms",
+    "schemas": []
+  },
+  {
+    "path": "/add/passport",
+    "title": "Keep something important · Keeply PH",
+    "description": "Your all-in-one place for recurring loan payments, warranties, IDs, passports, bills and other important dates, with email alerts you choose.",
+    "robots": "noindex, nofollow",
+    "schemas": []
+  }
+]

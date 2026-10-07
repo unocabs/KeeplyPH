@@ -38,7 +38,7 @@ describe('post-save reminder guidance', () => {
     const html = render({ coverage: 'paused_capacity', usage: { ...usage, reminders: 3, purchases: 4 } });
     expect(html).toContain('All your alert slots are in use');
     expect(html).toContain('needs an available alert slot');
-    expect(html).toContain('keep saving unlimited reminders');
+    expect(html).toContain('keep saving unlimited items');
     expect(html).toContain('class="button primary" href="/pricing"');
     expect(html).toContain('href="/items?filter=reminders"');
     expect(html).not.toContain('Need more alerts?');
