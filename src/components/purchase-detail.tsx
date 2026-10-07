@@ -19,7 +19,7 @@ export function PurchaseDetail({ purchase: p, today, demo = false }: { purchase:
   }
   return <>
     <Link href={base + '/purchases'} className="back-link"><ArrowLeft size={14} /> Receipt Reminders</Link>
-    <div className="page-heading"><div className="details-summary"><CategoryIcon category={p.category} large /><div><h1>{p.product_name || 'Unfinished reminder'}</h1><p>{p.merchant || 'A little piece of your everyday.'}</p></div></div><Link className="button secondary" aria-label="Edit reminder" href={base + '/purchases/' + p.id + '/edit'}><Pencil size={15} /> Edit reminder</Link></div>
+    <div className="page-heading"><div className="details-summary"><CategoryIcon productType={p.product_type} productName={p.product_name} category={p.category} large /><div><h1>{p.product_name || 'Unfinished reminder'}</h1><p>{p.merchant || 'A little piece of your everyday.'}</p></div></div><Link className="button secondary" aria-label="Edit reminder" href={base + '/purchases/' + p.id + '/edit'}><Pencil size={15} /> Edit reminder</Link></div>
     <div className="detail-grid">
       <section className="panel"><h2>Purchase details</h2><dl className="detail-fields"><div><dt>Purchased on</dt><dd>{formatDate(p.purchased_on)}</dd></div><div><dt>Price</dt><dd>{formatMoney(p.price_minor)}</dd></div><div><dt>Store or merchant</dt><dd>{p.merchant || 'Not added'}</dd></div><div><dt>Category</dt><dd className="capitalize">{p.category || 'Not added'}</dd></div>{p.notes && <div className="full"><dt>Notes</dt><dd className="notes-text">{p.notes}</dd></div>}</dl></section>
       <section className="panel warranty-summary"><div className="section-heading"><h2>Warranty</h2><StatusBadge purchase={p} today={today} /></div>

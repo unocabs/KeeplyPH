@@ -1,3 +1,5 @@
+import { ProductGlyph } from './icons/product-glyph';
+import { resolvedProductType } from '@/features/purchases/product-types';
 import { CategoryGlyph } from './icons/category-glyph';
 import { categoryIcons, templateIcons, purchaseIcons, presetIcons, dateIcons } from './icons/icon-specs';
 import { isReminderPreset, type TemplateKey, type ReminderPreset, type DateKind } from '@/features/templates';
@@ -15,6 +17,8 @@ import { getInsurer } from '@/features/items/insurers';
 import { ProviderLogo } from './provider-logo';
 
 interface IconProps {
+  productType?: string | null;
+  productName?: string | null;
   template: TemplateKey;
   category?: Category | null;
   preset?: string | null;
@@ -29,7 +33,9 @@ interface IconProps {
   size?: number;
 }
 /** Shared identity across category choices, saved reminders and date lists. */
-export function TemplateIcon({ template, category, preset, group, focus, size = 22 }: IconProps) {
+export function TemplateIcon({ template, category, preset, group, focus, productType, productName, size = 22 }: IconProps) {
+  const resolved = template === 'receipt' && !group ? resolvedProductType(category, productName, productType) : undefined;
+  if (resolved) return <ProductGlyph type={resolved} size={size}/>;
   const spec = group ? categoryIcons[group] || templateIcons.other
     : isReminderPreset(preset || undefined) ? presetIcons[preset as ReminderPreset]
     : template === 'receipt' && category ? purchaseIcons[category]

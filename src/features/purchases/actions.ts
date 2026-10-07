@@ -2,6 +2,7 @@
 import { revalidatePath } from 'next/cache';
 import { requireUser } from '@/lib/auth';
 import { parseMoney, type ActionResult } from '@/lib/domain';
+import { isProductType } from './product-types';
 import { errorMessage } from '@/lib/errors';
 import { purchaseSchema, warrantySchema, uuidSchema } from '@/lib/validation';
 export async function createDraft(id: string): Promise<ActionResult> {
@@ -22,6 +23,9 @@ export async function savePurchase(form: FormData): Promise<ActionResult> {
     notes: String(form.get('notes') || ''), price_minor: price,
   });
   if (!input.success) return { error: input.error.issues[0].message };
+  const productType = form.has('product_type') ? String(form.get('product_type') || '') : undefined;
+  if (productType && !isProductType(productType, input.data.category)) return { error: 'Choose an item type that matches the category.' };
+  const purchaseData = productType === undefined ? input.data : {...input.data, product_type:productType};
   const hasWarranty = form.get('has_warranty') === 'on';
   const warranty = hasWarranty ? warrantySchema.safeParse({
     starts_on: String(form.get('starts_on') || ''), expires_on: String(form.get('expires_on') || ''),
@@ -30,9 +34,9 @@ export async function savePurchase(form: FormData): Promise<ActionResult> {
   }) : null;
   if (warranty && !warranty.success) return { error: warranty.error.issues[0].message };
   const { supabase } = await requireUser();
-  const { error } = await supabase.rpc('save_purchase', { p_id: id, p_revision: revision, p_data: input.data, p_warranty: warranty?.success ? warranty.data : null });
+  const { error } = await supabase.rpc('save_purchase', { p_id: id, p_revision: revision, p_data: purchaseData, p_warranty: warranty?.success ? warranty.data : null });
   if (error) return { error: errorMessage(error) };
-  revalidatePath('/dashboard'); revalidatePath('/purchases'); revalidatePath('/purchases/' + id); revalidatePath('/settings/billing');
+  revalidatePath('/dashboard'); revalidatePath('/items'); revalidatePath('/items/' + id); revalidatePath('/purchases'); revalidatePath('/purchases/' + id); revalidatePath('/settings/billing');
   const {data:coverage}=await supabase.rpc('item_coverage',{p_id:id});
   return { id, uncovered: Boolean(warranty?.success && warranty.data.reminders_enabled && (coverage as {coverage?:string})?.coverage!=='covered') };
 }

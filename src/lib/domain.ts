@@ -1,6 +1,7 @@
 export const categories = ['electronics', 'appliances', 'home', 'clothing', 'other'] as const;
 export type Category = typeof categories[number];
 export interface Purchase {
+  product_type?: string | null;
   id: string; user_id: string; state: 'draft' | 'saved'; product_name: string | null; purchased_on: string | null;
   merchant: string | null; price_minor: number | null; currency: string; category: Category | null; notes: string | null;
   revision: number; created_at: string; updated_at: string;

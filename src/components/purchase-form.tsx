@@ -4,6 +4,9 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Camera, FileText, Lightbulb, Trash2, UploadCloud } from 'lucide-react';
 import { addMonths, categories, FILE_TYPES, MAX_FILE_BYTES, todayIn, type Document, type PurchaseWithDetails } from '@/lib/domain';
+import { ProductTypePicker } from './product-type-picker';
+import { isProductType } from '@/features/purchases/product-types';
+import { type Category } from '@/lib/domain';
 import { createDraft, savePurchase, deletePurchase } from '@/features/purchases/actions';
 import { prepareUpload, removeDocument } from '@/features/documents/actions';
 type Upload = { id: string; name: string; kind: Document['kind']; progress: number; phase: 'uploading' | 'processing' | 'ready' | 'error'; error?: string; file?: File; document?: Document };
@@ -25,6 +28,9 @@ export function uploadBytes(path: string, token: string, file: File, progress: (
   });
 }
 export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, initialCategory }: { purchase?: PurchaseWithDetails; demo?: boolean; warrantyFocus?: boolean; initialCategory?: string }) {
+  const [productName,setProductName]=useState(purchase?.product_name || '');
+  const [category,setCategory]=useState<Category|null>(purchase?.category || (categories.includes(initialCategory as Category) ? initialCategory as Category : null));
+  const [productType,setProductType]=useState(purchase?.product_type || '');
   const router = useRouter();
   const base = demo ? '/demo' : '';
   const idRef = useRef(purchase?.id || '');
@@ -142,11 +148,12 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
       <div className="form-stack">
         <section className="panel form-section"><h2>The essentials</h2><p>A name is all you need to get started.</p>
           <div className="field-grid">
-            <label className="full">Product name<input name="product_name" required maxLength={160} defaultValue={purchase?.product_name || ''} placeholder="e.g. Sony WH-1000XM5 headphones" /></label>
+            <label className="full">Product name<input name="product_name" required maxLength={160} value={productName} onChange={e=>setProductName(e.target.value)} placeholder="e.g. Sony WH-1000XM5 headphones" /></label>
             <label>Purchase date<input name="purchased_on" type="date" defaultValue={purchase?.purchased_on || ''} /></label>
             <label>Store or merchant<input name="merchant" maxLength={160} defaultValue={purchase?.merchant || ''} placeholder="e.g. SM Appliance Center" /></label>
             <label>Price (₱)<input name="price" inputMode="decimal" pattern="[0-9]+(\.[0-9]{1,2})?" defaultValue={purchase?.price_minor != null ? (purchase.price_minor / 100).toFixed(2) : ''} placeholder="0.00" /></label>
-            <label>Category<select name="category" defaultValue={purchase?.category || initialCategory || ''}><option value="">Choose a category</option>{categories.map(c => <option key={c} value={c}>{c[0].toUpperCase() + c.slice(1)}</option>)}</select></label>
+            <label>Category<select name="category" value={category || ''} onChange={e=>{const next=(e.target.value || null) as Category|null;setCategory(next);if(productType && !isProductType(productType,next))setProductType('');}}><option value="">Choose a category</option>{categories.map(c => <option key={c} value={c}>{c[0].toUpperCase() + c.slice(1)}</option>)}</select></label>
+            <ProductTypePicker category={category} name={productName} value={productType} onChange={value=>{setProductType(value);dirty.current=true;}}/>
             <label className="full">Notes <textarea name="notes" rows={3} maxLength={5000} defaultValue={purchase?.notes || ''} placeholder="Anything you’d like to remember…" /></label>
           </div>
         </section>
