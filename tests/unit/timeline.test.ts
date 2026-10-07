@@ -7,6 +7,11 @@ import { Dashboard } from '@/components/dashboard';
 import { UpcomingTimeline } from '@/components/upcoming-timeline';
 import type { Usage } from '@/lib/domain';
 
+// Closed add dialogs show catalog previews independently of a saved reminder's identity.
+function withoutCategoryPickers(html: string) {
+  return html.replace(/<dialog class="template-dialog"[\s\S]*?<\/dialog>/g, '');
+}
+
 const today = '2026-12-20';
 const usage = { purchases: 1, reminders: 1, storage_bytes: 0, premium: false, premium_until: null } as Usage;
 function fixture(due = '2027-01-03') {
@@ -48,9 +53,9 @@ describe('dashboard timeline', () => {
     ];
     for (const { source, ...identity } of identities) {
       const item = { ...fixture(), car_brand: null, motorcycle_brand: null, subscription_brand: null, ...identity, product_name: 'My reminder' };
-      const timeline = renderToStaticMarkup(createElement(UpcomingTimeline, { rows: timelineRows([item], today), today }));
+      const timeline = withoutCategoryPickers(renderToStaticMarkup(createElement(UpcomingTimeline, { rows: timelineRows([item], today), today })));
       expect(timeline).toContain(source);
-      const dashboard = renderToStaticMarkup(createElement(Dashboard, { items: [item], today, name: 'Test', usage }));
+      const dashboard = withoutCategoryPickers(renderToStaticMarkup(createElement(Dashboard, { items: [item], today, name: 'Test', usage })));
       // Timeline, Upcoming, and the reminder card share the same saved identity.
       expect(dashboard.split(`src="${source}"`)).toHaveLength(4);
     }
@@ -64,7 +69,7 @@ describe('dashboard timeline', () => {
       { reminder_preset: 'motorcycle-loan', motorcycle_brand: 'unknown' },
     ]) {
       const item = { ...fixture(), template_key: 'other' as const, car_brand: null, motorcycle_brand: null, subscription_brand: null, ...identity };
-      const html = renderToStaticMarkup(createElement(UpcomingTimeline, { rows: timelineRows([item], today), today }));
+      const html = withoutCategoryPickers(renderToStaticMarkup(createElement(UpcomingTimeline, { rows: timelineRows([item], today), today })));
       expect(html).not.toContain('-brands/');
       expect(html).toContain('reminder-icon');
       expect(html).toContain('<svg');

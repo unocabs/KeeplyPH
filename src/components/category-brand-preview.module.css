@@ -1,0 +1,12 @@
+.copy{flex:1;min-width:0;container-type:inline-size;container-name:category-copy}
+.arrow{flex-shrink:0}
+.row{display:flex;align-items:center;gap:7px;margin-top:14px;white-space:nowrap}
+.logo{width:32px;height:32px;flex:none;display:inline-flex;align-items:center;justify-content:center;border:1px solid #eee9f4;border-radius:50%;background:#fdfcfe}
+.logo img{width:24px;height:24px;object-fit:contain}
+.more{font-size:11px;line-height:1.4;font-weight:400;color:var(--muted);margin-left:3px}
+@container category-copy (max-width:160px){
+  .row{gap:3px}
+  .logo{width:24px;height:24px}
+  .logo img{width:20px;height:20px}
+  .more{font-size:10px;margin-left:1px}
+}
