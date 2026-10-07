@@ -1317,6 +1317,30 @@ try {
     await (await import('../tests/database/product-types.mjs')).testProductTypes({admin,actor,user,test});
   }
 
+  if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610070030_public_reactions.sql') {
+    await test('Public reactions are private, idempotent, concurrent-safe, and retain only anonymous counts', async () => {
+      const id = randomUUID();
+      assert.equal((await actor(null, 'select public.public_reactions_ready()', [], 'service_role')).rows[0].public_reactions_ready, true);
+      await Promise.all(Array.from({length: 4}, () => actor(null, 'select public.record_public_reaction($1,$2)', [id,'helpful'], 'service_role')));
+      assert.equal(Number((await admin.query("select count from private.public_reaction_counts where reaction='helpful' and day=(now() at time zone 'Asia/Manila')::date")).rows[0].count), 1);
+      await assert.rejects(actor(null, 'select public.record_public_reaction($1,$2)', [id,'love'], 'service_role'), /REACTION_CONFLICT/);
+      await assert.rejects(actor(null, 'select public.record_public_reaction($1,$2)', [randomUUID(),'sad'], 'service_role'), /INVALID_REACTION/);
+      for (const role of ['anon','authenticated']) {
+        await assert.rejects(actor(null, 'select * from private.public_reaction_counts', [], role), /permission denied/);
+        await assert.rejects(actor(null, 'select public.record_public_reaction($1,$2)', [randomUUID(),'love'], role), /permission denied/);
+        await assert.rejects(actor(null, 'select public.public_reactions_ready()', [], role), /permission denied/);
+      }
+      await admin.query("update private.public_reaction_receipts set created_at=now()-interval '401 days' where id=$1", [id]);
+      await actor(null, 'select public.purge_public_reaction_receipts()', [], 'service_role');
+      assert.equal((await admin.query('select * from private.public_reaction_receipts where id=$1',[id])).rowCount,0);
+      assert.equal(Number((await admin.query("select sum(count) as count from private.public_reaction_counts where reaction='helpful'")).rows[0].count),1);
+      const checks=(await admin.query(await readFile('supabase/check-public-reactions-prerequisites.sql','utf8'))).rows;
+      assert.ok(checks.every(row=>row.status.startsWith('PRESENT')));
+      await admin.query("update private.rate_limit_buckets set count=120 where action='public_reactions'");
+      await assert.rejects(actor(null, 'select public.record_public_reaction($1,$2)', [randomUUID(),'love'], 'service_role'), /RATE_LIMITED/);
+    });
+  }
+
   console.log('\n' + passed + ' database integration tests passed.');
 } finally {
   if (admin) await admin.end();

@@ -14,6 +14,9 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      public_reactions_ready: Rpc<Record<string, never>, boolean>;
+      record_public_reaction: Rpc<{ p_id: string; p_reaction: string }, undefined>;
+      purge_public_reaction_receipts: Rpc<Record<string, never>, undefined>;
       update_email_preferences: Rpc<{p_email:boolean;p_suggestions:boolean},undefined>;
       unsubscribe_reminder_ideas: Rpc<{p_user:string;p_enrollment:string},undefined>;
       claim_reminder_idea_jobs: Rpc<{p_limit:number}>;

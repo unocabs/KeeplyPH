@@ -1,6 +1,12 @@
 import 'server-only';
 import { z } from 'zod';
 import { requireEnv } from './env';
+const methodNames: Record<string, string> = { card: 'Credit / debit card', gcash: 'GCash', paymaya: 'Maya', qrph: 'QR Ph' };
+export function configuredPaymentMethods(): string[] {
+  const methods = (process.env.PAYMONGO_PAYMENT_METHODS || 'qrph').split(',').map(method => method.trim());
+  if (!methods.length || methods.some(method => !Object.hasOwn(methodNames, method))) return [];
+  return [...new Set(methods)].map(method => methodNames[method]);
+}
 export function paymentMode() {
   const mode = requireEnv('PAYMONGO_MODE');
   if (!['test', 'live'].includes(mode)) throw new Error('Invalid payment mode');

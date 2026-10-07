@@ -172,3 +172,39 @@ where d.recurrence_months is not null
 ```
 
 The bounded worker can need multiple runs after extended downtime. Dates left unconfirmed are history, not evidence of nonpayment. The worker never marks payments paid and never sends historical alerts. Queued future alerts retain existing occurrence-based idempotency and are checked again before delivery. Migration verification is covered by `npm run test:db` against a temporary isolated database.
+
+
+## LTO calculator reactions (migration 030)
+
+1. Run `supabase/check-public-reactions-prerequisites.sql` in the target Supabase SQL Editor (read-only). Hosted application state cannot be inferred from local tests. Migration 030 depends only on the private schema, rate-limit table/function from `202609200001_core.sql`, and Supabase's standard roles. If core prerequisites are missing on an existing project, investigate before changing it. On a fresh project, apply core first. Do not rerun a migration already present; investigate partial migration state instead.
+2. If core is PRESENT and reactions are MISSING, run the complete `supabase/migrations/202610070030_public_reactions.sql` in the SQL Editor before deploying the app. Rerun the prerequisite check; both rows should be PRESENT.
+3. Deploy with `PUBLIC_REACTIONS_ENABLED=false`. In a controlled preview using a dedicated test database, enable it and verify a successful save in SQL, repeat clicks/reload, offline retry, mobile and desktop keyboard/touch behavior, and missing-backend hiding. Enable it on production only after those checks pass. No third-party integration is required. The existing `APP_URL` must match the served origin, including `www`; the same-origin POST check intentionally rejects other origins.
+4. Keep the hourly maintenance job running. When reactions are enabled, it removes submission receipts older than 400 days. Daily aggregate totals remain without any user link.
+
+Review privately in Supabase SQL Editor as the database owner:
+
+```sql
+-- Daily totals in Philippine time, newest first.
+select day,
+ sum(count) filter (where reaction='helpful') as helpful,
+ sum(count) filter (where reaction='easy') as easy_to_use,
+ sum(count) filter (where reaction='love') as love_it,
+ sum(count) as total
+from private.public_reaction_counts
+group by day order by day desc;
+
+-- All-time counts by emoji.
+select reaction, sum(count) as total
+from private.public_reaction_counts group by reaction order by reaction;
+```
+
+Reactions measure voluntary feedback, not unique visitors or traffic. Browser storage discourages repeated submissions; it is not a fraud-proof visitor counter. A submission UUID supports idempotent retries within the 400-day receipt window. No account, plate, IP, referrer, or persistent visitor identifier is submitted. A global 120-request/minute database ceiling bounds writes without identifying visitors; automated submissions can still influence totals. Public clients cannot read totals or access the receipt table. The availability endpoint returns only readiness; failures hide the buttons. Save failures and timeouts retain the chosen reaction for explicit retry, and success is shown only after the database acknowledges it.
+
+Rollback: set `PUBLIC_REACTIONS_ENABLED=false` and redeploy. Leave stored counts in place.
+
+Local verification: `npm run test:db` starts an isolated temporary PostgreSQL database and applies all checked-in migrations; it never applies them to the hosted project. `npm test -- tests/unit/public-reactions.test.ts` covers the HTTP handler. Browser checks using intercepted API responses verify UI behavior only, not a live Supabase deployment.
+
+
+Local validation on 2026-10-07: typecheck, lint, production build, six reaction-handler unit tests, and all 138 isolated database integration tests passed. Chrome desktop, mobile Chrome layout, and mobile WebKit layout passed the success/failure/reload/retry and readiness-hiding flows with intercepted API responses. HTTPS was used for WebKit because production CSP upgrades resource requests to HTTPS. Additional Chrome checks passed for timeout, network failure, browser storage denial, pending button locking, and navigating away during a save then retrying with the same receipt. These are browser-engine tests, not physical iPhone/Android or live Supabase verification.
+
+Rendered calculator title, description, canonical, and Article/BreadcrumbList JSON-LD were checked locally; JSON parsing and expected required fields passed. External rich-result validation was not performed. Robots and sitemap files were unchanged. Lighthouse on the local production build with reactions disabled: calculator Performance 99, SEO 100, Accessibility 97; privacy Performance 99, SEO 100. The calculator accessibility deductions were existing special-case badges with low text contrast. Scores do not establish hosted performance or accessibility of the activated widget; the widget's keyboard controls, touch targets, and responsive overflow were checked separately. No hosted migration, production deployment, or live feedback save was performed.

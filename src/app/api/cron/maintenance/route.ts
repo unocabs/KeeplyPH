@@ -18,6 +18,10 @@ export async function POST(request: Request) {
     const work = workSchema.parse(data);
     const { error: feedbackError } = await admin.rpc('purge_old_feedback', {});
     if (feedbackError) throw new Error('Feedback retention failed');
+    if (process.env.PUBLIC_REACTIONS_ENABLED === 'true') {
+      const { error: reactionError } = await admin.rpc('purge_public_reaction_receipts', {});
+      if (reactionError) throw new Error('Reaction retention failed');
+    }
     let removed = 0, accounts = 0;
     for (const object of work.objects) {
       if (Date.now() - started > 40000) break;

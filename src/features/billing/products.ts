@@ -3,7 +3,7 @@ export const MAX_SLOTS = 100;
 export const SLOT_STEP = 5;
 export const products = {
   slots_30: { amount: 2900, originalAmount: 4900, period: 'for 30 days' },
-  slots_permanent: { amount: 24900, originalAmount: 49900, period: 'forever' },
+  slots_permanent: { amount: 24900, originalAmount: 49900, period: 'one-time' },
 } as const;
 export type Product = keyof typeof products;
 export function isProduct(value: string): value is Product { return Object.hasOwn(products, value); }
