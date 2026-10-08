@@ -21,7 +21,7 @@ const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 export const metadata: Metadata = {
   title: { absolute: title }, description,
   alternates: { canonical: '/lto-registration-renewal' },
-  openGraph: { title, description, url: '/lto-registration-renewal', siteName: 'Keeply PH', locale: 'en_PH', type: 'article' },
+  openGraph: { title, description, url: '/lto-registration-renewal', siteName: 'Keeply', locale: 'en_PH', type: 'article' },
   twitter: { card: 'summary_large_image', title, description },
 };
 
@@ -34,8 +34,8 @@ export default async function Page() {
         '@type': 'Article', '@id': pageUrl + '#guide',
         headline: title, description, url: pageUrl, mainEntityOfPage: pageUrl,
         inLanguage: 'en-PH', dateModified: '2026-10-01',
-        author: { '@type': 'Organization', name: 'Keeply PH', url: 'https://www.keeplyph.com' },
-        publisher: { '@type': 'Organization', name: 'Keeply PH', url: 'https://www.keeplyph.com' },
+        author: { '@type': 'Organization', name: 'Keeply', url: 'https://www.keeplyph.com' },
+        publisher: { '@type': 'Organization', name: 'Keeply', url: 'https://www.keeplyph.com' },
         citation: [charter, externalCharter, manual, ncr, plateMemo],
       },
       {
@@ -56,9 +56,9 @@ export default async function Page() {
         <div className="eyebrow">FREE TOOL FOR PHILIPPINE CAR OWNERS</div>
         <h1>LTO car registration renewal<br /><em>&amp; date calculator</em></h1>
         <p className={styles.intro}>Find your renewal schedule, prepare the right documents, and plan your next visit. Start with the free plate number calculator, then follow the car registration renewal guide below.</p>
-        <p className={styles.review}>By <a href="#sources">Keeply PH</a> · Guide updated <time dateTime="2026-10-01">October 1, 2026</time> · Based on official LTO sources.</p>
+        <p className={styles.review}>By <a href="#sources">Keeply</a> · Guide updated <time dateTime="2026-10-01">October 1, 2026</time> · Based on official LTO sources.</p>
         <div className="hero-actions"><a href="#renewal-calculator" className="button primary">Check my renewal schedule ↓</a><a href="#requirements" className="button secondary">See renewal requirements</a></div>
-        <p className={styles.disclosure}>This guide covers vehicle registration, not driver’s license renewal. Keeply PH is an independent reminder app; renewal transactions are completed through LTO.</p>
+        <p className={styles.disclosure}>This guide covers vehicle registration, not driver’s license renewal. Keeply is an independent reminder app; renewal transactions are completed through LTO.</p>
       </header>
       <nav className={styles.jump} aria-label="On this page">{[['renewal-calculator','Renewal date calculator'],['renewal-overview','Quick guide'],['schedule','Plate number schedule'],['requirements','Requirements'],['steps','Steps'],['costs','Costs'],['special-cases','Special cases'],['questions','Questions'],['sources','Sources']].map(([id,label]) => <a key={id} href={'#'+id}>{label}</a>)}</nav>
 
@@ -147,7 +147,7 @@ export default async function Page() {
 
       <section className={styles.cta}><span className="eyebrow">ONE LESS DATE TO REMEMBER</span><h2>Know your renewal date?<br />Give yourself a heads-up.</h2><p>Add your car, enter the date you’ve confirmed, and choose reminders. No full plate number is needed.</p><Link className="button primary" href={reminder}>Set my renewal reminder →</Link><p className={styles.disclosure}>Google sign-in is required to save. Alerts are optional.</p><Link className="text-button" href="/vehicle-registration-reminder">Explore Keeply’s vehicle reminders →</Link></section>
 
-      <section id="sources" className={`${styles.section} ${styles.sources}`}><h2>Official sources and review notes</h2><p>Original source excerpts reviewed September 30, 2026; additional online-eligibility and plate-transition excerpts checked October 1, 2026. Prepared by Keeply PH using official LTO publications. Direct access to the LTO PDFs was unavailable during review, so the relevant indexed excerpts were used alongside official supporting material. These sources may be updated by later LTO issuances. Confirm your transaction’s requirements and assessment with LTO.</p><ul><li><a href={charter}>LTO 2025 motor-vehicle Citizen’s Charter</a> — renewal checklist and portal process, printed pages 205 onward.</li><li><a href={externalCharter}>LTO 2025 external-services Citizen’s Charter</a> — individual walk-in procedure.</li><li><a href={manual}>LTO Filipino Driver’s Manual, volume 2</a> — standard registration schedule, printed page 17.</li><li><a href={plateMemo}>LTO April 2023 plate-transition memorandum</a> — registration adjustments and advance-renewal examples.</li><li><a href={ncr}>LTO NCR motor-vehicle renewal guidance</a> — special cases and receipt guidance.</li><li><a href="https://portal.lto.gov.ph/">Official LTMS portal</a> · <a href="https://lto.gov.ph/">LTO announcements and services</a></li></ul></section>
+      <section id="sources" className={`${styles.section} ${styles.sources}`}><h2>Official sources and review notes</h2><p>Original source excerpts reviewed September 30, 2026; additional online-eligibility and plate-transition excerpts checked October 1, 2026. Prepared by Keeply using official LTO publications. Direct access to the LTO PDFs was unavailable during review, so the relevant indexed excerpts were used alongside official supporting material. These sources may be updated by later LTO issuances. Confirm your transaction’s requirements and assessment with LTO.</p><ul><li><a href={charter}>LTO 2025 motor-vehicle Citizen’s Charter</a>: renewal checklist and portal process, printed pages 205 onward.</li><li><a href={externalCharter}>LTO 2025 external-services Citizen’s Charter</a>: individual walk-in procedure.</li><li><a href={manual}>LTO Filipino Driver’s Manual, volume 2</a>: standard registration schedule, printed page 17.</li><li><a href={plateMemo}>LTO April 2023 plate-transition memorandum</a>: registration adjustments and advance-renewal examples.</li><li><a href={ncr}>LTO NCR motor-vehicle renewal guidance</a>: special cases and receipt guidance.</li><li><a href="https://portal.lto.gov.ph/">Official LTMS portal</a> · <a href="https://lto.gov.ph/">LTO announcements and services</a></li></ul></section>
     </main>
   </>;
 }

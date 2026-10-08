@@ -55,7 +55,7 @@ export function formatDate(date: string | null, short = false): string {
   return new Intl.DateTimeFormat('en-PH', { month: short ? 'short' : 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(date.slice(0, 10) + 'T00:00:00Z'));
 }
 export function formatMoney(minor: number | null): string {
-  if (minor === null) return '—';
+  if (minor === null) return 'Not set';
   return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', maximumFractionDigits: minor % 100 ? 2 : 0 }).format(minor / 100);
 }
 export function parseMoney(value: string): number | null {

@@ -39,12 +39,12 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
   if (!demo && usage.purchases === 0 && items.length === 0) return <div className={styles.dashboard}>
     <section className={styles.welcome} aria-labelledby="welcome-heading">
       <span className={styles.welcomeIcon}><Bell size={28} aria-hidden="true" /></span>
-      <div className="eyebrow">A LITTLE LESS TO REMEMBER</div>
+      <div className="eyebrow">YOUR HOUSEHOLD, ORGANISED</div>
       <h1 id="welcome-heading">Welcome to Keeply.</h1>
-      <h2>What’s one date you don’t want to forget?</h2>
-      <p>Start with a bill, car renewal, or passport expiry. Choose a type, add a date, and decide when to be reminded.</p>
+      <h2>What would you like to organise first?</h2>
+      <p>Start with a bill, appliance warranty or home service. Keep its details and next date together, then choose whether you want alerts.</p>
       <div className={styles.welcomeActions}>
-        <AddItemButton label="Add my first reminder" />
+        <AddItemButton label="Add my first item" />
         <Link className="text-button" href="/demo">Explore a sample account <ArrowRight size={16} aria-hidden="true" /></Link>
       </div>
       <p className={styles.welcomeFootnote}>Save unlimited items. Get alerts for {3 + (usage.bonus_slots ?? 0)} items free.</p>
@@ -56,7 +56,7 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
   return <div className={styles.dashboard}>
     {timeline.length ? <UpcomingTimeline rows={timeline} today={today} base={base} /> : <div className={'page-heading ' + styles.hero}>
       <HeroReminders variant="dashboard" />
-      <div><div className="eyebrow">A LITTLE LESS TO REMEMBER</div><h1>Everything in its place.</h1><p>Welcome back, {name.split(' ')[0] || 'there'}. A little peace of mind, all together.</p></div>
+      <div><div className="eyebrow">YOUR HOUSEHOLD, ORGANISED</div><h1>Everything in its place.</h1><p>Welcome back, {name.split(' ')[0] || 'there'}. A little peace of mind, all together.</p></div>
       <AddItemButton demo={demo} />
     </div>}
     {setup}
@@ -71,13 +71,13 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
     </div>
     {['maintenance', 'insurance'].includes(category) && <p className="hint space-bottom">Showing {category === 'maintenance' ? 'maintenance' : 'insurance'} dates across your reminders. Each reminder stays in its original category.</p>}
     <div className={'stat-grid ' + styles.stats}>
-      <Link href={base + '/items'} className="stat-card"><span className="stat-icon violet"><ReceiptText size={21} /></span><div><span>Active reminders</span><strong>{usage.active_reminders ?? active.length}</strong><p>Your current reminders</p></div></Link>
+      <Link href={base + '/items'} className="stat-card"><span className="stat-icon violet"><ReceiptText size={21} /></span><div><span>Household items</span><strong>{usage.active_reminders ?? active.length}</strong><p>The things you manage</p></div></Link>
       <Link href={base + '/items?filter=reminders'} className="stat-card"><span className="stat-icon green"><Bell size={21} /></span><div><span>Alert coverage</span><strong>{usage.reminders}<small> / {usage.slot_limit ?? 3}</small></strong><p>Alert slots in use</p></div></Link>
       <Link href={base + '/items?filter=upcoming'} className="stat-card"><span className="stat-icon amber"><CalendarDays size={21} /></span><div><span>Coming up</span><strong>{usage.upcoming ?? comingUp(allRows, today).length}</strong><p>Next 30 days</p></div></Link>
     </div>
     <section className={'panel ' + styles.dates} aria-labelledby="upcoming-heading">
       <div className="section-heading"><div><h2 id="upcoming-heading">Upcoming</h2><p className="section-description">Important dates, with room to plan ahead.</p></div><Link href={base + '/items?filter=dates' + browseQuery}>View all <ArrowRight size={15} /></Link></div>
-      {overdue > 0 && <div className="alert error spaced"><Link href={base + '/items?filter=overdue' + browseQuery}>{overdue} overdue or expired {overdue === 1 ? 'date' : 'dates'} — review →</Link></div>}
+      {overdue > 0 && <div className="alert error spaced"><Link href={base + '/items?filter=overdue' + browseQuery}>{overdue} overdue or expired {overdue === 1 ? 'date' : 'dates'}: review →</Link></div>}
       {overdueRows.length > 0 && <div className={styles.overdueDates}><h3>Needs attention</h3><div className={styles.rows}>{overdueRows.map(row => <ItemDateRow key={row.date.id} row={row} today={today} base={base} compact />)}</div></div>}
       <div className={styles.rows}>{near.map(row => <ItemDateRow key={row.date.id} row={row} today={today} base={base} compact />)}</div>
       {!near.length && <p className={styles.empty}>Nothing due in the next 30 days{category !== 'all' ? ' in this category' : ''}.</p>}
@@ -85,10 +85,10 @@ export function Dashboard({ items, usage, name, today, demo = false, setup }: { 
     </section>
     {later.length > 0 && <section className={'panel ' + styles.dates} aria-labelledby="later-heading"><div className="section-heading"><div><h2 id="later-heading">Later</h2><p className="section-description">For the bigger dates ahead.</p></div></div><div className={styles.rows}>{later.map(row => <ItemDateRow key={row.date.id} row={row} today={today} base={base} compact />)}</div></section>}
     <section className={styles.library} aria-labelledby="all-reminders-heading">
-      <div className={'section-heading ' + styles.libraryHeading}><div><h2 id="all-reminders-heading">All reminders</h2><p className="section-description">Your recently added reminders.</p></div><label className={styles.sort}><span className="sr-only">Sort overview reminders</span><select value={sort} onChange={event => setSort(event.target.value)}><option value="recent">Recently added</option><option value="due">Due soon</option></select></label></div>
+      <div className={'section-heading ' + styles.libraryHeading}><div><h2 id="all-reminders-heading">Household items</h2><p className="section-description">Your recently added household items.</p></div><label className={styles.sort}><span className="sr-only">Sort overview reminders</span><select value={sort} onChange={event => setSort(event.target.value)}><option value="recent">Recently added</option><option value="due">Due soon</option></select></label></div>
       <div className={'purchase-grid ' + styles.cards}>{sorted.slice(0, 6).map(item => <ItemCard key={item.id} item={item} base={base} today={today} compact />)}</div>
       {!matched.length && <p className={styles.empty}>{active.length ? 'No reminders in this category.' : 'Add your first reminder. A name is a good start.'}</p>}
-      <div className={styles.browse}><p>{completePreview && matched.length <= 6 ? 'Everything in this overview, ready when you need it.' : 'This overview shows a selection of your reminders.'}</p><Link href={base + '/items' + (browseQuery ? '?' + browseQuery.slice(1) : '')}>Browse all reminders <ArrowRight size={15} /></Link></div>
+      <div className={styles.browse}><p>{completePreview && matched.length <= 6 ? 'Everything in this overview, ready when you need it.' : 'This overview shows a selection of your household items.'}</p><Link href={base + '/items' + (browseQuery ? '?' + browseQuery.slice(1) : '')}>Browse all items <ArrowRight size={15} /></Link></div>
     </section>
     <p className="privacy-note"><ShieldCheck size={15} />Your reminders and files are private to your account.</p>
   </div>;

@@ -6,8 +6,8 @@ import { IdCategory } from '@/components/id-category';
 import { loanPresetKeys, reminderPresets } from '@/features/templates';
 
 export const metadata = {
-  title: 'Loan Payment Reminders Philippines',
-  description: 'Remember personal, home, car, government and online loan payments with Keeply PH. Set monthly reminders, an optional peso amount and your loan end date.',
+  title: 'Loan Payment Reminders',
+  description: 'Remember personal, home, car, government and online loan payments with Keeply. Set monthly reminders, an optional peso amount and your loan end date.',
   alternates: { canonical: '/loan-payment-reminder' },
 };
 export default function LoanPaymentReminderPage() {

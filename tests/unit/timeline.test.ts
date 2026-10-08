@@ -37,7 +37,7 @@ describe('dashboard timeline', () => {
     expect(html).toContain('coming-up-title');
     expect(html).toContain('Email alert');
     expect(html).toContain('href="/demo/items?filter=upcoming"');
-    expect(html).toContain('aria-label="Add Reminder"');
+    expect(html).toContain('aria-label="Add item"');
     expect(html).toContain('Show more · 3 more');
     expect(html).toContain('upcoming-heading');
     expect(html).not.toContain('Everything in its place.');
@@ -75,11 +75,11 @@ describe('dashboard timeline', () => {
       expect(html).toContain('<svg');
     }
   });
-  it('retains the exact fallback hero and Add Reminder when no dates qualify', () => {
+  it('retains the exact fallback hero and Add item when no dates qualify', () => {
     for (const items of [[], [fixture('2027-01-20')], [fixture('2026-12-19')]]) {
       const html = renderToStaticMarkup(createElement(Dashboard, { items, today, name: 'Test', usage }));
       expect(html).toContain('Everything in its place.');
-      expect(html).toContain('Add Reminder');
+      expect(html).toContain('Add item');
       expect(html).not.toContain('coming-up-title');
     }
   });

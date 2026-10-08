@@ -8,6 +8,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Writing and positioning
+
+Never use em dashes in assistant replies, new documentation, or customer-facing copy. Use a period, comma, colon, or parentheses instead. Preserve the generated Next.js rules above as required by Next.js.
+
+Position Keeply as an app for organising household obligations. Alerts support the experience. Use the brand name Keeply without a geographic suffix or geographic qualifiers in general marketing. Retain en-PH language metadata and en_PH Open Graph locale. Keep official source names and necessary jurisdiction context in specific guides accurate.
+
+Use "Explore a sample account" for the general demo CTA. Order categories around household usefulness, beginning with bills, home maintenance, and purchases/warranties. Keep category identifiers and existing saved records stable when updating presentation.
+
 ## Premium feature quality
 
 The owner wants Keeply to feel premium. Do not add extra or new features unless they provide a complete, polished, reliable experience. Prefer fewer finished features over half-baked ideas, placeholders, or functionality that requires awkward workarounds.

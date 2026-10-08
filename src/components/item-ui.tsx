@@ -46,7 +46,7 @@ export function ItemDateRow({ row, today, base = '', compact = false }: { row: D
         <div className={styles.rowContent}><div className={styles.rowTitle}><strong>{row.item.product_name}</strong><CategoryBadge item={row.item} /></div><span className={styles.rowPurpose}><DateIcon kind={row.date.kind} label={row.date.label} preset={row.item.reminder_preset} size={13} />{[reminderProviderLabel(row.item), row.date.label].filter(Boolean).join(' · ')}</span><span className={styles.rowDate}><CalendarDays size={15} aria-hidden="true" />{formatDate(row.occurrence.due_on, true)}{alertStatus(row.item, row.date) === 'enabled' && <AlertState item={row.item} date={row.date} />}</span></div>
       </Link>
       <div className={styles.rowStatus}>
-        <Link className={styles.rowAction} href={action.href} aria-label={`${action.label} for ${row.item.product_name} — ${row.date.label}`}>{action.label}</Link>
+        <Link className={styles.rowAction} href={action.href} aria-label={`${action.label} for ${row.item.product_name}: ${row.date.label}`}>{action.label}</Link>
         <CountdownBadge row={row} today={today} />
       </div>
     </div>;

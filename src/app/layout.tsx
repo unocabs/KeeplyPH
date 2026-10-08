@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import './globals.css';
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.keeplyph.com'), title: { default: 'Keeply PH — Loans, Bills, Warranties & ID Reminders', template: '%s · Keeply PH' },
-  applicationName: 'Keeply PH',
-  appleWebApp: { capable: true, title: 'Keeply PH', statusBarStyle: 'default' },
+  metadataBase: new URL('https://www.keeplyph.com'), title: { default: 'Keeply: Household Bills, Maintenance & Warranties', template: '%s · Keeply' },
+  applicationName: 'Keeply',
+  appleWebApp: { capable: true, title: 'Keeply', statusBarStyle: 'default' },
   twitter: { card: 'summary_large_image' },
-  openGraph: { locale: 'en_PH', siteName: 'Keeply PH', type: 'website' },
-  description: 'Your all-in-one place for recurring loan payments, warranties, IDs, passports, bills and other important dates, with email alerts you choose.',
+  openGraph: { locale: 'en_PH', siteName: 'Keeply', type: 'website' },
+  description: 'Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.',
 };
 export const dynamic = 'force-dynamic';
 export default function RootLayout({ children }: { children: React.ReactNode }) {

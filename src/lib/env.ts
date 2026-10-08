@@ -1,6 +1,6 @@
 export function isConfigured() { return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY); }
 export function supportEmail() { return process.env.SUPPORT_EMAIL?.trim() || 'rgianmcabrera@gmail.com'; }
-export function operatorName() { return process.env.OPERATOR_NAME?.trim() || 'Keeply PH'; }
+export function operatorName() { return process.env.OPERATOR_NAME?.trim() || 'Keeply'; }
 export function appUrl() {
   const value = process.env.APP_URL || (process.env.NODE_ENV === 'production' ? 'https://keeplyph.com' : 'http://localhost:3000');
   return new URL(value).origin;

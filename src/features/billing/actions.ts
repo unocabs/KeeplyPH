@@ -28,7 +28,7 @@ export async function startCheckout(_previous: ActionResult, form: FormData): Pr
       const methods = (process.env.PAYMONGO_PAYMENT_METHODS || 'qrph').split(',').map(s => s.trim());
       if (!methods.length || methods.some(m => !['card', 'gcash', 'paymaya', 'qrph'].includes(m))) throw new Error('Invalid payment method');
       const result = checkoutSchema.parse(await paymongo('/v2/checkout_sessions', {
-        line_items: [{ name: `${slots} ${product === 'slots_30' ? 'alert slots — 30 days' : 'permanent alert slots'}`, amount: order.amount_minor, currency: 'PHP', quantity: 1 }],
+        line_items: [{ name: `${slots} ${product === 'slots_30' ? 'alert slots: 30 days' : 'permanent alert slots'}`, amount: order.amount_minor, currency: 'PHP', quantity: 1 }],
         payment_method_types: methods, reference_number: order.id, metadata: { keeply_order_id: order.id },
         success_url: appUrl() + '/settings/billing?payment=return&order=' + order.id,
         cancel_url: appUrl() + '/settings/billing?payment=cancelled&order=' + order.id, send_email_receipt: true,

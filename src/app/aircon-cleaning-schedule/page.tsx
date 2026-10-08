@@ -5,8 +5,8 @@ import { Brand } from '@/components/brand';
 import { PublicAuthLink } from '@/components/public-auth-link';
 import styles from './page.module.css';
 
-const title = 'Aircon Cleaning Schedule Philippines: When, What & Cost';
-const description = 'When should you clean your aircon? Compare filter care and professional servicing, schedules by daily use, published Philippine prices and a booking checklist.';
+const title = 'Aircon Cleaning Schedule: When, What & Cost';
+const description = 'When should you clean your aircon? Compare filter care and professional servicing, schedules by daily use, published service prices and a booking checklist.';
 const pageUrl = 'https://www.keeplyph.com/aircon-cleaning-schedule';
 const sources = {
   midea: 'https://www.midea.com/ph/news/aircon-cleaning-schedule-in-the-philippines--filters--self-cleaning--and-professional-deep-cleaning',
@@ -18,7 +18,7 @@ const reminder = '/add/aircon';
 
 export const metadata: Metadata = {
   title, description, alternates: { canonical: '/aircon-cleaning-schedule' },
-  openGraph: { title, description, url: '/aircon-cleaning-schedule', type: 'article', locale: 'en_PH', siteName: 'Keeply PH' },
+  openGraph: { title, description, url: '/aircon-cleaning-schedule', type: 'article', locale: 'en_PH', siteName: 'Keeply' },
   twitter: { card: 'summary_large_image', title, description },
 };
 
@@ -29,8 +29,8 @@ export default async function Page() {
     '@graph': [
       { '@type': 'Article', '@id': pageUrl + '#guide', headline: title, description, url: pageUrl,
         mainEntityOfPage: pageUrl, inLanguage: 'en-PH', datePublished: '2026-10-04', dateModified: '2026-10-04',
-        author: { '@type': 'Organization', name: 'Keeply PH', url: 'https://www.keeplyph.com' },
-        publisher: { '@type': 'Organization', name: 'Keeply PH', url: 'https://www.keeplyph.com' },
+        author: { '@type': 'Organization', name: 'Keeply', url: 'https://www.keeplyph.com' },
+        publisher: { '@type': 'Organization', name: 'Keeply', url: 'https://www.keeplyph.com' },
         citation: Object.values(sources) },
       { '@type': 'BreadcrumbList', '@id': pageUrl + '#breadcrumb', itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.keeplyph.com' },
@@ -47,7 +47,7 @@ export default async function Page() {
         <div className="eyebrow">A PRACTICAL GUIDE FOR PHILIPPINE HOUSEHOLDS</div>
         <h1>Kailan magpapalinis ng aircon?<br /><em>Start with how you use it.</em></h1>
         <p className={styles.intro}>A bedroom unit used at night and an aircon running all day need different plans. Here’s how to separate filter care from a technician’s visit, compare quotes, and remember the next clean.</p>
-        <p className={styles.review}>By <a href="#sources">Keeply PH</a> · Reviewed <time dateTime="2026-10-04">October 4, 2026</time> · Based on manufacturer guidance and published service prices.</p>
+        <p className={styles.review}>By <a href="#sources">Keeply</a> · Reviewed <time dateTime="2026-10-04">October 4, 2026</time> · Based on manufacturer guidance and published service prices.</p>
         <div className="hero-actions"><a className="button primary" href="#schedule">Find my cleaning schedule ↓</a><a className="button secondary" href="#cost">Compare cleaning costs</a></div>
       </header>
 
@@ -138,7 +138,7 @@ export default async function Page() {
       </section>
 
       <section id="booking-checklist" className={styles.section}>
-        <span className={styles.number}>06 / MAKE THE APPOINTMENT COUNT</span><h2>Before the technician arrives—and before they leave</h2>
+        <span className={styles.number}>06 / MAKE THE APPOINTMENT COUNT</span><h2>Before the technician arrives, and before they leave</h2>
         <div className={styles.columns}>
           <div><h3>Before the visit</h3><ul>
             <li>Send model details and access photos so the quote matches the installation.</li>
@@ -189,13 +189,13 @@ export default async function Page() {
       </section>
 
       <section id="sources" className={`${styles.section} ${styles.sources}`}>
-        <h2>Sources and review notes</h2><p>Prepared by Keeply PH on October 4, 2026. This is a household planning guide, not a repair diagnosis. Manufacturer instructions for your model and a qualified technician’s assessment take precedence.</p>
+        <h2>Sources and review notes</h2><p>Prepared by Keeply on October 4, 2026. This is a household planning guide, not a repair diagnosis. Manufacturer instructions for your model and a qualified technician’s assessment take precedence.</p>
         <ul>
-          <li><a href={sources.midea}>Midea Philippines: aircon cleaning schedule</a> — usage bands, filter care, professional servicing and self-cleaning limits. Full page reviewed.</li>
-          <li><a href={sources.daikin}>Daikin: maintenance tips</a> — washable-filter care and professional support. Full page reviewed.</li>
-          <li><a href={sources.panasonic}>Panasonic Philippines: cleaning and servicing</a> — filter types and servicing guidance. Relevant indexed text reviewed; direct access returned an access restriction.</li>
-          <li><a href="https://aircon.cis.panasonic.com/wp-content/uploads/cs-pc12gkd_cu-pc12gkd_f565574.pdf">Panasonic CS-PC12GKD care instructions</a> — power isolation and filter care; model-specific, not a manual for every aircon. Indexed care section reviewed.</li>
-          <li><a href={sources.teko}>Teko: aircon cleaning services</a> — published prices and inclusions. Full page reviewed. Prices can change; obtain a current quote.</li>
+          <li><a href={sources.midea}>Midea Philippines: aircon cleaning schedule</a>: usage bands, filter care, professional servicing and self-cleaning limits. Full page reviewed.</li>
+          <li><a href={sources.daikin}>Daikin: maintenance tips</a>: washable-filter care and professional support. Full page reviewed.</li>
+          <li><a href={sources.panasonic}>Panasonic Philippines: cleaning and servicing</a>: filter types and servicing guidance. Relevant indexed text reviewed; direct access returned an access restriction.</li>
+          <li><a href="https://aircon.cis.panasonic.com/wp-content/uploads/cs-pc12gkd_cu-pc12gkd_f565574.pdf">Panasonic CS-PC12GKD care instructions</a>: power isolation and filter care; model-specific, not a manual for every aircon. Indexed care section reviewed.</li>
+          <li><a href={sources.teko}>Teko: aircon cleaning services</a>: published prices and inclusions. Full page reviewed. Prices can change; obtain a current quote.</li>
         </ul>
         <p>Household examples, quote prompts and appointment checklists are Keeply’s editorial illustrations.</p>
       </section>

@@ -1,0 +1,125 @@
+[
+  {
+    "page": "aircon-cleaning-schedule",
+    "scores": {
+      "performance": 97,
+      "accessibility": 100,
+      "seo": 100
+    },
+    "accessibilityIssues": []
+  },
+  {
+    "page": "document-expiry-tracker",
+    "scores": {
+      "performance": 98,
+      "accessibility": 96,
+      "seo": 100
+    },
+    "accessibilityIssues": [
+      {
+        "key": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "nodes": [
+          "Example"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "home",
+    "scores": {
+      "performance": 96,
+      "accessibility": 100,
+      "seo": 100
+    },
+    "accessibilityIssues": []
+  },
+  {
+    "page": "loan-payment-reminder",
+    "scores": {
+      "performance": 97,
+      "accessibility": 100,
+      "seo": 100
+    },
+    "accessibilityIssues": []
+  },
+  {
+    "page": "lto-registration-renewal",
+    "scores": {
+      "performance": 97,
+      "accessibility": 97,
+      "seo": 100
+    },
+    "accessibilityIssues": [
+      {
+        "key": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "nodes": [
+          "LTMS portal",
+          "LTO office"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "pricing",
+    "scores": {
+      "performance": 98,
+      "accessibility": 100,
+      "seo": 100
+    },
+    "accessibilityIssues": []
+  },
+  {
+    "page": "privacy",
+    "scores": {
+      "performance": 98,
+      "accessibility": 100,
+      "seo": 100
+    },
+    "accessibilityIssues": []
+  },
+  {
+    "page": "terms",
+    "scores": {
+      "performance": 98,
+      "accessibility": 100,
+      "seo": 100
+    },
+    "accessibilityIssues": []
+  },
+  {
+    "page": "vehicle-registration-reminder",
+    "scores": {
+      "performance": 98,
+      "accessibility": 96,
+      "seo": 100
+    },
+    "accessibilityIssues": [
+      {
+        "key": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "nodes": [
+          "Example"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "warranty-tracker",
+    "scores": {
+      "performance": 98,
+      "accessibility": 96,
+      "seo": 100
+    },
+    "accessibilityIssues": [
+      {
+        "key": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "nodes": [
+          "Example"
+        ]
+      }
+    ]
+  }
+]

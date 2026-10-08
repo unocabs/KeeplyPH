@@ -19,8 +19,8 @@ export function SlotPlans({ action, pending = false, enabled = true, permanentSl
       <div className="section-heading"><label htmlFor={id}>How many more items need alerts?</label><output htmlFor={id} aria-live="polite">{slots} extra slots</output></div>
       <p className="section-description">Alerts for {permanentSlots + slots + freeSlots} items in total, including your {freeSlots} free slots{permanentSlots ? ` and ${permanentSlots} permanent slots` : ''}. Multiple dates on one item share a slot.</p>
       <input id={id} type="range" min="5" max={max} step="5" value={slots} disabled={pending} onChange={e => setSelected(Number(e.target.value))} aria-valuetext={`${slots} extra slots, ${permanentSlots + slots + freeSlots} total`} />
-      <div className="slot-scale"><span>5 slots</span>{max >= 25 && <button type="button" className={'slot-best' + (slots === 25 ? ' selected' : '')} disabled={pending} onClick={() => setSelected(25)} aria-describedby={`${id}-recommendation`}>25 slots <span>Best option</span></button>}<span>{max} slots</span></div>
-      {max >= 25 && <p className="slot-recommendation" id={`${id}-recommendation`}><strong>Why 25? Our best option for a busy household.</strong> Room for bills, installments, subscriptions, IDs and renewals, with space for the next thing you want to keep. Choose fewer or more to fit your needs.</p>}
+      <div className="slot-scale"><span>5 slots</span>{max >= 25 && <button type="button" className={'slot-best' + (slots === 25 ? ' selected' : '')} disabled={pending} onClick={() => setSelected(25)} aria-describedby={`${id}-recommendation`}>25 slots</button>}<span>{max} slots</span></div>
+      {max >= 25 && <p className="slot-recommendation" id={`${id}-recommendation`}><strong>Managing several household obligations?</strong> Room for bills, installments, subscriptions, IDs and renewals, with space for the next thing you want to keep. Choose fewer or more to fit your needs.</p>}
     </section>
     <div className="settings-grid slot-plan-grid">
       {(permanentSlots ? ['slots_permanent'] : ['slots_30', 'slots_permanent']).map(value => {
@@ -28,9 +28,9 @@ export function SlotPlans({ action, pending = false, enabled = true, permanentSl
         const price = packPrice(product, slots);
         const permanent = product === 'slots_permanent';
         return <section className={'panel plan-card' + (preferredProduct === product ? ' selected-plan' : '')} key={product}>
-          <div className="section-heading"><h2>{permanent ? 'One-time purchase' : '30-day access'}</h2>{slots === 25 && <span className="best-option">Best option</span>}</div>
+          <div className="section-heading"><h2>{permanent ? 'One-time purchase' : '30-day access'}</h2></div>
           {preferredProduct === product && <p className="hint spaced">Your selected option · review before paying</p>}
-          <div className="original-price"><span className="sr-only">Original price: </span><s>{formatMoney(price.originalAmount)}</s></div>
+
           <div className="plan-price"><span className="sr-only">Current price: </span>{formatMoney(price.amount)} <small>{products[product].period}</small></div>
           <ul className="plan-list"><li><Check size={16}/>{slots} extra items with alerts · {permanentSlots + slots + freeSlots} total</li><li><Check size={16}/>{permanent ? 'No renewal or scheduled expiry' : 'Renew manually through PayMongo'}</li><li><Check size={16}/>{permanent ? 'One payment for the selected slots' : 'No automatic charges'}</li></ul>
           <p className="plan-terms">{permanent ? <>Purchased slots remain available while Keeply operates. <Link href="/terms#permanent-access">What permanent means →</Link></> : 'When access expires, extra alerts pause. Your saved reminders stay accessible.'}</p>

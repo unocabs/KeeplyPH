@@ -32,32 +32,33 @@ interface Sample {
   bought?: number;
 }
 
-// The first six are also the overview's recently-added selection.
+// Preserve array indices for stable sample links. Household priorities determine the overview order.
+const householdOrder = [1, 6, 5, 13, 0, 3, 7, 8, 4, 2, 9, 10, 11, 12, 14, 15, 16];
 const samples: Sample[] = [
-  { name: 'Home Credit — phone installment', preset: 'credit-card-installment', due: 3, recurrence: 1, amount: 189900, history: true, note: 'Set aside payment after payday. Keep the payment confirmation.' },
-  { name: 'Meralco — bahay', preset: 'electric-bill', due: 5, recurrence: 1, note: 'Check the bill before paying. The amount can change each month.' },
-  { name: 'Tuition ni Mia — next installment', preset: 'tuition', due: 9, amount: 650000, note: 'Check the school’s payment schedule for the amount and due date.' },
-  { id: ids.car, name: 'Family car — Toyota Vios', template: 'car', kind: 'registration', due: 27, note: 'Keep it ready for school runs and trips home.' },
-  { name: 'Mama — follow-up checkup', preset: 'medical-appointment', due: 7, note: 'Confirm the appointment and prepare questions for the doctor.' },
-  { id: ids.washing, name: 'Washing machine — receipt & warranty', template: 'receipt', kind: 'warranty', due: 23, merchant: 'SM Appliance', price: 2399500, bought: -342, note: 'Keep the receipt here in case it needs repairs.' },
-  { name: 'PLDT — internet sa bahay', preset: 'internet-bill', due: 18, recurrence: 1, note: 'Used for work and online classes. Include in the monthly budget.' },
-  { name: 'Life insurance — quarterly premium', preset: 'life-insurance', due: 40, recurrence: 3, amount: 450000, note: 'Set aside the premium before the next quarter.' },
-  { name: 'Netflix — monthly renewal', preset: 'streaming', due: 21, recurrence: 1, note: 'Check if we still use it before the next charge.' },
-  { name: 'Honda Click — daily commute', template: 'motorcycle', kind: 'registration', due: 65, note: 'Check the next oil change and registration dates.' },
-  { id: ids.passport, name: 'Passport — my renewal', template: 'passport', kind: 'expiration', due: 244, note: 'Check the expiry date before booking a trip.' },
-  { id: ids.licence, name: 'Driver’s license — my renewal', template: 'licence', kind: 'expiration', due: 400, note: 'Check the expiry date and plan a day for renewal.' },
-  { name: 'PRC license — my renewal', preset: 'prc-license', due: 90, note: 'Check the requirements before renewing.' },
-  { id: ids.aircon, name: 'Bedroom aircon — next cleaning', template: 'aircon', kind: 'service', due: -3, history: true, note: 'Keep the last cleaning date and technician’s number here.' },
-  { name: 'Family reunion — confirm our attendance', due: 35, note: 'Let Ate know how many of us are coming.' },
-  { id: ids.fan, name: 'Electric fan — receipt', template: 'receipt', due: null, covered: false, merchant: 'Abenson', price: 249500, bought: -8, note: 'Keep the receipt in case we need it later.' },
-  { id: ids.headphones, name: 'Old headphones — expired warranty', template: 'receipt', kind: 'warranty', due: -45, covered: false, merchant: 'Electronics shop', price: 299500, bought: -410, note: 'The warranty has ended. Keep the purchase details for reference.' },
+  { name: 'Home Credit: phone installment', preset: 'credit-card-installment', due: 3, recurrence: 1, amount: 189900, history: true, note: 'Set aside payment after payday. Keep the payment confirmation.' },
+  { name: 'Meralco: household electricity', preset: 'electric-bill', due: 5, recurrence: 1, note: 'Check the bill before paying. The amount can change each month.' },
+  { name: 'Mia’s tuition: next installment', preset: 'tuition', due: 9, amount: 650000, note: 'Check the school’s payment schedule for the amount and due date.' },
+  { id: ids.car, name: 'Family car: Toyota Vios', template: 'car', kind: 'registration', due: 27, note: 'Keep it ready for school runs and trips home.' },
+  { name: 'Family checkup: follow-up appointment', preset: 'medical-appointment', due: 7, note: 'Confirm the appointment and prepare questions for the doctor.' },
+  { id: ids.washing, name: 'Washing machine: receipt & warranty', template: 'receipt', kind: 'warranty', due: 23, merchant: 'SM Appliance', price: 2399500, bought: -342, note: 'Keep the receipt here in case it needs repairs.' },
+  { name: 'PLDT: home internet', preset: 'internet-bill', due: 18, recurrence: 1, note: 'Used for work and online classes. Include in the monthly budget.' },
+  { name: 'Life insurance: quarterly premium', preset: 'life-insurance', due: 40, recurrence: 3, amount: 450000, note: 'Set aside the premium before the next quarter.' },
+  { name: 'Netflix: monthly renewal', preset: 'streaming', due: 21, recurrence: 1, note: 'Check if we still use it before the next charge.' },
+  { name: 'Honda Click: daily commute', template: 'motorcycle', kind: 'registration', due: 65, note: 'Check the next oil change and registration dates.' },
+  { id: ids.passport, name: 'Passport: my renewal', template: 'passport', kind: 'expiration', due: 244, note: 'Check the expiry date before booking a trip.' },
+  { id: ids.licence, name: 'Driver’s license: my renewal', template: 'licence', kind: 'expiration', due: 400, note: 'Check the expiry date and plan a day for renewal.' },
+  { name: 'PRC license: my renewal', preset: 'prc-license', due: 90, note: 'Check the requirements before renewing.' },
+  { id: ids.aircon, name: 'Bedroom aircon: next cleaning', template: 'aircon', kind: 'service', due: -3, history: true, note: 'Keep the last cleaning date and technician’s number here.' },
+  { name: 'Family reunion: confirm our attendance', due: 35, note: 'Confirm how many of us are coming.' },
+  { id: ids.fan, name: 'Electric fan: receipt', template: 'receipt', due: null, covered: false, merchant: 'Abenson', price: 249500, bought: -8, note: 'Keep the receipt in case we need it later.' },
+  { id: ids.headphones, name: 'Old headphones: expired warranty', template: 'receipt', kind: 'warranty', due: -45, covered: false, merchant: 'Electronics shop', price: 299500, bought: -410, note: 'The warranty has ended. Keep the purchase details for reference.' },
 ];
 
 export function sampleItems(today = todayIn()): ItemWithDetails[] {
   return samples.map((sample, index) => {
     const id = sample.id || sampleId(index);
     const template = sample.template || 'other';
-    const timestamp = day(today, -index) + 'T09:00:00Z';
+    const timestamp = day(today, -householdOrder.indexOf(index)) + 'T09:00:00Z';
     const covered = sample.covered !== false;
     const item: ItemWithDetails = {
       id, user_id: 'sample', state: 'saved', product_name: sample.name,

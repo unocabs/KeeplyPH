@@ -1,0 +1,50 @@
+[
+  {
+    "engine": "chromium",
+    "width": 320,
+    "flows": "home, demo, category selection/search/empty state, modal cancellation, category filter, sample preferences, pricing quantity, warranty detail",
+    "errors": []
+  },
+  {
+    "engine": "chromium",
+    "width": 390,
+    "flows": "home, demo, category selection/search/empty state, modal cancellation, category filter, sample preferences, pricing quantity, warranty detail",
+    "errors": []
+  },
+  {
+    "engine": "chromium",
+    "width": 768,
+    "flows": "home, demo, category selection/search/empty state, modal cancellation, category filter, sample preferences, pricing quantity, warranty detail",
+    "errors": []
+  },
+  {
+    "engine": "chromium",
+    "width": 1280,
+    "flows": "home, demo, category selection/search/empty state, modal cancellation, category filter, sample preferences, pricing quantity, warranty detail",
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "width": 320,
+    "flows": "home, demo, category selection/search/empty state, modal cancellation, category filter, sample preferences, pricing quantity, warranty detail",
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "width": 390,
+    "flows": "home, demo, category selection/search/empty state, modal cancellation, category filter, sample preferences, pricing quantity, warranty detail",
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "width": 768,
+    "flows": "home, demo, category selection/search/empty state, modal cancellation, category filter, sample preferences, pricing quantity, warranty detail",
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "width": 1280,
+    "flows": "home, demo, category selection/search/empty state, modal cancellation, category filter, sample preferences, pricing quantity, warranty detail",
+    "errors": []
+  }
+]

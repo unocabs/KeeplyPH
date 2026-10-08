@@ -135,7 +135,7 @@ input[type=file]:disabled::file-selector-button { cursor:not-allowed; background
   .search-field input:focus { outline:none; }
 }
 
-/* Keeply PH identity and shared reminder iconography. */
+/* Keeply identity and shared reminder iconography. */
 .brand{gap:2px}.brand-logo{width:64px;height:64px;object-fit:contain;flex-shrink:0;margin:-12px -5px -12px -10px}.brand-country{display:inline-block;margin-left:7px;font-size:10px;font-weight:700;letter-spacing:.07em;color:#796597;vertical-align:middle}
 .reminder-icon{--icon-primary:#68617e;--icon-secondary:var(--icon-primary);--icon-surface:#f1eff6;--icon-highlight:#faf9fc;--icon-border:#e2dfea;width:42px;height:42px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--icon-primary);background:linear-gradient(180deg,var(--icon-highlight),var(--icon-surface));border:1px solid var(--icon-border);box-shadow:inset 0 1px 0 #ffffff99,0 1px 2px #0f172a0a}
 
@@ -342,3 +342,17 @@ select {
 .utility-badge{background:#edf2fa;color:#58769e}
 
 .avatar-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}.avatar-photo.is-loaded{opacity:1}
+
+.household-example-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:22px}
+.household-example{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:20px;background:#fff;border:1px solid #d9d0ed;border-radius:12px;min-width:0}
+.household-example:hover{border-color:var(--primary)}
+.household-example h3{font-size:19px;line-height:1.4;margin:0}
+.household-example p{font-size:14px;color:var(--muted);line-height:1.7;flex:1}
+.household-example>span:last-child{display:flex;align-items:center;gap:6px;color:var(--primary);font-size:13px;line-height:1.5}
+.household-example>span:last-child svg{flex-shrink:0}
+@media(max-width:720px){.household-example-grid{grid-template-columns:1fr}.household-example{padding:18px}}
+
+.landing-home .landing-preview .badge.none{color:#655e73}
+
+.detail-grid>section,.detail-grid>aside{min-width:0}
+@media(max-width:900px){.detail-grid{grid-template-columns:minmax(0,1fr)}}

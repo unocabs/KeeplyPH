@@ -55,7 +55,7 @@ export function DocumentPreview({ kind }: { kind: keyof typeof examples }) {
             <text x="200" y="46" textAnchor="middle" fontSize="13" fontWeight="700" fill="#5940aa">EXAMPLE ONLY · NOT AN OFFICIAL DOCUMENT</text>
             <text x="24" y="94" fontSize="18" fontWeight="700" fill="#262235">{doc.title}</text>
             {doc.fields.map((field,index) => <g key={field}><text x="24" y={132+index*59} fontSize="12" fill="#534d65">{field}</text><rect x="24" y={143+index*59} width={index%2 ? 240 : 320} height="12" rx="3" fill="#e9e6ef" /></g>)}
-            <text x="24" y="438" fontSize="11" fill="#6d637e">Keeply PH · Visual guide · No personal data</text>
+            <text x="24" y="438" fontSize="11" fill="#6d637e">Keeply · Visual guide · No personal data</text>
           </svg>
           <figcaption>{doc.note}</figcaption>
         </figure>)}</div>
