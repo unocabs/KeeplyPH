@@ -89,7 +89,7 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       await completion.getByRole('button',{name:'Save activity',exact:true}).click();
       await history.getByText('Filter cleaning completed',{exact:true}).waitFor();
       const activity=(await admin.query('select * from public.item_activities where item_id=$1',[item])).rows[0]; assert.equal(Number(activity.amount_minor),60000);
-      await history.getByRole('button',{name:'Correct',exact:true}).click();
+      await history.getByRole('button',{name:'Edit Details',exact:true}).click();
       await history.getByLabel('Cost').fill('650'); await history.getByLabel('Reason for correction').fill('Correct receipt amount');
       await history.getByRole('button',{name:'Save correction',exact:true}).click();
       await history.getByText('Corrected entry. Previous versions are retained.').waitFor();
@@ -100,15 +100,15 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       await history.getByRole('button',{name:'Remove recorded activity',exact:true}).click();
       await history.getByLabel('Reason',{exact:true}).fill('Recorded against the wrong occurrence');
       await history.locator('form').getByRole('button',{name:'Remove recorded activity',exact:true}).click();
-      await page.getByRole('heading',{name:'Past occurrences to review'}).waitFor();
+      await page.getByRole('heading',{name:'Past reminders to check'}).waitFor();
       await page.getByRole('button',{name:'Mark as skipped',exact:true}).click();
       await page.getByLabel('Reason for skipping').fill('Service was canceled'); await page.getByRole('button',{name:'Confirm skipped',exact:true}).click();
-      await page.getByRole('heading',{name:'Past occurrences to review'}).waitFor({state:'hidden'});
+      await page.getByRole('heading',{name:'Past reminders to check'}).waitFor({state:'hidden'});
       await page.locator('details').filter({has:page.locator('summary').filter({hasText:/^History \(/})}).locator('summary').click();
       await page.getByRole('button',{name:'Reopen for review',exact:true}).click(); await page.getByLabel('Reason for reopening').fill('Service did happen');
-      await page.getByRole('button',{name:'Confirm reopened',exact:true}).click(); await page.getByRole('heading',{name:'Past occurrences to review'}).waitFor();
+      await page.getByRole('button',{name:'Confirm reopened',exact:true}).click(); await page.getByRole('heading',{name:'Past reminders to check'}).waitFor();
       await page.getByRole('button',{name:'Record completion',exact:true}).click(); await page.locator('form').filter({has:page.getByRole('heading',{name:'Record completion'})}).getByRole('button',{name:'Save activity',exact:true}).click();
-      await history.getByRole('button',{name:'Correct',exact:true}).waitFor();
+      await history.getByRole('button',{name:'Edit Details',exact:true}).waitFor();
       // Exercise a real failed server action followed by retry with preserved fields.
       await history.getByRole('button',{name:'Add activity',exact:true}).click(); await history.getByLabel('What happened?').fill('Independent repair');
       await history.getByLabel('Activity type').selectOption('repair');
@@ -124,9 +124,9 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       const bill=randomUUID();await actor(owner,"select public.create_item_draft($1,'other')",[bill]);
       await actor(owner,'select public.save_item_with_date($1,1,$2,$3,$4,$5)',[bill,'Older electricity bill','',{kind:'other',label:'Monthly payment',due_on:'2020-01-01',reminders_enabled:false,offsets:[],interval_months:null,recurrence_months:1,recurrence_ends_on:null},'electric-bill']);
       await actor(null,'select public.advance_recurring_dates()',[],'service_role');
-      await page.goto(base+'/dashboard');await page.getByRole('heading',{name:'Occurrences to review',exact:true}).waitFor();
-      await page.getByRole('link',{name:'Review all occurrences'}).click();await page.getByRole('heading',{name:'Occurrences to review',exact:true}).waitFor();
-      await page.getByRole('link',{name:'Review',exact:true}).first().click();await page.getByRole('heading',{name:'Record completion',exact:true}).waitFor();
+      await page.goto(base+'/dashboard');await page.getByRole('heading',{name:'Overdue or expired',exact:true}).waitFor();
+      await page.getByRole('link',{name:'Review all'}).click();await page.waitForURL(url=>url.pathname==='/items'&&url.searchParams.get('filter')==='overdue');await page.getByRole('heading',{name:'Overdue or expired',exact:true}).waitFor();
+      await page.getByRole('link',{name:/Review/}).filter({has:page.getByText('Older electricity bill',{exact:true})}).first().click();await page.getByRole('heading',{name:'Record completion',exact:true}).waitFor();
       await page.locator('form').filter({has:page.getByRole('heading',{name:'Record completion'})}).getByRole('button',{name:'Cancel',exact:true}).click();
       await page.getByText('Scheduled January 1, 2020',{exact:true}).waitFor();
       await page.locator('details').filter({has:page.locator('summary').filter({hasText:/^History \(/})}).locator('summary').click();
@@ -134,7 +134,7 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       await page.getByText(/History \(40 cycles\)/).waitFor();
       await testCoreExperience({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
       await testInsightsExperience({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
-      reports.push({engine:engine.name(),width,passed:['completion','actual cost','service next date','correction','audit history','cancel','void','skip','reopen','late completion','validation','server failure','retry','no overflow','account-wide review','historical deep link','cycle pagination','attention first','single planning view','demo review','demo history','demo creation','name-first save','add date later','provider persistence','form cancellation','creation failure retry','existing vehicle','purchase save','compact schedule and amount','collapsed validation reveal','readiness preferences','readiness cancellation and retry','occurrence amount confirmation','amount cancellation and retry','account-wide insights','expanded search','demo insights']});
+      reports.push({engine:engine.name(),width,passed:['completion','actual cost','service next date','correction','audit history','cancel','void','skip','reopen','late completion','validation','server failure','retry','no overflow','account-wide review','historical deep link','cycle pagination','calendar first','single planning view','demo review','demo history','demo creation','name-first save','add date later','provider persistence','form cancellation','creation failure retry','existing vehicle','purchase save','compact schedule and amount','collapsed validation reveal','readiness preferences','readiness cancellation and retry','occurrence amount confirmation','amount cancellation and retry','account-wide insights','expanded search','demo insights']});
       await context.close(); await browser.close(); browser=null;
     }
     assert.deepEqual(errors,[]);
@@ -162,10 +162,16 @@ async function testCoreExperience({page,base,owner,actor,admin,today,engine,widt
   await page.goto(base+'/demo');
   const attention=page.locator('section[aria-labelledby="attention-heading"]'),planning=page.locator('section[aria-labelledby="planning-heading"]'),records=page.locator('section[aria-labelledby="all-reminders-heading"]');
   await planning.getByRole('heading',{name:'Your next 30 days'}).waitFor();
-  assert((await attention.boundingBox()).y<(await planning.boundingBox()).y);
+  assert((await planning.boundingBox()).y<(await attention.boundingBox()).y);
   assert((await planning.boundingBox()).y<(await records.boundingBox()).y);
   assert.equal(await page.getByRole('heading',{level:1}).count(),1);
   assert.equal(await planning.getByRole('button',{name:'Calendar',exact:true}).getAttribute('aria-pressed'),'true');
+  assert((await planning.boundingBox()).y < 300);
+  const grid=planning.locator('[class*="grid"]');
+  const todayLine=grid.locator('span').first();
+  assert.equal(await todayLine.evaluate(el=>getComputedStyle(el).borderLeftStyle),'solid');
+  assert(Math.abs((await todayLine.boundingBox()).x-(await grid.boundingBox()).x)<2);
+
   assert.deepEqual(await planning.locator('[aria-label="Planning view"] button').allTextContents(),['Calendar','List']);
   await planning.getByRole('button',{name:'List',exact:true}).click();
   const listNames=await planning.locator('strong').allTextContents();
@@ -183,9 +189,11 @@ async function testCoreExperience({page,base,owner,actor,admin,today,engine,widt
   await records.getByRole('button',{name:/^All/}).click();
   await page.evaluate(()=>scrollTo(0,0));
   await page.screenshot({path:`artifacts/household-core/${engine.name()}-${width}-dashboard.png`,fullPage:true});
-  await attention.getByRole('link',{name:'Review all occurrences'}).click();
-  await page.getByRole('heading',{name:'Occurrences to review',exact:true}).waitFor();
-  await page.getByRole('link',{name:'Review',exact:true}).first().click();
+  await attention.getByRole('link',{name:'Review all'}).click();
+  await page.waitForURL(url=>url.pathname==='/demo/items'&&url.searchParams.get('filter')==='overdue');
+  await page.getByRole('heading',{name:'Overdue or expired',exact:true}).waitFor();
+  assert.equal(await page.locator('section.panel').getByRole('link').count(),3);
+  await page.locator('section.panel').getByRole('link').filter({hasText:'Review'}).first().click();
   const completion=page.locator('form').filter({has:page.getByRole('heading',{name:'Record completion'})});
   await completion.getByRole('button',{name:'Review sample activity'}).waitFor();
   await completion.getByRole('button',{name:'Review sample activity'}).click();
@@ -194,7 +202,7 @@ async function testCoreExperience({page,base,owner,actor,admin,today,engine,widt
   await page.goto(base+'/demo/items/cccccccc-cccc-4ccc-8ccc-cccccccccccc');
   const history=page.locator('section[aria-labelledby="activity-history-heading"]');
   await history.getByRole('heading',{name:'Activity history',exact:true}).waitFor();
-  assert.equal(await history.getByRole('button',{name:'Correct',exact:true}).count(),2);
+  assert.equal(await history.getByRole('button',{name:'Edit Details',exact:true}).count(),2);
   await page.goto(base+'/demo/add/other?preset=electric-bill');
   await page.getByLabel('A helpful name').fill('Sample electric bill');
   const options=page.locator('details').filter({has:page.locator('summary').getByText('Provider, brand and notes (optional)',{exact:true})});
@@ -269,7 +277,7 @@ async function testCoreExperience({page,base,owner,actor,admin,today,engine,widt
 async function testInsightsExperience({page,base,owner,actor,admin,today,engine,width,failSave}) {
   await mkdir('artifacts/household-insights',{recursive:true});
   await page.goto(base+'/demo');
-  await page.getByRole('heading',{name:'Your household brief',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'This week at home',exact:true}).waitFor();
   const summary=page.locator('section[aria-labelledby="payment-summary-heading"]');
   assert((await summary.textContent()).includes('Unverified'));
   assert((await summary.textContent()).includes('₱8,399'));
@@ -293,7 +301,7 @@ async function testInsightsExperience({page,base,owner,actor,admin,today,engine,
   await page.goto(base+'/demo/items?q=Sample%20washing%20machine%20receipt.svg');
   await page.getByRole('heading',{name:'Washing machine: receipt & warranty',exact:true}).waitFor();
   assert.equal(await page.locator('.purchase-grid h3').count(),1);
-  await page.goto(base+'/demo');await page.getByRole('heading',{name:'Your household brief',exact:true}).waitFor();
+  await page.goto(base+'/demo');await page.getByRole('heading',{name:'This week at home',exact:true}).waitFor();
   await page.screenshot({path:`artifacts/household-insights/${engine.name()}-${width}-demo.png`,fullPage:true});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   // A name-only bill proves preference success, cancellation, retry and later data completion.
@@ -334,7 +342,7 @@ async function testInsightsExperience({page,base,owner,actor,admin,today,engine,
   const stored=(await admin.query('select expected_amount_minor,amount_certainty,status from public.date_occurrences where id=$1',[occurrence.id])).rows[0];
   assert.equal(Number(stored.expected_amount_minor),120050);assert.equal(stored.amount_certainty,'confirmed');assert.equal(stored.status,'open');
   await page.waitForLoadState('networkidle');
-  await page.goto(base+'/dashboard');await page.getByRole('heading',{name:'Your household brief',exact:true}).waitFor();
+  await page.goto(base+'/dashboard');await page.getByRole('heading',{name:'This week at home',exact:true}).waitFor();
   assert((await page.locator('section[aria-labelledby="payment-summary-heading"]').textContent()).includes('₱1,200.50'));
   await page.screenshot({path:`artifacts/household-insights/${engine.name()}-${width}-private.png`,fullPage:true});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));

@@ -29,7 +29,7 @@ export async function getItem(id: string, selectedOccurrence?: string): Promise<
   // Deep links may point beyond the bounded initial occurrence history.
   if (selectedOccurrence && /^[0-9a-f-]{36}$/i.test(selectedOccurrence) && !item.dates.some(date => date.occurrences.some(o => o.id === selectedOccurrence))) {
     const {data:target,error:targetError} = await supabase.from('date_occurrences').select('*').eq('id',selectedOccurrence).eq('user_id',profile.id).maybeSingle();
-    if(targetError)throw new Error('Unable to load the selected occurrence.');
+    if(targetError)throw new Error('Unable to load the selected reminder.');
     if(target) { const date=item.dates.find(date => date.id === target.date_id); if(date)date.selected_occurrence=target; }
   }
   const [previewResult, historyResult] = await Promise.all([
@@ -46,7 +46,7 @@ export async function getItem(id: string, selectedOccurrence?: string): Promise<
 export async function getUnconfirmedSummary(before?:string,beforeId?:string): Promise<import('./activity').UnconfirmedSummary> {
   const {supabase}=await requireUser();
   const {data,error}=await supabase.rpc('unconfirmed_occurrence_summary',{p_before:before || null,p_before_id:beforeId || null});
-  if(error)throw new Error('Unable to load occurrences requiring review.');
+  if(error)throw new Error('Unable to load reminders requiring review.');
   return data as unknown as import('./activity').UnconfirmedSummary;
 }
 

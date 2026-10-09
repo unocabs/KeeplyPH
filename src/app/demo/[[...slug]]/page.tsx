@@ -14,11 +14,12 @@ import { PurchaseDetail } from '@/components/purchase-detail';
 import { AlertOptions } from '@/components/alert-options';
 import { SettingsForm } from '@/components/settings-form';
 import { Billing } from '@/components/billing';
-import { OccurrenceReviewList } from '@/components/occurrence-review-list';
+import { OccurrenceReviewList, OverdueReminderList } from '@/components/occurrence-review-list';
 import { requiredDate } from '@/features/items/validation';
 import { uuidSchema } from '@/lib/validation';
 import { HouseholdPaymentPlan } from '@/components/payment-plan';
 import { sampleInsights, samplePaymentPlan } from '@/features/items/insights';
+import { dateRows } from '@/features/items/domain';
 import { notFound } from 'next/navigation';
 export const metadata = { title: 'Sample account', robots: { index: false, follow: false } };
 export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ q?: string; filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string; template?: string; before?: string; id?: string }> }) {
@@ -43,7 +44,12 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
     content = <OccurrenceReviewList summary={sampleUnconfirmed(items,valid ? query.before : undefined,valid ? query.id : undefined)} paged={valid} base="/demo" />;
   }
   else if(slug[0] === 'items') {
-    if(!slug[1]) content = <ItemList key={JSON.stringify(query)} serverQuery={{template:query.template,q:query.q}} items={items} today={today} initialFilter={query.filter} demo />;
+    if(!slug[1] && query.filter === 'overdue') {
+      const valid=requiredDate.safeParse(query.before).success && uuidSchema.safeParse(query.id).success;
+      const summary=sampleUnconfirmed(items,valid?query.before:undefined,valid?query.id:undefined),last=summary.rows.at(-1);
+      content=<OverdueReminderList rows={dateRows(items).filter(row=>row.occurrence.due_on<today)} summary={summary} base="/demo" paged={valid} pastNext={summary.has_more&&last?'/demo/items?'+new URLSearchParams({filter:'overdue',before:last.due_on,id:last.occurrence_id}):undefined}/>;
+    }
+    else if(!slug[1]) content = <ItemList key={JSON.stringify(query)} serverQuery={{template:query.template,q:query.q}} items={items} today={today} initialFilter={query.filter} demo />;
     else { const item = items.find(i=>i.id===slug[1]); if(!item)notFound();content = slug[2] === 'edit' ? <ItemForm template={item.template_key} item={item} demo/> : <ItemDetail item={item} usage={usage} today={today} demo/>; }
   }
   else if (slug[0] === 'purchases' && !slug[1]) content = <PurchaseList key={query.filter} purchases={purchases} today={today} initialFilter={query.filter} demo />;

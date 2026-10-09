@@ -79,7 +79,7 @@ export function ActivityEditor({ item, today, activity, date, occurrence, demo =
           {!repeating && policy === 'manual' && <label className="full">Next confirmed date (optional)<input type="date" min={completed} max="2200-12-31" value={next} onChange={event => setNext(event.target.value)} /><span className="hint">Leave empty to finish.</span></label>}
           <p className="hint full">Next scheduled date: {proposed ? formatDate(proposed) : 'None'}.{policy === 'from_completion' && repeating ? ' Future services wait for completion before advancing.' : ''}</p>
         </>}
-        {occurrence && !schedule && <p className="hint full">This records an earlier occurrence. Your current schedule stays the same.</p>}
+        {occurrence && !schedule && <p className="hint full">This records an earlier reminder. Your current schedule stays the same.</p>}
         {warranty && <p className="hint full">This ends tracking. It does not renew warranty coverage.</p>}
         {activity && <><label className="full">Reason for correction<textarea required rows={2} maxLength={1000} value={reason} onChange={event => setReason(event.target.value)} /></label><p className="hint full">The previous entry is retained in correction history. Future dates stay the same.</p></>}
       </div>

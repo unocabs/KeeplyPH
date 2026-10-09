@@ -35,7 +35,7 @@ export function readinessChecks(item: ItemWithDetails): ReadinessCheck[] {
 }
 export function readinessComplete(checks: ReadinessCheck[]) { return checks.every(c=>['complete','not_applicable'].includes(c.state)); }
 export type AmountCertainty = 'confirmed' | 'estimated' | 'unverified' | 'unset';
-export const amountLabels: Record<AmountCertainty,string> = {confirmed:'Confirmed',estimated:'Estimated',unverified:'Unverified',unset:'Amount not saved'};
+export const amountLabels: Record<AmountCertainty,string> = {confirmed:'Amount checked',estimated:'Estimated',unverified:'Unverified',unset:'Amount not saved'};
 export function occurrenceAmount(date: DateWithDetails, occurrence: Occurrence) {
   return occurrence.amount_certainty ? { amount:occurrence.expected_amount_minor ?? null,certainty:occurrence.amount_certainty }
     : { amount:date.payment_amount_minor ?? null,certainty:date.payment_amount_minor == null ? 'unset' as const : date.payment_amount_certainty || 'unverified' as const };

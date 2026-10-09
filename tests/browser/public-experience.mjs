@@ -44,9 +44,11 @@ try {
     const navigate=async path=>{await page.waitForLoadState('networkidle');const response=await page.goto(base+path);assert.equal(response.status(),200,path);await page.waitForLoadState('networkidle');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),path+' overflow');};
     await navigate('/');
     assert.match(await page.locator('h1').innerText(),/Your household,\s*a little more organised\./);
+    assert.equal(await page.locator('.hero-actions').getByRole('link',{name:'Start organizing for free',exact:true}).getAttribute('href'),'/add');
+    assert.equal(await page.locator('.hero-actions').getByRole('link',{name:'Explore a sample household',exact:true}).getAttribute('href'),'/demo');
     const showcase=page.locator('section').filter({has:page.locator('#example-title')});
     assert.equal(await showcase.locator('article').count(),4);
-    const confirmed=await showcase.locator('dl div').filter({has:page.getByText('Confirmed',{exact:true})}).locator('dd').innerText();
+    const confirmed=await showcase.locator('dl > div').filter({hasText:'Amount checked'}).locator('dd').innerText();
     const historyCard=showcase.locator('article').filter({has:page.getByRole('heading',{name:'Remember the last service.'})});
     assert.equal(await historyCard.locator('ol li').count(),2);
     const readiness=await showcase.locator('progress').getAttribute('value');
@@ -59,11 +61,10 @@ try {
     await page.getByRole('button',{name:'List',exact:true}).click();assert.equal(await page.getByRole('button',{name:'List',exact:true}).getAttribute('aria-pressed'),'true');
     await page.getByRole('button',{name:'Calendar',exact:true}).click();
     assert.equal(await page.locator('progress').getAttribute('value'),readiness);
-    await page.getByRole('link',{name:'See what you can try in this sample account ↓',exact:true}).click();
-    const guide=page.locator('section').filter({has:page.locator('#sample-capabilities')});assert.equal(await guide.locator('div a').count(),6);
+    const guide=page.locator('section').filter({has:page.locator('#sample-capabilities')});await guide.scrollIntoViewIfNeeded();assert.equal(await guide.locator('div a').count(),6);
     await page.screenshot({path:`${output}/${engine.name()}-${width}-demo.png`,fullPage:true});
     await guide.getByRole('link',{name:/Payment planning/}).click();await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
-    assert.equal(await page.locator('dl div').filter({has:page.getByText(/^Confirmed ·/)}).locator('dd').innerText(),confirmed);
+    assert.equal(await page.locator('dl div').filter({has:page.getByText(/^Amount checked ·/)}).locator('dd').innerText(),confirmed);
     // A deep-linked editor can be cancelled without changing the sample amount.
     await page.getByRole('link',{name:'Review amount',exact:true}).first().click();
     const amount=page.locator('form').filter({has:page.getByLabel('Amount status')});await amount.waitFor();
@@ -74,9 +75,9 @@ try {
     await navigate('/demo');await page.getByRole('link',{name:/Search your records/}).click();
     await page.waitForURL('**/demo/items?q=cleaning');await page.waitForLoadState('networkidle');
     await page.getByRole('heading',{name:'Bedroom aircon: next cleaning',exact:true}).waitFor();
-    await navigate('/');await page.getByRole('link',{name:'Explore readiness',exact:true}).click();await page.locator('#readiness-summary-heading').waitFor();
-    await page.getByRole('link',{name:'Review incomplete records →',exact:true}).click();await page.waitForURL('**/demo/items?filter=incomplete');await page.waitForLoadState('networkidle');await page.getByRole('heading',{name:'Family car: Toyota Vios',exact:true}).waitFor();
-    await navigate('/');await page.getByRole('link',{name:'Open a sample receipt and warranty →',exact:true}).click();
+    await navigate('/');await page.getByRole('link',{name:'Explore readiness',exact:true}).click();await page.locator('#readiness-summary-heading').waitFor();await page.waitForLoadState('networkidle');
+    await page.getByRole('link',{name:'Add useful details',exact:true}).click();await page.waitForURL('**/demo/items?filter=incomplete');await page.waitForLoadState('networkidle');await page.getByRole('heading',{name:'Family car: Toyota Vios',exact:true}).waitFor();
+    await navigate('/');await page.getByRole('link',{name:'Open a sample receipt and warranty',exact:true}).click();
     const receipt=page.getByRole('link',{name:'View sample receipt',exact:true});await receipt.waitFor();
     const popupPromise=page.waitForEvent('popup');await receipt.click();const popup=await popupPromise;await popup.waitForLoadState();assert(popup.url().endsWith('/demo/washing-machine-receipt.svg'));await popup.close();
     await navigate('/');const faq=page.locator('details').filter({has:page.getByText('Does confirming an amount mark a bill paid?',{exact:true})});await faq.locator('summary').click();assert(await faq.evaluate(element=>element.open));await faq.locator('summary').click();assert.equal(await faq.evaluate(element=>element.open),false);

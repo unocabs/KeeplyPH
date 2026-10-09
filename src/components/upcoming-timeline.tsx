@@ -63,7 +63,7 @@ export function UpcomingTimeline({ rows, today, base = '', embedded = false }: {
       </div>;
     })}</div>
     <div className={styles.footer}>
-      <div className={styles.footerSummary}><div className={styles.legend}><span><i aria-hidden="true" />Alert</span><span><CalendarDays size={15} aria-hidden="true" />Due date</span></div>{rows.length > 5 && <Link href={base + '/items?filter=upcoming'}>View all upcoming <ArrowRight size={14} aria-hidden="true" /></Link>}</div>
+      <div className={styles.footerSummary}><div className={styles.legend}><span><i aria-hidden="true" />Alert</span><span><CalendarDays size={15} aria-hidden="true" />Due date</span></div>{(embedded || rows.length > 5) && <Link href={base + '/items?filter=upcoming'}>View all upcoming <ArrowRight size={14} aria-hidden="true" /></Link>}</div>
       {extraCount > 0 && <button type="button" className={styles.expand} aria-expanded={expanded} aria-controls={rowsId} onClick={event => { event.currentTarget.focus(); setExpanded(value => !value); }}>{expanded ? 'Show less' : `Show more · ${extraCount} more`}</button>}
     </div>
     </div>

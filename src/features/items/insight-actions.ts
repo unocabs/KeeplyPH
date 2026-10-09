@@ -19,5 +19,5 @@ export async function saveOccurrenceAmount(occurrence:string,revision:number,amo
   const {supabase}=await requireUser();
   const {error}=await supabase.rpc('set_occurrence_amount',{p_occurrence:occurrence,p_revision:revision,p_amount:amount,p_certainty:certainty});
   if(error)return {error:errorMessage(error)};
-  refresh();return {success:'Expected amount saved for this occurrence.'};
+  refresh();return {success:'Expected amount saved for this payment date.'};
 }

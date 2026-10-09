@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { sampleItems, sampleUsage } from '@/lib/demo';
 import { timelineAlerts, timelineAlertGroups, timelinePosition, timelineRows } from '@/features/items/timeline';
 import { Dashboard } from '@/components/dashboard';
+import { sampleInsights } from '@/features/items/insights';
 import { UpcomingTimeline } from '@/components/upcoming-timeline';
 import type { Usage } from '@/lib/domain';
 
@@ -31,6 +32,30 @@ function fixture(due = '2027-01-03') {
 }
 
 describe('dashboard timeline', () => {
+  it('groups the shared demo and account dashboard around calendar, checks, planning and records', () => {
+    const items = sampleItems(today);
+    for (const demo of [true, false]) {
+      const html = renderToStaticMarkup(createElement(Dashboard, { items, today, name: 'Alex', usage: sampleUsage(items, today), insights: sampleInsights(items, today), demo }));
+      const positions = ['coming-up', 'needs-a-check', 'plan-and-organise', 'saved-records'].map(id => html.indexOf(`id="${id}"`));
+      expect(positions.every(position => position > 0)).toBe(true);
+      expect(positions).toEqual([...positions].sort((a, b) => a - b));
+      expect(html.indexOf('id="planning-heading"')).toBeLessThan(html.indexOf('id="household-brief-heading"'));
+      expect(html.indexOf('id="household-brief-heading"')).toBeLessThan(html.indexOf('id="needs-a-check"'));
+      expect(html.indexOf('Household items')).toBeGreaterThan(html.indexOf('id="saved-records"'));
+      expect(html).toContain('Details to add');
+      expect(html).toContain('A few useful details are missing from your records. Add them whenever you’re ready.');
+      expect(html).not.toContain('Household readiness');
+      expect(html).toContain(`href="${demo ? '/demo' : ''}/items?filter=incomplete"`);
+      expect(html).toContain('aria-label="On this page"');
+    }
+  });
+  it('omits planning navigation when insights are unavailable and preserves the first-item welcome', () => {
+    const html = renderToStaticMarkup(createElement(Dashboard, { items: [fixture()], today, name: 'Alex', usage }));
+    expect(html).not.toContain('#plan-and-organise');
+    const welcome = renderToStaticMarkup(createElement(Dashboard, { items: [], today, name: 'Alex', usage: { ...usage, purchases: 0 } }));
+    expect(welcome).toContain('Welcome to Keeply.');
+    expect(welcome).not.toContain('On this page');
+  });
   it('defaults to one planning calendar and keeps navigation contained in the demo', () => {
     const items = sampleItems(today);
     const html = renderToStaticMarkup(createElement(Dashboard, { items, today, name: 'Alex', usage: sampleUsage(items, today), demo: true }));

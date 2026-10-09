@@ -49,12 +49,12 @@ export async function voidActivity(id: string, revision: number, reason: string)
 }
 
 export async function skipOccurrence(request: string, occurrence: string, revision: number, reason: string, reopen = false): Promise<ActionResult> {
-  if (![request, occurrence].every(id => uuidSchema.safeParse(id).success) || !Number.isInteger(revision) || revision < 1 || !reason.trim() || reason.length > 1000) return { error: 'Give a reason for skipping this occurrence.' };
+  if (![request, occurrence].every(id => uuidSchema.safeParse(id).success) || !Number.isInteger(revision) || revision < 1 || !reason.trim() || reason.length > 1000) return { error: 'Give a reason for skipping this reminder.' };
   const { supabase } = await requireUser();
   const { error } = await supabase.rpc('skip_unconfirmed_occurrence', { p_request: request, p_occurrence: occurrence, p_revision: revision, p_reason: reason, p_reopen: reopen });
   if (error) return { error: errorMessage(error) };
   refresh();
-  return { success: reopen ? 'Occurrence reopened for review.' : 'Occurrence marked skipped. Your current schedule stays the same.' };
+  return { success: reopen ? 'Reminder reopened for review.' : 'Reminder marked skipped. Your current schedule stays the same.' };
 }
 
 export async function activityHistory(item: string, before: string, beforeId: string): Promise<ActivityPage> {

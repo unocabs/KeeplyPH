@@ -8,7 +8,7 @@ import { ActivityEditor } from '@/components/activity-editor';
 import { ActivityHistory } from '@/components/activity-history';
 import { Dashboard } from '@/components/dashboard';
 
-vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }), useSearchParams: () => new URLSearchParams() }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }), useSearchParams: () => new URLSearchParams(), usePathname: () => '/dashboard' }));
 vi.mock('@/features/items/activity-actions', () => ({ recordOccurrence: vi.fn(), saveActivity: vi.fn(), activityHistory: vi.fn(), voidActivity: vi.fn(), activityCorrections: vi.fn() }));
 const today = '2026-10-08', items = sampleItems(today);
 const aircon = items.find(item => item.template_key === 'aircon')!;
@@ -42,7 +42,7 @@ describe('household history presentation', () => {
   it('shows explicitly fictional service history and its actual recorded costs', () => {
     const html=renderToStaticMarkup(createElement(ActivityHistory,{item:aircon,today,demo:true}));
     expect(html).toContain('Illustrative history'); expect(html).toContain('₱600'); expect(html).toContain('Scheduled for');
-    expect(html).toContain('Correct'); expect(html).toContain('Remove recorded activity');
+    expect(html).toContain('Edit Details'); expect(html).toContain('Remove recorded activity');
   });
   it('keeps optional actual amounts empty and offers review without pretending the sample saves', () => {
     const date=aircon.dates[0], occurrence=date.occurrences.find(o => o.status === 'open')!;
@@ -53,7 +53,9 @@ describe('household history presentation', () => {
   });
   it('shows unresolved totals from the account query even when the preview has no such record', () => {
     const html=renderToStaticMarkup(createElement(Dashboard,{items,usage:sampleUsage(items,today),today,name:'Alex',unconfirmed:{total:45,has_more:true,rows:[{item_id:aircon.id,product_name:'Older service',date_id:aircon.dates[0].id,occurrence_id:'22222222-2222-4222-8222-222222222222',due_on:'2026-01-01',label:'Service'}]}}));
-    expect(html).toContain('45 occurrences have'); expect(html).toContain('Older service'); expect(html).toContain('href="/items/review"'); expect(html).toContain('occurrence=');
-    expect(html.indexOf('Occurrences to review')).toBeLessThan(html.indexOf('Alert coverage'));
+    expect(html).toContain(`${45 + (sampleUsage(items,today).overdue ?? 0)}</strong> reminders need a check`); expect(html).toContain('Older service'); expect(html).toContain('href="/items?filter=overdue"'); expect(html).toContain('occurrence=');
+    expect(html.indexOf('Your next 30 days')).toBeLessThan(html.indexOf('Overdue or expired'));
+    expect(html.indexOf('Overdue or expired')).toBeLessThan(html.indexOf('Alert coverage'));
+    expect(html).not.toContain('Occurrences to review');
   });
 });
