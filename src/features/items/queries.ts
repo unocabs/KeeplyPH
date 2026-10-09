@@ -11,6 +11,14 @@ export async function getPaymentPlan(before?:string,beforeId?:string): Promise<i
  const {supabase}=await requireUser();const {data,error}=await supabase.rpc('household_payment_plan',{p_before:before || null,p_before_id:beforeId || null});
  if(error)throw new Error('Unable to load payment planning. Please retry.');return data as unknown as import('./insights').PaymentPlan;
 }
+export async function getPaymentActionContexts(plan:import('./insights').PaymentPlan):Promise<Record<string,import('./insights').PaymentActionContext>> {
+ const ids=[...new Set(plan.rows.filter(row=>row.occurrence_id).map(row=>row.date_id))];
+ if(!ids.length)return {};
+ const {supabase,userId}=await requireUser();
+ const {data,error}=await supabase.from('important_dates').select('id,revision,kind').eq('user_id',userId).in('id',ids);
+ if(error)throw new Error('Unable to load payment actions. Please retry.');
+ return Object.fromEntries(data.map(date=>[date.id,{revision:date.revision,can_record_payment:!['service','warranty'].includes(date.kind)}]));
+}
 export async function getItems(query:ItemQuery={}): Promise<ItemWithDetails[]> {
  const {supabase,profile}=await requireUser();
  const validCursor=query.cursor&&query.cursorId&&/^\d{4}-/.test(query.cursor)&&/^[0-9a-f-]{36}$/i.test(query.cursorId)&&Number.isFinite(Date.parse(query.cursor));

@@ -48,7 +48,7 @@ try {
     assert.equal(await page.locator('.hero-actions').getByRole('link',{name:'Explore a sample household',exact:true}).getAttribute('href'),'/demo');
     const showcase=page.locator('section').filter({has:page.locator('#example-title')});
     assert.equal(await showcase.locator('article').count(),4);
-    const confirmed=await showcase.locator('dl > div').filter({hasText:'Amount checked'}).locator('dd').innerText();
+    const total=await showcase.locator('article').filter({has:page.getByRole('heading',{name:'Plan for payments.'})}).getByText(/^₱/).innerText();
     const historyCard=showcase.locator('article').filter({has:page.getByRole('heading',{name:'Remember the last service.'})});
     assert.equal(await historyCard.locator('ol li').count(),2);
     const readiness=await showcase.locator('progress').getAttribute('value');
@@ -64,10 +64,10 @@ try {
     const guide=page.locator('section').filter({has:page.locator('#sample-capabilities')});await guide.scrollIntoViewIfNeeded();assert.equal(await guide.locator('div a').count(),6);
     await page.screenshot({path:`${output}/${engine.name()}-${width}-demo.png`,fullPage:true});
     await guide.getByRole('link',{name:/Payment planning/}).click();await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
-    assert.equal(await page.locator('dl div').filter({has:page.getByText(/^Amount checked ·/)}).locator('dd').innerText(),confirmed);
+    assert.equal(await page.getByText(total,{exact:true}).count(),1);
     // A deep-linked editor can be cancelled without changing the sample amount.
-    await page.getByRole('link',{name:'Review amount',exact:true}).first().click();
-    const amount=page.locator('form').filter({has:page.getByLabel('Amount status')});await amount.waitFor();
+    await page.getByRole('button',{name:'Edit amount',exact:true}).first().click();
+    const amount=page.locator('form').filter({has:page.getByLabel('Expected amount (PHP)')});await amount.waitFor();
     await amount.getByRole('button',{name:'Cancel',exact:true}).click();await amount.waitFor({state:'hidden'});
     await navigate('/');await page.getByRole('link',{name:'Open service history',exact:true}).click();await page.locator('#activity-history-heading').waitFor();
     const history=page.locator('section').filter({has:page.locator('#activity-history-heading')});assert.equal(await history.locator('ol>li').count(),2);

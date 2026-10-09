@@ -35,15 +35,38 @@ export function readinessChecks(item: ItemWithDetails): ReadinessCheck[] {
 }
 export function readinessComplete(checks: ReadinessCheck[]) { return checks.every(c=>['complete','not_applicable'].includes(c.state)); }
 export type AmountCertainty = 'confirmed' | 'estimated' | 'unverified' | 'unset';
-export const amountLabels: Record<AmountCertainty,string> = {confirmed:'Amount checked',estimated:'Estimated',unverified:'Unverified',unset:'Amount not saved'};
+export function paymentTotal(plan:Pick<PaymentPlan,'confirmed_minor'|'estimated_minor'|'unverified_minor'>):string {
+  return (BigInt(plan.confirmed_minor)+BigInt(plan.estimated_minor)+BigInt(plan.unverified_minor)).toString();
+}
 export function occurrenceAmount(date: DateWithDetails, occurrence: Occurrence) {
   return occurrence.amount_certainty ? { amount:occurrence.expected_amount_minor ?? null,certainty:occurrence.amount_certainty }
     : { amount:date.payment_amount_minor ?? null,certainty:date.payment_amount_minor == null ? 'unset' as const : date.payment_amount_certainty || 'unverified' as const };
 }
 export interface PlannedPayment {item_id:string;product_name:string;date_id:string;label:string;occurrence_id:string|null;due_on:string;amount_minor:number|null;certainty:AmountCertainty;projected:boolean}
+export interface PaymentActionContext { revision:number; can_record_payment:boolean }
 export interface PaymentPlan {
   today:string;ends_on:string;currency:'PHP';total:number;confirmed_minor:string;estimated_minor:string;unverified_minor:string;
   confirmed_count:number;estimated_count:number;unverified_count:number;unset_count:number;has_more:boolean;rows:PlannedPayment[];
+}
+/** Keep sample totals in sync without implying a persisted payment or bill. */
+export function previewPaymentChange(plan:PaymentPlan,row:PlannedPayment,change:{amount:number|null;certainty:AmountCertainty}|'paid'):PaymentPlan {
+  const result={...plan,rows:plan.rows.filter(candidate=>candidate.date_id!==row.date_id||candidate.due_on!==row.due_on)};
+  const adjust=(certainty:AmountCertainty,amount:number|null,direction:1|-1)=>{
+    if(certainty==='unset')result.unset_count+=direction;
+    else {
+      const count=`${certainty}_count` as 'confirmed_count'|'estimated_count'|'unverified_count';
+      const sum=`${certainty}_minor` as 'confirmed_minor'|'estimated_minor'|'unverified_minor';
+      result[count]+=direction;result[sum]=(BigInt(result[sum])+BigInt(amount??0)*BigInt(direction)).toString();
+    }
+  };
+  adjust(row.certainty,row.amount_minor,-1);
+  if(change==='paid')result.total--;
+  else {
+    adjust(change.certainty,change.amount,1);
+    result.rows.push({...row,amount_minor:change.amount,certainty:change.certainty});
+    result.rows.sort((a,b)=>a.due_on.localeCompare(b.due_on)||a.date_id.localeCompare(b.date_id));
+  }
+  return result;
 }
 export interface HouseholdInsights {
   today:string;

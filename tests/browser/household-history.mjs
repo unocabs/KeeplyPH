@@ -10,16 +10,32 @@ import { pathToFileURL } from 'node:url';
 
 export async function testHouseholdBrowser({ admin, actor, user }) {
   const playwrightModule = process.env.PLAYWRIGHT_MODULE;
-  const playwright = playwrightModule ? await import(pathToFileURL(playwrightModule).href) : createRequire(import.meta.url)('playwright');
+  const manual = process.env.PG_TEST_CUA === '1';
+  const playwright = manual ? null : playwrightModule ? await import(pathToFileURL(playwrightModule).href) : createRequire(import.meta.url)('playwright');
   const output = 'artifacts/household-history'; await mkdir(output, { recursive: true });
   const apiPort = 34571, appPort = 34572, base = `http://localhost:${appPort}`;
-  const owners = new Map(), errors = [], reports = [];
+  const owners = new Map(), errors = [], reports = [], sessions = new Map();
+  let manualOwner;
   const rpcNames = new Set(['account_usage','item_detail','date_history','reminder_preview','item_activity_history','complete_occurrence','save_item_activity','void_item_activity','skip_unconfirmed_occurrence','activity_corrections','dashboard_timeline_items','unconfirmed_occurrence_summary','list_items','item_coverage','create_item_draft','save_item_with_date','save_utility_item_with_date','save_motorcycle_item_with_date','save_subscription_item_with_date','save_loan_item_with_date','save_insurance_item_with_date','create_purchase_draft','save_purchase','save_important_date','household_insights','household_payment_plan','set_readiness_preference','set_occurrence_amount']);
   let failNextSave = false;
   const api = createServer(async (req, res) => {
     const url = new URL(req.url, `http://localhost:${apiPort}`);
     res.setHeader('Content-Type', 'application/json');
     try {
+      if(manual && url.pathname === '/__test/login') {
+        const session=sessions.get(url.searchParams.get('owner'));if(!session)throw new Error('Unknown isolated test session');
+        res.setHeader('Set-Cookie','sb-localhost-auth-token=base64-'+Buffer.from(JSON.stringify(session)).toString('base64url')+'; Path=/; SameSite=Lax');
+        res.writeHead(303,{Location:base+'/items/payments'});res.end();return;
+      }
+      if(manual && url.pathname === '/__test/fail-next' && req.method==='POST') {failNextSave=true;res.end('{}');return;}
+      if(manual && url.pathname === '/__test/conflict' && req.method==='POST') {
+        await admin.query("update public.important_dates set revision=revision+1 where user_id=$1 and item_id=(select id from public.items where user_id=$1 and product_name='Quick internet bill')",[manualOwner]);res.end('{}');return;
+      }
+      if(manual && url.pathname === '/__test/state') {
+        const dates=(await admin.query('select i.product_name,d.id,d.revision,o.id occurrence_id,o.status,o.due_on::text,o.expected_amount_minor,o.amount_certainty from public.items i join public.important_dates d on d.item_id=i.id join public.date_occurrences o on o.date_id=d.id where i.user_id=$1 order by i.product_name,o.due_on',[manualOwner])).rows;
+        const activities=(await admin.query('select activity_type,title,amount_minor,completed_on::text,notes from public.item_activities where user_id=$1',[manualOwner])).rows;
+        res.end(JSON.stringify({dates,activities}));return;
+      }
       const bearer = req.headers.authorization?.split(' ')[1];
       const owner = bearer?.includes('.') ? JSON.parse(Buffer.from(bearer.split('.')[1], 'base64url').toString()).sub : null;
       if (!owner || !owners.has(owner)) { res.writeHead(401); res.end(JSON.stringify({ message: 'Local test session required' })); return; }
@@ -29,15 +45,16 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
         let body = ''; for await (const chunk of req) body += chunk;
         const args = JSON.parse(body || '{}'), keys = Object.keys(args);
         if (!keys.every(key => /^p_[a-z_]+$/.test(key))) throw new Error('Invalid RPC arguments');
-        if (failNextSave && ['save_item_activity','save_utility_item_with_date','set_readiness_preference','set_occurrence_amount'].includes(name)) { failNextSave = false; res.writeHead(503); res.end(JSON.stringify({ message: 'Test connection interruption' })); return; }
+        if (failNextSave && ['complete_occurrence','save_item_activity','save_utility_item_with_date','set_readiness_preference','set_occurrence_amount'].includes(name)) { failNextSave = false; res.writeHead(503); res.end(JSON.stringify({ message: 'Test connection interruption' })); return; }
         const result = await actor(owner, `select public.${name}(${keys.map((key, i) => `${key}=>$${i+1}`).join(',')}) as value`, Object.values(args));
         res.end(JSON.stringify(result.rows[0].value)); return;
       }
       const table = url.pathname.split('/').at(-1);
-      if (!['profiles','items','date_occurrences'].includes(table)) throw new Error('Unsupported test table');
+      if (!['profiles','items','date_occurrences','important_dates'].includes(table)) throw new Error('Unsupported test table');
       const entries = [...url.searchParams].filter(([key]) => ['id','user_id','state','archived_at','template_key'].includes(key));
       const values = [], clauses = entries.map(([key, value]) => {
         if (value === 'is.null') return `${key} is null`;
+        if(value.startsWith('in.(')&&value.endsWith(')')) {const ids=value.slice(4,-1).split(',');if(!ids.every(id=>/^[0-9a-f-]{36}$/i.test(id)))throw new Error('Invalid test IDs');values.push(ids);return `${key}=any($${values.length}::uuid[])`;}
         if (!value.startsWith('eq.')) throw new Error('Unsupported test filter');
         values.push(value.slice(3)); return `${key}=$${values.length}`;
       });
@@ -61,6 +78,22 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       if(server.exitCode !== null) throw new Error('Local app exited: ' + serverLog.slice(-1500));
       await new Promise(resolve => setTimeout(resolve, 250));
       if(attempt===119) throw new Error('Local app failed to start');
+    }
+    if(manual) {
+      const owner=await user(),now=Math.floor(Date.now()/1000);manualOwner=owner;
+      const testUser={id:owner,aud:'authenticated',role:'authenticated',email:'quick-payment@example.test',email_confirmed_at:new Date().toISOString(),user_metadata:{full_name:'Payment test household'},app_metadata:{provider:'google'}};
+      owners.set(owner,testUser);
+      const jwt=[Buffer.from(JSON.stringify({alg:'HS256',typ:'JWT'})).toString('base64url'),Buffer.from(JSON.stringify({sub:owner,aud:'authenticated',role:'authenticated',iat:now,exp:now+3600,iss:`http://localhost:${apiPort}/auth/v1`,session_id:randomUUID()})).toString('base64url'),'bG9jYWwtdGVzdA'].join('.');
+      sessions.set(owner,{access_token:jwt,refresh_token:'local-test',expires_in:3600,expires_at:now+3600,token_type:'bearer',user:testUser});
+      const today=(await admin.query("select (now() at time zone 'Asia/Manila')::date::text as t")).rows[0].t;
+      for(const [name,amount,certainty,offset,recurrence] of [['Quick electricity bill',150000,'unverified',0,1],['Quick internet bill',200000,'estimated',2,null],['Amount to add',null,'estimated',3,null],['Projected school fee',100000,'estimated',-1,1]]) {
+        const id=randomUUID();await actor(owner,"select public.create_item_draft($1,'other')",[id]);
+        const due=new Date(Date.parse(today+'T00:00:00Z')+offset*86400000).toISOString().slice(0,10);
+        await actor(owner,'select public.save_item_with_date($1,1,$2,$3,$4,$5)',[id,name,'',{kind:'other',label:'Monthly payment',due_on:due,reminders_enabled:false,offsets:[],interval_months:null,recurrence_months:recurrence,recurrence_ends_on:null,payment_amount_minor:amount,payment_amount_certainty:certainty},'electric-bill']);
+      }
+      console.log('CUA payment fixture ready: '+`http://localhost:${apiPort}/__test/login?owner=${owner}`);
+      console.log('Isolated database only. Send a newline on stdin after browser checks to clean up.');
+      process.stdin.resume();await new Promise(resolve=>process.stdin.once('data',resolve));process.stdin.pause();return;
     }
     for(const [engine,width] of [[playwright.chromium,1280],[playwright.chromium,390],[playwright.webkit,390]]) {
       browser = await engine.launch(engine.name() === 'chromium' ? {channel:process.env.PLAYWRIGHT_CHROMIUM_CHANNEL || 'chrome'} : {});
@@ -279,13 +312,13 @@ async function testInsightsExperience({page,base,owner,actor,admin,today,engine,
   await page.goto(base+'/demo');
   await page.getByRole('heading',{name:'This week at home',exact:true}).waitFor();
   const summary=page.locator('section[aria-labelledby="payment-summary-heading"]');
-  assert((await summary.textContent()).includes('Unverified'));
-  assert((await summary.textContent()).includes('₱8,399'));
-  await summary.getByRole('link',{name:'Review payment amounts'}).click();
+  assert(!(await summary.textContent()).includes('Unverified'));
+  assert((await summary.textContent()).includes('₱10,148'));
+  await summary.getByRole('link',{name:'View payments'}).click();
   await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
-  await page.getByRole('link',{name:'Review amount',exact:true}).first().click();
+  await page.getByRole('button',{name:'Edit amount',exact:true}).first().click();
   let form=page.locator('form').filter({has:page.getByRole('heading',{name:'Expected amount for this date',exact:true})});
-  await form.getByLabel('Amount status').selectOption('estimated');
+  await form.getByLabel('This is an estimate').check();
   await form.getByLabel('Expected amount (PHP)').fill('2000');
   await form.getByRole('button',{name:'Review sample amount',exact:true}).click();
   await page.getByRole('status').getByText('Sample amount shown here. No changes are saved.').waitFor();
@@ -321,20 +354,20 @@ async function testInsightsExperience({page,base,owner,actor,admin,today,engine,
   form=page.locator('form').filter({has:page.getByRole('heading',{name:'Add an important date',exact:true})});
   await form.getByLabel('Next payment',{exact:true}).fill(today);
   await form.getByLabel('Amount per payment').fill('1500');
-  assert.equal(await form.getByLabel('Schedule amount status').inputValue(),'estimated');
+  assert.equal(await form.getByLabel('This is an estimate').isChecked(),false);
   await form.getByLabel('Send me alerts for this date').uncheck();
   await form.getByRole('button',{name:'Save date',exact:true}).click();await key.getByText('Saved',{exact:true}).waitFor();
   await page.waitForLoadState('networkidle');
   const date=(await actor(owner,'select public.item_detail($1) data',[item])).rows[0].data.dates[0],occurrence=date.occurrences.find(o=>o.status==='open');
   await page.goto(base+'/items/payments');await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
   const payment=page.locator('li').filter({has:page.getByRole('link',{name:'Readiness bill',exact:true})});
-  await payment.getByRole('link',{name:'Review amount',exact:true}).click();
+  await payment.getByRole('button',{name:'Edit amount',exact:true}).click();
   form=page.locator('form').filter({has:page.getByRole('heading',{name:'Expected amount for this date',exact:true})});
   await form.getByLabel('Expected amount (PHP)').fill('1300');await form.getByRole('button',{name:'Cancel',exact:true}).click();
   await page.waitForURL(url=>!url.searchParams.has('action'));
   await page.waitForLoadState('networkidle');
   assert.equal((await admin.query('select amount_certainty from public.date_occurrences where id=$1',[occurrence.id])).rows[0].amount_certainty,null);
-  await page.getByRole('button',{name:'Edit expected amount',exact:true}).click();await form.getByLabel('Amount status').selectOption('confirmed');await form.getByLabel('Expected amount (PHP)').fill('bad');
+  await payment.getByRole('button',{name:'Edit amount',exact:true}).click();await form.getByLabel('This is an estimate').uncheck();await form.getByLabel('Expected amount (PHP)').fill('bad');
   await form.getByRole('button',{name:'Save expected amount',exact:true}).click();await form.getByRole('alert').waitFor();
   await form.getByLabel('Expected amount (PHP)').fill('1200.50');failSave();await form.getByRole('button',{name:'Save expected amount',exact:true}).click();await form.getByRole('alert').waitFor();
   assert.equal(await form.getByLabel('Expected amount (PHP)').inputValue(),'1200.50');
@@ -347,8 +380,7 @@ async function testInsightsExperience({page,base,owner,actor,admin,today,engine,
   await page.screenshot({path:`artifacts/household-insights/${engine.name()}-${width}-private.png`,fullPage:true});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await page.goto(base+'/items/'+item+'?date='+date.id+'&action=amount');
-  await form.getByLabel('Amount status').selectOption('inherit');
-  await form.getByRole('button',{name:'Save expected amount',exact:true}).click();
+  await form.getByRole('button',{name:'Reset to schedule amount',exact:true}).click();
   await page.waitForURL(url=>!url.searchParams.has('action'));await page.waitForLoadState('networkidle');
   const reset=(await admin.query('select amount_certainty,expected_amount_minor from public.date_occurrences where id=$1',[occurrence.id])).rows[0];assert.equal(reset.amount_certainty,null);assert.equal(reset.expected_amount_minor,null);
   await page.goto(base+'/items?q=Household%20search%20needle');await page.getByRole('heading',{name:'Readiness bill',exact:true}).waitFor();assert.equal(await page.locator('.purchase-grid h3').count(),1);

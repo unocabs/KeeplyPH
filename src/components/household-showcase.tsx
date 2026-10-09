@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { ArrowRight, CalendarDays, History, Lightbulb, ReceiptText, Check, CircleCheck, CircleHelp, FileText, Sparkles } from 'lucide-react';
+import { ArrowRight, CalendarDays, History, Lightbulb, ReceiptText, Check, FileText } from 'lucide-react';
 import { formatDate, todayIn } from '@/lib/domain';
 import { sampleItems } from '@/lib/demo';
 import { comingUp, dateRows } from '@/features/items/domain';
-import { formatTotal, readinessCopy, sampleInsights } from '@/features/items/insights';
+import { formatTotal, paymentTotal, readinessCopy, sampleInsights } from '@/features/items/insights';
 import { ItemIdentityIcon } from './reminder-icon';
 import styles from './household-showcase.module.css';
 
@@ -30,9 +30,9 @@ export function HouseholdShowcase() {
         <Link href="/demo#planning-heading">Explore the calendar <ArrowRight size={16} aria-hidden="true"/></Link>
       </article>
       <article className={styles.card + ' ' + styles.paymentCard}>
-        <div className={styles.cardTop}><span className={styles.icon}><ReceiptText size={24} aria-hidden="true"/></span><span className={styles.kicker}>Make room in the budget</span></div><h3>Plan for payments.</h3><p>See the next 30 days of saved and projected payments. Checked amounts, estimates and figures to verify each have their place.</p>
-        <div className={styles.preview}><div className={styles.previewHeading}><strong>Payments to plan for</strong><span className={styles.previewBadge}>Next 30 days · PHP</span></div><dl className={styles.totals}><div><dt><CircleCheck size={19} aria-hidden="true"/><span>Amount checked<small>{payments.confirmed_count} {payments.confirmed_count === 1 ? 'payment' : 'payments'}</small></span></dt><dd>{formatTotal(payments.confirmed_minor)}</dd></div><div className={styles.estimated}><dt><Sparkles size={19} aria-hidden="true"/><span>Estimated<small>{payments.estimated_count} {payments.estimated_count === 1 ? 'payment' : 'payments'}</small></span></dt><dd>{formatTotal(payments.estimated_minor)}</dd></div><div className={styles.unverified}><dt><CircleHelp size={19} aria-hidden="true"/><span>Unverified<small>{payments.unverified_count} {payments.unverified_count === 1 ? 'payment' : 'payments'}</small></span></dt><dd>{formatTotal(payments.unverified_minor)}</dd></div></dl><p className={styles.note}>{payments.unset_count} {payments.unset_count === 1 ? 'payment has' : 'payments have'} no amount saved. Checking an amount does not mark it paid.</p></div>
-        <Link href="/demo/items/payments">Review sample payments <ArrowRight size={16} aria-hidden="true"/></Link>
+        <div className={styles.cardTop}><span className={styles.icon}><ReceiptText size={24} aria-hidden="true"/></span><span className={styles.kicker}>Make room in the budget</span></div><h3>Plan for payments.</h3><p>See the next 30 days of saved and projected payments. See one total to set aside, add missing amounts and mark payments paid.</p>
+        <div className={styles.preview}><div className={styles.previewHeading}><strong>Payments to plan for</strong><span className={styles.previewBadge}>Next 30 days · PHP</span></div><div className={styles.paymentTotal}><strong>{formatTotal(paymentTotal(payments))}</strong><span>to plan for</span></div>{payments.estimated_count>0&&<p className={styles.note}>Includes {payments.estimated_count} {payments.estimated_count===1?'estimate':'estimates'}</p>}{payments.unset_count>0&&<p className={styles.note}>{payments.unset_count} {payments.unset_count===1?'payment needs':'payments need'} an amount</p>}</div>
+        <Link href="/demo/items/payments">View sample payments <ArrowRight size={16} aria-hidden="true"/></Link>
       </article>
       <article className={styles.card + ' ' + styles.historyCard}>
         <div className={styles.cardTop}><span className={styles.icon}><History size={24} aria-hidden="true"/></span><span className={styles.kicker}>A record to come back to</span></div><h3>Remember the last service.</h3><p>Keep completed services, payments and renewals with their item. Add actual costs and notes, and correct a record when needed.</p>

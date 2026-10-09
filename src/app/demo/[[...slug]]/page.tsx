@@ -37,7 +37,8 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   }
   else if(slug[0] === 'items' && slug[1] === 'payments') {
     const valid = requiredDate.safeParse(query.before).success && uuidSchema.safeParse(query.id).success;
-    content = <HouseholdPaymentPlan plan={samplePaymentPlan(items,today,valid?query.before:undefined,valid?query.id:undefined)} paged={valid} base="/demo"/>;
+    const contexts=Object.fromEntries(items.flatMap(item=>item.dates.map(date=>[date.id,{revision:date.revision,can_record_payment:!['service','warranty'].includes(date.kind)}])));
+    content = <HouseholdPaymentPlan key={valid?query.before+':'+query.id:'first'} plan={samplePaymentPlan(items,today,valid?query.before:undefined,valid?query.id:undefined)} contexts={contexts} paged={valid} base="/demo" demo/>;
   }
   else if(slug[0] === 'items' && slug[1] === 'review') {
     const valid = requiredDate.safeParse(query.before).success && uuidSchema.safeParse(query.id).success;

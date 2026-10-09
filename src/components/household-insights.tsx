@@ -1,17 +1,17 @@
 import Link from 'next/link';
 import { ArrowRight, CalendarDays, Lightbulb, ReceiptText, Sun, CircleAlert } from 'lucide-react';
 import { formatDate } from '@/lib/domain';
-import { formatTotal, readinessCopy, readinessHref, type HouseholdInsights, type PaymentPlan } from '@/features/items/insights';
+import { formatTotal, paymentTotal, readinessCopy, readinessHref, type HouseholdInsights, type PaymentPlan } from '@/features/items/insights';
 import type { ItemWithDetails } from '@/features/items/domain';
 import { ItemIdentityIcon } from './reminder-icon';
 import styles from './household-insights.module.css';
 
 export function PaymentTotals({plan}:{plan:PaymentPlan}) {
-  return <><dl className={styles.totals}>
-    <div className={styles.total} data-certainty="confirmed"><dt>Amount checked <span className={styles.totalCount}>· {plan.confirmed_count}</span></dt><dd>{formatTotal(plan.confirmed_minor)}</dd></div>
-    <div className={styles.total} data-certainty="estimated"><dt>Estimated <span className={styles.totalCount}>· {plan.estimated_count}</span></dt><dd>{formatTotal(plan.estimated_minor)}</dd></div>
-    <div className={styles.total} data-certainty="unverified"><dt>Unverified <span className={styles.totalCount}>· {plan.unverified_count}</span></dt><dd>{formatTotal(plan.unverified_minor)}</dd></div>
-  </dl><p className="hint">{plan.unset_count} {plan.unset_count===1?'payment has':'payments have'} no amount saved.</p></>;
+  return <div className={styles.paymentBudget}>
+    <p className={styles.budgetAmount}>{formatTotal(paymentTotal(plan))}<span>to plan for</span></p>
+    {plan.estimated_count>0&&<p className={styles.budgetNote}>Includes {plan.estimated_count} {plan.estimated_count===1?'estimate':'estimates'}</p>}
+    {plan.unset_count>0&&<p className={styles.budgetMissing}>{plan.unset_count} {plan.unset_count===1?'payment needs':'payments need'} an amount</p>}
+  </div>;
 }
 export function HouseholdWeekSummary({insights,items=[],base='',demo=false}:{insights:HouseholdInsights;items?:ItemWithDetails[];base?:string;demo?:boolean}) {
   const {week,today}=insights, attention=week.overdue_count+week.unconfirmed_count;
@@ -33,7 +33,7 @@ export function HouseholdWeekSummary({insights,items=[],base='',demo=false}:{ins
 export function HouseholdInsightCards({insights,items=[],base=''}:{insights:HouseholdInsights;items?:ItemWithDetails[];base?:string}) {
   const {readiness,payments}=insights;
   return <div className={styles.columns}>
-      <section className={'panel '+styles.card} aria-labelledby="payment-summary-heading"><h3 tabIndex={-1} id="payment-summary-heading" className={styles.title}><ReceiptText size={21} aria-hidden="true"/>Payments to plan for</h3><p className={styles.meta}>Next 30 days · PHP · {payments.total} saved or projected {payments.total===1?'payment':'payments'}</p><PaymentTotals plan={payments}/><Link className={styles.cardAction} href={base+'/items/payments'}>Review payment amounts <ArrowRight size={16} aria-hidden="true"/></Link><p className={styles.footer}>“Amount checked” means you’ve verified the bill amount for that date. It does not mark it paid. Paid and overdue payments are excluded.</p></section>
+      <section className={'panel '+styles.card} aria-labelledby="payment-summary-heading"><h3 tabIndex={-1} id="payment-summary-heading" className={styles.title}><ReceiptText size={21} aria-hidden="true"/>Payments to plan for</h3><p className={styles.meta}>Next 30 days · {payments.total} {payments.total===1?'payment':'payments'}</p><PaymentTotals plan={payments}/><Link className={styles.cardAction} href={base+'/items/payments'}>View payments <ArrowRight size={16} aria-hidden="true"/></Link><p className={styles.footer}>Based on your saved amounts and repeating schedules. Paid and overdue payments are excluded.</p></section>
       <section className={'panel '+styles.card+' '+styles.detailsCard} aria-labelledby="readiness-summary-heading"><h3 tabIndex={-1} id="readiness-summary-heading" className={styles.title}><Lightbulb size={21} aria-hidden="true"/>Details to add</h3><p className={styles.meta}>{readiness.rows.length ? "A few useful details are missing from your records. Add them whenever you’re ready." : "Keep useful details here, so you don’t have to remember them later."}</p><p className={styles.detailCount}>{readiness.ready} of {readiness.total} items have their relevant key details saved or marked not applicable.</p>{readiness.total>0 && <progress className={styles.progress} value={readiness.ready} max={readiness.total} aria-label="Items with key details resolved"/>}<ul className={styles.suggestions}>{readiness.rows.slice(0,2).map(row=><li key={row.item_id+row.key}><Link href={readinessHref(row.item_id,row.key,base)}><ItemIdentityIcon item={items.find(item=>item.id===row.item_id)} size={21}/><span><strong>{row.product_name}</strong><small>{readinessCopy[row.key].label} to add</small></span><ArrowRight size={15} aria-hidden="true"/></Link></li>)}</ul>{!readiness.rows.length&&<p className="hint spaced">No open suggestions. You can revisit unknown or hidden details on each item.</p>}<Link className={styles.cardAction} href={base+'/items?filter=incomplete'}>Add useful details <ArrowRight size={16} aria-hidden="true"/></Link><p className={styles.footer}>Save it here, so you don’t have to remember it later. {readiness.unknown} {readiness.unknown===1?'detail':'details'} not known yet; {readiness.dismissed} {readiness.dismissed===1?'suggestion':'suggestions'} hidden. Optional files don’t affect this count.</p></section>
   </div>;
 }
