@@ -11,6 +11,18 @@ describe('household insights',()=>{
     const rows=samplePaymentRows([loan],'2026-01-31');
     expect(rows[0].certainty).toBe('confirmed');expect(rows[1].certainty).toBe('estimated');expect(rows[1].occurrence_id).toBeNull();
   });
+  it('includes maintenance in weekly payments once an expected cost is saved',()=>{
+    const car=sampleItems(today).find(item=>item.template_key==='car')!;
+    car.dates=car.dates.filter(date=>date.kind==='service');
+    const date=car.dates[0],current=date.occurrences.find(o=>o.status==='open')!;
+    current.due_on=addDays(today,2);date.payment_amount_minor=null;
+    current.expected_amount_minor=null;current.amount_certainty=null;
+    expect(sampleInsights([car],today).week.payment_count).toBe(0);
+    date.payment_amount_minor=250000;date.payment_amount_certainty='estimated';
+    expect(sampleInsights([car],today).week.payment_count).toBe(1);
+    expect(samplePaymentPlan([car],today).estimated_minor).toBe('250000');
+    current.status='completed';expect(sampleInsights([car],today).week.payment_count).toBe(0);
+  });
   it('clamps month end and excludes dates after the schedule end',()=>{
     const item=structuredClone(sampleItems('2028-01-31')[0]);
     const date=item.dates[0],current=date.occurrences.find(o=>o.status==='open')!;

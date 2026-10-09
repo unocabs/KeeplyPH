@@ -40,8 +40,13 @@
 .cardAction:hover { border-color:#c7b9e4; background:#f1edf9; }
 .progress { width:100%; height:10px; margin-top:16px; accent-color:var(--primary); }
 .suggestions { list-style:none; display:grid; gap:12px; margin:16px 0; padding:0; }
-.suggestions li { border:1px solid #eae8f4; border-radius:12px; padding:12px; background:#faf9fd; }
-.suggestions a { display:flex; align-items:center; gap:12px; min-height:44px; }
+.suggestions li { display:flex; align-items:center; gap:4px; border:1px solid #eae8f4; border-radius:12px; padding:8px; background:#faf9fd; }
+.suggestions a { display:flex; align-items:center; gap:12px; min-height:44px; min-width:0; flex:1; padding:4px; }
+.suggestions .dismissSuggestion,.suggestions .restoreSuggestion { display:flex; align-items:center; justify-content:center; flex:0 0 44px; width:44px; min-height:44px; padding:0; border:0; border-radius:8px; background:transparent; color:#706c83; cursor:pointer; }
+.suggestions .dismissSuggestion:hover,.suggestions .restoreSuggestion:hover { background:#eee9f7; color:var(--primary); }
+.dismissSuggestion:focus-visible,.restoreSuggestion:focus-visible,.hiddenSuggestions summary:focus-visible { outline:2px solid var(--primary); outline-offset:2px; }
+.hiddenSuggestions { margin-top:12px; }
+.hiddenSuggestions summary { width:fit-content; min-height:44px; padding:10px 4px; color:var(--primary); font-size:13px; font-weight:600; cursor:pointer; }
 .suggestions a > span:not(:global(.reminder-icon)) { min-width:0; flex:1; }
 .suggestions small { display:block; font-size:12px; color:#706c83; margin-top:4px; }
 .suggestions a > svg { flex-shrink:0; color:var(--primary); }
@@ -95,3 +100,6 @@
   .weekSummary small { font-size:11px; line-height:1.4; }
   .lines { grid-template-columns:1fr; }
 }
+
+.briefItem .serviceAction { display:flex; align-items:center; gap:6px; font-size:15px; font-weight:650; }
+.serviceAction svg { flex-shrink:0; color:var(--primary); }

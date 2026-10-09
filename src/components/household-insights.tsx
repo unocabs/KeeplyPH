@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { ArrowRight, CalendarDays, Lightbulb, ReceiptText, Sun, CircleAlert } from 'lucide-react';
 import { formatDate } from '@/lib/domain';
-import { formatTotal, paymentTotal, readinessCopy, readinessHref, type HouseholdInsights, type PaymentPlan } from '@/features/items/insights';
+import { formatTotal, paymentTotal, type HouseholdInsights, type PaymentPlan } from '@/features/items/insights';
 import type { ItemWithDetails } from '@/features/items/domain';
-import { ItemIdentityIcon } from './reminder-icon';
+import { ItemIdentityIcon, DateIcon } from './reminder-icon';
 import styles from './household-insights.module.css';
+import { ReadinessSuggestions } from './readiness-suggestions';
 
 export function PaymentTotals({plan}:{plan:PaymentPlan}) {
   return <div className={styles.paymentBudget}>
@@ -23,17 +24,17 @@ export function HouseholdWeekSummary({insights,items=[],base='',demo=false}:{ins
         <Link className={attention ? styles.summaryUrgent : undefined} href={base+'/items?filter=overdue'}><CircleAlert size={19} aria-hidden="true"/><span><strong>{attention}</strong><small>{attention?'need a check':'overdue reminders'}</small></span><ArrowRight size={15} aria-hidden="true"/></Link>
       </div>
       <div className={styles.lines}>
-        {week.services.map(service=><Link className={styles.briefItem} key={service.date_id} href={base+'/items/'+service.item_id+'#date-'+service.date_id}><ItemIdentityIcon item={items.find(item=>item.id===service.item_id)} size={21}/><span><strong>{service.product_name}</strong><small>{service.label} · {formatDate(service.due_on,true)}</small></span><ArrowRight size={16} aria-hidden="true"/></Link>)}
+        {week.services.map(service=><Link className={styles.briefItem} key={service.date_id} href={base+'/items/'+service.item_id+'#date-'+service.date_id}><ItemIdentityIcon item={items.find(item=>item.id===service.item_id)} size={21}/><span><strong className={styles.serviceAction}><DateIcon kind="service" size={17}/>{service.label}</strong><small>{service.product_name}</small><small>{formatDate(service.due_on,true)}</small></span><ArrowRight size={16} aria-hidden="true"/></Link>)}
       </div>
       {!week.date_count && !week.payment_count && !attention && <p className={styles.quietWeek}>A little breathing room. Your week looks quiet.</p>}
-      <p className={styles.footer}>From your saved records. Repeating payments may include projected dates. This summary does not confirm payments or appointments.</p>
+      <p className={styles.footer}>Payments include saved payment schedules and dates with an expected cost. Add a cost to include a service or renewal. Repeating payments may include projected dates. This summary does not confirm payments or appointments.</p>
     </section>;
 }
 
-export function HouseholdInsightCards({insights,items=[],base=''}:{insights:HouseholdInsights;items?:ItemWithDetails[];base?:string}) {
+export function HouseholdInsightCards({insights,items=[],base='',scope='preview'}:{insights:HouseholdInsights;items?:ItemWithDetails[];base?:string;scope?:string}) {
   const {readiness,payments}=insights;
   return <div className={styles.columns}>
       <section className={'panel '+styles.card} aria-labelledby="payment-summary-heading"><h3 tabIndex={-1} id="payment-summary-heading" className={styles.title}><ReceiptText size={21} aria-hidden="true"/>Payments to plan for</h3><p className={styles.meta}>Next 30 days · {payments.total} {payments.total===1?'payment':'payments'}</p><PaymentTotals plan={payments}/><Link className={styles.cardAction} href={base+'/items/payments'}>View payments <ArrowRight size={16} aria-hidden="true"/></Link><p className={styles.footer}>Based on your saved amounts and repeating schedules. Paid and overdue payments are excluded.</p></section>
-      <section className={'panel '+styles.card+' '+styles.detailsCard} aria-labelledby="readiness-summary-heading"><h3 tabIndex={-1} id="readiness-summary-heading" className={styles.title}><Lightbulb size={21} aria-hidden="true"/>Details to add</h3><p className={styles.meta}>{readiness.rows.length ? "A few useful details are missing from your records. Add them whenever you’re ready." : "Keep useful details here, so you don’t have to remember them later."}</p><p className={styles.detailCount}>{readiness.ready} of {readiness.total} items have their relevant key details saved or marked not applicable.</p>{readiness.total>0 && <progress className={styles.progress} value={readiness.ready} max={readiness.total} aria-label="Items with key details resolved"/>}<ul className={styles.suggestions}>{readiness.rows.slice(0,2).map(row=><li key={row.item_id+row.key}><Link href={readinessHref(row.item_id,row.key,base)}><ItemIdentityIcon item={items.find(item=>item.id===row.item_id)} size={21}/><span><strong>{row.product_name}</strong><small>{readinessCopy[row.key].label} to add</small></span><ArrowRight size={15} aria-hidden="true"/></Link></li>)}</ul>{!readiness.rows.length&&<p className="hint spaced">No open suggestions. You can revisit unknown or hidden details on each item.</p>}<Link className={styles.cardAction} href={base+'/items?filter=incomplete'}>Add useful details <ArrowRight size={16} aria-hidden="true"/></Link><p className={styles.footer}>Save it here, so you don’t have to remember it later. {readiness.unknown} {readiness.unknown===1?'detail':'details'} not known yet; {readiness.dismissed} {readiness.dismissed===1?'suggestion':'suggestions'} hidden. Optional files don’t affect this count.</p></section>
+      <section className={'panel '+styles.card+' '+styles.detailsCard} aria-labelledby="readiness-summary-heading"><h3 tabIndex={-1} id="readiness-summary-heading" className={styles.title}><Lightbulb size={21} aria-hidden="true"/>Details to add</h3><p className={styles.meta}>{readiness.rows.length ? "A few useful details are missing from your records. Add them whenever you’re ready." : "Keep useful details here, so you don’t have to remember them later."}</p><p className={styles.detailCount}>{readiness.ready} of {readiness.total} items have their relevant key details saved or marked not applicable.</p>{readiness.total>0 && <progress className={styles.progress} value={readiness.ready} max={readiness.total} aria-label="Items with key details resolved"/>}<ReadinessSuggestions readiness={readiness} items={items} base={base} scope={scope}/><Link className={styles.cardAction} href={base+'/items?filter=incomplete'}>Add useful details <ArrowRight size={16} aria-hidden="true"/></Link><p className={styles.footer}>Save it here, so you don’t have to remember it later.</p></section>
   </div>;
 }

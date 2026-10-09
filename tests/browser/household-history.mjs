@@ -1,19 +1,37 @@
 // Real application/server actions and isolated PostgreSQL, with local Auth/REST stand-ins.
 // This does not verify hosted Supabase, Google OAuth, Storage uploads or physical devices.
 import assert from 'node:assert/strict';
-import { createServer } from 'node:http';
-import { spawn } from 'node:child_process';
+import { createServer, request as forwardRequest } from 'node:http';
+import { createServer as createHttpsServer } from 'node:https';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { spawn, execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { createRequire } from 'node:module';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, mkdtemp, readFile, rm } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
+
+// Wait for pending server actions and hydration before interacting with a new page.
+async function visit(page,url) {
+  await page.waitForLoadState('networkidle');
+  try { await page.goto(url); }
+  catch(error) {
+    // WebKit can cancel a test navigation when a preceding action finishes its refresh.
+    if(!/cancelled; maybe frame was detached|ERR_ABORTED/.test(error.message))throw error;
+    await page.waitForLoadState('networkidle');
+    await page.goto(url);
+  }
+  await page.waitForLoadState('networkidle');
+}
 
 export async function testHouseholdBrowser({ admin, actor, user }) {
   const playwrightModule = process.env.PLAYWRIGHT_MODULE;
   const manual = process.env.PG_TEST_CUA === '1';
   const playwright = manual ? null : playwrightModule ? await import(pathToFileURL(playwrightModule).href) : createRequire(import.meta.url)('playwright');
   const output = 'artifacts/household-history'; await mkdir(output, { recursive: true });
-  const apiPort = 34571, appPort = 34572, base = `http://localhost:${appPort}`;
+  const production=process.env.PG_TEST_PRODUCTION==='1';
+  const apiPort = 34571, appPort = 34572, tlsPort=34574, httpBase=`http://localhost:${appPort}`, base=production?`https://localhost:${tlsPort}`:httpBase;
+  let tlsProxy,certificateFolder;
   const owners = new Map(), errors = [], reports = [], sessions = new Map();
   let manualOwner;
   const rpcNames = new Set(['account_usage','item_detail','date_history','reminder_preview','item_activity_history','complete_occurrence','save_item_activity','void_item_activity','skip_unconfirmed_occurrence','activity_corrections','dashboard_timeline_items','unconfirmed_occurrence_summary','list_items','item_coverage','create_item_draft','save_item_with_date','save_utility_item_with_date','save_motorcycle_item_with_date','save_subscription_item_with_date','save_loan_item_with_date','save_insurance_item_with_date','create_purchase_draft','save_purchase','save_important_date','household_insights','household_payment_plan','set_readiness_preference','set_occurrence_amount']);
@@ -45,7 +63,7 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
         let body = ''; for await (const chunk of req) body += chunk;
         const args = JSON.parse(body || '{}'), keys = Object.keys(args);
         if (!keys.every(key => /^p_[a-z_]+$/.test(key))) throw new Error('Invalid RPC arguments');
-        if (failNextSave && ['complete_occurrence','save_item_activity','save_utility_item_with_date','set_readiness_preference','set_occurrence_amount'].includes(name)) { failNextSave = false; res.writeHead(503); res.end(JSON.stringify({ message: 'Test connection interruption' })); return; }
+        if (failNextSave && ['complete_occurrence','save_item_activity','save_utility_item_with_date','set_readiness_preference','set_occurrence_amount','save_important_date'].includes(name)) { failNextSave = false; res.writeHead(503); res.end(JSON.stringify({ message: 'Test connection interruption' })); return; }
         const result = await actor(owner, `select public.${name}(${keys.map((key, i) => `${key}=>$${i+1}`).join(',')}) as value`, Object.values(args));
         res.end(JSON.stringify(result.rows[0].value)); return;
       }
@@ -67,14 +85,23 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
     } catch (error) { res.writeHead(400); res.end(JSON.stringify({ message:error.message,code:error.code || 'P0001' })); }
   });
   await new Promise(resolve => api.listen(apiPort, 'localhost', resolve));
-  const server = spawn(process.execPath, ['node_modules/next/dist/bin/next','dev','--port',String(appPort)], {
+  if(production) {
+    certificateFolder=await mkdtemp(join(tmpdir(),'keeply-browser-tls-'));
+    execFileSync('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',join(certificateFolder,'key.pem'),'-out',join(certificateFolder,'cert.pem'),'-days','1','-subj','/CN=localhost'],{stdio:'ignore'});
+    tlsProxy=createHttpsServer({key:await readFile(join(certificateFolder,'key.pem')),cert:await readFile(join(certificateFolder,'cert.pem'))},(req,res)=>{
+      const upstream=forwardRequest({hostname:'localhost',port:appPort,path:req.url,method:req.method,headers:{...req.headers,'x-forwarded-proto':'https','x-forwarded-host':`localhost:${tlsPort}`,'x-forwarded-port':String(tlsPort)}},response=>{res.writeHead(response.statusCode,response.headers);response.pipe(res);});
+      upstream.on('error',()=>{res.writeHead(502);res.end();});req.pipe(upstream);
+    });
+    await new Promise((resolve,reject)=>{tlsProxy.once('error',reject);tlsProxy.listen(tlsPort,'localhost',resolve);});
+  }
+  const server = spawn(process.execPath, ['node_modules/next/dist/bin/next',production?'start':'dev','--port',String(appPort)], {
     cwd:process.cwd(),env:{...process.env,NEXT_PUBLIC_SUPABASE_URL:`http://localhost:${apiPort}`,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:'local-test-key',SUPABASE_SECRET_KEY:'local-test-key',SUPABASE_SERVICE_ROLE_KEY:'local-test-key',APP_URL:base,PAYMENTS_ENABLED:'false',EMAIL_DELIVERY_ENABLED:'false',WEB_PUSH_DELIVERY_ENABLED:'false'},stdio:['ignore','pipe','pipe'],
   });
   let serverLog = ''; server.stdout.on('data', chunk => { serverLog += chunk; }); server.stderr.on('data', chunk => { serverLog += chunk; });
-  let browser;
+  let browser,lastPage;
   try {
     for(let attempt=0;attempt<120;attempt++) {
-      try { if((await fetch(base + '/demo')).ok) break; } catch {}
+      try { if((await fetch(httpBase + '/demo')).ok) break; } catch {}
       if(server.exitCode !== null) throw new Error('Local app exited: ' + serverLog.slice(-1500));
       await new Promise(resolve => setTimeout(resolve, 250));
       if(attempt===119) throw new Error('Local app failed to start');
@@ -95,9 +122,9 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       console.log('Isolated database only. Send a newline on stdin after browser checks to clean up.');
       process.stdin.resume();await new Promise(resolve=>process.stdin.once('data',resolve));process.stdin.pause();return;
     }
-    for(const [engine,width] of [[playwright.chromium,1280],[playwright.chromium,390],[playwright.webkit,390]]) {
+    for(const [engine,width] of [[playwright.chromium,1280],[playwright.chromium,390],[playwright.webkit,390]].filter(([engine])=>!process.env.PG_TEST_BROWSER_ENGINE||engine.name()===process.env.PG_TEST_BROWSER_ENGINE)) {
       browser = await engine.launch(engine.name() === 'chromium' ? {channel:process.env.PLAYWRIGHT_CHROMIUM_CHANNEL || 'chrome'} : {});
-      const context = await browser.newContext({viewport:{width,height:900}});
+      const context = await browser.newContext({viewport:{width,height:900},ignoreHTTPSErrors:production});
       const owner=await user(), item=randomUUID(), now=Math.floor(Date.now()/1000);
       const testUser={id:owner,aud:'authenticated',role:'authenticated',email:'household-test@example.test',email_confirmed_at:new Date().toISOString(),user_metadata:{full_name:'Test household'},app_metadata:{provider:'google'}};
       owners.set(owner,testUser);
@@ -107,8 +134,10 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       const jwt=[Buffer.from(JSON.stringify({alg:'HS256',typ:'JWT'})).toString('base64url'),Buffer.from(JSON.stringify({sub:owner,aud:'authenticated',role:'authenticated',iat:now,exp:now+3600,iss:`http://localhost:${apiPort}/auth/v1`,session_id:randomUUID()})).toString('base64url'),'bG9jYWwtdGVzdA'].join('.');
       const session={access_token:jwt,refresh_token:'local-test',expires_in:3600,expires_at:now+3600,token_type:'bearer',user:testUser};
       await context.addCookies([{name:'sb-localhost-auth-token',value:'base64-'+Buffer.from(JSON.stringify(session)).toString('base64url'),domain:'localhost',path:'/',httpOnly:false,sameSite:'Lax'}]);
-      const page=await context.newPage(); page.setDefaultTimeout(10000); page.on('pageerror',error=>errors.push({message:error.message,stack:error.stack,url:page.url(),engine:engine.name(),width}));
-      await page.goto(`${base}/items/${item}`); await page.getByRole('heading',{name:'Bedroom aircon',exact:true}).waitFor();
+      const page=await context.newPage(); lastPage=page; page.setDefaultTimeout(10000); page.on('pageerror',error=>errors.push({message:error.message,stack:error.stack,url:page.url(),engine:engine.name(),width}));
+      const actionEditingOnly=process.env.PG_TEST_ACTION_EDITING_ONLY==='1';
+      if(!actionEditingOnly) {
+      await visit(page,`${base}/items/${item}`); await page.getByRole('heading',{name:'Bedroom aircon',exact:true}).waitFor();
       const history=page.locator('section[aria-labelledby="activity-history-heading"]');
       await history.getByRole('button',{name:'Add activity',exact:true}).click();
       await history.getByLabel('What happened?').fill('Canceled entry');
@@ -157,7 +186,7 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       const bill=randomUUID();await actor(owner,"select public.create_item_draft($1,'other')",[bill]);
       await actor(owner,'select public.save_item_with_date($1,1,$2,$3,$4,$5)',[bill,'Older electricity bill','',{kind:'other',label:'Monthly payment',due_on:'2020-01-01',reminders_enabled:false,offsets:[],interval_months:null,recurrence_months:1,recurrence_ends_on:null},'electric-bill']);
       await actor(null,'select public.advance_recurring_dates()',[],'service_role');
-      await page.goto(base+'/dashboard');await page.getByRole('heading',{name:'Overdue or expired',exact:true}).waitFor();
+      await visit(page,base+'/dashboard');await page.getByRole('heading',{name:'Overdue or expired',exact:true}).waitFor();
       await page.getByRole('link',{name:'Review all'}).click();await page.waitForURL(url=>url.pathname==='/items'&&url.searchParams.get('filter')==='overdue');await page.getByRole('heading',{name:'Overdue or expired',exact:true}).waitFor();
       await page.getByRole('link',{name:/Review/}).filter({has:page.getByText('Older electricity bill',{exact:true})}).first().click();await page.getByRole('heading',{name:'Record completion',exact:true}).waitFor();
       await page.locator('form').filter({has:page.getByRole('heading',{name:'Record completion'})}).getByRole('button',{name:'Cancel',exact:true}).click();
@@ -167,32 +196,42 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       await page.getByText(/History \(40 cycles\)/).waitFor();
       await testCoreExperience({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
       await testInsightsExperience({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
-      reports.push({engine:engine.name(),width,passed:['completion','actual cost','service next date','correction','audit history','cancel','void','skip','reopen','late completion','validation','server failure','retry','no overflow','account-wide review','historical deep link','cycle pagination','calendar first','single planning view','demo review','demo history','demo creation','name-first save','add date later','provider persistence','form cancellation','creation failure retry','existing vehicle','purchase save','compact schedule and amount','collapsed validation reveal','readiness preferences','readiness cancellation and retry','occurrence amount confirmation','amount cancellation and retry','account-wide insights','expanded search','demo insights']});
+      }
+      await testActionEditing({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
+      reports.push({engine:engine.name(),width,passed:actionEditingOnly?['stable zero timing','leading zero replacement','service expected cost','service cost payment count','action hierarchy','direct checklist service entry','cost cancellation','cost validation','server failure and retry']:['completion','actual cost','service next date','correction','audit history','cancel','void','skip','reopen','late completion','validation','server failure','retry','no overflow','account-wide review','historical deep link','cycle pagination','calendar first','single planning view','demo review','demo history','demo creation','name-first save','add date later','provider persistence','form cancellation','creation failure retry','existing vehicle','purchase save','compact schedule and amount','collapsed validation reveal','readiness preferences','readiness cancellation and retry','occurrence amount confirmation','amount cancellation and retry','account-wide insights','expanded search','demo insights','stable zero timing','leading zero replacement','service expected cost','service cost payment count','action hierarchy','direct checklist service entry']});
       await context.close(); await browser.close(); browser=null;
     }
     assert.deepEqual(errors,[]);
     for(const path of ['/', '/demo', '/items']) {
-      const response=await fetch(base+path,{redirect:'manual'}),html=await response.text();
+      const response=await fetch(httpBase+path,{redirect:'manual'}),html=await response.text();
       if(path==='/') { assert(html.includes('lang="en-PH"'));assert(html.includes('https://www.keeplyph.com'));assert(html.includes('application/ld+json')); }
       if(path==='/demo')assert(html.includes('noindex'));
       if(path==='/items')assert([303,307,308].includes(response.status));
     }
-    const smoke=spawn(process.execPath,['scripts/smoke.mjs'],{cwd:process.cwd(),env:{...process.env,SMOKE_URL:base},stdio:['ignore','pipe','pipe']});
+    const smoke=spawn(process.execPath,['scripts/smoke.mjs'],{cwd:process.cwd(),env:{...process.env,SMOKE_URL:httpBase},stdio:['ignore','pipe','pipe']});
     let smokeLog='';smoke.stdout.on('data',chunk=>{smokeLog+=chunk;});smoke.stderr.on('data',chunk=>{smokeLog+=chunk;});
     const smokeCode=await new Promise(resolve=>smoke.once('exit',resolve));
     assert.equal(smokeCode,0,smokeLog);console.log('✓ Existing HTTP smoke checks and rendered public/private indexing checks passed');
     await writeFile(`${output}/browser-checks.json`,JSON.stringify({reports,errors,limitations:['Local Auth and REST stand-ins; real server actions and isolated PostgreSQL','No hosted provider or physical-device verification']},null,2));
-    console.log('✓ Household history browser flows passed in Chromium desktop/mobile and WebKit mobile');
+    console.log('✓ Household browser flows passed: '+reports.map(report=>report.engine+' '+report.width).join(', '));
+  } catch(error) {
+    if(lastPage&&!lastPage.isClosed()) {
+      await lastPage.screenshot({path:'/tmp/keeply-browser-failure.png',fullPage:true}).catch(()=>{});
+      await writeFile('/tmp/keeply-browser-failure.json',JSON.stringify({url:lastPage.url(),errors,html:await lastPage.content()},null,2));
+    }
+    throw error;
   } finally {
     if(browser)await browser.close();
     server.kill('SIGTERM'); await new Promise(resolve=>server.once('exit',resolve));
+    if(tlsProxy)await new Promise(resolve=>tlsProxy.close(resolve));
+    if(certificateFolder)await rm(certificateFolder,{recursive:true,force:true});
     await new Promise(resolve=>api.close(resolve));
   }
 }
 
 async function testCoreExperience({page,base,owner,actor,admin,today,engine,width,failSave}) {
   await mkdir('artifacts/household-core',{recursive:true});
-  await page.goto(base+'/demo');
+  await visit(page,base+'/demo');
   const attention=page.locator('section[aria-labelledby="attention-heading"]'),planning=page.locator('section[aria-labelledby="planning-heading"]'),records=page.locator('section[aria-labelledby="all-reminders-heading"]');
   await planning.getByRole('heading',{name:'Your next 30 days'}).waitFor();
   assert((await planning.boundingBox()).y<(await attention.boundingBox()).y);
@@ -232,11 +271,11 @@ async function testCoreExperience({page,base,owner,actor,admin,today,engine,widt
   await completion.getByRole('button',{name:'Review sample activity'}).click();
   await completion.getByRole('status').waitFor();
   await completion.getByRole('button',{name:'Cancel',exact:true}).click();
-  await page.goto(base+'/demo/items/cccccccc-cccc-4ccc-8ccc-cccccccccccc');
+  await visit(page,base+'/demo/items/cccccccc-cccc-4ccc-8ccc-cccccccccccc');
   const history=page.locator('section[aria-labelledby="activity-history-heading"]');
   await history.getByRole('heading',{name:'Activity history',exact:true}).waitFor();
   assert.equal(await history.getByRole('button',{name:'Edit Details',exact:true}).count(),2);
-  await page.goto(base+'/demo/add/other?preset=electric-bill');
+  await visit(page,base+'/demo/add/other?preset=electric-bill');
   await page.getByLabel('A helpful name').fill('Sample electric bill');
   const options=page.locator('details').filter({has:page.locator('summary').getByText('Provider, brand and notes (optional)',{exact:true})});
   assert.equal(await options.getAttribute('open'),null);
@@ -244,7 +283,7 @@ async function testCoreExperience({page,base,owner,actor,admin,today,engine,widt
   await page.getByRole('button',{name:'Review sample item',exact:true}).click();
   await page.getByRole('status').waitFor();
   // Real name-first save, including a failed transaction and retry with fields retained.
-  await page.goto(base+'/add/other?preset=electric-bill');
+  await visit(page,base+'/add/other?preset=electric-bill');
   await page.getByLabel('A helpful name').fill('Electric bill kept for later');
   await page.getByText('Provider, brand and notes (optional)',{exact:true}).click();
   await page.getByRole('combobox',{name:/Biller \/ provider/}).click();
@@ -270,14 +309,14 @@ async function testCoreExperience({page,base,owner,actor,admin,today,engine,widt
   assert.equal((await admin.query('select count(*)::int as n from public.items where user_id=$1',[owner])).rows[0].n,3);
   // Add service to an existing saved vehicle instead of creating a duplicate.
   const car=randomUUID();await actor(owner,"select public.create_item_draft($1,'car')",[car]);await actor(owner,'select public.save_item_with_date($1,1,$2,$3,null,null,$4)',[car,'Existing family car','','toyota']);
-  await page.goto(base+'/add/car?focus=service');
+  await visit(page,base+'/add/car?focus=service');
   await page.getByLabel('Which car is this for?').selectOption(car);
   await page.getByLabel('Next service date').fill(today);await page.getByLabel('Send me alerts for this date').uncheck();
   await page.getByRole('button',{name:'Save date to vehicle',exact:true}).click();
   await page.getByRole('heading',{name:'Existing family car',exact:true}).waitFor();
   assert.equal((await admin.query("select count(*)::int as n from public.items where user_id=$1 and template_key='car'",[owner])).rows[0].n,1);
   assert.equal((await admin.query('select count(*)::int as n from public.important_dates where item_id=$1',[car])).rows[0].n,1);
-  await page.goto(base+'/add/other?preset=internet-bill');
+  await visit(page,base+'/add/other?preset=internet-bill');
   await page.getByLabel('A helpful name').fill('Internet payment schedule');
   await page.getByLabel('Next payment',{exact:true}).fill(today);
   await page.getByText('Schedule details',{exact:true}).click();
@@ -295,13 +334,13 @@ async function testCoreExperience({page,base,owner,actor,admin,today,engine,widt
   const savedSchedule=(await admin.query("select d.recurrence_months,d.recurrence_ends_on::text,d.payment_amount_minor,d.reminders_enabled from public.important_dates d join public.items i on i.id=d.item_id where i.user_id=$1 and i.product_name='Internet payment schedule'",[owner])).rows[0];
   assert.equal(savedSchedule.recurrence_months,1);assert.equal(savedSchedule.recurrence_ends_on,'2032-12-31');assert.equal(Number(savedSchedule.payment_amount_minor),120000);assert.equal(savedSchedule.reminders_enabled,false);
   // Purchase details survive collapsing. A minimal purchase works with no files or warranty.
-  await page.goto(base+'/add/receipt?category=appliances');
+  await visit(page,base+'/add/receipt?category=appliances');
   await page.getByLabel('Product name',{exact:true}).fill('New washing machine');
   await page.getByText('Purchase details (optional)',{exact:true}).click();await page.getByLabel('Store or merchant').fill('Appliance store');
   await page.getByText('Purchase details (optional)',{exact:true}).click();
   await page.getByRole('button',{name:'Save purchase',exact:true}).click();await page.getByRole('heading',{name:'New washing machine',exact:true}).waitFor();
   assert.equal((await admin.query("select merchant from public.items where user_id=$1 and product_name='New washing machine'",[owner])).rows[0].merchant,'Appliance store');
-  await page.goto(base+'/demo/add/receipt?category=appliances');await page.getByLabel('Product name',{exact:true}).fill('Demo appliance');
+  await visit(page,base+'/demo/add/receipt?category=appliances');await page.getByLabel('Product name',{exact:true}).fill('Demo appliance');
   await page.getByRole('button',{name:'Review sample purchase',exact:true}).click();await page.getByRole('status').waitFor();
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await page.screenshot({path:`artifacts/household-core/${engine.name()}-${width}-purchase.png`,fullPage:true});
@@ -309,7 +348,7 @@ async function testCoreExperience({page,base,owner,actor,admin,today,engine,widt
 
 async function testInsightsExperience({page,base,owner,actor,admin,today,engine,width,failSave}) {
   await mkdir('artifacts/household-insights',{recursive:true});
-  await page.goto(base+'/demo');
+  await visit(page,base+'/demo');
   await page.getByRole('heading',{name:'This week at home',exact:true}).waitFor();
   const summary=page.locator('section[aria-labelledby="payment-summary-heading"]');
   assert(!(await summary.textContent()).includes('Unverified'));
@@ -324,33 +363,33 @@ async function testInsightsExperience({page,base,owner,actor,admin,today,engine,
   await page.getByRole('status').getByText('Sample amount shown here. No changes are saved.').waitFor();
   await page.waitForURL(url=>!url.searchParams.has('action'));
   await page.waitForLoadState('networkidle');
-  await page.goto(base+'/demo/items/99999999-9999-4999-8999-999999999999');
+  await visit(page,base+'/demo/items/99999999-9999-4999-8999-999999999999');
   const ready=page.locator('section[aria-labelledby="readiness-heading"]');
   const service=ready.locator('li').filter({has:page.getByText('Service history',{exact:true})});
-  await service.getByRole('button',{name:'Manage suggestion'}).click();
-  await service.getByLabel('Detail status').selectOption('not_applicable');
-  await service.getByRole('button',{name:'Review sample preference'}).click();
+  await service.getByRole('button',{name:'Checklist options'}).click();
+  await service.getByLabel('How should Keeply treat this detail?').selectOption('not_applicable');
+  await service.getByRole('button',{name:'Preview checklist change'}).click();
   await service.getByText('Not applicable',{exact:true}).waitFor();
-  await page.goto(base+'/demo/items?q=Sample%20washing%20machine%20receipt.svg');
+  await visit(page,base+'/demo/items?q=Sample%20washing%20machine%20receipt.svg');
   await page.getByRole('heading',{name:'Washing machine: receipt & warranty',exact:true}).waitFor();
   assert.equal(await page.locator('.purchase-grid h3').count(),1);
-  await page.goto(base+'/demo');await page.getByRole('heading',{name:'This week at home',exact:true}).waitFor();
+  await visit(page,base+'/demo');await page.getByRole('heading',{name:'This week at home',exact:true}).waitFor();
   await page.screenshot({path:`artifacts/household-insights/${engine.name()}-${width}-demo.png`,fullPage:true});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   // A name-only bill proves preference success, cancellation, retry and later data completion.
   await admin.query('delete from private.rate_limit_buckets where user_id=$1',[owner]);
   const item=randomUUID();await actor(owner,"select public.create_item_draft($1,'other')",[item]);
   await actor(owner,'select public.save_item_with_date($1,1,$2,$3,null,$4)',[item,'Readiness bill','Household search needle','electric-bill']);
-  await page.goto(base+'/items/'+item);await page.getByRole('heading',{name:'Readiness bill',exact:true}).waitFor();
+  await visit(page,base+'/items/'+item);await page.getByRole('heading',{name:'Readiness bill',exact:true}).waitFor();
   const key=page.locator('section[aria-labelledby="readiness-heading"] li').filter({has:page.getByText('Important date',{exact:true})});
-  await key.getByRole('button',{name:'Manage suggestion'}).click();await key.getByLabel('Detail status').selectOption('not_applicable');await key.getByRole('button',{name:'Cancel',exact:true}).click();
+  await key.getByRole('button',{name:'Checklist options'}).click();await key.getByLabel('How should Keeply treat this detail?').selectOption('not_applicable');await key.getByRole('button',{name:'Cancel',exact:true}).click();
   assert.equal((await admin.query('select count(*)::int n from public.item_readiness_preferences where item_id=$1',[item])).rows[0].n,0);
-  await key.getByRole('button',{name:'Manage suggestion'}).click();await key.getByLabel('Detail status').selectOption('unknown');
-  failSave();await key.getByRole('button',{name:'Save preference',exact:true}).click();await key.getByRole('alert').waitFor();assert.equal(await key.getByLabel('Detail status').inputValue(),'unknown');
-  await key.getByRole('button',{name:'Save preference',exact:true}).click();await key.getByText('Not known yet',{exact:true}).waitFor();
+  await key.getByRole('button',{name:'Checklist options'}).click();await key.getByLabel('How should Keeply treat this detail?').selectOption('unknown');
+  failSave();await key.getByRole('button',{name:'Save checklist choice',exact:true}).click();await key.getByRole('alert').waitFor();assert.equal(await key.getByLabel('How should Keeply treat this detail?').inputValue(),'unknown');
+  await key.getByRole('button',{name:'Save checklist choice',exact:true}).click();await key.getByText('Not known yet',{exact:true}).waitFor();
   assert.equal((await admin.query('select state from public.item_readiness_preferences where item_id=$1',[item])).rows[0].state,'unknown');
   await page.reload();await key.getByText('Not known yet',{exact:true}).waitFor();
-  await key.getByRole('button',{name:'Review dates',exact:true}).click();
+  await key.getByRole('button',{name:'Add a date',exact:true}).click();
   form=page.locator('form').filter({has:page.getByRole('heading',{name:'Add an important date',exact:true})});
   await form.getByLabel('Next payment',{exact:true}).fill(today);
   await form.getByLabel('Amount per payment').fill('1500');
@@ -359,7 +398,7 @@ async function testInsightsExperience({page,base,owner,actor,admin,today,engine,
   await form.getByRole('button',{name:'Save date',exact:true}).click();await key.getByText('Saved',{exact:true}).waitFor();
   await page.waitForLoadState('networkidle');
   const date=(await actor(owner,'select public.item_detail($1) data',[item])).rows[0].data.dates[0],occurrence=date.occurrences.find(o=>o.status==='open');
-  await page.goto(base+'/items/payments');await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
+  await visit(page,base+'/items/payments');await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
   const payment=page.locator('li').filter({has:page.getByRole('link',{name:'Readiness bill',exact:true})});
   await payment.getByRole('button',{name:'Edit amount',exact:true}).click();
   form=page.locator('form').filter({has:page.getByRole('heading',{name:'Expected amount for this date',exact:true})});
@@ -375,13 +414,75 @@ async function testInsightsExperience({page,base,owner,actor,admin,today,engine,
   const stored=(await admin.query('select expected_amount_minor,amount_certainty,status from public.date_occurrences where id=$1',[occurrence.id])).rows[0];
   assert.equal(Number(stored.expected_amount_minor),120050);assert.equal(stored.amount_certainty,'confirmed');assert.equal(stored.status,'open');
   await page.waitForLoadState('networkidle');
-  await page.goto(base+'/dashboard');await page.getByRole('heading',{name:'This week at home',exact:true}).waitFor();
-  assert((await page.locator('section[aria-labelledby="payment-summary-heading"]').textContent()).includes('₱1,200.50'));
+  await visit(page,base+'/dashboard');await page.getByRole('heading',{name:'This week at home',exact:true}).waitFor();
+  assert((await page.locator('section[aria-labelledby="payment-summary-heading"]').textContent()).includes('₱2,400.50'));
   await page.screenshot({path:`artifacts/household-insights/${engine.name()}-${width}-private.png`,fullPage:true});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-  await page.goto(base+'/items/'+item+'?date='+date.id+'&action=amount');
+  await visit(page,base+'/items/'+item+'?date='+date.id+'&action=amount');
   await form.getByRole('button',{name:'Reset to schedule amount',exact:true}).click();
+  await form.waitFor({state:'hidden'});
   await page.waitForURL(url=>!url.searchParams.has('action'));await page.waitForLoadState('networkidle');
   const reset=(await admin.query('select amount_certainty,expected_amount_minor from public.date_occurrences where id=$1',[occurrence.id])).rows[0];assert.equal(reset.amount_certainty,null);assert.equal(reset.expected_amount_minor,null);
-  await page.goto(base+'/items?q=Household%20search%20needle');await page.getByRole('heading',{name:'Readiness bill',exact:true}).waitFor();assert.equal(await page.locator('.purchase-grid h3').count(),1);
+  await visit(page,base+'/items?q=Household%20search%20needle');await page.getByRole('heading',{name:'Readiness bill',exact:true}).waitFor();assert.equal(await page.locator('.purchase-grid h3').count(),1);
+}
+
+
+async function testActionEditing({page,base,owner,actor,admin,today,engine,width,failSave}) {
+  const item=randomUUID(), due=new Date(Date.parse(today+'T00:00:00Z')+2*86400000).toISOString().slice(0,10);
+  await admin.query('delete from private.rate_limit_buckets where user_id=$1',[owner]);
+  await actor(owner,"select public.create_item_draft($1,'car')",[item]);
+  await actor(owner,'select public.save_item_with_date($1,1,$2,$3,$4)',[item,'Kia Stonic','',{kind:'service',label:'Maintenance',due_on:due,reminders_enabled:false,offsets:[{unit:'days',value:2},{unit:'days',value:0}],interval_months:null}]);
+  let data=(await actor(owner,'select public.item_detail($1) data',[item])).rows[0].data;
+  const date=data.dates[0];
+  const before=(await actor(owner,'select public.household_insights() data')).rows[0].data.week.payment_count;
+  await visit(page,base+'/items/'+item);
+  const readiness=page.locator('section[aria-labelledby="readiness-heading"]');
+  await readiness.getByRole('button',{name:'Record a completed service',exact:true}).click();
+  const history=page.locator('section[aria-labelledby="activity-history-heading"]');
+  await history.getByLabel('What happened?').fill('Previous maintenance');
+  await history.getByRole('button',{name:'Cancel',exact:true}).click();
+  assert.equal((await admin.query('select count(*)::int n from public.item_activities where item_id=$1',[item])).rows[0].n,0);
+  const checklist=readiness.locator('li').filter({has:page.getByText('Service history',{exact:true})});
+  await checklist.getByRole('button',{name:'Checklist options',exact:true}).click();
+  await checklist.getByLabel('How should Keeply treat this detail?').selectOption('not_applicable');
+  await readiness.screenshot({path:`artifacts/household-insights/${engine.name()}-${width}-checklist.png`});
+  await checklist.getByRole('button',{name:'Cancel',exact:true}).click();
+  const card=page.locator('#date-'+date.id);
+  await card.getByRole('button',{name:'Edit date & schedule',exact:true}).click();
+  const form=card.locator('form').filter({has:page.getByRole('heading',{name:'Edit date & schedule',exact:true})});
+  await form.getByLabel('Expected cost (₱, optional)').fill('2500');
+  await form.getByRole('button',{name:'Cancel',exact:true}).click();
+  assert.equal((await admin.query('select payment_amount_minor from public.important_dates where id=$1',[date.id])).rows[0].payment_amount_minor,null);
+  await card.getByRole('button',{name:'Edit date & schedule',exact:true}).click();
+  const timing=form.getByLabel('Alert timing 1',{exact:true});
+  assert.equal(await timing.inputValue(),'2');
+  await timing.fill('');
+  assert.equal(await timing.inputValue(),'0');
+  assert.equal(await form.locator('.offset-row').count(),2);
+  await timing.press('End');await timing.press('2');
+  assert.equal(await timing.inputValue(),'2');
+  await timing.fill('02');assert.equal(await timing.inputValue(),'2');
+  await form.getByLabel('Expected cost (₱, optional)').fill('-1');
+  assert.equal(await form.getByLabel('Expected cost (₱, optional)').evaluate(input=>input.checkValidity()),false);
+  await form.getByLabel('Expected cost (₱, optional)').fill('2500');
+  await form.getByLabel('This is an estimate').check();
+  failSave();await form.getByRole('button',{name:'Save date',exact:true}).click();await form.getByRole('alert').waitFor();
+  assert.equal(await timing.inputValue(),'2');
+  assert.equal(await form.getByLabel('Expected cost (₱, optional)').inputValue(),'2500');
+  await form.getByRole('button',{name:'Save date',exact:true}).click();await form.waitFor({state:'hidden'});
+  await page.reload();await card.getByText('Schedule amount:',{exact:false}).waitFor();assert((await card.textContent()).includes('₱2,500'));
+  data=(await actor(owner,'select public.item_detail($1) data',[item])).rows[0].data;
+  assert.equal(data.dates[0].payment_amount_minor,250000);
+  assert.deepEqual(data.dates[0].offsets.map(o=>o.value).sort((a,b)=>a-b),[0,2]);
+  const insights=(await actor(owner,'select public.household_insights() data')).rows[0].data;
+  assert.equal(insights.week.payment_count,before+1);
+  assert(insights.payments.rows.some(row=>row.item_id===item&&row.amount_minor===250000));
+  await visit(page,base+'/dashboard');
+  await page.getByRole('button',{name:/Kia Stonic.*View reminder details/}).click();
+  const dialog=page.getByRole('dialog').filter({has:page.getByRole('button',{name:'Close reminder details'})});
+  await dialog.getByRole('heading',{name:'Maintenance',exact:true}).waitFor();
+  assert.equal(await dialog.locator('h2 svg').count(),1);
+  await page.screenshot({path:`artifacts/household-insights/${engine.name()}-${width}-action.png`});
+  await dialog.getByRole('button',{name:'Close reminder details'}).click();
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
 }

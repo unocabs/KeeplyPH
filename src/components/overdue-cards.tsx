@@ -49,7 +49,6 @@ export function OverdueCards({ rows, items, base, scope }: { rows: UnconfirmedSu
       <button type="button" className={styles.dismissReminder} aria-label={'Hide reminder: ' + row.product_name + ', ' + formatDate(row.due_on, true)} title="Hide this card" onClick={() => hide(row.occurrence_id)}><X size={16} aria-hidden="true"/></button>
     </div>)}</div>}
     <div className={styles.hiddenReminders}>
-      <p role="status">{hiddenCount > 0 && <>{hiddenCount} {hiddenCount === 1 ? 'card hidden' : 'cards hidden'} {fallback.has(key) ? 'for this visit' : 'in this browser'}. Reminders are still in Review all.</>}</p>
       {hiddenCount > 0 && <button type="button" className="text-button" onClick={restore}>Show hidden ({hiddenCount})</button>}
     </div>
   </div>;

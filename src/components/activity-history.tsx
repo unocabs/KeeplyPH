@@ -29,19 +29,24 @@ function Corrections({ activity }: { activity: ItemActivity }) {
   </details>;
 }
 
-export function ActivityHistory({ item, today, demo = false }: { item: ItemWithDetails; today: string; demo?: boolean }) {
+export function ActivityHistory({ item, today, demo = false, addRequest = 0 }: { item: ItemWithDetails; today: string; demo?: boolean; addRequest?: number }) {
   const router = useRouter();
   const page = item.activity_history || { activities: [], has_more: false };
   const [initial, setInitial] = useState(item.activity_history);
   const [rows, setRows] = useState(page.activities);
   const [more, setMore] = useState(page.has_more);
   const [edit, setEdit] = useState<ItemActivity | 'new' | null>(null);
+  const [handledAdd, setHandledAdd] = useState(addRequest);
   const [remove, setRemove] = useState<ItemActivity | null>(null);
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
   const inFlight = useRef(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  if (handledAdd !== addRequest) {
+    setHandledAdd(addRequest);
+    if (!edit && !remove && !busy) { setEdit('new'); setError(''); setMessage(''); }
+  }
   if (initial !== item.activity_history) { setInitial(item.activity_history); setRows(page.activities); setMore(page.has_more); }
 
   async function older() {

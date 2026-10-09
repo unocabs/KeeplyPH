@@ -9,7 +9,7 @@ import { timelineAlerts, timelineAlertGroups, timelinePosition } from '@/feature
 import { itemCategory } from '@/features/templates/categories';
 import { categoryLabel } from './item-ui';
 import { reminderProviderLabel } from '@/features/items/provider-label';
-import { ReminderIcon } from './reminder-icon';
+import { ReminderIcon, DateIcon, ItemIdentityIcon } from './reminder-icon';
 import { AddItemButton } from './template-picker';
 import styles from './upcoming-timeline.module.css';
 
@@ -68,8 +68,8 @@ export function UpcomingTimeline({ rows, today, base = '', embedded = false }: {
     </div>
     </div>
     <dialog ref={dialog} className={styles.dialog} aria-labelledby={titleId} onClick={event => { if (event.target === event.currentTarget) dialog.current?.close(); }}>
-      <div className="section-heading"><h2 id={titleId}>{selected?.item.product_name}</h2><button type="button" className="icon-button" aria-label="Close reminder details" onClick={() => dialog.current?.close()}><X size={21} aria-hidden="true" /></button></div>
-      {selected && <><p className={styles.caption}>{[categoryLabel(itemCategory(selected.item)), reminderProviderLabel(selected.item), selected.date.label].filter(Boolean).join(' · ')}</p>
+      <div className="section-heading"><div><h2 id={titleId} className={styles.actionTitle}>{selected && <DateIcon kind={selected.date.kind} label={selected.date.label} preset={selected.item.reminder_preset} size={25}/>}<span>{selected?.date.label}</span></h2><p className={styles.itemName}>{selected && <><ItemIdentityIcon item={selected.item} size={16}/><span>{selected.item.product_name}</span></>}</p></div><button type="button" className="icon-button" aria-label="Close reminder details" onClick={() => dialog.current?.close()}><X size={21} aria-hidden="true" /></button></div>
+      {selected && <><p className={styles.caption}>{[categoryLabel(itemCategory(selected.item)), reminderProviderLabel(selected.item)].filter(Boolean).join(' · ')}</p>
         <div className={styles.detailDue}><span>Due {formatDate(selected.occurrence.due_on)}</span><strong>{dateStatus(selected, today).replace('remaining', 'left')}</strong></div>
         <h3>Alerts {alertStatus(selected.item, selected.date) === 'enabled' ? 'enabled' : alertStatus(selected.item, selected.date) === 'paused' ? 'paused' : 'off'}</h3>
         {alerts.length ? <ul className={styles.alertList}>{alerts.map(alert => <li key={alert.on}><span>{formatDate(alert.on)}</span><small>{alert.channels.map(channel => channelNames[channel]).join(' / ')}</small></li>)}</ul> : <p className={styles.caption}>No alerts scheduled in the next 30 days.</p>}

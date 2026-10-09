@@ -17,7 +17,7 @@ describe('alert schedules', () => {
         expect(dateSchema.safeParse(value).success).toBe(true);
         expect(value.reminders_enabled).toBe(true);
         expect(value.offsets.filter(o => o.unit === 'days' && o.value === 0)).toHaveLength(1);
-        expect(html).toContain('Alert me on the due date');
+        expect(html).toContain('On the due date');
         if (value.kind === 'warranty') {
           expect(html).not.toContain('Recurring payment');
           expect(html).not.toContain('Repeat frequency');
@@ -144,10 +144,10 @@ describe('due-date alert preferences', () => {
     expect(dateSchema.safeParse({ ...value, offsets:[] }).success).toBe(false);
     expect(dateSchema.safeParse({ ...value, reminders_enabled:false, offsets:[] }).success).toBe(true);
   });
-  it('does not expose zero as an editable advance timing', () => {
+  it('keeps due-date alerts editable in custom timings', () => {
     const html = renderToStaticMarkup(createElement(DateFields, {template:'passport',value:{...initialDate('passport'),due_on:'2032-01-31'},onChange:()=>{}}));
-    expect(html).toContain('Advance timing 3');
-    expect(html).not.toContain('Advance timing 4');
+    expect(html).toContain('Alert timing 4');
+    expect(html).not.toContain('Alert timing 5');
     expect(html).toContain('On the due date');
   });
 });

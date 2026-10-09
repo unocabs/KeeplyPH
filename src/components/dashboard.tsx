@@ -76,7 +76,7 @@ export function Dashboard({ items, usage, name, today, demo = false, setup, unco
     {insights && <section id="plan-and-organise" className={styles.chapter+' '+styles.organise} aria-labelledby="organise-heading">
       <div className={styles.chapterLabel}><Wallet size={15} aria-hidden="true"/>Plan &amp; organise</div>
       <div className={styles.chapterHeading}><h2 tabIndex={-1} id="organise-heading">A little planning, less to remember.</h2><p>Set aside for payments and keep useful details for later.</p></div>
-      <HouseholdInsightCards insights={insights} items={active} base={base}/>
+      <HouseholdInsightCards insights={insights} items={active} base={base} scope={demo ? 'demo' : accountId ?? 'preview'}/>
     </section>}
     <section id="saved-records" className={styles.chapter+' '+styles.library} aria-labelledby="all-reminders-heading">
       <div className={styles.chapterLabel}><LayoutDashboard size={15} aria-hidden="true"/>Your saved records</div>
