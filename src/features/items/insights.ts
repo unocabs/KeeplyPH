@@ -1,4 +1,4 @@
-import { daysUntil } from '@/lib/domain';
+import { daysUntil, formatDate, formatMoney } from '@/lib/domain';
 import { itemCategory, paymentDate } from '@/features/templates/categories';
 import { currentOccurrence, dateRows, isActiveReminder, type ItemWithDetails, type DateWithDetails, type Occurrence } from './domain';
 import { nextRecurringDate } from './recurrence';
@@ -18,6 +18,26 @@ export const readinessCopy: Record<ReadinessKey, { label: string; help: string }
 export const readinessStateLabels: Record<ReadinessState,string> = {
   missing: 'To add', complete: 'Saved', unknown: 'Not known yet', not_applicable: 'Not applicable', dismissed: 'Suggestion hidden',
 };
+export function readinessDate(item:ItemWithDetails,key:ReadinessKey) {
+  if(key==='registration')return item.dates.find(date=>date.kind==='registration');
+  if(key==='warranty')return item.dates.find(date=>date.kind==='warranty');
+  if(key==='service_date')return item.dates.find(date=>date.kind==='service') ?? item.dates[0];
+  if(key==='important_date')return item.dates[0];
+}
+export function readinessSavedValue(item:ItemWithDetails,key:ReadinessKey):{value:string;detail?:string}|null {
+  if(key==='purchase_date')return item.purchased_on ? {value:formatDate(item.purchased_on),detail:item.price_minor==null?undefined:'Purchase price: '+formatMoney(item.price_minor)} : null;
+  if(key==='service_history') {
+    const service=item.activity_history?.activities.filter(activity=>activity.activity_type==='service'&&!activity.voided_at).sort((a,b)=>b.completed_on.localeCompare(a.completed_on))[0];
+    return service ? {value:formatDate(service.completed_on),detail:service.title+(service.amount_minor==null?'':' · Cost: '+formatMoney(service.amount_minor))} : null;
+  }
+  const date=readinessDate(item,key);
+  if(!date)return null;
+  const current=currentOccurrence(date);
+  const due=current?.due_on ?? [...date.occurrences].sort((a,b)=>b.due_on.localeCompare(a.due_on))[0]?.due_on;
+  if(!due)return null;
+  const amount=current?occurrenceAmount(date,current):null;
+  return {value:(current?'':'Last recorded: ')+formatDate(due),detail:amount?.amount==null?undefined:(amount.certainty==='estimated'?'Estimated cost: ':amount.certainty==='unverified'?'Unverified cost: ':'Expected cost: ')+formatMoney(amount.amount)};
+}
 /** Sample account mirror of the database rules. Private records use authoritative checks. */
 export function readinessChecks(item: ItemWithDetails): ReadinessCheck[] {
   if (item.readiness_checks) return item.readiness_checks;

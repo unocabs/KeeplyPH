@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
-import { readinessChecks, readinessCopy, readinessHref, readinessStateLabels, type ReadinessCheck, type ReadinessState, type ReadinessKey } from '@/features/items/insights';
+import { readinessChecks, readinessCopy, readinessDate, readinessSavedValue, readinessHref, readinessStateLabels, type ReadinessCheck, type ReadinessState, type ReadinessKey } from '@/features/items/insights';
+import { guideToSection } from '@/lib/guide-to-section';
 import { saveReadinessPreference } from '@/features/items/insight-actions';
 import { actionError } from '@/lib/action-error';
 import type { ItemWithDetails } from '@/features/items/domain';
@@ -22,8 +23,13 @@ function ReadinessChoice({check,item,demo,onSampleSave,onAddDate,onRecordService
     catch(e){setError(actionError(e));}finally{submitting.current=false;setBusy(false);}
   }
   const copy=readinessCopy[check.key];
-  const dateDetail=['important_date','registration','service_date'].includes(check.key);
-  const savedDate=item.dates.find(date=>check.key==='registration'?date.kind==='registration':check.key==='service_date'?date.kind==='service':true) ?? (check.key==='service_date'?item.dates[0]:undefined);
+  const dateDetail=['important_date','registration','service_date','warranty'].includes(check.key);
+  const savedDate=readinessDate(item,check.key);
+  const savedValue=check.state==='complete'?readinessSavedValue(item,check.key):null;
+  function guide(event:React.MouseEvent<HTMLAnchorElement>,id:string) {
+    if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||event.button!==0)return;
+    event.preventDefault();guideToSection(id);
+  }
   const explanation:Record<string,string>={
     missing:'Keep this on your checklist until you add the record.',
     unknown:'Keep this on your checklist as not known yet. You can add the record later.',
@@ -31,8 +37,9 @@ function ReadinessChoice({check,item,demo,onSampleSave,onAddDate,onRecordService
     dismissed:'Hide this suggestion from the dashboard. The detail still counts as missing.',
   };
   return <li className={styles.check}><div className={styles.checkHeading}><strong>{copy.label}</strong><span className={styles.state}>{readinessStateLabels[check.state]}</span></div>
+    {savedValue&&<p className={styles.savedValue}><strong>{savedValue.value}</strong>{savedValue.detail&&<span>{savedValue.detail}</span>}</p>}
     {check.state!=='complete'&&<p className="hint spaced">{check.state==='not_applicable'?'You marked this detail as not needed for this item.':check.state==='dismissed'?'Hidden from dashboard suggestions. You can still add the record here.':copy.help}</p>}
-    {!item.archived_at&&<div className={styles.controls}>{dateDetail?(check.state==='complete'&&savedDate?<Link className="text-button" href={'#date-'+savedDate.id}>Review or update date</Link>:<button type="button" className="text-button" onClick={onAddDate}>Add a date</button>):check.key==='service_history'&&check.state!=='complete'?<button type="button" className="text-button" onClick={onRecordService}>Record a completed service</button>:<Link className="text-button" href={readinessHref(item.id,check.key,demo?'/demo':'')}>{check.key==='service_history'?'View service history':check.state==='complete'?'Update detail':'Add detail'}</Link>}
+    {!item.archived_at&&<div className={styles.controls}>{dateDetail?(check.state==='complete'&&savedDate?<a className="text-button" href={'#date-'+savedDate.id} onClick={event=>guide(event,'date-'+savedDate.id)}>Review or update date</a>:<button type="button" className="text-button" onClick={onAddDate}>Add a date</button>):check.key==='service_history'?(check.state!=='complete'?<button type="button" className="text-button" onClick={onRecordService}>Record a completed service</button>:<a className="text-button" href="#activity-history-heading" onClick={event=>guide(event,'activity-history-heading')}>View service history</a>):<Link className="text-button" href={readinessHref(item.id,check.key,demo?'/demo':'')}>{check.state==='complete'?'Update detail':'Add detail'}</Link>}
       {check.state!=='complete'&&<button type="button" className="text-button" onClick={()=>{setState(check.state);setError('');setOpen(!open);}} aria-expanded={open}>Checklist options</button>}
     </div>}
     {open&&<form className={styles.editor} onSubmit={submit}><fieldset disabled={busy}><h3>{copy.label}: checklist options</h3><p className="hint spaced">This changes the checklist only. Choose an option above to add the actual record.</p><label className="spaced">How should Keeply treat this detail?<select value={state} onChange={e=>setState(e.target.value as ReadinessState)}><option value="missing">I still need to add it</option><option value="unknown">I don’t know it yet</option><option value="not_applicable">I don’t need this for this item</option><option value="dismissed">Hide from dashboard suggestions</option></select></label><p className="hint spaced" aria-live="polite">{explanation[state]}</p>{error&&<p role="alert" className="alert error spaced">{error}</p>}<div className="form-actions"><button type="button" className="button secondary" onClick={()=>setOpen(false)}>Cancel</button><button className="button primary">{busy?'Saving…':demo?'Preview checklist change':'Save checklist choice'}</button></div></fieldset></form>}{message&&<p className="alert info spaced" role="status">{message}</p>}</li>;

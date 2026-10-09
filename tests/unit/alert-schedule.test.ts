@@ -144,10 +144,19 @@ describe('due-date alert preferences', () => {
     expect(dateSchema.safeParse({ ...value, offsets:[] }).success).toBe(false);
     expect(dateSchema.safeParse({ ...value, reminders_enabled:false, offsets:[] }).success).toBe(true);
   });
-  it('keeps due-date alerts editable in custom timings', () => {
+  it('renders a due-date-only schedule with a checkbox and no early rows', () => {
+    const html=renderToStaticMarkup(createElement(DateFields,{template:'other',value:{...value,offsets:[{unit:'days',value:0}]},onChange:()=>{}}));
+    expect(html).toContain('Alert me on the due date');
+    expect(html).toContain('On the due date');
+    expect(html).toContain('Add an early alert');
+    expect(html).not.toContain('Early alert 1');
+  });
+  it('keeps the due-date checkbox separate from custom early alerts', () => {
     const html = renderToStaticMarkup(createElement(DateFields, {template:'passport',value:{...initialDate('passport'),due_on:'2032-01-31'},onChange:()=>{}}));
-    expect(html).toContain('Alert timing 4');
-    expect(html).not.toContain('Alert timing 5');
+    expect(html).toContain('Early alert 3');
+    expect(html).toContain('Alert me on the due date');
+    expect(html).not.toContain('Early alert 4');
+    expect(html).not.toContain('value="0"');
     expect(html).toContain('On the due date');
   });
 });

@@ -18,7 +18,7 @@ export function DateFields({ template, value, onChange, preset, compact = false 
   const [ends, setEnds] = useState(Boolean(value.recurrence_ends_on));
   const [customTimings, setCustomTimings] = useState(false);
   const [editingTimings, setEditingTimings] = useState<Offset[] | null>(null);
-  const timingRows = editingTimings ?? value.offsets;
+  const timingRows = editingTimings ?? withDueDateAlert(value.offsets, false);
   const dueDateAlert = value.offsets.some(offset => offset.unit === 'days' && offset.value === 0);
   const mode = customTimings ? 'custom' : alertMode(value.offsets, Boolean(value.recurrence_months));
   const choice = getReminderPreset(template, preset || undefined);
@@ -31,8 +31,9 @@ export function DateFields({ template, value, onChange, preset, compact = false 
   function updateTimings(rows: Offset[]) {
     setCustomTimings(true);
     setEditingTimings(rows);
-    // Keep the editor rows stable while storing each delivery timing only once.
-    patch({ offsets: rows.filter((row, index) => rows.findIndex(other => other.unit === row.unit && other.value === row.value) === index) });
+    // Draft rows stay visible while editing. Only the checkbox adds a due-date alert.
+    const advance = rows.filter(row => row.value > 0).filter((row, index, list) => list.findIndex(other => other.unit === row.unit && other.value === row.value) === index);
+    patch({ offsets: withDueDateAlert(advance, dueDateAlert) });
   }
   function interval(months: number | null) { patch({ interval_months: months, ...(last && months ? { due_on: addMonths(last, months) } : {}) }); }
   const preview = value.recurrence_months && value.due_on ? previewRecurringDates(value.recurrence_anchor || value.due_on, value.due_on, value.recurrence_months, value.recurrence_ends_on || null) : [];
@@ -60,17 +61,21 @@ export function DateFields({ template, value, onChange, preset, compact = false 
       setCustomTimings(selected === 'custom'); setEditingTimings(null);
       if (selected === 'gentle' || selected === 'standard') patch({ offsets: presetOffsets(selected, Boolean(value.recurrence_months), dueDateAlert) });
     }}><option value="gentle">Gentle · 7 days before</option><option value="standard">Standard · {value.recurrence_months ? '14' : '30'}, 7 and 1 day before</option><option value="custom">Custom · choose your timings</option></select></label>
-    {mode !== 'custom' && <label className="checkbox-row"><input type="checkbox" checked={dueDateAlert} onChange={e => patch({ offsets: withDueDateAlert(value.offsets, e.target.checked) })}/><span><strong>Alert me on the due date</strong><p>Included by default, alongside your advance alerts. Uses the same alert slot and your enabled delivery channels.</p></span></label>}
+    <label className="checkbox-row"><input type="checkbox" checked={dueDateAlert} onChange={e => patch({ offsets: withDueDateAlert(value.offsets, e.target.checked) })}/><span><strong>Alert me on the due date</strong><p>Send an alert on the due date, in addition to any early alerts you choose.</p></span></label>
     <div className="schedule-preview" aria-live="polite"><strong>{value.reminders_enabled ? 'Selected alert timings' : 'Alert timings · alerts are off'}</strong><ul className="alert-timings">{value.offsets.map((offset, n) => <li key={n}>{timingLabel(offset)}</li>)}</ul><p className="hint">Around 9 AM in your account timezone. Past alert times are skipped. The due date stays the same.</p></div>
-    {mode === 'custom' ? <div>{timingRows.map((offset, n) => <div className="offset-row" key={n}><label>Alert timing {n+1}<input type="number" min={offset.unit === 'days' ? 0 : 1} max={value.recurrence_months ? 27 : offset.unit === 'months' ? 24 : 365} value={offset.value} onFocus={e => { if (offset.value === 0) e.target.select(); }} onChange={e => {
-      const number = e.target.value === '' ? (offset.unit === 'days' ? 0 : 1) : Number(e.target.value);
+    {mode === 'custom' ? <div>{timingRows.map((offset, n) => <div className="offset-row" key={n}><label>Early alert {n+1}<input type="number" min={1} max={value.recurrence_months ? 27 : offset.unit === 'months' ? 24 : 365} value={offset.value} onFocus={e => { if (offset.value === 0) e.target.select(); }} onChange={e => {
+      const number = e.target.value === '' ? 0 : Number(e.target.value);
       e.target.value = String(number);
       updateTimings(timingRows.map((row, index) => index === n ? { ...row, value: number } : row));
-    }} /></label><label>Unit<select value={offset.unit} onChange={e => updateTimings(timingRows.map((row, index) => index === n ? { unit: e.target.value as Offset['unit'], value: e.target.value === 'months' ? Math.max(1, row.value) : row.value } : row))}><option value="days">Days before</option>{!value.recurrence_months && <option value="months">Calendar months before</option>}</select></label><button className="text-button" type="button" disabled={timingRows.length === 1} onClick={() => updateTimings(timingRows.filter((_, index) => index !== n))}>Remove</button></div>)}{timingRows.length < 4 && <button type="button" className="text-button" onClick={() => {
-      const advanceCount = withDueDateAlert(timingRows, false).length;
-      const next = advanceCount >= 3 ? 0 : [1, 7, 3, 14].find(day => !timingRows.some(offset => offset.unit === 'days' && offset.value === day))!;
+    }} onBlur={e => {
+      if (offset.value < 1) {
+        e.target.value = '1';
+        updateTimings(timingRows.map((row, index) => index === n ? { ...row, value: 1 } : row));
+      }
+    }} /></label><label>Unit<select value={offset.unit} onChange={e => updateTimings(timingRows.map((row, index) => index === n ? { unit: e.target.value as Offset['unit'], value: e.target.value === 'months' ? Math.max(1, row.value) : row.value } : row))}><option value="days">Days before</option>{!value.recurrence_months && <option value="months">Calendar months before</option>}</select></label><button className="text-button" type="button" disabled={timingRows.length === 1 && !dueDateAlert && value.reminders_enabled} onClick={() => updateTimings(timingRows.filter((_, index) => index !== n))}>Remove</button></div>)}{timingRows.length < 3 && <button type="button" className="text-button" onClick={() => {
+      const next = [1, 7, 3, 14].find(day => !timingRows.some(offset => offset.unit === 'days' && offset.value === day))!;
       updateTimings([...timingRows, { unit: 'days', value: next }]);
-    }}>Add a timing</button>}<p className="hint">0 days means on the due date. Choose up to 3 advance alerts and one due-date alert. Matching timings send one alert.</p></div> : <button type="button" className="text-button" onClick={() => setCustomTimings(true)}>Customize timings</button>}
+    }}>Add an early alert</button>}<p className="hint">Choose up to 3 early alerts. Use the checkbox above for an alert on the due date.</p></div> : <button type="button" className="text-button" onClick={() => setCustomTimings(true)}>Customize timings</button>}
     </div></details>}
   </div>;
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { sampleItems } from '@/lib/demo';
-import { addDays, formatTotal, readinessChecks, readinessComplete, sampleInsights, samplePaymentRows, samplePaymentPlan, sampleSearchMatches } from '@/features/items/insights';
+import { addDays, formatTotal, readinessChecks, readinessComplete, readinessSavedValue, sampleInsights, samplePaymentRows, samplePaymentPlan, sampleSearchMatches } from '@/features/items/insights';
 const today='2026-10-08';
 describe('household insights',()=>{
   it('separates sample amounts, handles unset amounts and keeps current confirmations scoped',()=>{
@@ -65,6 +65,29 @@ describe('household insights',()=>{
     expect(result.week.services[0].product_name).toBe('Family car: Toyota Vios');
     expect(result.readiness.unknown).toBe(1);expect(result.readiness.dismissed).toBe(1);
     expect(sampleInsights([],today).readiness.total).toBe(0);
+  });
+  it('shows the saved date and current cost without confusing zero or unset amounts',()=>{
+    const car=sampleItems(today)[3],date=car.dates.find(date=>date.kind==='registration')!;
+    const current=date.occurrences.find(occurrence=>occurrence.status==='open')!;
+    date.payment_amount_minor=250000;date.payment_amount_certainty='estimated';
+    expect(readinessSavedValue(car,'registration')).toEqual({value:'November 4, 2026',detail:'Estimated cost: ₱2,500'});
+    current.expected_amount_minor=0;current.amount_certainty='confirmed';
+    expect(readinessSavedValue(car,'registration')?.detail).toBe('Expected cost: ₱0');
+    current.expected_amount_minor=null;current.amount_certainty='unset';
+    expect(readinessSavedValue(car,'registration')?.detail).toBeUndefined();
+    current.status='completed';
+    expect(readinessSavedValue(car,'registration')?.value).toBe('Last recorded: November 4, 2026');
+  });
+  it('shows purchase facts and the most recent non-removed service details',()=>{
+    const items=sampleItems(today),purchase=items[5],aircon=items[13];
+    expect(readinessSavedValue(purchase,'purchase_date')?.detail).toBe('Purchase price: ₱23,995');
+    const service=aircon.activity_history!.activities.find(activity=>activity.activity_type==='service')!;
+    service.amount_minor=0;
+    expect(readinessSavedValue(aircon,'service_history')?.detail).toContain('Cost: ₱0');
+    service.voided_at=today;
+    expect(readinessSavedValue(aircon,'service_history')?.detail).not.toContain('Cost: ₱0');
+    aircon.activity_history!.activities.forEach(activity=>activity.voided_at=today);
+    expect(readinessSavedValue(aircon,'service_history')).toBeNull();
   });
   it('keeps search literal and searches notes, non-voided history and authorised ready filenames',()=>{
     const items=sampleItems(today);
