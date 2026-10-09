@@ -1,13 +1,14 @@
 import { itemCategory } from '@/features/templates/categories';
 import type { RecurrenceFields } from './recurrence';
+import type { ActivityPage } from './activity';
 import { daysUntil, type Purchase, type Document } from '@/lib/domain';
 import type { TemplateKey, DateKind, Offset } from '@/features/templates';
 export interface Item extends Purchase { utility_id?: string | null; utility_name?: string | null; insurer_id?: string | null; insurer_name?: string | null; lender_id?: string | null; lender_name?: string | null; subscription_brand?: string | null; car_brand?: string | null; motorcycle_brand?: string | null; reminder_preset?: string | null; alert_delivery_paused?: boolean; template_key: TemplateKey; template_version: number; archived_at: string | null; coverage_requested_at?: string | null; coverage_active?: boolean; coverage_since?: string | null; coverage?: 'covered' | 'paused_capacity' | 'off' }
-export interface Occurrence { snoozed_on?: string | null; id: string; date_id: string; user_id: string; cycle: number; due_on: string; status: 'open' | 'completed' | 'superseded' | 'unconfirmed'; completed_on: string | null; created_at: string }
+export interface Occurrence { expected_amount_minor?: number | null; amount_certainty?: import('./insights').AmountCertainty | null; snoozed_on?: string | null; id: string; date_id: string; user_id: string; cycle: number; due_on: string; status: 'open' | 'completed' | 'superseded' | 'unconfirmed' | 'skipped'; completed_on: string | null; created_at: string }
 export interface ImportantDate extends RecurrenceFields { id: string; item_id: string; user_id: string; kind: DateKind; label: string; starts_on: string | null; serial_number: string | null; notes: string | null; reminders_enabled: boolean; reminders_enabled_at: string | null; reminder_disabled_reason: string | null; interval_months: number | null; revision: number; created_at: string; updated_at: string }
 export interface ScheduledAlert { on: string; channel: 'email' | 'push' | 'sms' }
-export interface DateWithDetails extends ImportantDate { scheduled_alerts?: ScheduledAlert[]; next_scheduled_on?: string | null; occurrences: Occurrence[]; offsets: Offset[] }
-export interface ItemWithDetails extends Item { dates: DateWithDetails[]; documents: Document[] }
+export interface DateWithDetails extends ImportantDate { selected_occurrence?: Occurrence; scheduled_alerts?: ScheduledAlert[]; next_scheduled_on?: string | null; occurrences: Occurrence[]; offsets: Offset[] }
+export interface ItemWithDetails extends Item { readiness_checks?: import('./insights').ReadinessCheck[]; dates: DateWithDetails[]; documents: Document[]; activity_history?: ActivityPage }
 export interface DateRow { item: ItemWithDetails; date: DateWithDetails; occurrence: Occurrence }
 export function currentOccurrence(date: DateWithDetails) { return date.occurrences.find(o => o.status === 'open'); }
 export function dateRows(items: ItemWithDetails[]): DateRow[] {

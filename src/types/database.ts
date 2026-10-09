@@ -14,6 +14,17 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      household_insights: Rpc<Record<string, never>>;
+      household_payment_plan: Rpc<{ p_before?: string | null; p_before_id?: string | null }>;
+      set_readiness_preference: Rpc<{ p_item: string; p_revision: number; p_criterion: string; p_state: string }, undefined>;
+      set_occurrence_amount: Rpc<{ p_occurrence: string; p_revision: number; p_amount: number | null; p_certainty: string }, undefined>;
+      complete_occurrence: Rpc<{ p_request: string; p_occurrence: string; p_revision: number; p_data: Json; p_next: string | null; p_policy: string }, string>;
+      save_item_activity: Rpc<{ p_id: string; p_item: string; p_revision: number; p_data: Json; p_reason: string | null; p_request?: string | null }, string>;
+      activity_corrections: Rpc<{ p_id: string }>;
+      unconfirmed_occurrence_summary: Rpc<{ p_before?: string | null; p_before_id?: string | null }>;
+      void_item_activity: Rpc<{ p_id: string; p_revision: number; p_reason: string }, undefined>;
+      skip_unconfirmed_occurrence: Rpc<{ p_request: string; p_occurrence: string; p_revision: number; p_reason: string; p_reopen?: boolean }, undefined>;
+      item_activity_history: Rpc<{ p_item: string; p_before?: string | null; p_before_id?: string | null }>;
       public_reactions_ready: Rpc<Record<string, never>, boolean>;
       record_public_reaction: Rpc<{ p_id: string; p_reaction: string }, undefined>;
       purge_public_reaction_receipts: Rpc<Record<string, never>, undefined>;

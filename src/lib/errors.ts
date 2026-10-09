@@ -9,6 +9,11 @@ const messages: Record<string, string> = {
   UPLOAD_EXPIRED: 'This upload expired. Remove it and select the file again.', RATE_LIMITED: 'A few too many requests. Please try again shortly.',
   PACK_ALREADY_OWNED: 'Your permanent alert pack is already active. Choose permanent slots to add more.', SLOT_PACK_LIMIT: 'You can purchase up to 100 extra permanent slots.', DATE_REQUIRED: 'Add an important date to get started.', DATE_LIMIT: 'You can track up to 10 dates per reminder.', DOCUMENTS_NOT_ALLOWED: 'This template stores dates only, without documents.',
   INVALID_INPUT: 'Please check the information and try again.',
+  REQUEST_CONFLICT: 'This request was already saved with different details. Reload to review the saved activity.',
+  ALREADY_COMPLETED: 'This occurrence is already recorded. Reload to review its activity.',
+  ITEM_ARCHIVED: 'Restore this item before recording an activity.',
+  REASON_REQUIRED: 'Give a reason for this correction.',
+  INVALID_DOCUMENT: 'Choose a saved document attached to this item.',
 };
 export function errorMessage(error: unknown, fallback = 'Something went wrong. Please try again.'): string {
   const text = error instanceof Error ? error.message : typeof error === 'object' && error !== null && 'message' in error ? String(error.message) : '';

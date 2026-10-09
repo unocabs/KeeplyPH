@@ -5,9 +5,11 @@ import { sampleItems, sampleUsage } from '@/lib/demo';
 import { CoverageControl } from '@/components/reminder-management';
 import { ItemDetail } from '@/components/item-detail';
 
-vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }), useSearchParams: () => new URLSearchParams() }));
+vi.mock('@/features/items/insight-actions', () => ({ saveReadinessPreference: vi.fn(), saveOccurrenceAmount: vi.fn() }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn(), push: vi.fn(), replace: vi.fn() }), usePathname: () => '/items/test', useSearchParams: () => new URLSearchParams() }));
 vi.mock('@/features/reminders/actions', () => ({ changeCoverage: vi.fn(), coverageChoices: vi.fn() }));
 vi.mock('@/features/items/actions', () => ({ snoozeDate: vi.fn(), dateHistory: vi.fn(), saveDate: vi.fn(), completeDate: vi.fn(), archiveItem: vi.fn(), deleteItem: vi.fn() }));
+vi.mock('@/features/items/activity-actions', () => ({ recordOccurrence: vi.fn(), saveActivity: vi.fn(), voidActivity: vi.fn(), skipOccurrence: vi.fn(), activityHistory: vi.fn() }));
 vi.mock('@/components/item-documents', () => ({ ItemDocuments: () => null }));
 const today = '2026-10-05';
 const items = sampleItems(today);

@@ -41,7 +41,7 @@ try {
   command('pg_ctl', ['-D', join(folder, 'data'), '-l', join(folder, 'server.log'), '-o', "-k " + folder + " -p " + port + " -c listen_addresses='' -c unix_socket_permissions=0700", '-w', 'start']); started = true;
   admin = new pg.Client(config); await admin.connect();
   await admin.query("create role anon; create role authenticated; create role service_role bypassrls; create schema auth; create schema storage; grant usage on schema auth,storage,public to anon,authenticated,service_role; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz,last_sign_in_at timestamptz,raw_user_meta_data jsonb default '{}'::jsonb); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]); create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text); alter table storage.objects enable row level security; grant select on storage.objects to authenticated;");
-  let migrationSeed, recurrenceMigrationSeed, dueDateMigrationSeed;
+  let migrationSeed, recurrenceMigrationSeed, dueDateMigrationSeed, activityMigrationSeed;
   for (const name of (await readdir('supabase/migrations')).filter(n => n.endsWith('.sql') && (!process.env.PG_TEST_MIGRATION_THROUGH || n <= process.env.PG_TEST_MIGRATION_THROUGH)).sort()) {
     if (name === '202610060024_expand_dashboard_timeline.sql') {
       const checks = (await admin.query(await readFile('supabase/check-timeline-expansion-prerequisites.sql', 'utf8'))).rows;
@@ -71,6 +71,14 @@ try {
         offsets:(await admin.query('select unit,value from public.reminder_offsets where date_id=$1 order by unit,value',[before.id])).rows,
         recurring:(await admin.query('select * from public.important_dates where id=$1',[recurrenceMigrationSeed.id])).rows[0],
       };
+    }
+    if(name==='202610080031_household_activity_history.sql') {
+      const owner=await user(),id=randomUUID();
+      await actor(owner,"select public.create_item_draft($1,'aircon')",[id]);
+      await actor(owner,"select public.save_item_with_date($1,1,'Legacy aircon','',$2)",[id,{kind:'service',label:'Previous service',due_on:'2026-01-01',reminders_enabled:false,offsets:[],interval_months:null}]);
+      const date=(await admin.query('select id,revision from public.important_dates where item_id=$1',[id])).rows[0];
+      await actor(owner,"select public.complete_date($1,$2,'2026-01-02',null)",[date.id,date.revision]);
+      activityMigrationSeed={owner,item:id,date:date.id};
     }
     await admin.query(await readFile(join('supabase/migrations', name), 'utf8'));
     if (name==='202610050023_due_date_alerts.sql') {
@@ -228,9 +236,9 @@ try {
     }
     for(const table of ['items','important_dates','date_occurrences','reminder_offsets']){assert.equal((await actor(other,'select * from public.'+table)).rowCount,0);await assert.rejects(actor(u,'delete from public.'+table),/permission denied/);}
   });
-  await test('A missing/invalid initial date rolls back the entire item save',async()=>{
+  await test('Invalid initial dates roll back the entire item save',async()=>{
     const u=await user(),id=await item(u,'passport');
-    await assert.rejects(actor(u,'select public.save_item_with_date($1,1,$2,$3,null)',[id,'Passport','']),/DATE_REQUIRED/);
+    if (process.env.PG_TEST_MIGRATION_THROUGH && process.env.PG_TEST_MIGRATION_THROUGH < '202610080032_household_core_experience.sql') await assert.rejects(actor(u,'select public.save_item_with_date($1,1,$2,$3,null)',[id,'Passport','']),/DATE_REQUIRED/);
     await assert.rejects(actor(u,'select public.save_item_with_date($1,1,$2,$3,$4)',[id,'Passport','',input('registration')]),/INVALID_INPUT/);
     assert.equal((await actor(u,'select state from public.items where id=$1',[id])).rows[0].state,'draft');
   });
@@ -601,7 +609,10 @@ try {
 
   await test('Category migration preserves existing recurrence dates, amounts and anchors',async()=>{
     const after=(await admin.query('select * from public.important_dates where id=$1',[recurrenceMigrationSeed.id])).rows[0];
-    assert.deepEqual(after,recurrenceMigrationSeed);
+    const {recurrence_policy,payment_amount_certainty,...preserved}=after;
+    assert.deepEqual(preserved,recurrenceMigrationSeed);
+    if(recurrence_policy!==undefined)assert.equal(recurrence_policy,'fixed');
+    if(payment_amount_certainty!==undefined)assert.equal(payment_amount_certainty,'unverified');
   });
   await test('Open-ended quarterly premiums complete and advance from their original anchor',async()=>{
     const u=await user(), id=await item(u,'other');
@@ -1341,7 +1352,20 @@ try {
     });
   }
 
+  if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610080031_household_activity_history.sql') {
+    await (await import('../tests/database/household-history.mjs')).testHouseholdHistory({admin,actor,user,test,activityMigrationSeed});
+  }
+
+  if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610080032_household_core_experience.sql') {
+    await (await import('../tests/database/household-core.mjs')).testHouseholdCore({admin,actor,user,test});
+  }
+
+  if (!process.env.PG_TEST_MIGRATION_THROUGH || process.env.PG_TEST_MIGRATION_THROUGH >= '202610080033_household_insights.sql') {
+    await (await import('../tests/database/household-insights.mjs')).testHouseholdInsights({admin,actor,user,test});
+  }
+
   console.log('\n' + passed + ' database integration tests passed.');
+  if (process.env.PG_TEST_BROWSER === '1') await (await import('../tests/browser/household-history.mjs')).testHouseholdBrowser({admin,actor,user});
 } finally {
   if (admin) await admin.end();
   if (started) command('pg_ctl', ['-D', join(folder, 'data'), '-m', 'immediate', '-w', 'stop']);

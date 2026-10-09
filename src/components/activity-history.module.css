@@ -1,0 +1,13 @@
+.editor { padding: 20px; border: 1px solid #ddd5f0; border-radius: 16px; background: #faf8ff; margin-top: 16px; }
+.list { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 16px; }
+.entry { padding-left: 16px; border-left: 3px solid #dfd7f3; min-width: 0; }
+.entry h3 { font-size: 16px; overflow-wrap: anywhere; }
+.entry p { margin-top: 6px; overflow-wrap: anywhere; }
+.meta { color: var(--muted); font-size: 13px; }
+.notes { white-space: pre-wrap; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 8px; }
+.actions button, .actions a { min-height: 44px; }
+.voided { opacity: .8; border-left-color: #dad6e2; }
+.review { margin-top: 16px; padding: 16px; background: #fffaf1; border: 1px solid #eee1c5; border-radius: 12px; }
+.review li { margin-block: 12px; }
+@media(max-width: 600px) { .editor { padding: 16px; } }

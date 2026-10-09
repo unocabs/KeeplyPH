@@ -9,6 +9,7 @@ export const dateSchema = z.object({
   recurrence_months: z.union([z.literal(1), z.literal(3), z.literal(6), z.literal(12)]).nullable().optional(),
   recurrence_ends_on: requiredDate.nullable().optional(),
   payment_amount_minor: z.number().int().min(0).max(99999999999).nullable().optional(),
+  payment_amount_certainty: z.enum(['estimated','unverified']).optional(),
   interval_months: z.number().int().min(1).max(120).nullable(),
 }).superRefine((value, ctx) => {
   if (value.reminders_enabled && !value.offsets.length) ctx.addIssue({ code: 'custom', message: 'Choose an alert timing or turn alerts off for this date.', path: ['offsets'] });

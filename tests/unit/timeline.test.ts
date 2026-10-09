@@ -31,15 +31,17 @@ function fixture(due = '2027-01-03') {
 }
 
 describe('dashboard timeline', () => {
-  it('shows the sample calendar with alerts and navigation contained in the demo', () => {
+  it('defaults to one planning calendar and keeps navigation contained in the demo', () => {
     const items = sampleItems(today);
     const html = renderToStaticMarkup(createElement(Dashboard, { items, today, name: 'Alex', usage: sampleUsage(items, today), demo: true }));
+    expect(html).toContain('planning-heading');
     expect(html).toContain('coming-up-title');
-    expect(html).toContain('Email alert');
+    expect(html).toContain('Planning view');
+    expect(html).toContain('aria-pressed="true">Calendar</button><button type="button" aria-pressed="false">List</button>');
     expect(html).toContain('href="/demo/items?filter=upcoming"');
     expect(html).toContain('aria-label="Add item"');
-    expect(html).toContain('Show more · 3 more');
-    expect(html).toContain('upcoming-heading');
+    expect(html).toContain('Show more ·');
+    expect(html).toContain('attention-heading');
     expect(html).not.toContain('Everything in its place.');
   });
   it('keeps saved brand artwork consistent between the timeline and Upcoming list', () => {
@@ -56,8 +58,8 @@ describe('dashboard timeline', () => {
       const timeline = withoutCategoryPickers(renderToStaticMarkup(createElement(UpcomingTimeline, { rows: timelineRows([item], today), today })));
       expect(timeline).toContain(source);
       const dashboard = withoutCategoryPickers(renderToStaticMarkup(createElement(Dashboard, { items: [item], today, name: 'Test', usage })));
-      // Timeline, Upcoming, and the reminder card share the same saved identity.
-      expect(dashboard.split(`src="${source}"`)).toHaveLength(4);
+      // The default planning calendar and record card share the saved identity.
+      expect(dashboard.split(`src="${source}"`)).toHaveLength(3);
     }
   });
   it('keeps generic icons for missing, unknown, and incompatible saved brands', () => {
@@ -75,10 +77,11 @@ describe('dashboard timeline', () => {
       expect(html).toContain('<svg');
     }
   });
-  it('retains the exact fallback hero and Add item when no dates qualify', () => {
+  it('keeps the household heading and useful empty planning state when no dates qualify', () => {
     for (const items of [[], [fixture('2027-01-20')], [fixture('2026-12-19')]]) {
       const html = renderToStaticMarkup(createElement(Dashboard, { items, today, name: 'Test', usage }));
-      expect(html).toContain('Everything in its place.');
+      expect(html).toContain('Your household, organised.');
+      expect(html).toContain('No dates saved for the next 30 days.');
       expect(html).toContain('Add item');
       expect(html).not.toContain('coming-up-title');
     }
@@ -129,7 +132,7 @@ describe('dashboard timeline', () => {
     row.date.scheduled_alerts = [today, '2026-12-21', '2026-12-22', '2026-12-30'].map(on => ({ on, channel: 'email' }));
     expect(timelineAlertGroups(row, today).map(group => group.map(alert => alert.on))).toEqual([[today, '2026-12-21', '2026-12-22'], ['2026-12-30']]);
   });
-  it('renders one/five rows, overflow navigation, accessible dates, and preserves Upcoming below', () => {
+  it('keeps standalone calendar overflow and one default planning section on the dashboard', () => {
     for (const count of [1, 4, 5, 6, 10, 12]) {
       const items = Array.from({ length: count }, (_, index) => ({ ...fixture(), id: String(index), product_name: `Real reminder ${index}` }));
       const rows = timelineRows(items, today);
@@ -146,7 +149,8 @@ describe('dashboard timeline', () => {
       expect(html).toContain('role="tooltip"');
       const dashboard = renderToStaticMarkup(createElement(Dashboard, { items, today, name: 'Test', usage }));
       expect(dashboard).toContain('coming-up-title');
-      expect(dashboard).toContain('upcoming-heading');
+      expect(dashboard).toContain('planning-heading');
+      expect(dashboard).not.toContain('upcoming-heading');
       expect(dashboard).not.toContain('Everything in its place.');
     }
   });

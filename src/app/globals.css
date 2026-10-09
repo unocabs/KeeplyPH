@@ -356,3 +356,11 @@ select {
 
 .detail-grid>section,.detail-grid>aside{min-width:0}
 @media(max-width:900px){.detail-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Optional form sections keep entered values mounted when collapsed. */
+.optional-details > summary { color: var(--primary); font-weight: 600; }
+.optional-details > .date-fields { margin-top: 12px; }
+.optional-details.panel > summary { padding-block: 0; display: list-item; align-content: center; }
+
+.demo-banner { color: #716027; }
+@media (max-width: 720px) { .demo-banner { font-size: 11px; line-height: 1.5; padding: 10px 16px; } }

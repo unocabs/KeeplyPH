@@ -1,4 +1,21 @@
 /* Keeply's existing palette, with a shared 4/8/12/16/24/32 spacing scale. */
+.heading { align-items: center; margin-bottom: 24px; }
+.heading h1 { font-size: clamp(26px, 4vw, 34px); }
+.attention :global(.section-heading h2) { display: flex; align-items: center; gap: 10px; }
+.attention :global(.section-heading h2 svg) { color: #97712e; flex-shrink: 0; }
+.attentionGroup { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--dashboard-line); }
+.attentionGroup :global(.section-heading) { flex-wrap: wrap; }
+.viewSwitch { display: flex; width: fit-content; gap: 4px; margin-top: 20px; padding: 4px; border: 1px solid var(--dashboard-line); border-radius: 12px; background: #f8f6ff; }
+.viewSwitch button { min-height: 44px; min-width: 88px; border-radius: 8px; color: var(--dashboard-muted); }
+.viewSwitch button[aria-pressed=true] { background: white; color: var(--primary); box-shadow: 0 1px 5px #29204410; font-weight: 600; }
+.sort { display: block; margin-bottom: 16px; }
+.examples { margin-top: 32px; border-color: var(--dashboard-line); box-shadow: none; }
+.exampleLinks { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 20px; }
+.exampleLinks a { display: grid; gap: 8px; padding: 16px; border: 1px solid var(--dashboard-line); border-radius: 12px; background: #faf8ff; }
+.exampleLinks a:hover { border-color: #cfc4ef; }
+.exampleLinks span { font-size: 13px; color: var(--dashboard-muted); }
+.exampleLinks svg { vertical-align: middle; color: var(--primary); }
+@container (max-width: 599px) { .exampleLinks { grid-template-columns: 1fr; } .attention :global(.section-heading) { flex-wrap: wrap; } .heading :global(.button) { margin-top: 12px; } }
 .dashboard {
   --dashboard-line: #eae8f4;
   --dashboard-muted: #706c83;
@@ -143,6 +160,9 @@
 }
 
 
+.sampleJump { display:inline-flex; align-items:center; min-height:44px; margin:-12px 0 16px; font-size:13px; color:var(--primary); }
+.sampleJump:hover { text-decoration:underline; text-underline-offset:4px; }
+.dashboard h2[id] { scroll-margin-top:24px; }
 .overdueDates{margin-top:20px;padding:16px;border:1px solid #f2d2ce;border-radius:12px;background:#fffaf9}
 .overdueDates h3{font-size:13px;color:#a84f49;margin-bottom:6px}
 @media(max-width:600px){.overdueDates{padding:12px}}

@@ -8,10 +8,12 @@ export const recurrenceFrequencies = [
 ] as const;
 
 export interface RecurrenceFields {
+  recurrence_policy?: 'fixed' | 'from_completion';
   recurrence_months?: number | null;
   recurrence_anchor?: string | null;
   recurrence_ends_on?: string | null;
   payment_amount_minor?: number | null;
+  payment_amount_certainty?: 'estimated' | 'unverified';
 }
 
 /** Use the original day each time: Jan 31 → Feb 28 → Mar 31. */

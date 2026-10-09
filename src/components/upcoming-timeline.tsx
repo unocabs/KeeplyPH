@@ -23,7 +23,7 @@ function dayAfter(today: string, days: number) {
   return date.toISOString().slice(0, 10);
 }
 
-export function UpcomingTimeline({ rows, today, base = '' }: { rows: DateRow[]; today: string; base?: string }) {
+export function UpcomingTimeline({ rows, today, base = '', embedded = false }: { rows: DateRow[]; today: string; base?: string; embedded?: boolean }) {
   const [selected, setSelected] = useState<DateRow | null>(null);
   const [expanded, setExpanded] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -32,15 +32,15 @@ export function UpcomingTimeline({ rows, today, base = '' }: { rows: DateRow[]; 
   const alerts = selected ? timelineAlerts(selected, today) : [];
   const visible = rows.slice(0, expanded ? 10 : 5);
   const extraCount = Math.min(rows.length, 10) - 5;
-  return <section className={styles.hero} aria-labelledby="coming-up-title">
-    <div className={styles.header}><div><div className="eyebrow">COMING UP</div><h1 id="coming-up-title">A little less to remember</h1><p>Here’s what’s coming in the next 30 days.</p></div><AddItemButton demo={base === '/demo'} /></div>
+  return <section className={embedded ? styles.embedded : styles.hero} aria-labelledby="coming-up-title">
+    {embedded ? <h3 id="coming-up-title" className="sr-only">Calendar of upcoming dates</h3> : <div className={styles.header}><div><div className="eyebrow">COMING UP</div><h1 id="coming-up-title">A little less to remember</h1><p>Here’s what’s coming in the next 30 days.</p></div><AddItemButton demo={base === '/demo'} /></div>}
     <div className={styles.calendar}>
     <div className={styles.scale} aria-hidden="true"><span className={styles.range}>Next 30 days</span><div className={styles.axis}>{[0, 7, 14, 21, 30].map(day => <span key={day} className={day === 7 || day === 21 ? styles.extraLabel : undefined} style={{ left: `${day / 30 * 100}%` }}>{day === 0 ? <>{shortDate(today)}<small>Today</small></> : shortDate(dayAfter(today, day))}</span>)}</div></div>
     <div className={styles.rows} id={rowsId}>
     <div className={styles.grid} aria-hidden="true">{[0, 7, 14, 21, 30].map(day => <span key={day} className={day === 0 ? styles.todayLine : undefined} style={{ left: `${day / 30 * 100}%` }} />)}</div>
     {visible.map(row => {
       const due = row.occurrence.due_on;
-      return <div className={styles.row} key={row.item.id} data-category={itemCategory(row.item)}>
+      return <div className={styles.row} key={row.date.id} data-category={itemCategory(row.item)}>
         <div className={styles.identity}><strong>{row.item.product_name}</strong><span>{reminderProviderLabel(row.item) && <>{reminderProviderLabel(row.item)} · </>}{row.date.label} · {daysUntil(due, today) === 0 ? 'Today' : shortDate(due)}</span></div>
         <div className={styles.track}>
           {timelineAlertGroups(row, today).map(group => {

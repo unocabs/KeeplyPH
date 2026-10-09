@@ -1,6 +1,8 @@
 import { addMonths, todayIn, type PurchaseWithDetails, type Usage } from './domain';
 import { defaultOffsets, reminderPresets, type DateKind, type ReminderPreset, type TemplateKey } from '@/features/templates';
 import { comingUp, dateRows, type DateWithDetails, type ItemWithDetails } from '@/features/items/domain';
+import { readinessChecks } from '@/features/items/insights';
+import { activityTitle, completionType, type UnconfirmedSummary } from '@/features/items/activity';
 
 // Stable IDs preserve existing sample links, including the passport and receipt previews.
 const ids = {
@@ -41,9 +43,9 @@ const samples: Sample[] = [
   { id: ids.car, name: 'Family car: Toyota Vios', template: 'car', kind: 'registration', due: 27, note: 'Keep it ready for school runs and trips home.' },
   { name: 'Family checkup: follow-up appointment', preset: 'medical-appointment', due: 7, note: 'Confirm the appointment and prepare questions for the doctor.' },
   { id: ids.washing, name: 'Washing machine: receipt & warranty', template: 'receipt', kind: 'warranty', due: 23, merchant: 'SM Appliance', price: 2399500, bought: -342, note: 'Keep the receipt here in case it needs repairs.' },
-  { name: 'PLDT: home internet', preset: 'internet-bill', due: 18, recurrence: 1, note: 'Used for work and online classes. Include in the monthly budget.' },
+  { name: 'PLDT: home internet', preset: 'internet-bill', due: 18, recurrence: 1, amount: 120000, note: 'Used for work and online classes. Include in the monthly budget.' },
   { name: 'Life insurance: quarterly premium', preset: 'life-insurance', due: 40, recurrence: 3, amount: 450000, note: 'Set aside the premium before the next quarter.' },
-  { name: 'Netflix: monthly renewal', preset: 'streaming', due: 21, recurrence: 1, note: 'Check if we still use it before the next charge.' },
+  { name: 'Netflix: monthly renewal', preset: 'streaming', due: 21, recurrence: 1, amount: 54900, note: 'Check if we still use it before the next charge.' },
   { name: 'Honda Click: daily commute', template: 'motorcycle', kind: 'registration', due: 65, note: 'Check the next oil change and registration dates.' },
   { id: ids.passport, name: 'Passport: my renewal', template: 'passport', kind: 'expiration', due: 244, note: 'Check the expiry date before booking a trip.' },
   { id: ids.licence, name: 'Driver’s license: my renewal', template: 'licence', kind: 'expiration', due: 400, note: 'Check the expiry date and plan a day for renewal.' },
@@ -88,14 +90,14 @@ export function sampleItems(today = todayIn()): ItemWithDetails[] {
         revision: 1, created_at: timestamp, updated_at: timestamp, offsets: timings,
         recurrence_months: frequency || null, recurrence_anchor: anchor,
         recurrence_ends_on: index === 0 ? addMonths(due, 7) : null,
-        payment_amount_minor: options.amount ?? null, next_scheduled_on: nextAlert,
+        payment_amount_minor: options.amount ?? null, payment_amount_certainty: index === 8 ? 'unverified' : 'estimated', recurrence_policy: 'fixed', next_scheduled_on: nextAlert,
         scheduled_alerts: alertDays.map(on => ({ on, channel: 'email' as const })),
         occurrences: [],
       };
       if (options.history) {
         for (let cycle = 1; cycle <= 2; cycle++) {
           const past = addMonths(due, -(frequency || 6) * (3 - cycle));
-          date.occurrences.push({ id: sampleId(1000 + index * 100 + item.dates.length * 10 + cycle), date_id: dateId, user_id: 'sample', cycle, due_on: past, status: 'completed', completed_on: past, created_at: timestamp });
+          date.occurrences.push({ id: sampleId(1000 + index * 100 + item.dates.length * 10 + cycle), date_id: dateId, user_id: 'sample', cycle, due_on: past, status: index === 0 && cycle === 2 ? 'unconfirmed' : 'completed', completed_on: index === 0 && cycle === 2 ? null : past, created_at: timestamp });
         }
       }
       date.occurrences.push({ id: sampleId(1000 + index * 100 + item.dates.length * 10 + 3), date_id: dateId, user_id: 'sample', cycle: options.history ? 3 : 1, due_on: due, status: 'open', completed_on: null, created_at: timestamp });
@@ -107,7 +109,7 @@ export function sampleItems(today = todayIn()): ItemWithDetails[] {
       addDate(kind, label, sample.due, { recurrence: sample.recurrence, amount: sample.amount, history: sample.history });
     }
     if (template === 'car') {
-      addDate('service', 'Maintenance / PMS', 12);
+      addDate('service', 'Maintenance / PMS', 6);
       addDate('insurance', 'Insurance renewal', 45);
     }
     if (template === 'motorcycle') addDate('service', 'Oil change', 32);
@@ -115,6 +117,18 @@ export function sampleItems(today = todayIn()): ItemWithDetails[] {
     if (id === ids.washing) {
       item.documents = [{ id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', purchase_id: id, user_id: 'sample', kind: 'receipt', state: 'ready', staging_key: '', object_key: '/demo/washing-machine-receipt.svg', original_name: 'Sample washing machine receipt.svg', mime_type: 'image/svg+xml', size_bytes: null, reserved_bytes: 0, checksum: null, upload_expires_at: timestamp, created_at: timestamp }];
     }
+    item.activity_history = {
+      activities: item.dates.flatMap(date => date.occurrences.filter(o => o.status === 'completed').map(o => ({
+        id: o.id, user_id: 'sample', item_id: item.id, occurrence_id: o.id, scheduled_on: o.due_on,
+        activity_type: completionType(item, date), title: activityTitle(item, date), completed_on: o.completed_on!,
+        amount_minor: date.kind === 'service' ? 60000 : null, currency: 'PHP' as const, notes: null, actor_id: null,
+        source: 'recorded' as const, revision: 1, voided_at: null, document_ids: [],
+        created_at: o.completed_on + 'T09:00:00Z', updated_at: o.completed_on + 'T09:00:00Z',
+      }))).sort((a, b) => b.created_at.localeCompare(a.created_at)),
+      has_more: false,
+    };
+    if ([0,2].includes(index)) { const occurrence = item.dates[0].occurrences.find(o=>o.status==='open')!; occurrence.expected_amount_minor=sample.amount; occurrence.amount_certainty='confirmed'; }
+    item.readiness_checks=readinessChecks(item).map(check=>index===15&&check.key==='warranty'?{...check,state:'unknown'}:index===9&&check.key==='service_history'?{...check,state:'dismissed'}:check);
     return item;
   });
 }
@@ -141,4 +155,12 @@ export function sampleUsage(items: ItemWithDetails[], today = todayIn()): Usage 
     storage_bytes: 0, premium: false, premium_until: null,
     upcoming: comingUp(rows, today).length, overdue: rows.filter(row => row.occurrence.due_on < today).length,
   };
+}
+
+// Same review shape and cursor order as the private account query. All examples are fictional.
+export function sampleUnconfirmed(items: ItemWithDetails[], before?: string, beforeId?: string): UnconfirmedSummary {
+  const rows = items.filter(item => item.state === 'saved' && !item.archived_at).flatMap(item => item.dates.flatMap(date => date.occurrences.filter(o => o.status === 'unconfirmed').map(o => ({ item_id:item.id,product_name:item.product_name!,date_id:date.id,occurrence_id:o.id,due_on:o.due_on,label:date.label }))))
+    .sort((a,b) => a.due_on.localeCompare(b.due_on) || a.occurrence_id.localeCompare(b.occurrence_id));
+  const page = rows.filter(row => !before || !beforeId || row.due_on > before || (row.due_on === before && row.occurrence_id > beforeId));
+  return { total:rows.length,rows:page.slice(0,20),has_more:page.length > 20 };
 }

@@ -9,10 +9,11 @@ import { uuidSchema } from '@/lib/validation';
 import { getUsage } from '@/features/purchases/queries';
 import { ReminderSaved } from '@/components/reminder-saved';
 export const metadata={title:'Your reminder'};
-export default async function Page({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{saved?:string;savedDate?:string}>}){
+export default async function Page({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{saved?:string;savedDate?:string;occurrence?:string}>}){
   const {id}=await params;
   if(!uuidSchema.safeParse(id).success)notFound();
-  const [{profile},item,query]=await Promise.all([requireUser(),getItem(id),searchParams]);
+  const query=await searchParams;
+  const [{profile},item]=await Promise.all([requireUser(),getItem(id,query.occurrence)]);
   if(!item)notFound();
   if(item.state==='draft')return item.template_key==='receipt'?<PurchaseForm purchase={{...item,warranty:null}}/>:<ItemForm template={item.template_key} item={item}/>;
   const saved = ['created','updated','uncovered'].includes(query.saved || '');

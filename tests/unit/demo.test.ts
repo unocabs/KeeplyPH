@@ -33,7 +33,7 @@ describe('expanded demo account', () => {
         expect(date.next_scheduled_on).toBe(date.scheduled_alerts?.[0]?.on ?? null);
       }
       expect(rows.filter(row => row.occurrence.due_on >= today).slice(0, 5).map(row => row.item.product_name)).toEqual([
-        'Home Credit: phone installment', 'Meralco: household electricity', 'Family checkup: follow-up appointment', 'Mia’s tuition: next installment', 'Family car: Toyota Vios',
+        'Home Credit: phone installment', 'Meralco: household electricity', 'Family car: Toyota Vios', 'Family checkup: follow-up appointment', 'Mia’s tuition: next installment',
       ]);
       expect(items.slice().sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 6).map(item => item.product_name)).toEqual([1, 6, 5, 13, 0, 3].map(index => items[index].product_name));
     });
@@ -44,7 +44,8 @@ describe('expanded demo account', () => {
     const items = sampleItems(today);
     const loan = items[0].dates[0];
     const current = currentOccurrence(loan)!;
-    expect(loan.occurrences.filter(o => o.status === 'completed')).toHaveLength(2);
+    expect(loan.occurrences.filter(o => o.status === 'completed')).toHaveLength(1);
+    expect(loan.occurrences.filter(o => o.status === 'unconfirmed')).toHaveLength(1);
     expect(loan.payment_amount_minor).toBe(189900);
     expect(nextRecurringDate(loan.recurrence_anchor!, current.due_on, loan.recurrence_months!, loan.recurrence_ends_on!)).toBe(addMonths(current.due_on, 1));
     const car = items.find(item => item.template_key === 'car')!;

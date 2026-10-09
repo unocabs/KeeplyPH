@@ -1,0 +1,22 @@
+[
+  {
+    "page": "home",
+    "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "seo": 100
+    },
+    "limitations": []
+  },
+  {
+    "page": "demo",
+    "scores": {
+      "performance": 97,
+      "accessibility": 100,
+      "seo": 66
+    },
+    "limitations": [
+      "SEO audit penalizes the intentional noindex directive"
+    ]
+  }
+]

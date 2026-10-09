@@ -21,7 +21,8 @@ export function safeAuthIntent(value: string | null | undefined): string {
  const uuid = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
  if(new RegExp('^/items/' + uuid + '$', 'i').test(url.pathname)) {
    const date = url.searchParams.get('date'), action = url.searchParams.get('action');
-   const query = date && new RegExp('^' + uuid + '$','i').test(date) && ['complete','edit'].includes(action || '') ? '?action=' + action + '&date=' + date + (/^\d{4}-\d{2}-\d{2}$/.test(url.searchParams.get('due') || '') ? '&due=' + url.searchParams.get('due') : '') : '';
+   const occurrence=url.searchParams.get('occurrence');
+   const query = date && new RegExp('^' + uuid + '$','i').test(date) && ['complete','edit'].includes(action || '') ? '?action=' + action + '&date=' + date + (/^\d{4}-\d{2}-\d{2}$/.test(url.searchParams.get('due') || '') ? '&due=' + url.searchParams.get('due') : '') + (occurrence && new RegExp('^'+uuid+'$','i').test(occurrence) ? '&occurrence='+occurrence : '') : '';
    return url.pathname + query;
  }
  return '/dashboard';

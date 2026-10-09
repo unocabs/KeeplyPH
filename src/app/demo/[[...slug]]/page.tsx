@@ -7,16 +7,21 @@ import { ItemDetail } from '@/components/item-detail';
 import { ItemForm } from '@/components/item-form';
 import { TemplateChoices } from '@/components/template-picker';
 import { isTemplate } from '@/features/templates';
-import { samplePurchases, sampleItems, sampleUsage } from '@/lib/demo';
+import { samplePurchases, sampleItems, sampleUsage, sampleUnconfirmed } from '@/lib/demo';
 import { todayIn, categories, type Category } from '@/lib/domain';
 import { PurchaseForm } from '@/components/purchase-form';
 import { PurchaseDetail } from '@/components/purchase-detail';
 import { AlertOptions } from '@/components/alert-options';
 import { SettingsForm } from '@/components/settings-form';
 import { Billing } from '@/components/billing';
+import { OccurrenceReviewList } from '@/components/occurrence-review-list';
+import { requiredDate } from '@/features/items/validation';
+import { uuidSchema } from '@/lib/validation';
+import { HouseholdPaymentPlan } from '@/components/payment-plan';
+import { sampleInsights, samplePaymentPlan } from '@/features/items/insights';
 import { notFound } from 'next/navigation';
 export const metadata = { title: 'Sample account', robots: { index: false, follow: false } };
-export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string; template?: string }> }) {
+export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ q?: string; filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string; template?: string; before?: string; id?: string }> }) {
   const { slug = [] } = await params;
   const query = await searchParams;
   const today = todayIn();
@@ -27,10 +32,18 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   if (slug[0] === 'add') {
     if(!slug[1]) content = <><h1>What would you like to organise first?</h1><TemplateChoices demo initialCategory={query.category} /></>;
     else if(!isTemplate(slug[1])) notFound();
-    else content = slug[1] === 'receipt' ? <PurchaseForm demo initialCategory={categories.includes(query.category as Category) ? query.category as Category : undefined} /> : <ItemForm template={slug[1]} vehicles={items.filter(item => item.template_key === slug[1])} preset={query.preset} focus={query.focus} renewalDate={query.renewalDate} demo />;
+    else content = slug[1] === 'receipt' ? <PurchaseForm demo warrantyFocus={query.focus === 'warranty'} initialCategory={categories.includes(query.category as Category) ? query.category as Category : undefined} /> : <ItemForm template={slug[1]} vehicles={items.filter(item => item.template_key === slug[1])} preset={query.preset} focus={query.focus} renewalDate={query.renewalDate} demo />;
+  }
+  else if(slug[0] === 'items' && slug[1] === 'payments') {
+    const valid = requiredDate.safeParse(query.before).success && uuidSchema.safeParse(query.id).success;
+    content = <HouseholdPaymentPlan plan={samplePaymentPlan(items,today,valid?query.before:undefined,valid?query.id:undefined)} paged={valid} base="/demo"/>;
+  }
+  else if(slug[0] === 'items' && slug[1] === 'review') {
+    const valid = requiredDate.safeParse(query.before).success && uuidSchema.safeParse(query.id).success;
+    content = <OccurrenceReviewList summary={sampleUnconfirmed(items,valid ? query.before : undefined,valid ? query.id : undefined)} paged={valid} base="/demo" />;
   }
   else if(slug[0] === 'items') {
-    if(!slug[1]) content = <ItemList key={JSON.stringify(query)} serverQuery={{template:query.template}} items={items} today={today} initialFilter={query.filter} demo />;
+    if(!slug[1]) content = <ItemList key={JSON.stringify(query)} serverQuery={{template:query.template,q:query.q}} items={items} today={today} initialFilter={query.filter} demo />;
     else { const item = items.find(i=>i.id===slug[1]); if(!item)notFound();content = slug[2] === 'edit' ? <ItemForm template={item.template_key} item={item} demo/> : <ItemDetail item={item} usage={usage} today={today} demo/>; }
   }
   else if (slug[0] === 'purchases' && !slug[1]) content = <PurchaseList key={query.filter} purchases={purchases} today={today} initialFilter={query.filter} demo />;
@@ -38,11 +51,11 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   else if (slug[0] === 'purchases' && slug[1]) {
     const purchase = purchases.find(p => p.id === slug[1]);
     if (!purchase) notFound();
-    content = slug[2] === 'edit' ? <PurchaseForm purchase={purchase} demo /> : <PurchaseDetail purchase={purchase} today={today} demo />;
+    content = slug[2] === 'edit' ? <PurchaseForm purchase={purchase} warrantyFocus={query.focus === 'warranty'} demo /> : <PurchaseDetail purchase={purchase} today={today} demo />;
   }
   else if (slug[0] === 'settings' && slug[1] === 'billing') content = <Billing demo usage={usage} />;
   else if (slug[0] === 'settings' && slug[1] === 'alerts') content = <><div className="page-heading"><div><h1>Alert Options</h1><p>Your alerts, in this sample account.</p></div></div><section className="panel narrow-form"><AlertOptions demo initial={{email_reminders_enabled:true}}/></section></>;
   else if (slug[0] === 'settings') content = <><div className="page-heading"><div><h1>Make yourself at home.</h1><p>Your preferences, in this sample account.</p></div></div><SettingsForm demo profile={{ id: 'sample', display_name: 'Alex Reyes', timezone: 'Asia/Manila', email_reminders_enabled: true, email_delivery_blocked: false, deletion_requested_at: null, created_at: '', updated_at: '' }} /></>;
-  else content = <Dashboard items={items} usage={usage} name="Alex" today={today} demo />;
+  else content = <Dashboard items={items} usage={usage} name="Alex" today={today} unconfirmed={sampleUnconfirmed(items)} insights={sampleInsights(items,today)} demo />;
   return <AppShell name="Alex Reyes" hasExtraSlots={false} demo signedIn={await isSignedIn()}>{content}</AppShell>;
 }

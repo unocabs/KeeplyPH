@@ -146,38 +146,39 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
     </div>;
   }
   return <>
-    <Link className="back-link" href={base + '/purchases'}><ArrowLeft size={14} /> Receipt Reminders</Link>
-    <div className="page-heading"><div><div className="eyebrow">A LITTLE ORGANIZATION. A LOT OF PEACE OF MIND.</div><h1>{purchase?.state === 'saved' ? 'Edit reminder' : 'Add a receipt reminder'}</h1><p>Save the details now. Find them when you need them.</p></div></div>
-    <form onSubmit={submit} onChange={() => { dirty.current = true; }} className="form-layout">
+    <Link className="back-link" href={base + '/purchases'}><ArrowLeft size={14} /> Household purchases</Link>
+    <div className="page-heading"><div><div className="eyebrow">A LITTLE ORGANIZATION. A LOT OF PEACE OF MIND.</div><h1>{purchase?.state === 'saved' ? 'Edit purchase' : 'Add a purchase'}</h1><p>Save the details now. Find them when you need them.</p></div></div>
+    <form onInvalidCapture={event => { for (let section = (event.target as HTMLElement).closest('details'); section; section = section.parentElement?.closest('details') ?? null) section.open = true; }} onSubmit={submit} onChange={() => { dirty.current = true; }} className="form-layout">
       <div className="form-stack">
         <section className="panel form-section"><h2>The essentials</h2><p>A name is all you need to get started.</p>
           <div className="field-grid">
             <label className="full">Product name<input name="product_name" required maxLength={160} value={productName} onChange={e=>setProductName(e.target.value)} placeholder="e.g. Sony WH-1000XM5 headphones" /></label>
-            <label>Purchase date<input name="purchased_on" type="date" defaultValue={purchase?.purchased_on || ''} /></label>
-            <label>Store or merchant<input name="merchant" maxLength={160} defaultValue={purchase?.merchant || ''} placeholder="e.g. SM Appliance Center" /></label>
-            <label>Price (₱)<input name="price" inputMode="decimal" pattern="[0-9]+(\.[0-9]{1,2})?" defaultValue={purchase?.price_minor != null ? (purchase.price_minor / 100).toFixed(2) : ''} placeholder="0.00" /></label>
             <label>Category<select name="category" value={category || ''} onChange={e=>{const next=(e.target.value || null) as Category|null;setCategory(next);if(productType && !isProductType(productType,next))setProductType('');}}><option value="">Choose a category</option>{categories.map(c => <option key={c} value={c}>{c[0].toUpperCase() + c.slice(1)}</option>)}</select></label>
-            <ProductTypePicker category={category} name={productName} value={productType} onChange={value=>{setProductType(value);dirty.current=true;}}/>
-            <label className="full">Notes <textarea name="notes" rows={3} maxLength={5000} defaultValue={purchase?.notes || ''} placeholder="Anything you’d like to remember…" /></label>
           </div>
         </section>
-        <section className="panel form-section"><h2>Receipt</h2><p>No more faded paper or lost screenshots.</p>{uploadSection('receipt')}</section>
+        <details className="panel form-section optional-details" open={Boolean(purchase)}><summary>Purchase details (optional)</summary><div className="field-grid spaced">            <label>Purchase date<input name="purchased_on" type="date" defaultValue={purchase?.purchased_on || ''} /></label>
+            <label>Store or merchant<input name="merchant" maxLength={160} defaultValue={purchase?.merchant || ''} placeholder="e.g. SM Appliance Center" /></label>
+            <label>Price (₱)<input name="price" inputMode="decimal" pattern="[0-9]+(\.[0-9]{1,2})?" defaultValue={purchase?.price_minor != null ? (purchase.price_minor / 100).toFixed(2) : ''} placeholder="0.00" /></label>
+            <ProductTypePicker category={category} name={productName} value={productType} onChange={value=>{setProductType(value);dirty.current=true;}}/>
+            <label className="full">Notes <textarea name="notes" rows={3} maxLength={5000} defaultValue={purchase?.notes || ''} placeholder="Anything you’d like to remember…" /></label>
+</div></details>
+        <details className="panel form-section optional-details" open={uploads.some(file => file.kind === 'receipt')}><summary>Attach a receipt (optional)</summary><p className="hint">You can attach a receipt now or after saving.</p>{uploadSection('receipt')}</details>
         <section className="panel form-section">
           <label className="checkbox-row"><input name="has_warranty" type="checkbox" checked={hasWarranty} onChange={e => setHasWarranty(e.target.checked)} /><span><strong>This purchase has a warranty</strong><p>Keep your coverage dates and documents together.</p></span></label>
           {hasWarranty && <div className="warranty-fields"><div className="field-grid">
             <label>Warranty starts<input name="starts_on" type="date" value={starts} onChange={e => setStarts(e.target.value)} /></label>
             <label>Expiration date<input name="expires_on" type="date" required min={starts || undefined} value={expires} onChange={e => setExpires(e.target.value)} /></label>
             <div className="full"><span className="hint">Quick duration, from the start date</span><div className="presets">{[3, 6, 12, 24].map(m => <button type="button" key={m} disabled={!starts} onClick={() => setExpires(addMonths(starts, m))}>{m} months</button>)}</div></div>
-            <label className="full">Serial number<input name="serial_number" maxLength={160} defaultValue={purchase?.warranty?.serial_number || ''} /></label>
-            <label className="full">Warranty notes<textarea name="warranty_notes" maxLength={5000} rows={2} defaultValue={purchase?.warranty?.notes || ''} placeholder="Coverage, service center, or claim details" /></label>
           </div>
           <label className="checkbox-row"><input type="checkbox" name="reminders_enabled" checked={alerts} onChange={e => setAlerts(e.target.checked)} /><span><strong>Send me warranty alerts</strong><p>New warranties include advance alerts and an expiration-day alert, around 9 AM in your timezone. Existing alert timings stay as chosen. Your first 3 alert slots are free. Saving still works when slots are full.</p></span></label>
-          {uploadSection('warranty')}</div>}
+          <details className="optional-details" open={Boolean(purchase?.warranty?.serial_number || purchase?.warranty?.notes || uploads.some(file => file.kind === 'warranty'))}><summary>Warranty details and documents (optional)</summary><div className="field-grid spaced">            <label className="full">Serial number<input name="serial_number" maxLength={160} defaultValue={purchase?.warranty?.serial_number || ''} /></label>
+            <label className="full">Warranty notes<textarea name="warranty_notes" maxLength={5000} rows={2} defaultValue={purchase?.warranty?.notes || ''} placeholder="Coverage, service center, or claim details" /></label>
+</div>{uploadSection('warranty')}</details></div>}
         </section>
         {error && <div className="alert error" role="alert">{error}</div>}
         {savedPreview && <div className="alert success" role="status">Your sample form is ready. Sign in to save your own purchases; this preview does not store changes. <Link href="/login">Get started →</Link></div>}
         {purchase?.state === 'draft' && <button type="button" className="text-button" disabled={busy} onClick={() => void discardDraft()}>Discard this unfinished purchase</button>}
-        <div className="form-actions"><span>Only you can access your files.</span><div><Link className="button secondary" href={base + '/purchases'} onClick={e => { if (dirty.current && !confirm('Leave this form? Unsaved details will be lost.')) e.preventDefault(); }}>Cancel</Link><button disabled={busy} className="button primary">{saving ? 'Saving…' : demo ? 'Try saving purchase' : 'Save reminder'}</button></div></div>
+        <div className="form-actions"><span>Only you can access your files.</span><div><Link className="button secondary" href={base + '/purchases'} onClick={e => { if (dirty.current && !confirm('Leave this form? Unsaved details will be lost.')) e.preventDefault(); }}>Cancel</Link><button disabled={busy} className="button primary">{saving ? 'Saving…' : demo ? 'Review sample purchase' : 'Save purchase'}</button></div></div>
       </div>
       <aside className="form-help"><Lightbulb size={25} /><h3>A small habit, a calmer home.</h3><p>Add a receipt when you buy something. The next time you need it, it’ll be right here.</p><ul><li>Photos are optimized for storage.</li><li>Up to 6 files per purchase.</li><li>You can add more details later.</li><li>Uploads for unfinished purchases are kept for 24 hours.</li></ul></aside>
     </form>

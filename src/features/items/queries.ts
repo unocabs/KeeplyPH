@@ -3,6 +3,14 @@ import 'server-only';
 import { requireUser } from '@/lib/auth';
 import type { ItemWithDetails } from './domain';
 export interface ItemQuery { filter?:string; q?:string; template?:string; cursor?:string; cursorId?:string }
+export async function getHouseholdInsights(): Promise<import('./insights').HouseholdInsights> {
+ const {supabase}=await requireUser();const {data,error}=await supabase.rpc('household_insights',{});
+ if(error)throw new Error('Unable to load household insights. Please retry.');return data as unknown as import('./insights').HouseholdInsights;
+}
+export async function getPaymentPlan(before?:string,beforeId?:string): Promise<import('./insights').PaymentPlan> {
+ const {supabase}=await requireUser();const {data,error}=await supabase.rpc('household_payment_plan',{p_before:before || null,p_before_id:beforeId || null});
+ if(error)throw new Error('Unable to load payment planning. Please retry.');return data as unknown as import('./insights').PaymentPlan;
+}
 export async function getItems(query:ItemQuery={}): Promise<ItemWithDetails[]> {
  const {supabase,profile}=await requireUser();
  const validCursor=query.cursor&&query.cursorId&&/^\d{4}-/.test(query.cursor)&&/^[0-9a-f-]{36}$/i.test(query.cursorId)&&Number.isFinite(Date.parse(query.cursor));
@@ -13,15 +21,33 @@ export async function getDashboardItems():Promise<ItemWithDetails[]> {
  const {supabase,profile}=await requireUser();const {data,error}=await supabase.rpc('dashboard_timeline_items',{});
  if(error)throw new Error('Unable to load overview.');return (data as unknown as ItemWithDetails[]).map(item => ({ ...item, alert_delivery_paused: alertsPaused(profile) }));
 }
-export async function getItem(id: string): Promise<ItemWithDetails | null> {
+export async function getItem(id: string, selectedOccurrence?: string): Promise<ItemWithDetails | null> {
   const { supabase, profile } = await requireUser();
   const {data,error}=await supabase.rpc('item_detail',{p_id:id});
   if(error)throw new Error('Unable to load this reminder.');if(!data)return null;
   const item=data as unknown as ItemWithDetails;
-  const { data: preview, error: previewError } = await supabase.rpc('reminder_preview', { p_item_id: id });
+  // Deep links may point beyond the bounded initial occurrence history.
+  if (selectedOccurrence && /^[0-9a-f-]{36}$/i.test(selectedOccurrence) && !item.dates.some(date => date.occurrences.some(o => o.id === selectedOccurrence))) {
+    const {data:target,error:targetError} = await supabase.from('date_occurrences').select('*').eq('id',selectedOccurrence).eq('user_id',profile.id).maybeSingle();
+    if(targetError)throw new Error('Unable to load the selected occurrence.');
+    if(target) { const date=item.dates.find(date => date.id === target.date_id); if(date)date.selected_occurrence=target; }
+  }
+  const [previewResult, historyResult] = await Promise.all([
+    supabase.rpc('reminder_preview', { p_item_id: id }),
+    supabase.rpc('item_activity_history', { p_item: id }),
+  ]);
+  const { data: preview, error: previewError } = previewResult;
+  if(historyResult.error) throw new Error('Unable to load activity history.');
   if(previewError) throw new Error('Unable to load alert schedule.');
   const schedule = preview as unknown as { date_id: string; next_scheduled_on: string }[];
-  return { ...item, alert_delivery_paused: alertsPaused(profile), dates: item.dates.map(date => ({ ...date, next_scheduled_on: schedule.find(s=>s.date_id===date.id)?.next_scheduled_on || null })) };
+  return { ...item, activity_history: historyResult.data as unknown as import('./activity').ActivityPage, alert_delivery_paused: alertsPaused(profile), dates: item.dates.map(date => ({ ...date, next_scheduled_on: schedule.find(s=>s.date_id===date.id)?.next_scheduled_on || null })) };
+}
+
+export async function getUnconfirmedSummary(before?:string,beforeId?:string): Promise<import('./activity').UnconfirmedSummary> {
+  const {supabase}=await requireUser();
+  const {data,error}=await supabase.rpc('unconfirmed_occurrence_summary',{p_before:before || null,p_before_id:beforeId || null});
+  if(error)throw new Error('Unable to load occurrences requiring review.');
+  return data as unknown as import('./activity').UnconfirmedSummary;
 }
 
 export interface VehicleChoice { id: string; product_name: string | null; car_brand?: string | null; motorcycle_brand?: string | null }
