@@ -12,7 +12,7 @@ import { isCarBrand } from './car-brands';
 import { isLender } from './lenders';
 import { isInsurer, insurancePreset } from './insurers';
 import { isUtility, utilityPreset } from './utilities';
-function refresh() { revalidatePath('/dashboard'); revalidatePath('/items', 'layout'); revalidatePath('/purchases','layout'); revalidatePath('/settings/billing'); }
+function refresh() { revalidatePath('/dashboard'); revalidatePath('/checkup'); revalidatePath('/items', 'layout'); revalidatePath('/purchases','layout'); revalidatePath('/settings/billing'); }
 export async function createItemDraft(id: string, template: string): Promise<ActionResult> {
   if (!uuidSchema.safeParse(id).success || !isTemplate(template)) return { error: 'Choose a supported reminder type.' };
   const { supabase } = await requireUser();

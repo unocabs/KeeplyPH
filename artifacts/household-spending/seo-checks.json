@@ -1,0 +1,306 @@
+{
+  "environment": "Local production over HTTPS",
+  "pages": [
+    {
+      "requested": "/",
+      "path": "/",
+      "lang": "en-PH",
+      "title": "Household Bills, Maintenance, Warranties & Renewals",
+      "description": "Organise household bills, maintenance, warranties and renewals with Keeply. Keep important dates and useful details together, with optional alerts.",
+      "canonical": "https://www.keeplyph.com/",
+      "locale": "en_PH",
+      "schemas": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "inLanguage": "en-PH"
+            },
+            {
+              "@type": "WebApplication",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "applicationCategory": "LifestyleApplication",
+              "operatingSystem": "Web browser",
+              "description": "Organise household bills, maintenance, warranties and renewals with Keeply. Keep important dates and useful details together, with optional alerts.",
+              "featureList": [
+                "Household planning up to a year ahead with Premium",
+                "Monthly household costs from saved amounts",
+                "Household bills and recurring payment dates",
+                "Home maintenance and service history",
+                "Purchase receipts and warranty dates",
+                "Upcoming payment totals with optional estimates",
+                "Category-aware record completeness",
+                "Weekly household brief from saved data",
+                "Search notes, history, dates and authorised file names",
+                "Vehicle registration and insurance dates",
+                "ID and passport expiry dates",
+                "Optional alerts"
+              ],
+              "inLanguage": "en-PH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "requested": "/pricing",
+      "path": "/pricing",
+      "lang": "en-PH",
+      "title": "Pricing: household organisation & Premium planning · Keeply",
+      "description": "Organise household records, dates and alerts. Plan the months ahead with Keeply Premium from ₱59 for 30 days or ₱499 per year. Install for a 30-day gift, no card required.",
+      "canonical": "https://www.keeplyph.com/pricing",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/loan-payment-reminder",
+      "path": "/loan-payment-reminder",
+      "lang": "en-PH",
+      "title": "Loan Payment Reminders · Keeply",
+      "description": "Remember personal, home, car, government and online loan payments with Keeply. Set monthly reminders, an optional peso amount and your loan end date.",
+      "canonical": "https://www.keeplyph.com/loan-payment-reminder",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/warranty-tracker",
+      "path": "/warranty-tracker",
+      "lang": "en-PH",
+      "title": "Receipt & warranty tracker · Keeply",
+      "description": "Keep purchase receipts and warranty dates together. Optional private files and alerts you choose, with a free Keeply account.",
+      "canonical": "https://www.keeplyph.com/warranty-tracker",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/vehicle-registration-reminder",
+      "path": "/vehicle-registration-reminder",
+      "lang": "en-PH",
+      "title": "Car & motorcycle registration alerts · Keeply",
+      "description": "Remember user-confirmed vehicle registration, insurance renewal and service dates with Keeply. Car and motorcycle templates, optional alerts.",
+      "canonical": "https://www.keeplyph.com/vehicle-registration-reminder",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/lto-registration-renewal",
+      "path": "/lto-registration-renewal",
+      "lang": "en-PH",
+      "title": "LTO Car Registration Renewal & Date Calculator",
+      "description": "Check your LTO car registration renewal schedule with a free plate number calculator. Find requirements, fees, online steps and answers for your next renewal.",
+      "canonical": "https://www.keeplyph.com/lto-registration-renewal",
+      "locale": "en_PH",
+      "schemas": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Article",
+              "@id": "https://www.keeplyph.com/lto-registration-renewal#guide",
+              "headline": "LTO Car Registration Renewal & Date Calculator",
+              "description": "Check your LTO car registration renewal schedule with a free plate number calculator. Find requirements, fees, online steps and answers for your next renewal.",
+              "url": "https://www.keeplyph.com/lto-registration-renewal",
+              "mainEntityOfPage": "https://www.keeplyph.com/lto-registration-renewal",
+              "inLanguage": "en-PH",
+              "dateModified": "2026-10-01",
+              "author": {
+                "@type": "Organization",
+                "name": "Keeply",
+                "url": "https://www.keeplyph.com"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Keeply",
+                "url": "https://www.keeplyph.com"
+              },
+              "citation": [
+                "https://lto.gov.ph/wp-content/uploads/2025/11/MV-CC-2025.pdf",
+                "https://lto.gov.ph/wp-content/uploads/2025/09/LTO-CC-2025-External.pdf",
+                "https://lto.gov.ph/wp-content/uploads/2023/10/FDM-vol.-2-2nd-Edition.pdf",
+                "https://www.ltoncr.com/renewal-of-motor-vehicle-mv-registration/",
+                "https://lto.gov.ph/wp-content/uploads/2023/08/Memo_04122023_.pdf"
+              ]
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://www.keeplyph.com/lto-registration-renewal#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.keeplyph.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "LTO registration renewal",
+                  "item": "https://www.keeplyph.com/lto-registration-renewal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "requested": "/aircon-cleaning-schedule",
+      "path": "/aircon-cleaning-schedule",
+      "lang": "en-PH",
+      "title": "Aircon Cleaning Schedule: When, What & Cost · Keeply",
+      "description": "When should you clean your aircon? Compare filter care and professional servicing, schedules by daily use, published service prices and a booking checklist.",
+      "canonical": "https://www.keeplyph.com/aircon-cleaning-schedule",
+      "locale": "en_PH",
+      "schemas": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Article",
+              "@id": "https://www.keeplyph.com/aircon-cleaning-schedule#guide",
+              "headline": "Aircon Cleaning Schedule: When, What & Cost",
+              "description": "When should you clean your aircon? Compare filter care and professional servicing, schedules by daily use, published service prices and a booking checklist.",
+              "url": "https://www.keeplyph.com/aircon-cleaning-schedule",
+              "mainEntityOfPage": "https://www.keeplyph.com/aircon-cleaning-schedule",
+              "inLanguage": "en-PH",
+              "datePublished": "2026-10-04",
+              "dateModified": "2026-10-04",
+              "author": {
+                "@type": "Organization",
+                "name": "Keeply",
+                "url": "https://www.keeplyph.com"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Keeply",
+                "url": "https://www.keeplyph.com"
+              },
+              "citation": [
+                "https://www.midea.com/ph/news/aircon-cleaning-schedule-in-the-philippines--filters--self-cleaning--and-professional-deep-cleaning",
+                "https://www.daikin.com/products/ac/services/maintenance_tips",
+                "https://www.panasonic.com/ph/air-solutions/learn-more/how-to-clean-your-ac-unit-servicing.html",
+                "https://www.teko.ph/accredited-aircon-cleaning-services"
+              ]
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://www.keeplyph.com/aircon-cleaning-schedule#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.keeplyph.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Aircon cleaning schedule",
+                  "item": "https://www.keeplyph.com/aircon-cleaning-schedule"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "requested": "/document-expiry-tracker",
+      "path": "/document-expiry-tracker",
+      "lang": "en-PH",
+      "title": "Passport & driver’s license expiry alerts · Keeply",
+      "description": "Remember passport and driver’s license expiration with Keeply. Store a label and printed expiry date without uploading an identity scan.",
+      "canonical": "https://www.keeplyph.com/document-expiry-tracker",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/privacy",
+      "path": "/privacy",
+      "lang": "en-PH",
+      "title": "Privacy · Keeply",
+      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "canonical": "https://www.keeplyph.com/privacy",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/terms",
+      "path": "/terms",
+      "lang": "en-PH",
+      "title": "Terms · Keeply",
+      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "canonical": "https://www.keeplyph.com/terms",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/demo",
+      "path": "/demo",
+      "lang": "en-PH",
+      "title": "Sample account · Keeply",
+      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "robots": "noindex, nofollow",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/demo/items/payments",
+      "path": "/demo/items/payments",
+      "lang": "en-PH",
+      "title": "Sample account · Keeply",
+      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "robots": "noindex, nofollow",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/demo/planner?days=365",
+      "path": "/demo/planner",
+      "lang": "en-PH",
+      "title": "Sample account · Keeply",
+      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "robots": "noindex, nofollow",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/items/payments",
+      "path": "/login",
+      "lang": "en-PH",
+      "title": "Sign in · Keeply",
+      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "robots": "noindex, nofollow",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/planner",
+      "path": "/login",
+      "lang": "en-PH",
+      "title": "Sign in · Keeply",
+      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "robots": "noindex, nofollow",
+      "locale": "en_PH",
+      "schemas": []
+    }
+  ],
+  "sitemap": [
+    "https://www.keeplyph.com",
+    "https://www.keeplyph.com/pricing",
+    "https://www.keeplyph.com/loan-payment-reminder",
+    "https://www.keeplyph.com/warranty-tracker",
+    "https://www.keeplyph.com/vehicle-registration-reminder",
+    "https://www.keeplyph.com/lto-registration-renewal",
+    "https://www.keeplyph.com/aircon-cleaning-schedule",
+    "https://www.keeplyph.com/document-expiry-tracker",
+    "https://www.keeplyph.com/privacy",
+    "https://www.keeplyph.com/terms"
+  ],
+  "robots": "User-Agent: *\nAllow: /\n\nSitemap: https://www.keeplyph.com/sitemap.xml\n",
+  "structuredDataValidation": "JSON parsed; required WebSite and WebApplication fields checked locally. No external rich-result certification."
+}

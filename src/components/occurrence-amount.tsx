@@ -32,12 +32,12 @@ export function OccurrenceAmount({date,occurrence,demo=false,archived=false}:{da
     }catch(e){setError(actionError(e));}
   }
   return <div className="spaced">
-    <p><strong>Expected amount:</strong> {shown.amount==null?'Cost not added':formatMoney(shown.amount)}{shown.certainty==='estimated'&&<span className="hint"> · Approx.</span>}</p>
+    <p><strong>Expected amount:</strong> {shown.amount==null?'Amount not yet known':formatMoney(shown.amount)}{shown.amount!=null&&<span className="hint"> · {shown.certainty==='estimated'?'Estimated amount':shown.certainty==='confirmed'?'Confirmed amount':'Saved amount'}</span>}</p>
     {!archived&&!open&&<button type="button" className="text-button spaced" onClick={()=>{setEstimated(shown.certainty==='estimated');setAmount(shown.amount==null?'':String(shown.amount/100));setEditing(true);setError('');}}>{shown.amount==null?'Add expected cost':'Edit expected amount'}</button>}
     {open&&<form className={styles.editor} onSubmit={submit}><fieldset disabled={busy||transitioning}><h3>Expected amount for this date</h3>
       <label className="spaced">Expected amount (PHP)<input type="text" inputMode="decimal" value={amount} onChange={e=>setAmount(e.target.value)} placeholder="0.00"/></label>
       <label className="checkbox-row spaced"><input type="checkbox" checked={estimated} onChange={e=>setEstimated(e.target.checked)}/><span>This is an estimate</span></label>
-      <p className="hint spaced">Included in your payment plan for this date. Leave empty to remove the amount. Future dates keep their schedule amount.</p>
+      <p className="hint spaced">Uncheck when you know the confirmed amount. Leave empty if the amount isn’t known yet. Enter 0 only for a known zero cost. Saving a cost does not mark it paid. Future dates keep their schedule amount.</p>
       {error&&<p role="alert" className="alert error spaced">{error}</p>}
       <div className="form-actions"><button type="button" className="button secondary" onClick={close}>Cancel</button><button className="button primary">{busy||transitioning?'Saving…':demo?'Review sample amount':'Save expected amount'}</button></div>
       {occurrence.amount_certainty!=null&&<button type="button" className="text-button spaced" onClick={()=>void save(null,'inherit')}>Reset to schedule amount</button>}

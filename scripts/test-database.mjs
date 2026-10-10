@@ -1369,8 +1369,22 @@ try {
 
   }
   // Exercise historical contracts before applying the new offer and delivery cutover.
-  for(const name of newMigrations){await admin.query(await readFile(join('supabase/migrations',name),'utf8'));console.log('Applied '+name);}
-  if(newMigrations.length===2)await (await import('../tests/database/household-premium.mjs')).testHouseholdPremium({admin,actor,user,test});
+  for(const name of newMigrations.filter(name=>name<'202610100036_shared_household_planning.sql')){await admin.query(await readFile(join('supabase/migrations',name),'utf8'));console.log('Applied '+name);}
+  const planningMigrations=newMigrations.filter(name=>name>='202610100036_shared_household_planning.sql');
+  if(planningMigrations.length) {
+    const {seedHouseholdPlanning,testHouseholdPlanning}=await import('../tests/database/household-planning.mjs');
+    const seeds=await seedHouseholdPlanning({admin,user});
+    for(const name of planningMigrations){
+      if(name==='202610100037_household_spending_checkup.sql')await test('Spending Checkup prerequisite detects the unapplied release',async()=>{
+        const rows=(await admin.query(await readFile('supabase/check-household-spending-checkup-prerequisites.sql','utf8'))).rows;
+        assert.equal(rows.length,38);assert(rows.slice(0,-1).every(row=>row.status.startsWith('PRESENT')));assert(rows.at(-1).status.startsWith('MISSING'));
+      });
+      await admin.query(await readFile(join('supabase/migrations',name),'utf8'));console.log('Applied '+name);
+    }
+    await testHouseholdPlanning({admin,actor,user,test},seeds);
+  }
+  if(newMigrations.includes('202610100035_household_email.sql'))await (await import('../tests/database/household-premium.mjs')).testHouseholdPremium({admin,actor,user,test});
+  if(newMigrations.includes('202610100037_household_spending_checkup.sql'))await (await import('../tests/database/spending-checkup.mjs')).testSpendingCheckup({admin,actor,user,test});
   console.log('\n' + passed + ' database integration tests passed.');
   if (process.env.PG_TEST_BROWSER === '1') await (await import('../tests/browser/household-history.mjs')).testHouseholdBrowser({admin,actor,user});
 } finally {

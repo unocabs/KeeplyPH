@@ -1,0 +1,130 @@
+[
+  {
+    "name": "month-end confirmation applies only to the saved date",
+    "today": "2028-01-31", "days": 365,
+    "schedule": { "recurrence_months": 1, "recurrence_ends_on": "2028-03-31" },
+    "current": { "amount_certainty": "confirmed", "expected_amount_minor": 22000 },
+    "expected": [
+      { "due_on": "2028-01-31", "amount_minor": 22000, "certainty": "confirmed", "projected": false },
+      { "due_on": "2028-02-29", "amount_minor": 10000, "certainty": "estimated", "projected": true },
+      { "due_on": "2028-03-31", "amount_minor": 10000, "certainty": "estimated", "projected": true }
+    ]
+  },
+  {
+    "name": "quarterly costs share the yearly endpoint", "today": "2026-10-10", "days": 365,
+    "schedule": { "recurrence_months": 3 },
+    "expected": [
+      { "due_on": "2026-10-10", "amount_minor": 10000, "certainty": "estimated", "projected": false },
+      { "due_on": "2027-01-10", "amount_minor": 10000, "certainty": "estimated", "projected": true },
+      { "due_on": "2027-04-10", "amount_minor": 10000, "certainty": "estimated", "projected": true },
+      { "due_on": "2027-07-10", "amount_minor": 10000, "certainty": "estimated", "projected": true },
+      { "due_on": "2027-10-10", "amount_minor": 10000, "certainty": "estimated", "projected": true }
+    ]
+  },
+  {
+    "name": "six-monthly costs share the yearly endpoint", "today": "2026-10-10", "days": 365,
+    "schedule": { "recurrence_months": 6 },
+    "expected": [
+      { "due_on": "2026-10-10", "amount_minor": 10000, "certainty": "estimated", "projected": false },
+      { "due_on": "2027-04-10", "amount_minor": 10000, "certainty": "estimated", "projected": true },
+      { "due_on": "2027-10-10", "amount_minor": 10000, "certainty": "estimated", "projected": true }
+    ]
+  },
+  {
+    "name": "yearly renewals share the yearly endpoint", "today": "2026-10-10", "days": 365,
+    "schedule": { "recurrence_months": 12 },
+    "expected": [
+      { "due_on": "2026-10-10", "amount_minor": 10000, "certainty": "estimated", "projected": false },
+      { "due_on": "2027-10-10", "amount_minor": 10000, "certainty": "estimated", "projected": true }
+    ]
+  },
+  {
+    "name": "recorded payment is retained without adding it to upcoming costs", "today": "2026-10-10", "days": 30,
+    "current": { "status": "completed", "completed_on": "2026-10-10" }, "paid_amount_minor": 12345, "expected": []
+  },
+  {
+    "name": "inclusive endpoint stays visible", "today": "2026-10-10", "days": 30,
+    "current": { "due_on": "2026-11-09" },
+    "expected": [{ "due_on": "2026-11-09", "amount_minor": 10000, "certainty": "estimated", "projected": false }]
+  },
+  {
+    "name": "date after endpoint stays outside", "today": "2026-10-10", "days": 30,
+    "current": { "due_on": "2026-11-10" }, "expected": []
+  },
+  {
+    "name": "overdue confirmation does not become a future cost", "today": "2026-10-10", "days": 30,
+    "schedule": { "recurrence_months": 1, "recurrence_anchor": "2026-09-10" },
+    "current": { "due_on": "2026-09-10", "amount_certainty": "confirmed", "expected_amount_minor": 50000 },
+    "expected": [{ "due_on": "2026-10-10", "amount_minor": 10000, "certainty": "estimated", "projected": true }]
+  },
+  {
+    "name": "explicit unknown overrides only the current date", "today": "2028-01-31", "days": 30,
+    "schedule": { "recurrence_months": 1 },
+    "current": { "amount_certainty": "unset", "expected_amount_minor": null },
+    "expected": [
+      { "due_on": "2028-01-31", "amount_minor": null, "certainty": "unset", "projected": false },
+      { "due_on": "2028-02-29", "amount_minor": 10000, "certainty": "estimated", "projected": true }
+    ]
+  },
+  {
+    "name": "zero is a known amount", "today": "2026-10-10", "days": 30,
+    "current": { "amount_certainty": "confirmed", "expected_amount_minor": 0 },
+    "expected": [{ "due_on": "2026-10-10", "amount_minor": 0, "certainty": "confirmed", "projected": false }]
+  },
+  {
+    "name": "legacy amounts stay unverified", "today": "2026-10-10", "days": 30,
+    "schedule": { "payment_amount_certainty": "unverified" },
+    "expected": [{ "due_on": "2026-10-10", "amount_minor": 10000, "certainty": "unverified", "projected": false }]
+  },
+  {
+    "name": "unknown bill remains an expected expense", "today": "2026-10-10", "days": 30,
+    "schedule": { "payment_amount_minor": null },
+    "expected": [{ "due_on": "2026-10-10", "amount_minor": null, "certainty": "unset", "projected": false }]
+  },
+  {
+    "name": "custom date without an amount is not a payment", "today": "2026-10-10", "days": 30,
+    "item": { "reminder_preset": null }, "schedule": { "label": "Birthday", "payment_amount_minor": null },
+    "cost_expected": false, "reporting_category": "custom",
+    "expected": [{ "due_on": "2026-10-10", "amount_minor": null, "certainty": "unset", "projected": false }]
+  },
+  {
+    "name": "vehicle servicing keeps one reporting category", "today": "2026-10-10", "days": 90,
+    "item": { "template_key": "car", "reminder_preset": null }, "schedule": { "kind": "service" },
+    "reporting_category": "vehicles",
+    "expected": [{ "due_on": "2026-10-10", "amount_minor": 10000, "certainty": "estimated", "projected": false }]
+  },
+  {
+    "name": "completion-based services do not invent later dates", "today": "2028-01-31", "days": 365,
+    "item": { "template_key": "aircon", "reminder_preset": null },
+    "schedule": { "kind": "service", "recurrence_months": 1, "recurrence_policy": "from_completion" },
+    "reporting_category": "maintenance",
+    "expected": [{ "due_on": "2028-01-31", "amount_minor": 10000, "certainty": "estimated", "projected": false }]
+  },
+  {
+    "name": "closed projected dates are excluded without shifting the anchor", "today": "2028-01-31", "days": 365,
+    "schedule": { "recurrence_months": 1, "recurrence_ends_on": "2028-05-31" },
+    "history": [
+      { "due_on": "2028-02-29", "status": "completed" },
+      { "due_on": "2028-03-31", "status": "skipped" },
+      { "due_on": "2028-04-30", "status": "superseded" }
+    ],
+    "expected": [
+      { "due_on": "2028-01-31", "amount_minor": 10000, "certainty": "estimated", "projected": false },
+      { "due_on": "2028-05-31", "amount_minor": 10000, "certainty": "estimated", "projected": true }
+    ]
+  },
+  {
+    "name": "archived records are excluded", "today": "2026-10-10", "days": 30,
+    "item": { "archived_at": "2026-10-10T00:00:00Z" }, "expected": []
+  },
+  {
+    "name": "draft records are excluded", "today": "2026-10-10", "days": 30,
+    "item": { "state": "draft" }, "expected": []
+  },
+  {
+    "name": "purchase price is not charged again at warranty expiry", "today": "2026-10-10", "days": 30,
+    "item": { "template_key": "receipt", "reminder_preset": null, "price_minor": 500000 },
+    "schedule": { "kind": "warranty", "payment_amount_minor": null }, "cost_expected": false, "reporting_category": "purchases",
+    "expected": [{ "due_on": "2026-10-10", "amount_minor": null, "certainty": "unset", "projected": false }]
+  }
+]

@@ -23,8 +23,10 @@ import { plannerHorizon, samplePlanner, samplePlannerRows } from '@/features/pre
 import { paymentActionContext, sampleInsights, samplePaymentPlan } from '@/features/items/insights';
 import { dateRows } from '@/features/items/domain';
 import { notFound } from 'next/navigation';
+import { sampleSpendingCheckup, spendingCategories } from '@/features/premium/checkup';
+import { SpendingCheckupView } from '@/components/spending-checkup';
 export const metadata = { title: 'Sample account', robots: { index: false, follow: false } };
-export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ q?: string; filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string; template?: string; before?: string; id?: string; days?: string; month?: string }> }) {
+export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ q?: string; filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string; template?: string; before?: string; id?: string; days?: string; month?: string; week?:string }> }) {
   const { slug = [] } = await params;
   const query = await searchParams;
   const today = todayIn();
@@ -32,7 +34,11 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   const purchases = samplePurchases(items);
   const usage = sampleUsage(items, today);
   let content;
-  if (slug[0] === 'planner') {
+  if (slug[0] === 'checkup') {
+    const cursor=requiredDate.safeParse(query.before).success&&uuidSchema.safeParse(query.id).success;
+    content=<SpendingCheckupView plan={sampleSpendingCheckup(items,today,{week:requiredDate.safeParse(query.week).success?query.week:undefined,category:spendingCategories.includes(query.category??'')?query.category:undefined,before:cursor?query.before:undefined,id:cursor?query.id:undefined})} paged={cursor} demo/>;
+  }
+  else if (slug[0] === 'planner') {
     const days=plannerHorizon(query.days),month=/^\d{4}-\d{2}-01$/.test(query.month||'')&&requiredDate.safeParse(query.month).success?query.month:undefined;
     content=<HouseholdPlannerView key={days} plan={samplePlanner(items,today,days,month)} allSampleRows={samplePlannerRows(items,today,days)} premium demo month={month}/>;
   }

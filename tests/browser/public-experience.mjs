@@ -63,8 +63,18 @@ try {
     assert.equal(await page.locator('progress').getAttribute('value'),readiness);
     const guide=page.locator('section').filter({has:page.locator('#sample-capabilities')});await guide.scrollIntoViewIfNeeded();assert.equal(await guide.locator('div a').count(),6);
     await page.screenshot({path:`${output}/${engine.name()}-${width}-demo.png`,fullPage:true});
+    await page.getByRole('link',{name:'Explore Premium',exact:true}).click();await page.getByRole('heading',{name:'Your 30-Day Spending Checkup',exact:true}).waitFor();await page.waitForLoadState('networkidle');
+    const checkupTotal=page.locator('section[aria-labelledby="checkup-total-heading"]');assert((await checkupTotal.textContent()).includes(total));assert((await checkupTotal.textContent()).includes('₱4,700 of this total is estimated.'));
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    await page.screenshot({path:`${output}/${engine.name()}-${width}-checkup.png`,fullPage:true});
+    await page.getByRole('link',{name:'View contributing expenses',exact:true}).click();await page.waitForURL(url=>url.searchParams.has('week'));
+    const checkupExpenses=page.locator('section[aria-labelledby="checkup-expenses"]');assert(await checkupExpenses.locator('ol>li').count()>0);
+    await checkupExpenses.getByRole('link',{name:'Show all expenses',exact:true}).click();
+    await page.getByRole('link',{name:'Review Vehicles expenses',exact:true}).click();await page.waitForURL(url=>url.searchParams.get('category')==='vehicles');
+    assert.equal(await checkupExpenses.locator('ol>li').count(),1);assert((await checkupTotal.textContent()).includes(total));
+    await navigate('/demo');
     await guide.getByRole('link',{name:/Payment planning/}).click();await page.waitForURL('**/demo/items/payments');await page.waitForLoadState('networkidle');await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
-    assert.equal((await page.locator('p').filter({hasText:/^₱.*to plan for/}).innerText()).split('\n')[0],total);
+    assert.equal((await page.getByRole('region',{name:'Your Total Household Spending',exact:true}).locator('p').filter({hasText:/^₱.*Known upcoming costs/}).innerText()).split('\n')[0],total);
     // A deep-linked editor can be cancelled without changing the sample amount.
     await page.getByRole('button',{name:'Edit amount',exact:true}).first().click();
     const amount=page.locator('form').filter({has:page.getByLabel('Expected amount (PHP)')});await amount.waitFor();
@@ -85,14 +95,14 @@ try {
     console.log(`Passed public flows: ${engine.name()} ${width}`);
 
     if(width===1280) {
-      const paths=['/','/pricing','/loan-payment-reminder','/warranty-tracker','/vehicle-registration-reminder','/lto-registration-renewal','/aircon-cleaning-schedule','/document-expiry-tracker','/privacy','/terms','/demo','/demo/items/payments','/demo/planner?days=365','/items/payments','/planner'];
+      const paths=['/','/pricing','/loan-payment-reminder','/warranty-tracker','/vehicle-registration-reminder','/lto-registration-renewal','/aircon-cleaning-schedule','/document-expiry-tracker','/privacy','/terms','/demo','/demo/items/payments','/demo/planner?days=365','/demo/checkup','/items/payments','/planner','/checkup'];
       for(const path of paths) {
         await navigate(path);
         const result=await page.evaluate(()=>({path:location.pathname,lang:document.documentElement.lang,title:document.title,description:document.querySelector('meta[name="description"]')?.content,canonical:document.querySelector('link[rel="canonical"]')?.href,robots:document.querySelector('meta[name="robots"]')?.content,locale:document.querySelector('meta[property="og:locale"]')?.content,schemas:[...document.querySelectorAll('script[type="application/ld+json"]')].map(script=>JSON.parse(script.textContent))}));
         assert.equal(result.lang,'en-PH');assert.equal(result.locale,'en_PH');assert(result.title&&result.description);
-        if(path.startsWith('/demo')||(path==='/items/payments'||path==='/planner'))assert.match(result.robots,/noindex.*nofollow/);
+        if(path.startsWith('/demo')||['/items/payments','/planner','/checkup'].includes(path))assert.match(result.robots,/noindex.*nofollow/);
         else {assert.equal(result.canonical.replace(/\/$/,''),'https://www.keeplyph.com'+(path==='/'?'':path));assert(!result.robots?.includes('noindex'));}
-        if((path==='/items/payments'||path==='/planner'))assert.equal(result.path,'/login');
+        if(['/items/payments','/planner','/checkup'].includes(path))assert.equal(result.path,'/login');
         if(path==='/') {const graph=result.schemas[0]['@graph'];assert.equal(graph[0]['@type'],'WebSite');const application=graph.find(node=>node['@type']==='WebApplication');assert.equal(application.name,'Keeply');assert.equal(application.inLanguage,'en-PH');assert(application.featureList.some(feature=>feature.includes('Premium')));}
         seo.push({requested:path,...result});
       }

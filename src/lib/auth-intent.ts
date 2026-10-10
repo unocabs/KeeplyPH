@@ -18,7 +18,7 @@ export function safeAuthIntent(value: string | null | undefined): string {
    return url.pathname + (query.size ? '?' + query.toString() : '');
  }
  if(url.pathname==='/planner'){const days=url.searchParams.get('days');return '/planner'+(['30','90','365'].includes(days||'')?'?days='+days:'');}
- if(['/feedback','/dashboard','/add','/items','/purchases','/purchases/new','/settings','/settings/billing','/settings/alerts'].includes(url.pathname))return url.pathname;
+ if(['/feedback','/dashboard','/checkup','/add','/items','/purchases','/purchases/new','/settings','/settings/billing','/settings/alerts'].includes(url.pathname))return url.pathname;
  // Opaque record IDs preserve reminder actions across sign-in; ownership is checked on the destination.
  const uuid = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
  if(new RegExp('^/items/' + uuid + '$', 'i').test(url.pathname)) {

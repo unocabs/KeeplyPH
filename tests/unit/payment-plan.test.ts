@@ -2,6 +2,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import { HouseholdPaymentPlan } from '@/components/payment-plan';
+import { PaymentTotals } from '@/components/household-insights';
 import { sampleItems } from '@/lib/demo';
 import { paymentActionContext, paymentTotal, previewPaymentChange, samplePaymentPlan, type PaymentPlan } from '@/features/items/insights';
 
@@ -15,10 +16,10 @@ describe('payment card actions',()=>{
   it('exposes payment recording and amount actions without an item-detail detour',()=>{
     const data=plan(),contexts=Object.fromEntries(data.rows.map(row=>[row.date_id,{revision:2,can_record_payment:true}]));
     const html=renderToStaticMarkup(createElement(HouseholdPaymentPlan,{plan:data,contexts}));
-    for(const label of ['Mark paid','Edit amount','Add amount','Approx.'])expect(html).toContain(label);
+    for(const label of ['Mark paid','Edit amount','Add amount','Estimated amount','Confirmed amount','Expected amount'])expect(html).toContain(label);
     expect(html).not.toContain('action=amount');
     expect(html).not.toContain('Amount checked');expect(html).not.toContain('Unverified');
-    expect(html).toContain('₱13,648');expect(html).toContain('1 payment needs');expect(html).toContain('Includes 2 estimates');
+    expect(html).toContain('₱13,648');expect(html).toContain('1 upcoming expense needs');expect(html).toContain('₱4,700 of this total is estimated.');
   });
   it('keeps projected dates and unavailable contexts free of unsupported write actions',()=>{
     const data=plan(),row=data.rows[0];
@@ -67,5 +68,30 @@ describe('payment card actions',()=>{
     expect(updated.total).toBe(data.total-1);expect(updated.unset_count).toBe(data.unset_count-1);
     expect(updated.confirmed_minor).toBe(data.confirmed_minor);
     expect(updated.rows.some(candidate=>candidate.date_id===row.date_id&&candidate.due_on===row.due_on)).toBe(false);
+  });
+});
+
+describe('Free spending clarity',()=>{
+  const empty:PaymentPlan={today,ends_on:'2026-11-08',currency:'PHP',total:0,confirmed_minor:'0',estimated_minor:'0',unverified_minor:'0',confirmed_count:0,estimated_count:0,unverified_count:0,unset_count:0,has_more:false,rows:[]};
+  const render=(data:PaymentPlan)=>renderToStaticMarkup(createElement(PaymentTotals,{plan:data}));
+  it('distinguishes no upcoming expenses from expenses whose amounts are all unknown',()=>{
+    const none=render(empty),unknown=render({...empty,total:2,unset_count:2});
+    expect(none).toContain('No upcoming expenses');expect(none).not.toContain('₱0');
+    expect(unknown).toContain('Amounts not added yet');expect(unknown).toContain('2 upcoming expenses need an amount');expect(unknown).not.toContain('₱0');
+  });
+  it('recognizes a saved zero while keeping missing expenses visible',()=>{
+    const zero=render({...empty,total:1,confirmed_count:1});
+    expect(zero).toContain('₱0');expect(zero).toContain('Saved amounts total zero');expect(zero).not.toContain('No upcoming expenses');
+    const partial=render({...empty,total:2,confirmed_count:1,unset_count:1});
+    expect(partial).toContain('₱0');expect(partial).toContain('1 upcoming expense needs an amount');
+  });
+  it('uses account-wide totals and missing counts even when this page has no rows',()=>{
+    const html=render({...empty,total:29,confirmed_count:10,estimated_count:10,unverified_count:2,unset_count:7,confirmed_minor:'10000',estimated_minor:'123456',unverified_minor:'5000'});
+    expect(html).toContain('₱1,384.56');expect(html).toContain('Known upcoming costs');expect(html).toContain('₱1,234.56 of this total is estimated');
+    expect(html).toContain('₱50 uses saved amounts you haven’t confirmed');expect(html).toContain('7 upcoming expenses need an amount');
+    expect(html).not.toContain('%');
+  });
+  it('labels a zero estimate as estimated rather than silently treating it as confirmed',()=>{
+    expect(render({...empty,total:1,estimated_count:1})).toContain('₱0 of this total is estimated');
   });
 });

@@ -22,7 +22,7 @@ export function HouseholdPaymentPlan({plan,contexts={},base='',paged=false,demo=
   }
   return <><Link className="back-link" href={base+'/dashboard'}>← Household overview</Link>
     <div className="page-heading"><div><h1>Payments to plan for</h1><p>{formatDate(plan.today,true)} to {formatDate(plan.ends_on,true)} · {shown.total} {shown.total===1?'payment':'payments'}</p></div></div>
-    <section className={'panel '+styles.card}><PaymentTotals plan={shown}/><p className={styles.footer}>Edit amounts or mark a payment paid here. Completed and overdue payments are excluded.</p></section>
+    <section className={'panel '+styles.card} aria-label="Your Total Household Spending"><p className={styles.meta}>Based on the expenses you&apos;ve added to Keeply.</p><PaymentTotals plan={shown}/>{shown.total===0&&<Link className={styles.cardAction} href={base+'/add?category=bills'}>Add a household expense</Link>}<p className={styles.footer}>Edit expected costs or record payments you’ve made. Paid, completed, and overdue dates are excluded.</p></section>
     <div role="status" aria-live="polite" className={message?styles.paymentNotice:undefined}>{message}</div>
     <ol className={styles.paymentList}>{shown.rows.map(row=><PaymentCard key={row.date_id+':'+row.due_on} row={row} context={contexts[row.date_id]} today={plan.today} base={base} demo={demo} onChange={change=>changed(row,change)}/>)}</ol>
     {!shown.rows.length&&<p className="panel spaced">{paged?'No more payment dates in this window.':message?'You’re up to date. No more payments to plan for in this window.':'No payments saved for the next 30 days.'}</p>}
@@ -82,7 +82,7 @@ function PaymentCard({row,context,today,base,demo,onChange}:{row:PlannedPayment;
   }
   return <li ref={card} className={styles.paymentRow} aria-labelledby={title}>
     <div className={styles.paymentHeading}><ItemIdentityIcon item={row.identity}/><div><Link className={styles.paymentIdentity} href={base+'/items/'+row.item_id+'#date-'+row.date_id}><strong id={title}>{row.product_name}</strong></Link><p>{row.label} · {formatDate(row.due_on)}{row.projected?' · Projected from saved schedule':''}</p></div></div>
-    <div className={styles.amount}><strong>{row.amount_minor==null?'No amount added':formatMoney(row.amount_minor)}</strong>{row.certainty==='estimated'&&<p>Approx.</p>}</div>
+    <div className={styles.amount}><strong>{row.amount_minor==null?'Amount not yet known':formatMoney(row.amount_minor)}</strong><p>{row.amount_minor==null?'Add an estimate to include this cost.':row.certainty==='estimated'?'Estimated amount':row.certainty==='confirmed'?'Confirmed amount':'Expected amount'}</p></div>
     {actionable&&!mode&&<div className={styles.paymentActions} role="group" aria-busy={busy} aria-label={'Payment actions for '+row.product_name}>
       {context?.can_record_payment&&<button type="button" data-editor="paid" className={styles.paidAction} disabled={busy} onClick={()=>open('paid')} aria-expanded={false} aria-controls={formId}><CheckCircle2 size={17} aria-hidden="true"/>Mark paid</button>}
       <button type="button" data-editor="amount" disabled={busy} onClick={()=>open('amount')} aria-expanded={false} aria-controls={formId}><Pencil size={15} aria-hidden="true"/>{row.amount_minor==null?'Add amount':'Edit amount'}</button>
@@ -91,12 +91,13 @@ function PaymentCard({row,context,today,base,demo,onChange}:{row:PlannedPayment;
     {mode&&<form ref={form} id={formId} className={styles.paymentEditor} onSubmit={mode==='paid'?submitPaid:submitAmount}>
       <fieldset disabled={busy}>
         <h2><ReceiptText size={18} aria-hidden="true"/>{mode==='paid'?service?'Record service and payment':'Record a payment':'Expected amount for this date'}</h2>
-        <p>{mode==='paid'?service?'Record a service you’ve completed and paid for. Confirm the actual amount and date below. This also marks the service done.':'Record a payment you’ve already made. Confirm the actual amount and date below. Any repeating schedule will continue.':'For this payment date only. Leave the amount empty to remove it.'}</p>
+        <p>{mode==='paid'?service?'Record a service you’ve completed and paid for. Confirm the actual amount and date below. This also marks the service done.':'Record a payment you’ve already made. Confirm the actual amount and date below. Any repeating schedule will continue.':'For this payment date only. Leave empty if the amount isn’t known yet. Enter 0 only for a known zero cost.'}</p>
         {mode==='paid'&&row.certainty==='estimated'&&row.amount_minor!=null&&<p className="hint spaced">Your saved cost of {formatMoney(row.amount_minor)} was an estimate. Is this the amount you paid? Confirm or correct it below.</p>}
         <div className="field-grid spaced">
           {mode==='paid'&&<label>{service?'Completed and paid on':'Paid on'}<input type="date" required min="1900-01-01" max={today} value={paidOn} onChange={event=>setPaidOn(event.target.value)}/></label>}
           <label className={mode==='paid'?undefined:'full'}>{mode==='paid'?'Amount paid (optional, PHP)':'Expected amount (PHP)'}<input type="text" inputMode="decimal" value={amount} onChange={event=>setAmount(event.target.value)} placeholder="0.00"/></label>
           {mode==='amount'&&<label className="checkbox-row full"><input type="checkbox" checked={estimated} onChange={event=>setEstimated(event.target.checked)}/><span>This is an estimate</span></label>}
+          {mode==='amount'&&<p className="hint full">Uncheck when you know the confirmed amount. Saving a cost does not mark this payment paid. Future dates keep their schedule amount.</p>}
           {mode==='paid'&&<label className="full">Notes (optional)<textarea rows={2} maxLength={5000} value={notes} onChange={event=>setNotes(event.target.value)}/></label>}
           {mode==='paid'&&service&&(service.recurrence_months?<p className="hint full">The next service follows your saved repeating schedule.</p>:<label className="full">Next service date (optional)<input type="date" min={paidOn} max="2200-12-31" value={nextService} onChange={event=>setNextService(event.target.value)}/><span className="hint">{service.interval_months?`Leave empty to schedule the next service ${service.interval_months} months after completion.`:'Leave empty to finish this service reminder.'}</span></label>)}
         </div>

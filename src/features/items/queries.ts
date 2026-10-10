@@ -85,6 +85,19 @@ export async function getHouseholdPlanner(days:import('@/features/premium/planne
  return {...plan,rows:plan.rows.map(row=>({...row,identity:identities.get(row.item_id)}))};
 }
 
+export async function getSpendingCheckup(filter:import('@/features/premium/checkup').CheckupFilter={}):Promise<import('@/features/premium/checkup').SpendingCheckup|null> {
+ const {supabase,userId}=await requireUser();
+ const args={p_week:filter.week||null,p_category:filter.category||null,p_before:filter.before||null,p_before_id:filter.id||null};
+ let response=await supabase.rpc('household_spending_checkup',args);
+ // A bookmarked period can leave the rolling window. Return to the current overview.
+ if(response.error?.message.includes('INVALID_INPUT'))response=await supabase.rpc('household_spending_checkup',{...args,p_week:null,p_before:null,p_before_id:null});
+ if(response.error?.message.includes('PREMIUM_REQUIRED'))return null;
+ if(response.error)throw new Error('Unable to load your spending checkup. Please retry.');
+ const plan=response.data as unknown as import('@/features/premium/checkup').SpendingCheckup;
+ const identities=await getItemIdentities(supabase,userId,plan.rows.map(row=>row.item_id));
+ return {...plan,rows:plan.rows.map(row=>({...row,identity:identities.get(row.item_id)}))};
+}
+
 async function getItemIdentities(supabase:Awaited<ReturnType<typeof requireUser>>['supabase'],userId:string,itemIds:string[]):Promise<Map<string,ItemIdentity>> {
  const ids=[...new Set(itemIds)];
  if(!ids.length)return new Map();

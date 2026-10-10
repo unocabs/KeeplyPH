@@ -15,6 +15,7 @@ export interface Database {
     Views: Record<string, never>;
     Functions: {
       household_planner: Rpc<{p_days?:number;p_month?:string|null;p_before?:string|null;p_before_id?:string|null}>;
+      household_spending_checkup: Rpc<{p_week?:string|null;p_category?:string|null;p_before?:string|null;p_before_id?:string|null}>;
       activate_installation_premium: Rpc<{p_installed:boolean}>;
       acknowledge_installation_premium: Rpc<{p_id:string},undefined>;
       create_premium_order: Rpc<{p_user:string;p_id:string;p_product:string;p_live:boolean}>;

@@ -1,7 +1,8 @@
-import { daysUntil, formatDate, formatMoney } from '@/lib/domain';
-import { itemCategory, paymentDate } from '@/features/templates/categories';
-import { currentOccurrence, dateRows, isActiveReminder, itemIdentity, type ItemIdentity, type ItemWithDetails, type DateWithDetails, type Occurrence } from './domain';
-import { nextRecurringDate } from './recurrence';
+import { formatDate, formatMoney } from '@/lib/domain';
+import { itemCategory } from '@/features/templates/categories';
+import { currentOccurrence, dateRows, isActiveReminder, type ItemIdentity, type ItemWithDetails, type DateWithDetails } from './domain';
+import { addDays, occurrenceAmount, sampleHouseholdPlanningRows, type AmountCertainty } from './planning';
+export { addDays, occurrenceAmount, type AmountCertainty } from './planning';
 
 export const readinessKeys = ['purchase_date','warranty','important_date','registration','service_date','service_history'] as const;
 export type ReadinessKey = typeof readinessKeys[number];
@@ -54,13 +55,8 @@ export function readinessChecks(item: ItemWithDetails): ReadinessCheck[] {
   return checks.sort((a,b)=>a.key.localeCompare(b.key));
 }
 export function readinessComplete(checks: ReadinessCheck[]) { return checks.every(c=>['complete','not_applicable'].includes(c.state)); }
-export type AmountCertainty = 'confirmed' | 'estimated' | 'unverified' | 'unset';
 export function paymentTotal(plan:Pick<PaymentPlan,'confirmed_minor'|'estimated_minor'|'unverified_minor'>):string {
   return (BigInt(plan.confirmed_minor)+BigInt(plan.estimated_minor)+BigInt(plan.unverified_minor)).toString();
-}
-export function occurrenceAmount(date: DateWithDetails, occurrence: Occurrence) {
-  return occurrence.amount_certainty ? { amount:occurrence.expected_amount_minor ?? null,certainty:occurrence.amount_certainty }
-    : { amount:date.payment_amount_minor ?? null,certainty:date.payment_amount_minor == null ? 'unset' as const : date.payment_amount_certainty || 'unverified' as const };
 }
 export interface PlannedPayment {identity?:ItemIdentity;item_id:string;product_name:string;date_id:string;label:string;occurrence_id:string|null;due_on:string;amount_minor:number|null;certainty:AmountCertainty;projected:boolean}
 export interface PaymentActionContext {
@@ -100,27 +96,16 @@ export interface HouseholdInsights {
   week:{ends_on:string;payment_count:number;date_count:number;overdue_count:number;unconfirmed_count:number;services:{item_id:string;product_name:string;date_id:string;label:string;due_on:string}[]};
   payments:PaymentPlan;
 }
-export function addDays(day: string, count: number) { return new Date(Date.parse(day+'T00:00:00Z')+count*86400000).toISOString().slice(0,10); }
 /** Totals arrive as decimal integer strings to preserve exact money across large accounts. */
 export function formatTotal(minor: string) {
   const value=BigInt(minor), cents=value%100n;
   return new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP',maximumFractionDigits:0}).format(value/100n)+(cents ? '.'+String(cents).padStart(2,'0') : '');
 }
 export function samplePaymentRows(items:ItemWithDetails[],today:string):PlannedPayment[] {
-  const rows:PlannedPayment[]=[];
-  for(const item of items.filter(isActiveReminder)) for(const date of item.dates) {
-    const current=currentOccurrence(date);
-    if(!current || !(paymentDate(item.reminder_preset,date.kind,date.label) || date.payment_amount_minor!=null || current.expected_amount_minor!=null))continue;
-    const {amount,certainty}=occurrenceAmount(date,current);
-    if(daysUntil(current.due_on,today)>=0 && daysUntil(current.due_on,today)<=30)rows.push({identity:itemIdentity(item),item_id:item.id,product_name:item.product_name!,date_id:date.id,label:date.label,occurrence_id:current.id,due_on:current.due_on,amount_minor:amount,certainty,projected:false});
-    if(!date.recurrence_months || date.recurrence_policy==='from_completion')continue;
-    let next=nextRecurringDate(date.recurrence_anchor || current.due_on,current.due_on>=today?current.due_on:addDays(today,-1),date.recurrence_months,date.recurrence_ends_on || null);
-    for(let n=0;n<2 && next && next<=addDays(today,30);n++) {
-      if(!date.occurrences.some(o=>o.due_on===next && ['completed','skipped','superseded'].includes(o.status)))rows.push({identity:itemIdentity(item),item_id:item.id,product_name:item.product_name!,date_id:date.id,label:date.label,occurrence_id:null,due_on:next,amount_minor:date.payment_amount_minor ?? null,certainty:date.payment_amount_minor==null?'unset':date.payment_amount_certainty || 'unverified',projected:true});
-      next=nextRecurringDate(date.recurrence_anchor || current.due_on,next,date.recurrence_months,date.recurrence_ends_on || null);
-    }
-  }
-  return rows.sort((a,b)=>a.due_on.localeCompare(b.due_on)||a.date_id.localeCompare(b.date_id));
+  return sampleHouseholdPlanningRows(items,today,30).filter(row=>row.cost_expected).map(row=>({
+    identity:row.identity,item_id:row.item_id,product_name:row.product_name,date_id:row.date_id,label:row.label,
+    occurrence_id:row.occurrence_id,due_on:row.due_on,amount_minor:row.amount_minor,certainty:row.certainty,projected:row.projected,
+  }));
 }
 export function samplePaymentPlan(items:ItemWithDetails[],today:string,before?:string,beforeId?:string):PaymentPlan {
   const all=samplePaymentRows(items,today), page=all.filter(r=>!before || !beforeId || r.due_on>before || (r.due_on===before&&r.date_id>beforeId));

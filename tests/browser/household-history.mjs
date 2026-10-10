@@ -15,7 +15,7 @@ import { pathToFileURL } from 'node:url';
 const pendingActions=new WeakMap();
 async function settleActions(page) {
   const pending=pendingActions.get(page),deadline=Date.now()+10000;
-  while(pending?.size){if(Date.now()>deadline)throw new Error('Server action response did not finish before navigation');await new Promise(resolve=>setTimeout(resolve,25));}
+  while(pending?.size){if(Date.now()>deadline)throw new Error('Server action response did not finish before navigation: '+JSON.stringify([...pending].map(request=>({url:request.url(),action:Boolean(request.headers()['next-action'])}))));await new Promise(resolve=>setTimeout(resolve,25));}
 }
 
 // Wait for pending server actions and hydration before interacting with a new page.
@@ -42,8 +42,9 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
   let tlsProxy,certificateFolder;
   const owners = new Map(), errors = [], reports = [], sessions = new Map();
   let manualOwner;
-  const rpcNames = new Set(['household_planner','activate_installation_premium','acknowledge_installation_premium','get_billing_orders','account_usage','item_detail','date_history','reminder_preview','item_activity_history','complete_occurrence','save_item_activity','void_item_activity','skip_unconfirmed_occurrence','activity_corrections','dashboard_timeline_items','unconfirmed_occurrence_summary','list_items','item_coverage','create_item_draft','save_item_with_date','save_utility_item_with_date','save_motorcycle_item_with_date','save_subscription_item_with_date','save_loan_item_with_date','save_insurance_item_with_date','create_purchase_draft','save_purchase','save_important_date','household_insights','household_payment_plan','set_readiness_preference','set_occurrence_amount']);
+  const rpcNames = new Set(['household_spending_checkup','household_planner','activate_installation_premium','acknowledge_installation_premium','get_billing_orders','account_usage','item_detail','date_history','reminder_preview','item_activity_history','complete_occurrence','save_item_activity','void_item_activity','skip_unconfirmed_occurrence','activity_corrections','dashboard_timeline_items','unconfirmed_occurrence_summary','list_items','item_coverage','create_item_draft','save_item_with_date','save_utility_item_with_date','save_motorcycle_item_with_date','save_subscription_item_with_date','save_loan_item_with_date','save_insurance_item_with_date','create_purchase_draft','save_purchase','save_important_date','household_insights','household_payment_plan','set_readiness_preference','set_occurrence_amount']);
   let failNextSave = false;
+  let failNextCheckup = false;
   const api = createServer(async (req, res) => {
     const url = new URL(req.url, `http://localhost:${apiPort}`);
     res.setHeader('Content-Type', 'application/json');
@@ -71,6 +72,7 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
         let body = ''; for await (const chunk of req) body += chunk;
         const args = JSON.parse(body || '{}'), keys = Object.keys(args);
         if (!keys.every(key => /^p_[a-z_]+$/.test(key))) throw new Error('Invalid RPC arguments');
+        if(failNextCheckup&&name==='household_spending_checkup'){failNextCheckup=false;res.writeHead(503);res.end(JSON.stringify({message:'Test checkup interruption'}));return;}
         if (failNextSave && ['complete_occurrence','save_item_activity','save_utility_item_with_date','set_readiness_preference','set_occurrence_amount','save_important_date','activate_installation_premium'].includes(name)) { failNextSave = false; res.writeHead(503); res.end(JSON.stringify({ message: 'Test connection interruption' })); return; }
         const result = await actor(owner, `select public.${name}(${keys.map((key, i) => `${key}=>$${i+1}`).join(',')}) as value`, Object.values(args));
         res.end(JSON.stringify(result.rows[0].value)); return;
@@ -148,6 +150,8 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       page.on('requestfinished',request=>pending.delete(request));page.on('requestfailed',request=>pending.delete(request));
       const actionEditingOnly=process.env.PG_TEST_ACTION_EDITING_ONLY==='1',paymentOnly=process.env.PG_TEST_PAYMENT_ACTIONS_ONLY==='1';
       if(!actionEditingOnly&&!paymentOnly) {
+      await testFreeSpendingClarity({page,base,owner,actor,admin,today,engine,width});
+      await testSpendingCheckupExperience({page,base,owner,actor,admin,today,engine,width,failRead:()=>{failNextCheckup=true;}});
       await visit(page,`${base}/items/${item}`); await page.getByRole('heading',{name:'Bedroom aircon',exact:true}).waitFor();
       const history=page.locator('section[aria-labelledby="activity-history-heading"]');
       await history.getByRole('button',{name:'Add activity',exact:true}).click();
@@ -363,6 +367,124 @@ async function testCoreExperience({page,base,owner,actor,admin,today,engine,widt
   await page.screenshot({path:`artifacts/household-core/${engine.name()}-${width}-purchase.png`,fullPage:true});
 }
 
+async function testFreeSpendingClarity({page,base,owner,actor,admin,today,engine,width}) {
+  await mkdir('artifacts/household-spending',{recursive:true});
+  const summary=page.locator('section[aria-labelledby="payment-summary-heading"]');
+  await visit(page,base+'/dashboard');
+  await summary.getByText('No upcoming expenses',{exact:true}).waitFor();
+  assert(!(await summary.textContent()).includes('₱0'));
+  await summary.getByRole('link',{name:'Add a household expense',exact:true}).click();
+  await page.waitForURL(url=>url.pathname==='/add'&&url.searchParams.get('category')==='bills');
+  await page.locator('a[href="/add/other?preset=electric-bill"]').waitFor();
+  const id=randomUUID();
+  await actor(owner,"select public.create_item_draft($1,'other')",[id]);
+  await actor(owner,'select public.save_item_with_date($1,1,$2,$3,$4,$5)',[id,'Spending clarity bill','',{kind:'other',label:'Bill payment',due_on:today,reminders_enabled:false,offsets:[],interval_months:null,payment_amount_minor:null},'electric-bill']);
+  await visit(page,base+'/dashboard');
+  await summary.getByText('Amounts not added yet',{exact:true}).waitFor();
+  assert(!(await summary.textContent()).includes('₱0'));
+  assert((await summary.textContent()).includes('1 upcoming expense needs an amount'));
+  await summary.getByRole('link',{name:'Add missing amounts',exact:true}).click();
+  const payment=page.locator('li').filter({has:page.getByRole('link',{name:'Spending clarity bill',exact:true})});
+  const totals=page.getByRole('region',{name:'Your Total Household Spending',exact:true});
+  await payment.getByText('Amount not yet known',{exact:true}).waitFor();
+  // An explicit zero, an estimate, a confirmation, and unknown all remain unpaid.
+  for(const [value,estimated,label] of [['0',false,'Confirmed amount'],['1234.56',true,'Estimated amount'],['1200.50',false,'Confirmed amount'],['',false,'Amount not yet known']]) {
+    await payment.getByRole('button',{name:value==='0'?'Add amount':'Edit amount',exact:true}).click();
+    const form=payment.locator('form');
+    await form.getByLabel('Expected amount (PHP)').fill(value);
+    await form.getByLabel('This is an estimate').setChecked(estimated);
+    await form.getByRole('button',{name:'Save expected amount',exact:true}).click();
+    await form.waitFor({state:'hidden'});
+    await payment.getByText(label,{exact:true}).waitFor();
+    if(value==='0')await totals.getByText('Saved amounts total zero',{exact:true}).waitFor();
+    if(estimated)await totals.getByText('₱1,234.56 of this total is estimated.',{exact:true}).waitFor();
+    if(value==='1200.50')assert(!(await totals.textContent()).includes('is estimated'));
+    if(value==='')await totals.getByText('Amounts not added yet',{exact:true}).waitFor();
+    await page.waitForLoadState('networkidle');
+    const detail=(await actor(owner,'select public.item_detail($1) data',[id])).rows[0].data;
+    const current=detail.dates[0].occurrences.find(row=>row.status==='open');
+    assert.equal(current.amount_certainty,value===''?'unset':estimated?'estimated':'confirmed');
+    assert.equal(current.expected_amount_minor,value===''?null:Math.round(Number(value)*100));
+    assert.equal(detail.dates[0].payment_amount_minor,null);
+    assert.equal((await admin.query('select count(*)::int n from public.item_activities where item_id=$1',[id])).rows[0].n,0);
+  }
+  await visit(page,base+'/dashboard');
+  await summary.getByText('Amounts not added yet',{exact:true}).waitFor();
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  await summary.screenshot({path:`artifacts/household-spending/${engine.name()}-${width}-unknown.png`});
+  await admin.query('delete from public.items where id=$1',[id]);
+  await admin.query('delete from private.rate_limit_buckets where user_id=$1',[owner]);
+}
+
+async function testSpendingCheckupExperience({page,base,owner,actor,admin,today,engine,width,failRead}) {
+  await mkdir('artifacts/household-checkup',{recursive:true});
+  const totalCard=page.locator('section[aria-labelledby="checkup-total-heading"]'),expenses=page.locator('section[aria-labelledby="checkup-expenses"]');
+  await visit(page,base+'/checkup?premium=true&category=vehicles');
+  await page.getByRole('heading',{name:'Turn your saved expenses into a clearer plan',exact:true}).waitFor();
+  assert.equal(await page.locator('#checkup-total-heading').count(),0);
+  await page.getByRole('link',{name:'View my Free payment plan',exact:true}).click();await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
+  await visit(page,base+'/demo');await page.getByRole('link',{name:'Explore Premium',exact:true}).click();
+  await page.getByRole('heading',{name:'Your 30-Day Spending Checkup',exact:true}).waitFor();
+  assert((await totalCard.textContent()).includes('₱13,648'));assert((await totalCard.textContent()).includes('₱4,700 of this total is estimated.'));
+  await page.getByRole('link',{name:'Review Vehicles expenses',exact:true}).click();await page.waitForURL(url=>url.searchParams.get('category')==='vehicles');
+  assert.equal(await expenses.locator('ol>li').count(),1);assert((await expenses.textContent()).includes('Family car: Toyota Vios'));
+  await expenses.getByRole('link',{name:'Family car: Toyota Vios',exact:true}).click();await page.getByRole('heading',{name:'Family car: Toyota Vios',exact:true}).waitFor();
+  await actor(owner,'select public.activate_installation_premium(true)');
+  await visit(page,base+'/checkup');await page.getByRole('heading',{name:'Build a useful checkup',exact:true}).waitFor();
+  assert.equal(await page.locator('#checkup-period-heading').count(),0);assert(!(await totalCard.textContent()).includes('₱0'));
+  const saved=[],datePrefix=randomUUID().slice(0,24);
+  const day=offset=>new Date(Date.parse(today+'T00:00:00Z')+offset*86400000).toISOString().slice(0,10);
+  for(let index=0;index<29;index++) {
+    const item=randomUUID(),date=datePrefix+String(index).padStart(12,'0'),occurrence=randomUUID(),vehicle=index===28,amount=index===0?null:index===1?0:vehicle?900000:10000;
+    await admin.query("insert into public.items(id,user_id,state,product_name,template_key,reminder_preset) values($1,$2,'saved',$3,$4,$5)",[item,owner,vehicle?'Checkup family car':'Checkup bill '+index,vehicle?'car':'other',vehicle?null:'electric-bill']);
+    await admin.query("insert into public.important_dates(id,item_id,user_id,kind,label,payment_amount_minor,payment_amount_certainty) values($1,$2,$3,$4,'Expected cost',$5,'estimated')",[date,item,owner,vehicle?'service':'other',amount]);
+    await admin.query('insert into public.date_occurrences(id,date_id,user_id,cycle,due_on) values($1,$2,$3,1,$4)',[occurrence,date,owner,vehicle?day(14):today]);
+    saved.push(item);
+  }
+  await visit(page,base+'/dashboard');await page.getByRole('link',{name:'Open my checkup',exact:true}).click();
+  await page.getByRole('heading',{name:'Highest-cost upcoming period',exact:true}).waitFor();
+  assert((await totalCard.textContent()).includes('₱11,600'));assert((await totalCard.textContent()).includes('1 upcoming expense needs an amount'));
+  assert.equal(await expenses.locator('ol>li').count(),25);
+  await page.getByRole('link',{name:'View contributing expenses',exact:true}).click();await page.waitForURL(url=>url.searchParams.get('week')===day(14));
+  assert.equal(await expenses.locator('ol>li').count(),1);assert((await expenses.textContent()).includes('Checkup family car'));assert((await totalCard.textContent()).includes('₱11,600'));
+  await expenses.getByRole('link',{name:'Show all expenses',exact:true}).click();await page.getByRole('link',{name:'Review Bills & utilities expenses',exact:true}).click();
+  await page.waitForURL(url=>url.searchParams.get('category')==='bills');assert.equal(await expenses.locator('ol>li').count(),25);
+  const firstNames=await expenses.locator('ol strong').allTextContents();
+  await expenses.getByRole('link',{name:'More expenses',exact:true}).click();await page.waitForURL(url=>url.searchParams.has('before')&&url.searchParams.get('category')==='bills');
+  assert.equal(await expenses.locator('ol>li').count(),3);assert((await totalCard.textContent()).includes('₱11,600'));
+  assert.equal(new Set([...firstNames,...await expenses.locator('ol strong').allTextContents()].filter(value=>value.startsWith('Checkup bill'))).size,28);
+  await expenses.getByRole('link',{name:'First page',exact:true}).click();await page.waitForURL(url=>!url.searchParams.has('before')&&url.searchParams.get('category')==='bills');await expenses.locator('ol>li').nth(24).waitFor();assert.equal(await expenses.locator('ol>li').count(),25);
+  await visit(page,base+'/checkup?week=2000-01-01&category=vehicles');
+  await page.getByRole('heading',{name:'Highest-cost upcoming period',exact:true}).waitFor();assert.equal(await expenses.locator('ol>li').count(),1);
+  await visit(page,base+'/checkup');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  await page.screenshot({path:`artifacts/household-checkup/${engine.name()}-${width}-private.png`,fullPage:true});
+  const before=(await admin.query('select to_jsonb(o) data from public.date_occurrences o where user_id=$1 order by id',[owner])).rows;
+  failRead();await visit(page,base+'/checkup?category=vehicles');
+  await page.getByRole('heading',{name:'We couldn’t load that right now.',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Try again',exact:true}).click();await page.getByRole('heading',{name:'Your 30-Day Spending Checkup',exact:true}).waitFor();
+  assert.deepEqual((await admin.query('select to_jsonb(o) data from public.date_occurrences o where user_id=$1 order by id',[owner])).rows,before);
+  // Normal client navigation after real edits must show a fresh Checkup.
+  for(const [value,expected] of [['1000','₱12,600'],['','₱11,600']]) {
+    await page.getByRole('link',{name:'Review amounts and payments',exact:true}).click();await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
+    const bill=page.locator('li').filter({has:page.getByRole('link',{name:'Checkup bill 0',exact:true})});
+    await bill.getByRole('button',{name:value?'Add amount':'Edit amount',exact:true}).click();
+    await bill.getByLabel('Expected amount (PHP)').fill(value);await bill.getByLabel('This is an estimate').check();
+    await bill.getByRole('button',{name:'Save expected amount',exact:true}).click();await bill.locator('form').waitFor({state:'hidden'});
+    await settleActions(page);await page.getByRole('link',{name:'← Household overview',exact:true}).click();await page.getByRole('link',{name:'Open my checkup',exact:true}).click();
+    await totalCard.locator('p').filter({hasText:expected}).first().waitFor();
+  }
+  await page.getByRole('link',{name:'Review amounts and payments',exact:true}).click();await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
+  const paid=page.locator('li').filter({has:page.getByRole('link',{name:'Checkup bill 2',exact:true})});
+  await paid.getByRole('button',{name:'Mark paid',exact:true}).click();await paid.getByRole('button',{name:'Confirm payment recorded',exact:true}).click();await paid.waitFor({state:'hidden'});
+  await settleActions(page);await page.getByRole('link',{name:'← Household overview',exact:true}).click();await page.getByRole('link',{name:'Open my checkup',exact:true}).click();await totalCard.locator('p').filter({hasText:'₱11,500'}).first().waitFor();
+  const activity=(await admin.query('select activity_type,amount_minor from public.item_activities where item_id=$1',[saved[2]])).rows;assert.equal(activity.length,1);assert.equal(activity[0].activity_type,'payment');assert.equal(Number(activity[0].amount_minor),10000);
+  await admin.query("update private.household_premium_periods set starts_at=now()-interval '31 days',ends_at=now()-interval '1 day' where user_id=$1",[owner]);
+  await visit(page,base+'/checkup');await page.getByRole('heading',{name:'Turn your saved expenses into a clearer plan',exact:true}).waitFor();
+  await page.getByRole('link',{name:'View my Free payment plan',exact:true}).click();await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();assert((await page.getByRole('region',{name:'Your Total Household Spending',exact:true}).textContent()).includes('₱11,500'));
+  await admin.query('delete from public.items where id=any($1::uuid[])',[saved]);await admin.query('delete from private.household_premium_periods where user_id=$1',[owner]);
+  console.log(`✓ Spending Checkup: Free gate, sample, low data, full-account totals, period/category navigation, record links, pagination, stale period, read retry, amount/payment refresh and expiry: ${engine.name()} ${width}`);
+}
+
 async function testInsightsExperience({page,base,owner,actor,admin,today,engine,width,failSave}) {
   await mkdir('artifacts/household-insights',{recursive:true});
   await visit(page,base+'/demo');
@@ -370,7 +492,9 @@ async function testInsightsExperience({page,base,owner,actor,admin,today,engine,
   const summary=page.locator('section[aria-labelledby="payment-summary-heading"]');
   assert(!(await summary.textContent()).includes('Unverified'));
   assert((await summary.textContent()).includes('₱13,648'));
-  await summary.getByRole('link',{name:'View payments'}).click();
+  await summary.getByRole('heading',{name:'Your Total Household Spending',exact:true}).waitFor();
+  assert((await summary.textContent()).includes('₱4,700 of this total is estimated.'));
+  await summary.getByRole('link',{name:'Add missing amounts'}).click();
   await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
   await page.getByRole('button',{name:'Edit amount',exact:true}).first().click();
   let form=page.locator('form').filter({has:page.getByRole('heading',{name:'Expected amount for this date',exact:true})});

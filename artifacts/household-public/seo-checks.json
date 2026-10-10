@@ -27,10 +27,12 @@
               "operatingSystem": "Web browser",
               "description": "Organise household bills, maintenance, warranties and renewals with Keeply. Keep important dates and useful details together, with optional alerts.",
               "featureList": [
+                "Household planning up to a year ahead with Premium",
+                "Monthly household costs from saved amounts",
                 "Household bills and recurring payment dates",
                 "Home maintenance and service history",
                 "Purchase receipts and warranty dates",
-                "Payment planning with confirmed, estimated and unverified amounts",
+                "Upcoming payment totals with optional estimates",
                 "Category-aware record completeness",
                 "Weekly household brief from saved data",
                 "Search notes, history, dates and authorised file names",
@@ -48,8 +50,8 @@
       "requested": "/pricing",
       "path": "/pricing",
       "lang": "en-PH",
-      "title": "Pricing: free alerts & extra slots · Keeply",
-      "description": "Save unlimited items with 3 free alert slots. Choose 5–100 extra slots, from ₱29 per 30 days or ₱249 permanently. Manual renewal, no automatic charges.",
+      "title": "Pricing: household organisation & Premium planning · Keeply",
+      "description": "Organise household records, dates and alerts. Plan the months ahead with Keeply Premium from ₱59 for 30 days or ₱499 per year. Install for a 30-day gift, no card required.",
       "canonical": "https://www.keeplyph.com/pricing",
       "locale": "en_PH",
       "schemas": []
@@ -257,7 +259,47 @@
       "schemas": []
     },
     {
+      "requested": "/demo/planner?days=365",
+      "path": "/demo/planner",
+      "lang": "en-PH",
+      "title": "Sample account · Keeply",
+      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "robots": "noindex, nofollow",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/demo/checkup",
+      "path": "/demo/checkup",
+      "lang": "en-PH",
+      "title": "Sample account · Keeply",
+      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "robots": "noindex, nofollow",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
       "requested": "/items/payments",
+      "path": "/login",
+      "lang": "en-PH",
+      "title": "Sign in · Keeply",
+      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "robots": "noindex, nofollow",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/planner",
+      "path": "/login",
+      "lang": "en-PH",
+      "title": "Sign in · Keeply",
+      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "robots": "noindex, nofollow",
+      "locale": "en_PH",
+      "schemas": []
+    },
+    {
+      "requested": "/checkup",
       "path": "/login",
       "lang": "en-PH",
       "title": "Sign in · Keeply",

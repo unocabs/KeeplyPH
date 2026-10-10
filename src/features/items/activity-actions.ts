@@ -10,6 +10,7 @@ import { requiredDate } from './validation';
 
 function refresh() {
   revalidatePath('/dashboard');
+  revalidatePath('/checkup');
   revalidatePath('/items', 'layout');
   revalidatePath('/purchases', 'layout');
 }

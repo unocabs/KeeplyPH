@@ -22,6 +22,8 @@ The existing global email allowance remains 90 reserved attempts per UTC day, sh
 
 ## Required hosted steps, in order
 
+Schema confirmation update, October 10, 2026: the owner supplied a prerequisite-check screenshot confirming migrations 034 and 035 as `PRESENT`, along with shared planning migration 036. Do not rerun these migrations. The original rollout steps below remain reference material for provider acceptance and worker cutover, which a schema-presence screenshot does not verify.
+
 The owner confirmed all earlier 34 migrations as applied on October 9. Do not rerun them.
 
 1. Pause the notifications cron (the existing `keeply-reminders` job in Supabase Cron, if using `supabase/schedule.sql`) and wait for any running HTTP invocation to finish. This prevents old workers from consuming individual jobs while the grouping schema and application change. For an existing live payment setup, retain `PAYMENTS_ENABLED=true`, the live PayMongo configuration and the live database billing mode so webhook fulfillment and reconciliation continue. The Premium migration retires creation of new slot orders while preserving already-created checkouts; the old checkout screen can be temporarily unavailable between migration and deployment. Keep the new Premium checkout gate disabled until its acceptance checks pass.
