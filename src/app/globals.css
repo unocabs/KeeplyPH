@@ -301,12 +301,14 @@ select {
 /* The shared brand keeps today's date beneath the wordmark on every surface. */
 .brand-lockup{position:relative;display:inline-flex;align-items:center;vertical-align:middle;flex-shrink:0}
 .brand-lockup .brand>span{transform:translateY(-4px)}
+.sidebar-brand .brand{font-size:18px;letter-spacing:-.8px}
 .brand-today{position:absolute;left:51px;bottom:-7px;color:var(--muted);font-size:10px;font-weight:400;line-height:14px;letter-spacing:0;white-space:nowrap}
 .mobile-header .brand-logo{width:58px;height:58px}
 .mobile-header .brand-today{left:45px}
 .auth-card .brand{margin-bottom:0}
 .auth-card .brand-lockup{margin-bottom:35px}
 @media(max-width:600px){.brand-today{left:45px}}
+@media(max-width:380px){.public-nav .brand{font-size:17px;letter-spacing:-.7px}.public-nav .button{white-space:nowrap}}
 
 /* Floating reminders frame the homepage copy without changing its backdrop. */
 .landing-home .landing-hero{position:relative;isolation:isolate}

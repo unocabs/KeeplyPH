@@ -105,11 +105,22 @@ try {
     const receipt=page.getByRole('link',{name:'View sample receipt',exact:true});await receipt.waitFor();
     const popupPromise=page.waitForEvent('popup');await receipt.click();const popup=await popupPromise;await popup.waitForLoadState();assert(popup.url().endsWith('/demo/washing-machine-receipt.svg'));await popup.close();
     await navigate('/');const faq=page.locator('details').filter({has:page.getByText('How do I plan for upcoming payments?',{exact:true})});await faq.locator('summary').click();assert(await faq.evaluate(element=>element.open));await faq.locator('summary').click();assert.equal(await faq.evaluate(element=>element.open),false);
-    reports.push({engine:engine.name(),width,passed:['no overflow','shared sample figures','Checkup full totals and period/category links','keyboard Checkup navigation','Outlook comparison and month coverage','Outlook keyboard navigation and pagination','calendar default','list toggle','keyboard demo navigation','six capability links','payment cancellation','history cancellation','search','readiness filter','sample receipt opens','FAQ open and close']});
+    await navigate('/bill-tracker');
+    assert.match(await page.locator('h1').innerText(),/Your bills, organised.\s*Your household, too./);
+    const billImages=page.locator('main img[src*="%2Fimages%2Fbills%2F"]');assert.equal(await billImages.count(),2);
+    await billImages.last().scrollIntoViewIfNeeded();await page.waitForFunction(()=>[...document.querySelectorAll('main img[src*="%2Fimages%2Fbills%2F"]')].every(img=>img.complete&&img.naturalWidth>0));
+    const billCategories=page.getByRole('navigation',{name:'Things you can organise with Keeply'}).getByRole('link');
+    assert.equal(await billCategories.count(),11);assert.equal(await billCategories.first().getAttribute('href'),'/add?category=bills');
+    const sampleBills=page.getByLabel('Fictional sample bills');assert.equal(await sampleBills.locator('li').count(),2);assert((await sampleBills.innerText()).includes('Not yet known'));assert((await sampleBills.innerText()).includes('Estimate'));
+    const billFaq=page.locator('details').first();await billFaq.locator('summary').focus();await page.keyboard.press('Enter');assert(await billFaq.evaluate(el=>el.open));await page.keyboard.press('Enter');assert.equal(await billFaq.evaluate(el=>el.open),false);
+    await page.evaluate(()=>{document.activeElement?.blur();scrollTo(0,0);});await page.screenshot({path:`${output}/${engine.name()}-${width}-bills.png`,fullPage:true});
+    await page.getByRole('link',{name:'Track my bills for free',exact:true}).first().click();await page.waitForURL('**/add?category=bills');await page.waitForLoadState('networkidle');assert(await page.getByRole('heading',{name:'Bills & utilities',exact:true}).count()>0);
+    await page.goBack();await page.waitForLoadState('networkidle');assert.equal(new URL(page.url()).pathname,'/bill-tracker');
+    reports.push({engine:engine.name(),width,passed:['bill landing images, sample data, categories, keyboard FAQ and bill entry/back navigation','no overflow','shared sample figures','Checkup full totals and period/category links','keyboard Checkup navigation','Outlook comparison and month coverage','Outlook keyboard navigation and pagination','calendar default','list toggle','keyboard demo navigation','six capability links','payment cancellation','history cancellation','search','readiness filter','sample receipt opens','FAQ open and close']});
     console.log(`Passed public flows: ${engine.name()} ${width}`);
 
     if(width===1280) {
-      const paths=['/','/pricing','/loan-payment-reminder','/warranty-tracker','/vehicle-registration-reminder','/lto-registration-renewal','/aircon-cleaning-schedule','/document-expiry-tracker','/privacy','/terms','/demo','/demo/items/payments','/demo/planner?days=365','/demo/checkup','/items/payments','/planner','/checkup'];
+      const paths=['/','/bill-tracker','/pricing','/loan-payment-reminder','/warranty-tracker','/vehicle-registration-reminder','/lto-registration-renewal','/aircon-cleaning-schedule','/document-expiry-tracker','/privacy','/terms','/demo','/demo/items/payments','/demo/planner?days=365','/demo/checkup','/items/payments','/planner','/checkup'];
       for(const path of paths) {
         await navigate(path);
         const result=await page.evaluate(()=>({path:location.pathname,lang:document.documentElement.lang,title:document.title,description:document.querySelector('meta[name="description"]')?.content,canonical:document.querySelector('link[rel="canonical"]')?.href,robots:document.querySelector('meta[name="robots"]')?.content,locale:document.querySelector('meta[property="og:locale"]')?.content,schemas:[...document.querySelectorAll('script[type="application/ld+json"]')].map(script=>JSON.parse(script.textContent))}));
@@ -121,7 +132,7 @@ try {
         seo.push({requested:path,...result});
       }
       const sitemap=await (await context.request.get(base+'/sitemap.xml')).text();
-      const locations=[...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(match=>match[1]);assert.equal(locations.length,10);assert(locations.every(url=>!url.includes('/demo')&&!url.includes('/items')&&!url.includes('/dashboard')));
+      const locations=[...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(match=>match[1]);assert.equal(locations.length,11);assert(locations.includes('https://www.keeplyph.com/bill-tracker'));assert(locations.every(url=>!url.includes('/demo')&&!url.includes('/items')&&!url.includes('/dashboard')));
       const robots=await(await context.request.get(base+'/robots.txt')).text();assert(robots.includes('Sitemap: https://www.keeplyph.com/sitemap.xml'));
       await writeFile(output+'/seo-checks.json',JSON.stringify({environment:'Local production over HTTPS',pages:seo,sitemap:locations,robots,structuredDataValidation:'JSON parsed; required WebSite and WebApplication fields checked locally. No external rich-result certification.'},null,2));
     }

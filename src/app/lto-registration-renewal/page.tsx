@@ -58,7 +58,7 @@ export default async function Page() {
         <p className={styles.intro}>Find your renewal schedule, prepare the right documents, and plan your next visit. Start with the free plate number calculator, then follow the car registration renewal guide below.</p>
         <p className={styles.review}>By <a href="#sources">Keeply</a> · Guide updated <time dateTime="2026-10-01">October 1, 2026</time> · Based on official LTO sources.</p>
         <div className="hero-actions"><a href="#renewal-calculator" className="button primary">Check my renewal schedule ↓</a><a href="#requirements" className="button secondary">See renewal requirements</a></div>
-        <p className={styles.disclosure}>This guide covers vehicle registration, not driver’s license renewal. Keeply is an independent reminder app; renewal transactions are completed through LTO.</p>
+        <p className={styles.disclosure}>This guide covers vehicle registration, not driver’s license renewal. Keeply is an independent household admin app; renewal transactions are completed through LTO.</p>
       </header>
       <nav className={styles.jump} aria-label="On this page">{[['renewal-calculator','Renewal date calculator'],['renewal-overview','Quick guide'],['schedule','Plate number schedule'],['requirements','Requirements'],['steps','Steps'],['costs','Costs'],['special-cases','Special cases'],['questions','Questions'],['sources','Sources']].map(([id,label]) => <a key={id} href={'#'+id}>{label}</a>)}</nav>
 
