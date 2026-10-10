@@ -5,7 +5,7 @@ import { uuidSchema } from '@/lib/validation';
 import { errorMessage } from '@/lib/errors';
 import type { ActionResult } from '@/lib/domain';
 import { readinessKeys } from './insights';
-function refresh() { revalidatePath('/dashboard'); revalidatePath('/checkup'); revalidatePath('/items','layout'); }
+function refresh() { revalidatePath('/dashboard'); revalidatePath('/checkup'); revalidatePath('/planner'); revalidatePath('/items','layout'); }
 export async function saveReadinessPreference(item:string,revision:number,key:string,state:string):Promise<ActionResult> {
   if(!uuidSchema.safeParse(item).success || !Number.isInteger(revision) || revision<1 || !readinessKeys.includes(key as typeof readinessKeys[number]) || !['missing','unknown','not_applicable','dismissed'].includes(state))return {error:'Check this record preference.'};
   const {supabase}=await requireUser();

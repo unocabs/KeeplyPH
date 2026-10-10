@@ -98,6 +98,18 @@ export async function getSpendingCheckup(filter:import('@/features/premium/check
  return {...plan,rows:plan.rows.map(row=>({...row,identity:identities.get(row.item_id)}))};
 }
 
+export async function getHouseholdOutlook(days:import('@/features/premium/planner').PlannerHorizon,month?:string,before?:string,beforeId?:string):Promise<import('@/features/premium/outlook').HouseholdOutlook|null> {
+ const {supabase,userId}=await requireUser();
+ const args={p_days:days,p_month:month||null,p_before:before||null,p_before_id:beforeId||null};
+ let response=await supabase.rpc('household_outlook',args);
+ if(response.error?.message.includes('INVALID_INPUT'))response=await supabase.rpc('household_outlook',{...args,p_month:null,p_before:null,p_before_id:null});
+ if(response.error?.message.includes('PREMIUM_REQUIRED'))return null;
+ if(response.error)throw new Error('Unable to load your household outlook. Please retry.');
+ const plan=response.data as unknown as import('@/features/premium/outlook').HouseholdOutlook;
+ const identities=await getItemIdentities(supabase,userId,plan.rows.map(row=>row.item_id));
+ return {...plan,rows:plan.rows.map(row=>({...row,identity:identities.get(row.item_id)}))};
+}
+
 async function getItemIdentities(supabase:Awaited<ReturnType<typeof requireUser>>['supabase'],userId:string,itemIds:string[]):Promise<Map<string,ItemIdentity>> {
  const ids=[...new Set(itemIds)];
  if(!ids.length)return new Map();

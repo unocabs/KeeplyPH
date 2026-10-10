@@ -40,7 +40,8 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   }
   else if (slug[0] === 'planner') {
     const days=plannerHorizon(query.days),month=/^\d{4}-\d{2}-01$/.test(query.month||'')&&requiredDate.safeParse(query.month).success?query.month:undefined;
-    content=<HouseholdPlannerView key={days} plan={samplePlanner(items,today,days,month)} allSampleRows={samplePlannerRows(items,today,days)} premium demo month={month}/>;
+    const cursor=requiredDate.safeParse(query.before).success&&uuidSchema.safeParse(query.id).success;
+    content=<HouseholdPlannerView key={days} plan={samplePlanner(items,today,days,month)} allSampleRows={samplePlannerRows(items,today,days)} premium demo month={month} before={cursor?query.before:undefined} beforeId={cursor?query.id:undefined}/>;
   }
   else if (slug[0] === 'add') {
     if(!slug[1]) content = <><h1>What would you like to organise first?</h1><TemplateChoices demo initialCategory={query.category} /></>;

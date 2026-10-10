@@ -67,11 +67,25 @@ try {
     const checkupTotal=page.locator('section[aria-labelledby="checkup-total-heading"]');assert((await checkupTotal.textContent()).includes(total));assert((await checkupTotal.textContent()).includes('₱4,700 of this total is estimated.'));
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
     await page.screenshot({path:`${output}/${engine.name()}-${width}-checkup.png`,fullPage:true});
-    await page.getByRole('link',{name:'View contributing expenses',exact:true}).click();await page.waitForURL(url=>url.searchParams.has('week'));
+    const periodLink=page.getByRole('link',{name:'View contributing expenses',exact:true});await periodLink.focus();await periodLink.press('Enter');await page.waitForURL(url=>url.searchParams.has('week'));
     const checkupExpenses=page.locator('section[aria-labelledby="checkup-expenses"]');assert(await checkupExpenses.locator('ol>li').count()>0);
     await checkupExpenses.getByRole('link',{name:'Show all expenses',exact:true}).click();
-    await page.getByRole('link',{name:'Review Vehicles expenses',exact:true}).click();await page.waitForURL(url=>url.searchParams.get('category')==='vehicles');
+    await page.getByRole('link',{name:/^Vehicles/}).click();await page.waitForURL(url=>url.searchParams.get('category')==='vehicles');
     assert.equal(await checkupExpenses.locator('ol>li').count(),1);assert((await checkupTotal.textContent()).includes(total));
+    await navigate('/demo/planner?days=365');await page.getByRole('heading',{name:'Your Household Outlook',exact:true}).waitFor();
+    const outlookTotal=page.locator('section[aria-labelledby="outlook-total-heading"]');await outlookTotal.waitFor();
+    const outlookMonths=page.getByRole('navigation',{name:'Monthly household costs',exact:true});const outlookOverall=await outlookTotal.innerText();
+    const compare=page.locator('section[aria-labelledby="outlook-comparison-heading"]');await compare.waitFor();
+    await compare.getByLabel('First month',{exact:true}).locator('option').first().waitFor({state:'attached'});
+    const monthOptions=await compare.getByLabel('First month',{exact:true}).locator('option').evaluateAll(options=>options.map(option=>option.value));
+    await compare.getByLabel('First month',{exact:true}).selectOption(monthOptions[0]);await compare.getByLabel('Second month',{exact:true}).selectOption(monthOptions[0]);await compare.getByRole('status').filter({hasText:'Choose two different months.'}).waitFor();
+    await compare.getByLabel('Second month',{exact:true}).selectOption(monthOptions[1]);assert(!(await compare.getByRole('status').innerText()).includes('Choose two different'));
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:`${output}/${engine.name()}-${width}-outlook.png`,fullPage:true});if(width<=390)await compare.screenshot({path:`${output}/${engine.name()}-${width}-outlook-comparison.png`});
+    const monthLink=outlookMonths.getByRole('link').first();await monthLink.focus();await monthLink.press('Enter');await page.waitForURL(url=>url.searchParams.has('month'));
+    await page.locator('#outlook-selected-heading').waitFor();if(width<=390)await page.waitForFunction(()=>document.getElementById('outlook-dates').getBoundingClientRect().top>=72);assert.equal(await outlookTotal.innerText(),outlookOverall);await page.getByRole('link',{name:'Show all months',exact:true}).click();await page.waitForURL(url=>!url.searchParams.has('month'));
+    await page.getByRole('link',{name:'More dates',exact:true}).click();await page.waitForURL(url=>url.searchParams.has('before'));assert.equal(await outlookTotal.innerText(),outlookOverall);
+    await page.getByRole('link',{name:'First page',exact:true}).click();await page.waitForURL(url=>!url.searchParams.has('before'));
+    await page.getByRole('link',{name:/^Next 3 months/}).click();await page.waitForURL(url=>url.searchParams.get('days')==='90');await outlookTotal.waitFor();
     await navigate('/demo');
     await guide.getByRole('link',{name:/Payment planning/}).click();await page.waitForURL('**/demo/items/payments');await page.waitForLoadState('networkidle');await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
     assert.equal((await page.getByRole('region',{name:'Your Total Household Spending',exact:true}).locator('p').filter({hasText:/^₱.*Known upcoming costs/}).innerText()).split('\n')[0],total);
@@ -84,14 +98,14 @@ try {
     await history.getByRole('button',{name:'Add activity',exact:true}).click();await history.getByRole('button',{name:'Cancel',exact:true}).click();
     await navigate('/demo');await page.getByRole('link',{name:/Search your records/}).click();
     await page.waitForURL('**/demo/items?q=cleaning');await page.waitForLoadState('networkidle');
-    await page.getByRole('heading',{name:'Bedroom aircon: next cleaning',exact:true}).waitFor();
+    await page.getByRole('heading',{name:'Bedroom aircon: next cleaning',exact:true}).waitFor();await page.waitForLoadState('networkidle');
     await navigate('/');await page.getByRole('link',{name:'Explore readiness',exact:true}).click();await page.locator('#readiness-summary-heading').waitFor();await page.waitForLoadState('networkidle');
-    await page.getByRole('link',{name:'Add useful details',exact:true}).click();await page.waitForURL('**/demo/items?filter=incomplete');await page.waitForLoadState('networkidle');await page.getByRole('heading',{name:'Family car: Toyota Vios',exact:true}).waitFor();
+    await page.getByRole('link',{name:'Add useful details',exact:true}).click();await page.waitForURL('**/demo/items?filter=incomplete');await page.waitForLoadState('networkidle');await page.getByRole('heading',{name:'Family car: Toyota Vios',exact:true}).waitFor();await page.waitForLoadState('networkidle');
     await navigate('/');await page.getByRole('link',{name:'Open a sample receipt and warranty',exact:true}).click();
     const receipt=page.getByRole('link',{name:'View sample receipt',exact:true});await receipt.waitFor();
     const popupPromise=page.waitForEvent('popup');await receipt.click();const popup=await popupPromise;await popup.waitForLoadState();assert(popup.url().endsWith('/demo/washing-machine-receipt.svg'));await popup.close();
     await navigate('/');const faq=page.locator('details').filter({has:page.getByText('How do I plan for upcoming payments?',{exact:true})});await faq.locator('summary').click();assert(await faq.evaluate(element=>element.open));await faq.locator('summary').click();assert.equal(await faq.evaluate(element=>element.open),false);
-    reports.push({engine:engine.name(),width,passed:['no overflow','shared sample figures','calendar default','list toggle','keyboard demo navigation','six capability links','payment cancellation','history cancellation','search','readiness filter','sample receipt opens','FAQ open and close']});
+    reports.push({engine:engine.name(),width,passed:['no overflow','shared sample figures','Checkup full totals and period/category links','keyboard Checkup navigation','Outlook comparison and month coverage','Outlook keyboard navigation and pagination','calendar default','list toggle','keyboard demo navigation','six capability links','payment cancellation','history cancellation','search','readiness filter','sample receipt opens','FAQ open and close']});
     console.log(`Passed public flows: ${engine.name()} ${width}`);
 
     if(width===1280) {

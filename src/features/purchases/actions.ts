@@ -36,7 +36,7 @@ export async function savePurchase(form: FormData): Promise<ActionResult> {
   const { supabase } = await requireUser();
   const { error } = await supabase.rpc('save_purchase', { p_id: id, p_revision: revision, p_data: purchaseData, p_warranty: warranty?.success ? warranty.data : null });
   if (error) return { error: errorMessage(error) };
-  revalidatePath('/dashboard'); revalidatePath('/checkup'); revalidatePath('/items'); revalidatePath('/items/' + id); revalidatePath('/purchases'); revalidatePath('/purchases/' + id); revalidatePath('/settings/billing');
+  revalidatePath('/dashboard'); revalidatePath('/checkup'); revalidatePath('/planner'); revalidatePath('/items'); revalidatePath('/items/' + id); revalidatePath('/purchases'); revalidatePath('/purchases/' + id); revalidatePath('/settings/billing');
   const {data:coverage}=await supabase.rpc('item_coverage',{p_id:id});
   return { id, uncovered: Boolean(warranty?.success && warranty.data.reminders_enabled && (coverage as {coverage?:string})?.coverage!=='covered') };
 }
@@ -45,6 +45,6 @@ export async function deletePurchase(id: string): Promise<ActionResult> {
   const { supabase } = await requireUser();
   const { error } = await supabase.rpc('delete_purchase', { p_id: id });
   if (error) return { error: errorMessage(error) };
-  revalidatePath('/dashboard'); revalidatePath('/checkup'); revalidatePath('/purchases');
+  revalidatePath('/dashboard'); revalidatePath('/checkup'); revalidatePath('/planner'); revalidatePath('/purchases');
   return { success: 'Purchase removed.' };
 }
