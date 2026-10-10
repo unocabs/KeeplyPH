@@ -1,0 +1,39 @@
+{
+  "buildId": "F505EiMSqS9VDpV7P60wU",
+  "premiumFilesMatchWorkspace": true,
+  "files": {
+    "src/app/(app)/checkup/page.tsx": "ea43cd397b88a8af28bd5767aacd724342ec6eb47ac6e3d37e8f3e0d43c58190",
+    "src/app/(app)/dashboard/page.tsx": "ab1e6b370047eadb4f82b975ebe705e28623b0e38a238611d70e6bca22abd9b1",
+    "src/app/(app)/layout.tsx": "c7cae0fef596ebd1113e5c9929e224986f82c8cb67367c6f0858b2f2cd9692ba",
+    "src/app/(app)/planner/page.tsx": "c8fd22eb25f74e16ce77e951bc21306375e1be80edccfd6486ec1fc3f112487c",
+    "src/app/(app)/settings/billing/page.tsx": "2db526a792df7de8860b7a9da2ebab896fac4b73f354579c5d4f62d77e07876c",
+    "src/app/api/premium-metrics/route.ts": "487ac172293a4d5ff5e2d813e87b2b82e7f54aaf2946c6be4a1f163c35f22d5a",
+    "src/app/privacy/page.tsx": "ff2f7d8948f3d4ed3ff57940530812018804053da013820b6371278e43a42411",
+    "src/components/billing.tsx": "18e011a140364563cf6ff939dfbde127d10db1b1b189206a146f67c34da26e72",
+    "src/components/dashboard.tsx": "d952b54bbec1e148453c45a991290c9f3957fa2680e950607b1f308dc6aa608d",
+    "src/components/household-outlook-summary.tsx": "9f1fe45d7cc105dfc160910724536c55981774e3f4e8dbb67c7d9fada28cdcce",
+    "src/components/household-planner.tsx": "62f6135a87f81c4081d09b597e50f98e4156d2b824b5f0870e68cfc249b0577c",
+    "src/components/premium-access-message.tsx": "80e00319c205cfe329a941e27754dbd2fd7bf9986dcd47de2a93959bda581097",
+    "src/components/premium-gift.tsx": "ee405c6d6413bdd94bab5319d05eabf2c2c6716994172a6e25f221d27d0c8fbf",
+    "src/components/premium-measurement.tsx": "9d87bf95ce680a31644b8da0501186a07db905e5c0cbe60ff52695224f935b33",
+    "src/components/premium-planner-preview.tsx": "c154d46034f87f8b23e444e271b3e26d67366ea14d5bdb4d35e94fd1813f00b3",
+    "src/components/premium-plans.tsx": "12cebe9b2d4f9ebe11aa7ed140b57fa436efe4f182ec9f39986756e22211d250",
+    "src/components/premium.module.css": "14d4af41ab6b550d663e268115301c4233167e0ce3241096a47c85c48a4c9bd1",
+    "src/components/settings-form.tsx": "b5be7230246b17c21697896abd2e1296d15cfada3fd217ed9ebaf3ddeccd6e04",
+    "src/components/spending-checkup.tsx": "fc91f2cad9c71bb62dc4ad5697bf6d032960d95f6c2517ed2ef8369dd3175bb9",
+    "src/features/account/actions.ts": "ddddb77b07963a5d556bcc80d63594cd092f430cb8079fe345d100427bcae37f",
+    "src/features/premium/discovery.ts": "525674310e73b08472a23afc31d635263db290084d01379e6a9f1412a67b5618",
+    "src/features/premium/measurement.ts": "bb95a519b400372238fa0bc57cfbaea43ed5acec49b37adea3d14e93b50a8a11",
+    "src/features/premium/queries.ts": "36d79df8d38cd12c8a6ec08fb558131cae87d533f0481e94feb0a9ceb77cb923",
+    "src/lib/domain.ts": "e3fa2ce0678e76535e9e2aac658cff4889b15bd2fc57aefb0efd8b7e1034ea50",
+    "src/types/database.ts": "4d1430e0bd3a5c68f2ba12808e466877d96eb7da1918c05733bbff69fc25a525",
+    "tests/browser/household-history.mjs": "813126e21387391f89b804c5f443116061f71fee4cbc68f1403031b99142a959",
+    "tests/database/premium-discovery.mjs": "6941643e63acfcc86b7f857a3aaf22b769080f88c6d294ad2836ca60b273926d",
+    "supabase/migrations/202610110039_premium_discovery.sql": "bcb42ee8a04ebe8b71f928d3f3aa0cea219f7e90db51f77c24768b4489cad543",
+    "supabase/check-premium-discovery-prerequisites.sql": "d8e63b76ff74b224be734f87acaaa3265b05ebaeb7b27787973a2c10305cf991"
+  },
+  "publicBrowserHarness": {
+    "testedSha256": "9a7df6b3327692973efe1200fca8b9765572e758e93607e5c910339a439753d5",
+    "note": "Later concurrent bill-page tests in the workspace were preserved and are outside this snapshot."
+  }
+}

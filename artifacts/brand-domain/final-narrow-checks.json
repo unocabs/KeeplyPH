@@ -1,0 +1,203 @@
+{
+  "environment": "Local production HTTPS",
+  "results": [
+    {
+      "engine": "chromium",
+      "path": "/",
+      "width": 320,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 183.65625,
+      "actionRight": 304,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "chromium",
+      "path": "/pricing",
+      "width": 320,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 209.359375,
+      "actionRight": 304,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "chromium",
+      "path": "/warranty-tracker",
+      "width": 320,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 183.65625,
+      "actionRight": 304,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "chromium",
+      "path": "/",
+      "width": 360,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 209.96875,
+      "actionRight": 344,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "chromium",
+      "path": "/pricing",
+      "width": 360,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 249.359375,
+      "actionRight": 344,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "chromium",
+      "path": "/warranty-tracker",
+      "width": 360,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 209.96875,
+      "actionRight": 344,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "chromium",
+      "path": "/",
+      "width": 380,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 229.96875,
+      "actionRight": 364,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "chromium",
+      "path": "/pricing",
+      "width": 380,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 269.359375,
+      "actionRight": 364,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "chromium",
+      "path": "/warranty-tracker",
+      "width": 380,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 229.96875,
+      "actionRight": 364,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "webkit",
+      "path": "/",
+      "width": 320,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 183.65625,
+      "actionRight": 304,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "webkit",
+      "path": "/pricing",
+      "width": 320,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 209.359375,
+      "actionRight": 304,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "webkit",
+      "path": "/warranty-tracker",
+      "width": 320,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 183.65625,
+      "actionRight": 304,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "webkit",
+      "path": "/",
+      "width": 360,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 209.96875,
+      "actionRight": 344,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "webkit",
+      "path": "/pricing",
+      "width": 360,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 249.359375,
+      "actionRight": 344,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "webkit",
+      "path": "/warranty-tracker",
+      "width": 360,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 209.96875,
+      "actionRight": 344,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "webkit",
+      "path": "/",
+      "width": 380,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 229.96875,
+      "actionRight": 364,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "webkit",
+      "path": "/pricing",
+      "width": 380,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 269.359375,
+      "actionRight": 364,
+      "buttonHeight": 43.5
+    },
+    {
+      "engine": "webkit",
+      "path": "/warranty-tracker",
+      "width": 380,
+      "overflow": false,
+      "text": "KeeplyPH.com",
+      "brandRight": 171.65625,
+      "actionLeft": 229.96875,
+      "actionRight": 364,
+      "buttonHeight": 43.5
+    }
+  ]
+}

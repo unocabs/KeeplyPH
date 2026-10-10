@@ -3,3 +3,6 @@
 @media(prefers-reduced-motion:no-preference){.celebration{animation:gift-arrival .45s ease-out}@keyframes gift-arrival{from{transform:scale(.85) rotate(-8deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}}
 
 .preview :global(.eyebrow),.giftDialog :global(.eyebrow){color:#68577f}.month small,.plannerIntro p,.upgrade p,.row p,.row small,.preview p{color:#656079}
+
+.previewActions{display:flex;flex-direction:column;align-items:center;gap:12px;flex-shrink:0}.preview>div:first-of-type{min-width:0;overflow-wrap:anywhere}.preview .previewActions{flex:0 0 auto}.preview h2{font-size:21px;line-height:1.4}
+@media(max-width:600px){.preview .previewActions{flex-basis:100%;align-items:stretch}.previewActions :global(.text-button){text-align:center}}

@@ -15,7 +15,7 @@ const playwright = process.env.PLAYWRIGHT_MODULE
   ? await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href)
   : createRequire(import.meta.url)('playwright');
 const output = 'artifacts/household-public';
-const appPort = 34575, tlsPort = 34576, base = `https://localhost:${tlsPort}`;
+const appPort = Number(process.env.PUBLIC_TEST_APP_PORT || 34575), tlsPort = Number(process.env.PUBLIC_TEST_TLS_PORT || 34576), base = `https://localhost:${tlsPort}`;
 const temporary = await mkdtemp(join(tmpdir(), 'keeply-public-'));
 const reports = [], seo = [], errors = [], failedRequests = [];
 let app, proxy, browser;
@@ -34,7 +34,7 @@ try {
   for (const stream of [app.stdout,app.stderr]) stream.on('data',chunk=>{serverLog=(serverLog+chunk).slice(-4000);});
   let ready = false;
   for(let attempt=0;attempt<60;attempt++) { if(app.exitCode!==null)throw new Error(serverLog);try{ready=(await fetch(`http://localhost:${appPort}/`)).ok;}catch{}if(ready)break;await delay(500); }
-  assert(ready,'Production server did not start');
+  assert(ready,'Production server did not start: '+serverLog);
 
   for (const [engine,width] of [[playwright.chromium,1280],[playwright.chromium,390],[playwright.webkit,390],[playwright.chromium,320]]) {
     browser = await engine.launch(engine.name()==='chromium'?{channel:process.env.PLAYWRIGHT_CHROMIUM_CHANNEL||'chrome'}:{});
@@ -54,10 +54,14 @@ try {
     const readiness=await showcase.locator('progress').getAttribute('value');
     await page.screenshot({path:`${output}/${engine.name()}-${width}-home.png`,fullPage:true});
     if(width===390)await showcase.screenshot({path:`${output}/${engine.name()}-${width}-showcase.png`});
+    await navigate('/pricing');assert.equal(await page.locator('.plan-card').count(),2);assert.equal(await page.getByText('30-Day Spending Checkup with period and category insights',{exact:true}).count(),2);assert((await page.locator('main').innerText()).includes('Renew when you choose. No automatic charges.'));await page.screenshot({path:`${output}/${engine.name()}-${width}-pricing.png`,fullPage:true});
+    await navigate('/privacy');assert((await page.locator('main').innerText()).includes('These events do not contain household amounts'));
+    await navigate('/');
     // Keyboard navigation opens the real default calendar, rather than a decorative mockup.
     const calendarLink=page.getByRole('link',{name:'Explore the calendar',exact:true});await calendarLink.focus();await page.keyboard.press('Enter');
     await page.locator('#planning-heading').waitFor();await page.waitForLoadState('networkidle');
     assert.equal(await page.getByRole('button',{name:'Calendar',exact:true}).getAttribute('aria-pressed'),'true');
+    const discovery=page.getByRole('region',{name:'Household Premium planning'});assert.equal(await discovery.count(),1);assert((await discovery.boundingBox()).y>(await page.locator('#planning-heading').boundingBox()).y);
     await page.getByRole('button',{name:'List',exact:true}).click();assert.equal(await page.getByRole('button',{name:'List',exact:true}).getAttribute('aria-pressed'),'true');
     await page.getByRole('button',{name:'Calendar',exact:true}).click();
     assert.equal(await page.locator('progress').getAttribute('value'),readiness);
@@ -116,7 +120,7 @@ try {
     await page.evaluate(()=>{document.activeElement?.blur();scrollTo(0,0);});await page.screenshot({path:`${output}/${engine.name()}-${width}-bills.png`,fullPage:true});
     await page.getByRole('link',{name:'Track my bills for free',exact:true}).first().click();await page.waitForURL('**/add?category=bills');await page.waitForLoadState('networkidle');assert(await page.getByRole('heading',{name:'Bills & utilities',exact:true}).count()>0);
     await page.goBack();await page.waitForLoadState('networkidle');assert.equal(new URL(page.url()).pathname,'/bill-tracker');
-    reports.push({engine:engine.name(),width,passed:['bill landing images, sample data, categories, keyboard FAQ and bill entry/back navigation','no overflow','shared sample figures','Checkup full totals and period/category links','keyboard Checkup navigation','Outlook comparison and month coverage','Outlook keyboard navigation and pagination','calendar default','list toggle','keyboard demo navigation','six capability links','payment cancellation','history cancellation','search','readiness filter','sample receipt opens','FAQ open and close']});
+    reports.push({engine:engine.name(),width,passed:['bill landing images, sample data, categories, keyboard FAQ and bill entry/back navigation','no overflow','Premium pricing benefits and privacy copy','single sample invitation after calendar','shared sample figures','Checkup full totals and period/category links','keyboard Checkup navigation','Outlook comparison and month coverage','Outlook keyboard navigation and pagination','calendar default','list toggle','keyboard demo navigation','six capability links','payment cancellation','history cancellation','search','readiness filter','sample receipt opens','FAQ open and close']});
     console.log(`Passed public flows: ${engine.name()} ${width}`);
 
     if(width===1280) {

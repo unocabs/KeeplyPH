@@ -22,13 +22,15 @@ Spending changes since a previous review, historical snapshots, what-if tools, p
 
 On October 11, 2026, the owner confirmed completion of the Checkup rollout steps, including migration 037 and the 38-row prerequisite check. Earlier migrations were already confirmed. Do not rerun migrations 034 through 037.
 
+On October 11, 2026, the owner confirmed the Outlook rollout complete, including migration 038 and the 39-row prerequisite check. Do not rerun migration 038. The steps below are retained as completed rollout reference. The agent did not independently inspect hosted Supabase or verify physical devices.
+
 Before deploying this milestone:
 
 1. Run the complete [read-only Outlook prerequisite query](../supabase/check-household-outlook-prerequisites.sql) in hosted Supabase SQL Editor. It checks all 39 prerequisites. If any previously confirmed prerequisite is unexpectedly missing, reconcile the schema/history first.
 2. If rows 1 through 38 are `PRESENT` and row 39 is `MISSING`, run the complete [202610110038_household_outlook.sql](../supabase/migrations/202610110038_household_outlook.sql) in the SQL Editor. It adds the read-only, Premium-gated Outlook RPC and private aggregation helper. It does not rewrite household records or change the older planner RPC. No delivery-worker cutover is involved.
 3. Rerun the read-only query. All 39 rows must be `PRESENT` before deploying the matching application code. If row 39 was already present, do not rerun migration 038.
 
-The agent applied migration 038 and checked the prerequisite query before and after it only in disposable local PostgreSQL. Hosted application and SQL deployment have not been performed by the agent. Migration 038 has not yet been confirmed on hosted Supabase.
+The agent applied migration 038 and checked the prerequisite query before and after it only in disposable local PostgreSQL. Hosted application and SQL deployment have not been performed by the agent. The owner has now confirmed migration 038 on hosted Supabase. The next release follows the separate [Premium discovery rollout guide](premium-discovery.md).
 
 ## Verification commands
 

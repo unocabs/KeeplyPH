@@ -1,0 +1,25 @@
+{
+  "change": "Darker section numbers for accessible contrast",
+  "reports": [
+    {
+      "engine": "chromium",
+      "width": 1440,
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "passed": true
+    }
+  ]
+}

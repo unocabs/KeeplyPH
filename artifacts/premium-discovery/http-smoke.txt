@@ -1,0 +1,28 @@
+✓ /
+✓ /demo
+✓ /demo/planner?days=365
+✓ /demo/items
+✓ /demo/items/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+✓ /demo/add/passport
+✓ /loan-payment-reminder
+✓ /demo/add/other?preset=personal-loan
+✓ /demo/add/other?preset=credit-card-installment
+✓ /warranty-tracker
+✓ /vehicle-registration-reminder
+✓ /document-expiry-tracker
+✓ /demo/purchases
+✓ /demo/purchases/new
+✓ /demo/purchases/11111111-1111-4111-8111-111111111111
+✓ /demo/settings
+✓ /demo/settings/alerts
+✓ /demo/settings/billing
+✓ /login
+✓ /pricing
+✓ /privacy
+✓ /terms
+✓ signed-out guard /dashboard
+✓ signed-out guard /planner
+✓ signed-out guard /items
+✓ signed-out guard /settings/billing
+✓ signed-out guard /settings/alerts
+✓ cron authorization and upload origin checks

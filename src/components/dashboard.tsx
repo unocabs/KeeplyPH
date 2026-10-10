@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import type {DiscoveryVariant} from '@/features/premium/discovery';
 import { PremiumPlannerPreview } from './premium-planner-preview';
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
@@ -19,7 +20,7 @@ import { DashboardNavigation, DashboardSectionLink } from './dashboard-navigatio
 import { HouseholdInsightCards, HouseholdWeekSummary } from './household-insights';
 import type { HouseholdInsights } from '@/features/items/insights';
 
-export function Dashboard({ items, usage, name, today, demo = false, setup, unconfirmed, insights, accountId }: { items: ItemWithDetails[]; usage: Usage; name: string; today: string; demo?: boolean; setup?: ReactNode; unconfirmed?: UnconfirmedSummary; insights?: HouseholdInsights; accountId?: string }) {
+export function Dashboard({ items, usage, name, today, demo = false, setup, unconfirmed, insights, accountId, discoveryVariant = 'contextual' }: { items: ItemWithDetails[]; usage: Usage; name: string; today: string; demo?: boolean; setup?: ReactNode; unconfirmed?: UnconfirmedSummary; insights?: HouseholdInsights; accountId?: string;discoveryVariant?:DiscoveryVariant }) {
   const [category, setCategory] = useState('all');
   const [sort, setSort] = useState('recent');
   const [view, setView] = useState<'list' | 'calendar'>('calendar');
@@ -52,13 +53,13 @@ export function Dashboard({ items, usage, name, today, demo = false, setup, unco
       <p>Start with a bill, appliance warranty or home service. Save a name now, add details when you have them, and choose whether you want alerts.</p>
       <div className={styles.welcomeActions}><AddItemButton label="Add my first item" /><Link className="text-button" href="/demo">Explore a sample account <ArrowRight size={16} aria-hidden="true" /></Link></div>
       <p className={styles.welcomeFootnote}>Keep your household records and choose the alerts that help.</p>
-    </section><PremiumPlannerPreview demo={demo} premium={usage.household_premium}/>{setup}<p className="privacy-note"><ShieldCheck size={15} aria-hidden="true" />Your household records and files are private to your account.</p>
+    </section><PremiumPlannerPreview demo={demo} usage={usage}/>{setup}<p className="privacy-note"><ShieldCheck size={15} aria-hidden="true" />Your household records and files are private to your account.</p>
   </div>;
 
   return <div className={styles.dashboard}>
     <div className={'page-heading ' + styles.heading}><div><h1>Your household, organised.</h1><p>Welcome back, {name.split(' ')[0] || 'there'}.</p></div><AddItemButton demo={demo} /></div>
-    <PremiumPlannerPreview demo={demo} premium={usage.household_premium}/>
     <DashboardNavigation hasPlan={!!insights} pathname={pathname} />
+    {discoveryVariant==='control'&&<PremiumPlannerPreview demo={demo} usage={usage}/>}
     <section id="coming-up" className={styles.chapter} aria-labelledby="planning-heading">
     <div className={styles.chapterLabel}><CalendarDays size={15} aria-hidden="true"/>Coming up</div>
     <div className={'panel ' + styles.dates + (view === 'calendar' && upcoming.length ? ' ' + styles.calendarPanel : '')}>
@@ -68,6 +69,7 @@ export function Dashboard({ items, usage, name, today, demo = false, setup, unco
       {insights && <HouseholdWeekSummary insights={insights} items={active} base={base} demo={demo}/>}
     </div>
     </section>
+    {discoveryVariant==='contextual'&&<PremiumPlannerPreview demo={demo} usage={usage}/>}
     <section id="needs-a-check" className={styles.chapter} aria-labelledby="attention-heading">
     <div className={styles.chapterLabel}><CircleAlert size={15} aria-hidden="true"/>Needs a check</div>
     <div className={'panel ' + styles.dates + ' ' + styles.attention + (attentionCount > 0 ? ' ' + styles.hasOverdue : '')}>

@@ -13,5 +13,5 @@ export default async function PlannerPage({searchParams}:{searchParams:Promise<{
  const outlook=usage.household_premium?await getHouseholdOutlook(days,month,valid?query.before:undefined,valid?query.id:undefined):null;
  const plan=outlook??await getHouseholdPlanner(30,usage.household_premium?undefined:month,usage.household_premium?undefined:valid?query.before:undefined,usage.household_premium?undefined:valid?query.id:undefined);
  const selectedMonth=outlook?.month??(outlook?undefined:usage.household_premium?undefined:month);
- return <HouseholdPlannerView key={plan.days+':'+selectedMonth+':'+query.before} plan={plan} premium={Boolean(outlook)} month={selectedMonth||undefined} before={valid?query.before:undefined}/>;
+ return <HouseholdPlannerView usage={usage} requestedDays={requested} key={plan.days+':'+selectedMonth+':'+query.before} plan={plan} premium={Boolean(outlook)} month={selectedMonth||undefined} before={valid?query.before:undefined}/>;
 }

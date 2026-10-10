@@ -1383,6 +1383,10 @@ try {
         const rows=(await admin.query(await readFile('supabase/check-household-outlook-prerequisites.sql','utf8'))).rows;
         assert.equal(rows.length,39);assert(rows.slice(0,-1).every(row=>row.status.startsWith('PRESENT')));assert(rows.at(-1).status.startsWith('MISSING'));
       });
+      if(name==='202610110039_premium_discovery.sql')await test('Premium discovery prerequisite detects the unapplied release',async()=>{
+        const rows=(await admin.query(await readFile('supabase/check-premium-discovery-prerequisites.sql','utf8'))).rows;
+        assert.equal(rows.length,40);assert(rows.slice(0,-1).every(row=>row.status.startsWith('PRESENT')));assert(rows.at(-1).status.startsWith('MISSING'));
+      });
       await admin.query(await readFile(join('supabase/migrations',name),'utf8'));console.log('Applied '+name);
     }
     await testHouseholdPlanning({admin,actor,user,test},seeds);
@@ -1390,6 +1394,7 @@ try {
   if(newMigrations.includes('202610100035_household_email.sql'))await (await import('../tests/database/household-premium.mjs')).testHouseholdPremium({admin,actor,user,test});
   if(newMigrations.includes('202610100037_household_spending_checkup.sql'))await (await import('../tests/database/spending-checkup.mjs')).testSpendingCheckup({admin,actor,user,test});
   if(newMigrations.includes('202610110038_household_outlook.sql'))await (await import('../tests/database/household-outlook.mjs')).testHouseholdOutlook({admin,actor,user,test});
+  if(newMigrations.includes('202610110039_premium_discovery.sql'))await (await import('../tests/database/premium-discovery.mjs')).testPremiumDiscovery({admin,actor,user,test});
   console.log('\n' + passed + ' database integration tests passed.');
   if (process.env.PG_TEST_BROWSER === '1') await (await import('../tests/browser/household-history.mjs')).testHouseholdBrowser({admin,actor,user});
 } finally {

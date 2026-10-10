@@ -49,7 +49,7 @@ describe('30-Day Spending Checkup',()=>{
  it('keeps low-data sample education separate from real totals',()=>{
    const plan=sampleSpendingCheckup([],fixtures[0].today),html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan}));
    expect(html).toContain('Build a useful checkup');expect(html).toContain('href="/demo/checkup"');expect(html).not.toContain('Highest-cost upcoming period');expect(html).not.toContain('₱0');
-   const invitation=renderToStaticMarkup(createElement(SpendingCheckupInvitation));expect(invitation).toContain('₱59');expect(invitation).toContain('Free payment plan');expect(invitation).not.toContain('Your planning takeaway');
+   const invitation=renderToStaticMarkup(createElement(SpendingCheckupInvitation,{usage:{household_premium:false} as import('@/lib/domain').Usage}));expect(invitation).toContain('₱59');expect(invitation).toContain('Free payment plan');expect(invitation).not.toContain('Your planning takeaway');
  });
  it('preserves the checkup destination through sign-in without accepting query injection',()=>{
    expect(safeAuthIntent('/checkup?user=someone-else&premium=true')).toBe('/checkup');

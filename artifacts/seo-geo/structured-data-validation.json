@@ -1,0 +1,204 @@
+{
+  "environment": "Local production HTML, Googlebot user-agent",
+  "vocabulary": "https://schema.org/version/latest/schemaorg-current-https.jsonld",
+  "checkedAt": "2026-10-10T17:33:42.459Z",
+  "graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://www.keeplyph.com/#website",
+      "name": "Keeply",
+      "url": "https://www.keeplyph.com",
+      "inLanguage": "en-PH",
+      "publisher": {
+        "@id": "https://www.keeplyph.com/#organization"
+      },
+      "about": {
+        "@id": "https://www.keeplyph.com/#app"
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://www.keeplyph.com/#app",
+      "name": "Keeply",
+      "url": "https://www.keeplyph.com",
+      "applicationCategory": "LifestyleApplication",
+      "operatingSystem": "Web browser",
+      "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+      "inLanguage": "en-PH",
+      "publisher": {
+        "@id": "https://www.keeplyph.com/#organization"
+      },
+      "mainEntityOfPage": {
+        "@id": "https://www.keeplyph.com/#webpage"
+      },
+      "featureList": [
+        "Household bills and recurring payment dates",
+        "Home maintenance and service history",
+        "Purchase receipts and warranty dates",
+        "Upcoming payment totals from saved amounts, with estimates identified",
+        "Household planning up to a year ahead with Premium",
+        "Monthly household costs from saved amounts",
+        "Category-aware record completeness",
+        "Weekly household brief from saved data",
+        "Search notes, history, dates and authorised file names",
+        "Vehicle registration and insurance dates",
+        "ID and passport expiry dates",
+        "Optional alerts"
+      ]
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.keeplyph.com/#organization",
+      "name": "Keeply",
+      "url": "https://www.keeplyph.com",
+      "logo": "https://www.keeplyph.com/brand/keeply-logo.png"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://www.keeplyph.com/#webpage",
+      "url": "https://www.keeplyph.com",
+      "name": "Household Admin App: Bills, Maintenance & Warranties · Keeply",
+      "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+      "inLanguage": "en-PH",
+      "isPartOf": {
+        "@id": "https://www.keeplyph.com/#website"
+      },
+      "mainEntity": {
+        "@id": "https://www.keeplyph.com/#app"
+      }
+    }
+  ],
+  "propertyChecks": [
+    {
+      "type": "WebSite",
+      "property": "name",
+      "valid": true
+    },
+    {
+      "type": "WebSite",
+      "property": "url",
+      "valid": true
+    },
+    {
+      "type": "WebSite",
+      "property": "inLanguage",
+      "valid": true
+    },
+    {
+      "type": "WebSite",
+      "property": "publisher",
+      "valid": true
+    },
+    {
+      "type": "WebSite",
+      "property": "about",
+      "valid": true
+    },
+    {
+      "type": "WebApplication",
+      "property": "name",
+      "valid": true
+    },
+    {
+      "type": "WebApplication",
+      "property": "url",
+      "valid": true
+    },
+    {
+      "type": "WebApplication",
+      "property": "applicationCategory",
+      "valid": true
+    },
+    {
+      "type": "WebApplication",
+      "property": "operatingSystem",
+      "valid": true
+    },
+    {
+      "type": "WebApplication",
+      "property": "description",
+      "valid": true
+    },
+    {
+      "type": "WebApplication",
+      "property": "inLanguage",
+      "valid": true
+    },
+    {
+      "type": "WebApplication",
+      "property": "publisher",
+      "valid": true
+    },
+    {
+      "type": "WebApplication",
+      "property": "mainEntityOfPage",
+      "valid": true
+    },
+    {
+      "type": "WebApplication",
+      "property": "featureList",
+      "valid": true
+    },
+    {
+      "type": "Organization",
+      "property": "name",
+      "valid": true
+    },
+    {
+      "type": "Organization",
+      "property": "url",
+      "valid": true
+    },
+    {
+      "type": "Organization",
+      "property": "logo",
+      "valid": true
+    },
+    {
+      "type": "WebPage",
+      "property": "url",
+      "valid": true
+    },
+    {
+      "type": "WebPage",
+      "property": "name",
+      "valid": true
+    },
+    {
+      "type": "WebPage",
+      "property": "description",
+      "valid": true
+    },
+    {
+      "type": "WebPage",
+      "property": "inLanguage",
+      "valid": true
+    },
+    {
+      "type": "WebPage",
+      "property": "isPartOf",
+      "valid": true
+    },
+    {
+      "type": "WebPage",
+      "property": "mainEntity",
+      "valid": true
+    }
+  ],
+  "passed": [
+    "JSON syntax",
+    "Known types and properties",
+    "Property domains including inheritance",
+    "Value ranges and reference target types",
+    "Unique IDs and resolved graph links",
+    "Matching rendered page title and descriptions",
+    "Brand logo response",
+    "Visible product definition and Free FAQ",
+    "No invented ratings, reviews or awards"
+  ],
+  "limitations": [
+    "Not a Google Rich Results Test certification",
+    "No claim of software rich-result eligibility",
+    "No verification of indexing or AI citations"
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "checkedAt": "2026-10-10T17:27:27.767Z",
+  "environment": "Hosted production, read-only fetches",
+  "pages": [
+    {
+      "path": "/",
+      "status": 200,
+      "url": "https://www.keeplyph.com/",
+      "title": "Household Bills, Maintenance, Warranties &amp; Renewals",
+      "description": "Organise household bills, maintenance, warranties and renewals with Keeply. Keep important dates and useful details together, with optional alerts.",
+      "canonical": "https://www.keeplyph.com",
+      "h1": "Your household,  a little more organised. ",
+      "schemas": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "inLanguage": "en-PH"
+            },
+            {
+              "@type": "WebApplication",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "applicationCategory": "LifestyleApplication",
+              "operatingSystem": "Web browser",
+              "description": "Organise household bills, maintenance, warranties and renewals with Keeply. Keep important dates and useful details together, with optional alerts.",
+              "featureList": [
+                "Household planning up to a year ahead with Premium",
+                "Monthly household costs from saved amounts",
+                "Household bills and recurring payment dates",
+                "Home maintenance and service history",
+                "Purchase receipts and warranty dates",
+                "Upcoming payment totals with optional estimates",
+                "Category-aware record completeness",
+                "Weekly household brief from saved data",
+                "Search notes, history, dates and authorised file names",
+                "Vehicle registration and insurance dates",
+                "ID and passport expiry dates",
+                "Optional alerts"
+              ],
+              "inLanguage": "en-PH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/pricing",
+      "status": 200,
+      "url": "https://www.keeplyph.com/pricing",
+      "title": "Pricing: household organisation &amp; Premium planning · Keeply",
+      "description": "Organise household records, dates and alerts. Plan the months ahead with Keeply Premium from ₱59 for 30 days or ₱499 per year. Install for a 30-day gift, no card required.",
+      "canonical": "https://www.keeplyph.com/pricing",
+      "h1": "Your household, organised.  Your months ahead, clearer. ",
+      "schemas": []
+    },
+    {
+      "path": "/warranty-tracker",
+      "status": 200,
+      "url": "https://www.keeplyph.com/warranty-tracker",
+      "title": "Receipt &amp; warranty tracker · Keeply",
+      "description": "Keep purchase receipts and warranty dates together. Optional private files and alerts you choose, with a free Keeply account.",
+      "canonical": "https://www.keeplyph.com/warranty-tracker",
+      "h1": "A receipt ready. A warranty remembered.",
+      "schemas": []
+    },
+    {
+      "path": "/loan-payment-reminder",
+      "status": 200,
+      "url": "https://www.keeplyph.com/loan-payment-reminder",
+      "title": "Loan Payment Reminders · Keeply",
+      "description": "Remember personal, home, car, government and online loan payments with Keeply. Set monthly reminders, an optional peso amount and your loan end date.",
+      "canonical": "https://www.keeplyph.com/loan-payment-reminder",
+      "h1": "Remember each payment. Through your final due date.",
+      "schemas": []
+    },
+    {
+      "path": "/document-expiry-tracker",
+      "status": 200,
+      "url": "https://www.keeplyph.com/document-expiry-tracker",
+      "title": "Passport &amp; driver’s license expiry alerts · Keeply",
+      "description": "Remember passport and driver’s license expiration with Keeply. Store a label and printed expiry date without uploading an identity scan.",
+      "canonical": "https://www.keeplyph.com/document-expiry-tracker",
+      "h1": "Important dates. A little more time.",
+      "schemas": []
+    },
+    {
+      "path": "/vehicle-registration-reminder",
+      "status": 200,
+      "url": "https://www.keeplyph.com/vehicle-registration-reminder",
+      "title": "Car &amp; motorcycle registration alerts · Keeply",
+      "description": "Remember user-confirmed vehicle registration, insurance renewal and service dates with Keeply. Car and motorcycle templates, optional alerts.",
+      "canonical": "https://www.keeplyph.com/vehicle-registration-reminder",
+      "h1": "Your next renewal, remembered.",
+      "schemas": []
+    },
+    {
+      "path": "/robots.txt",
+      "status": 200,
+      "url": "https://www.keeplyph.com/robots.txt",
+      "body": "User-Agent: *\nAllow: /\n\nSitemap: https://www.keeplyph.com/sitemap.xml\n",
+      "schemas": []
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200,
+      "url": "https://www.keeplyph.com/sitemap.xml",
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n<url>\n<loc>https://www.keeplyph.com</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/pricing</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/loan-payment-reminder</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/warranty-tracker</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/vehicle-registration-reminder</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/lto-registration-renewal</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/aircon-cleaning-schedule</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/document-expiry-tracker</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/privacy</loc>\n</url>\n<url>\n<loc>https://www.keeplyph.com/terms</loc>\n</url>\n</urlset>\n",
+      "schemas": []
+    }
+  ],
+  "bots": [
+    {
+      "userAgent": "Googlebot",
+      "status": 200,
+      "title": "Household Bills, Maintenance, Warranties &amp; Renewals",
+      "hasChallenge": false
+    },
+    {
+      "userAgent": "bingbot",
+      "status": 200,
+      "title": "Household Bills, Maintenance, Warranties &amp; Renewals",
+      "hasChallenge": false
+    },
+    {
+      "userAgent": "OAI-SearchBot",
+      "status": 200,
+      "title": "Household Bills, Maintenance, Warranties &amp; Renewals",
+      "hasChallenge": false
+    },
+    {
+      "userAgent": "Claude-SearchBot",
+      "status": 200,
+      "title": "Household Bills, Maintenance, Warranties &amp; Renewals",
+      "hasChallenge": false
+    },
+    {
+      "userAgent": "PerplexityBot",
+      "status": 200,
+      "title": "Household Bills, Maintenance, Warranties &amp; Renewals",
+      "hasChallenge": false
+    }
+  ],
+  "limitations": [
+    "Spoofed user agents do not verify access from actual crawler IPs",
+    "No Search Console, Bing Webmaster Tools or AI citation analytics access"
+  ]
+}

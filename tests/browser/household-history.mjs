@@ -13,8 +13,20 @@ import { pathToFileURL } from 'node:url';
 
 // A visible success message can precede the end of a streamed action response.
 const pendingActions=new WeakMap();
+// The local self-signed HTTPS proxy can surface WebKit's cancelled prefetch batch
+// as a fetch access-control error while a document navigation replaces the page.
+// Preserve those diagnostics separately. Every other page error still fails.
+function cancelledNavigationPrefetch(error,base) {
+ if(error.engine!=='webkit')return false;
+ const match=error.stack?.match(/Fetch API cannot load (https:\/\/\S+) due to access control checks\./);
+ if(!match)return false;
+ const url=new URL(match[1]),token=url.searchParams.get('_rsc');
+ if(url.origin!==base||!token)return false;
+ return error.recentNavigations.some(request=>Math.abs(request.at-error.at)<=200)
+  &&error.recentNetwork.filter(request=>request.method==='GET'&&request.error==='cancelled'&&Math.abs(request.at-error.at)<=100&&new URL(request.url).origin===base&&new URL(request.url).searchParams.has('_rsc')).length>=2;
+}
 async function settleActions(page) {
-  const pending=pendingActions.get(page),deadline=Date.now()+10000;
+  const pending=pendingActions.get(page),deadline=Date.now()+30000;
   while(pending?.size){if(Date.now()>deadline)throw new Error('Server action response did not finish before navigation: '+JSON.stringify([...pending].map(request=>({url:request.url(),action:Boolean(request.headers()['next-action'])}))));await new Promise(resolve=>setTimeout(resolve,25));}
 }
 
@@ -38,14 +50,19 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
   const playwright = manual ? null : playwrightModule ? await import(pathToFileURL(playwrightModule).href) : createRequire(import.meta.url)('playwright');
   const output = 'artifacts/household-history'; await mkdir(output, { recursive: true });
   const production=process.env.PG_TEST_PRODUCTION==='1';
-  const apiPort = 34571, appPort = 34572, tlsPort=34574, httpBase=`http://localhost:${appPort}`, base=production?`https://localhost:${tlsPort}`:httpBase;
+  const apiPort = Number(process.env.PG_TEST_API_PORT||34571), appPort = Number(process.env.PG_TEST_APP_PORT||34572), tlsPort=Number(process.env.PG_TEST_TLS_PORT||34574), httpBase=`http://localhost:${appPort}`, base=production?`https://localhost:${tlsPort}`:httpBase;
   let tlsProxy,certificateFolder;
   const owners = new Map(), errors = [], reports = [], sessions = new Map();
   let manualOwner;
-  const rpcNames = new Set(['household_outlook','household_spending_checkup','household_planner','activate_installation_premium','acknowledge_installation_premium','get_billing_orders','account_usage','item_detail','date_history','reminder_preview','item_activity_history','complete_occurrence','save_item_activity','void_item_activity','skip_unconfirmed_occurrence','activity_corrections','dashboard_timeline_items','unconfirmed_occurrence_summary','list_items','item_coverage','create_item_draft','save_item_with_date','save_utility_item_with_date','save_motorcycle_item_with_date','save_subscription_item_with_date','save_loan_item_with_date','save_insurance_item_with_date','create_purchase_draft','save_purchase','save_important_date','household_insights','household_payment_plan','set_readiness_preference','set_occurrence_amount']);
+  const rpcNames = new Set(['premium_measurement_context','record_premium_event','update_analytics_preference','update_preferences','household_outlook','household_spending_checkup','household_planner','activate_installation_premium','acknowledge_installation_premium','get_billing_orders','account_usage','item_detail','date_history','reminder_preview','item_activity_history','complete_occurrence','save_item_activity','void_item_activity','skip_unconfirmed_occurrence','activity_corrections','dashboard_timeline_items','unconfirmed_occurrence_summary','list_items','item_coverage','create_item_draft','save_item_with_date','save_utility_item_with_date','save_motorcycle_item_with_date','save_subscription_item_with_date','save_loan_item_with_date','save_insurance_item_with_date','create_purchase_draft','save_purchase','save_important_date','household_insights','household_payment_plan','set_readiness_preference','set_occurrence_amount']);
   let failNextSave = false;
   let failNextCheckup = false;
   let failNextOutlook = false;
+  let failNextMeasurement = false, acknowledgementGate;
+  function holdAcknowledgement() {
+    const arrived=Promise.withResolvers(),release=Promise.withResolvers();
+    acknowledgementGate={arrived,release};return {arrived:arrived.promise,release:release.resolve};
+  }
   const api = createServer(async (req, res) => {
     const url = new URL(req.url, `http://localhost:${apiPort}`);
     res.setHeader('Content-Type', 'application/json');
@@ -75,7 +92,9 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
         if (!keys.every(key => /^p_[a-z_]+$/.test(key))) throw new Error('Invalid RPC arguments');
         if(failNextOutlook&&name==='household_outlook'){failNextOutlook=false;res.writeHead(503);res.end(JSON.stringify({message:'Test outlook interruption'}));return;}
         if(failNextCheckup&&name==='household_spending_checkup'){failNextCheckup=false;res.writeHead(503);res.end(JSON.stringify({message:'Test checkup interruption'}));return;}
-        if (failNextSave && ['complete_occurrence','save_item_activity','save_utility_item_with_date','set_readiness_preference','set_occurrence_amount','save_important_date','activate_installation_premium'].includes(name)) { failNextSave = false; res.writeHead(503); res.end(JSON.stringify({ message: 'Test connection interruption' })); return; }
+        if(failNextMeasurement&&name==='record_premium_event'){failNextMeasurement=false;res.writeHead(503);res.end(JSON.stringify({message:'Test measurement interruption'}));return;}
+        if(acknowledgementGate&&name==='acknowledge_installation_premium'){const gate=acknowledgementGate;acknowledgementGate=null;gate.arrived.resolve();await gate.release.promise;}
+        if (failNextSave && ['acknowledge_installation_premium','complete_occurrence','save_item_activity','save_utility_item_with_date','set_readiness_preference','set_occurrence_amount','save_important_date','activate_installation_premium'].includes(name)) { failNextSave = false; res.writeHead(503); res.end(JSON.stringify({ message: 'Test connection interruption' })); return; }
         const result = await actor(owner, `select public.${name}(${keys.map((key, i) => `${key}=>$${i+1}`).join(',')}) as value`, Object.values(args));
         res.end(JSON.stringify(result.rows[0].value)); return;
       }
@@ -107,7 +126,7 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
     await new Promise((resolve,reject)=>{tlsProxy.once('error',reject);tlsProxy.listen(tlsPort,'localhost',resolve);});
   }
   const server = spawn(process.execPath, ['node_modules/next/dist/bin/next',production?'start':'dev','--port',String(appPort)], {
-    cwd:process.cwd(),env:{...process.env,NEXT_PUBLIC_SUPABASE_URL:`http://localhost:${apiPort}`,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:'local-test-key',SUPABASE_SECRET_KEY:'local-test-key',SUPABASE_SERVICE_ROLE_KEY:'local-test-key',APP_URL:base,PAYMENTS_ENABLED:'false',EMAIL_DELIVERY_ENABLED:'false',WEB_PUSH_DELIVERY_ENABLED:'false'},stdio:['ignore','pipe','pipe'],
+    cwd:process.cwd(),env:{...process.env,NEXT_PUBLIC_SUPABASE_URL:`http://localhost:${apiPort}`,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:'local-test-key',SUPABASE_SECRET_KEY:'local-test-key',SUPABASE_SERVICE_ROLE_KEY:'local-test-key',APP_URL:base,ANALYTICS_ENABLED:'true',PREMIUM_DISCOVERY_EXPERIMENT_ENABLED:process.env.PG_TEST_DISCOVERY_EXPERIMENT==='1'?'true':'false',PAYMENTS_ENABLED:'false',EMAIL_DELIVERY_ENABLED:'false',WEB_PUSH_DELIVERY_ENABLED:'false'},stdio:['ignore','pipe','pipe'],
   });
   let serverLog = ''; server.stdout.on('data', chunk => { serverLog += chunk; }); server.stderr.on('data', chunk => { serverLog += chunk; });
   let browser,lastPage;
@@ -146,12 +165,13 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       const jwt=[Buffer.from(JSON.stringify({alg:'HS256',typ:'JWT'})).toString('base64url'),Buffer.from(JSON.stringify({sub:owner,aud:'authenticated',role:'authenticated',iat:now,exp:now+3600,iss:`http://localhost:${apiPort}/auth/v1`,session_id:randomUUID()})).toString('base64url'),'bG9jYWwtdGVzdA'].join('.');
       const session={access_token:jwt,refresh_token:'local-test',expires_in:3600,expires_at:now+3600,token_type:'bearer',user:testUser};
       await context.addCookies([{name:'sb-localhost-auth-token',value:'base64-'+Buffer.from(JSON.stringify(session)).toString('base64url'),domain:'localhost',path:'/',httpOnly:false,sameSite:'Lax'}]);
-      const page=await context.newPage(); lastPage=page; page.setDefaultTimeout(10000); const recentNetwork=[];page.on('requestfailed',request=>{recentNetwork.push({url:request.url(),method:request.method(),error:request.failure()?.errorText,at:Date.now()});if(recentNetwork.length>12)recentNetwork.shift();});page.on('pageerror',error=>errors.push({message:error.message,stack:error.stack,url:page.url(),engine:engine.name(),width,recentNetwork:[...recentNetwork],at:Date.now()}));
+      const page=await context.newPage(); lastPage=page; page.setDefaultTimeout(10000); const recentNetwork=[],recentNavigations=[];page.on('request',request=>{if(request.isNavigationRequest()&&request.resourceType()==='document'){recentNavigations.push({url:request.url(),at:Date.now()});if(recentNavigations.length>8)recentNavigations.shift();}});page.on('requestfailed',request=>{recentNetwork.push({url:request.url(),method:request.method(),error:request.failure()?.errorText,at:Date.now()});if(recentNetwork.length>12)recentNetwork.shift();});page.on('pageerror',error=>errors.push({message:error.message,stack:error.stack,url:page.url(),engine:engine.name(),width,recentNetwork:[...recentNetwork],recentNavigations:[...recentNavigations],at:Date.now()}));
       const pending=new Set();pendingActions.set(page,pending);
       page.on('request',request=>{if(request.method()==='POST')pending.add(request);});
       page.on('requestfinished',request=>pending.delete(request));page.on('requestfailed',request=>pending.delete(request));
       const actionEditingOnly=process.env.PG_TEST_ACTION_EDITING_ONLY==='1',paymentOnly=process.env.PG_TEST_PAYMENT_ACTIONS_ONLY==='1';
       if(!actionEditingOnly&&!paymentOnly) {
+      await testPremiumDiscoveryExperience({page,base,owner,actor,admin,today,engine,width,failMeasurement:()=>{failNextMeasurement=true;return()=>!failNextMeasurement;}});
       await testFreeSpendingClarity({page,base,owner,actor,admin,today,engine,width});
       await testSpendingCheckupExperience({page,base,owner,actor,admin,today,engine,width,failRead:()=>{failNextCheckup=true;}});
       await testHouseholdOutlookExperience({page,base,owner,actor,admin,today,engine,width,failRead:()=>{failNextOutlook=true;}});
@@ -217,13 +237,15 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       }
       if(!paymentOnly)await testActionEditing({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
       await testServicePayments({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
-      if(!paymentOnly)await testPremiumExperience({page,context,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
-      reports.push({engine:engine.name(),width,outlook:paymentOnly||actionEditingOnly?[]:['Free gate','low data','full totals and contributors','month comparison','partial-month coverage','record navigation','cursor pagination','amount refresh','failed-read retry','stale month','expiry preserves Free access'],checkup:paymentOnly||actionEditingOnly?[]:['Free gate','isolated sample','low data','full-account totals','period and category navigation','source record links','pagination','stale bookmark','failed-read retry','amount and payment refresh','expiry preserves Free access'],premium:paymentOnly?[]:['automatic signed-in standalone gift','activation error retry','no notification requirement','modal and Escape dismissal','server acknowledgement','duplicate prevention','private year access','expiry returns to 30 days','sample amount validation and cancellation','monthly totals respond','sample edits survive month navigation','checkout hidden before verification','no overflow'],passed:paymentOnly?['maintenance Mark paid for estimates and exact amounts','confirm actual cost','cancel leaves history unchanged','invalid amount','failed save retains fields','retry records once','service history and next date','interval recurrence','fixed recurrence','completion-based recurrence','zero amount']:actionEditingOnly?['saved checklist date and cost','smooth guided record navigation','reduced-motion navigation','separate due-date checkbox','due-date-only schedule','stable zero timing','leading zero replacement','service expected cost','service cost payment count','action hierarchy','direct checklist service entry','cost cancellation','cost validation','server failure and retry']:['completion','actual cost','service next date','correction','audit history','cancel','void','skip','reopen','late completion','validation','server failure','retry','no overflow','account-wide review','historical deep link','cycle pagination','Premium preview before calendar','single planning view','demo review','demo history','demo creation','name-first save','add date later','provider persistence','form cancellation','creation failure retry','existing vehicle','purchase save','compact schedule and amount','collapsed validation reveal','readiness preferences','readiness cancellation and retry','occurrence amount confirmation','amount cancellation and retry','account-wide insights','expanded search','demo insights','stable zero timing','leading zero replacement','service expected cost','service cost payment count','action hierarchy','direct checklist service entry']});
+      if(!paymentOnly)await testPremiumExperience({page,context,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;},holdAcknowledgement});
+      reports.push({engine:engine.name(),width,discovery:paymentOnly||actionEditingOnly?[]:['calendar priority','one invitation','sample navigation','trial expiry','billing benefits and expiry','no repeat gift invitation','consent','coarse engagement','measurement failure does not block navigation','opt-out removes linked data','stable experiment assignment and both placements'],outlook:paymentOnly||actionEditingOnly?[]:['Free gate','low data','full totals and contributors','month comparison','partial-month coverage','record navigation','cursor pagination','amount refresh','failed-read retry','stale month','expiry preserves Free access'],checkup:paymentOnly||actionEditingOnly?[]:['Free gate','isolated sample','low data','full-account totals','period and category navigation','source record links','pagination','stale bookmark','failed-read retry','amount and payment refresh','expiry preserves Free access'],premium:paymentOnly?[]:['automatic signed-in standalone gift','activation error retry','no notification requirement','modal and Escape dismissal','server acknowledgement','duplicate prevention','private year access','expiry returns to 30 days','sample amount validation and cancellation','monthly totals respond','sample edits survive month navigation','checkout hidden before verification','no overflow'],passed:paymentOnly?['maintenance Mark paid for estimates and exact amounts','confirm actual cost','cancel leaves history unchanged','invalid amount','failed save retains fields','retry records once','service history and next date','interval recurrence','fixed recurrence','completion-based recurrence','zero amount']:actionEditingOnly?['saved checklist date and cost','smooth guided record navigation','reduced-motion navigation','separate due-date checkbox','due-date-only schedule','stable zero timing','leading zero replacement','service expected cost','service cost payment count','action hierarchy','direct checklist service entry','cost cancellation','cost validation','server failure and retry']:['completion','actual cost','service next date','correction','audit history','cancel','void','skip','reopen','late completion','validation','server failure','retry','no overflow','account-wide review','historical deep link','cycle pagination','single Premium preview after Free calendar','single planning view','demo review','demo history','demo creation','name-first save','add date later','provider persistence','form cancellation','creation failure retry','existing vehicle','purchase save','compact schedule and amount','collapsed validation reveal','readiness preferences','readiness cancellation and retry','occurrence amount confirmation','amount cancellation and retry','account-wide insights','expanded search','demo insights','stable zero timing','leading zero replacement','service expected cost','service cost payment count','action hierarchy','direct checklist service entry']});
       await settleActions(page);
       await context.close(); await browser.close(); browser=null;
     }
-    await writeFile('artifacts/household-premium/private-browser-checks.json',JSON.stringify({reports,errors,limitations:['Local Auth and REST stand-ins; real server actions and isolated PostgreSQL','Standalone detection is simulated; no physical installation or hosted provider verification']},null,2));
-    assert.deepEqual(errors,[]);
+    const cancelledPrefetches=errors.filter(error=>cancelledNavigationPrefetch(error,base));
+    const unexpectedErrors=errors.filter(error=>!cancelledNavigationPrefetch(error,base));
+    await writeFile('artifacts/household-premium/private-browser-checks.json',JSON.stringify({reports,errors:unexpectedErrors,cancelledPrefetches,limitations:['Local Auth and REST stand-ins; real server actions and isolated PostgreSQL','Standalone detection is simulated; no physical installation or hosted provider verification']},null,2));
+    assert.deepEqual(unexpectedErrors,[]);
     for(const path of ['/', '/demo', '/items']) {
       const response=await fetch(httpBase+path,{redirect:'manual'}),html=await response.text();
       if(path==='/') { assert(html.includes('lang="en-PH"'));assert(html.includes('https://www.keeplyph.com'));assert(html.includes('application/ld+json')); }
@@ -234,7 +256,7 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
     let smokeLog='';smoke.stdout.on('data',chunk=>{smokeLog+=chunk;});smoke.stderr.on('data',chunk=>{smokeLog+=chunk;});
     const smokeCode=await new Promise(resolve=>smoke.once('exit',resolve));
     assert.equal(smokeCode,0,smokeLog);console.log('✓ Existing HTTP smoke checks and rendered public/private indexing checks passed');
-    await writeFile(`${output}/browser-checks.json`,JSON.stringify({reports,errors,limitations:['Local Auth and REST stand-ins; real server actions and isolated PostgreSQL','No hosted provider or physical-device verification']},null,2));
+    await writeFile(`${output}/browser-checks.json`,JSON.stringify({reports,errors:unexpectedErrors,cancelledPrefetches,limitations:['Local Auth and REST stand-ins; real server actions and isolated PostgreSQL','No hosted provider or physical-device verification']},null,2));
     console.log('✓ Household browser flows passed: '+reports.map(report=>report.engine+' '+report.width).join(', '));
   } catch(error) {
     if(lastPage&&!lastPage.isClosed()) {
@@ -251,6 +273,71 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
   }
 }
 
+async function testPremiumDiscoveryExperience({page,base,owner,actor,admin,today,engine,width,failMeasurement}) {
+ const output='artifacts/premium-discovery';await mkdir(output,{recursive:true});
+ const preview=page.getByRole('region',{name:'Household Premium planning'}),planning=page.locator('#coming-up');
+ const events=async()=>Number((await admin.query('select count(*) n from private.premium_events where user_id=$1',[owner])).rows[0].n);
+ async function measured(name) {
+  for(let attempt=0;attempt<100;attempt++){
+   if((await admin.query('select 1 from private.premium_events where user_id=$1 and event=$2',[owner,name])).rowCount)return;
+   await new Promise(resolve=>setTimeout(resolve,100));
+  }throw new Error('Missing consented event: '+name);
+ }
+ async function preference(enabled){
+  await visit(page,base+'/settings');await page.locator('input[name=analytics_enabled]').setChecked(enabled);
+  await page.getByRole('button',{name:'Save preferences',exact:true}).click();await page.getByRole('status').filter({hasText:'Your preferences are saved.'}).waitFor();await settleActions(page);await page.waitForLoadState('networkidle');
+ }
+ const payloads=[],capture=request=>{if(request.url()===base+'/api/premium-metrics')payloads.push(JSON.parse(request.postData()));};page.on('request',capture);
+ await visit(page,base+'/dashboard');await preview.waitFor();assert.equal(await preview.count(),1);
+ assert((await preview.boundingBox()).y>(await planning.boundingBox()).y);await preview.scrollIntoViewIfNeeded();
+ assert((await preview.innerText()).includes('₱59 for 30 days'));assert.equal(await events(),0);await page.screenshot({path:`${output}/${engine.name()}-${width}-dashboard.png`,fullPage:true});
+ await preference(true);await visit(page,base+'/dashboard');await preview.scrollIntoViewIfNeeded();await measured('premium_preview_viewed');
+ const assignment=(await admin.query('select variant from private.premium_experiment_assignments where user_id=$1',[owner])).rows[0];
+ if(process.env.PG_TEST_DISCOVERY_EXPERIMENT==='1') {
+  assert(assignment);for(const variant of ['control','contextual']){
+   await admin.query('update private.premium_experiment_assignments set variant=$2 where user_id=$1',[owner,variant]);
+   await visit(page,base+'/dashboard');await preview.waitFor();const y=(await preview.boundingBox()).y,calendar=(await planning.boundingBox()).y;
+   assert.equal(y<calendar,variant==='control');assert.equal(await preview.count(),1);assert((await preview.innerText()).includes('₱59 for 30 days'));
+  }
+  await admin.query('update private.premium_experiment_assignments set variant=$2 where user_id=$1',[owner,assignment.variant]);
+ }
+ await settleActions(page);await page.waitForLoadState('networkidle');const measurementFailed=failMeasurement();
+ await preview.getByRole('link',{name:'Explore the checkup',exact:true}).click();await page.getByRole('heading',{name:'Your 30-Day Spending Checkup',exact:true}).waitFor();
+ await page.getByRole('link',{name:'View my Free payment plan',exact:true}).waitFor();await settleActions(page);await page.waitForLoadState('networkidle');assert(measurementFailed(),'Injected optional measurement failure was exercised');
+ await page.getByRole('link',{name:'Explore a sample account',exact:true}).focus();await page.keyboard.press('Enter');await page.waitForURL('**/demo/checkup');await page.getByRole('heading',{name:'Your 30-Day Spending Checkup',exact:true}).waitFor();await page.waitForLoadState('networkidle');
+ await measured('premium_sample_opened');
+ await actor(owner,'select public.activate_installation_premium(true)');
+ await admin.query("update private.household_premium_periods set starts_at=now()-interval '31 days',ends_at=now()-interval '1 day' where user_id=$1",[owner]);
+ await visit(page,base+'/dashboard');await preview.getByRole('heading',{name:'Your Premium trial has ended',exact:true}).waitFor();await preview.scrollIntoViewIfNeeded();await measured('premium_expiry_viewed');
+ await preview.screenshot({path:`${output}/${engine.name()}-${width}-expired.png`});
+ await visit(page,base+'/planner?days=365');await page.getByRole('heading',{name:'Your Premium trial has ended',exact:true}).waitFor();assert.equal(await page.getByRole('link',{name:'Show me how to install',exact:true}).count(),0);
+ assert.equal(await page.getByRole('link',{name:'Next 30 days',exact:true}).getAttribute('aria-current'),'page');
+ await visit(page,base+'/settings/billing');await page.getByRole('heading',{name:'Your Premium trial has ended',exact:true}).waitFor();assert.equal(await page.getByRole('heading',{name:'Install Keeply. Enjoy 30 days of full Premium.',exact:true}).count(),0);
+ assert((await page.innerText('main')).includes('records, history, alerts, amount editing'));assert((await page.innerText('main')).includes('No automatic renewal'));
+ assert.equal(await page.locator('form button[type="submit"]').count(),2);assert.equal(await page.locator('form button[type="submit"]:disabled').count(),2);
+ await page.screenshot({path:`${output}/${engine.name()}-${width}-billing.png`,fullPage:true});
+ await admin.query("update private.household_premium_periods set starts_at=now(),ends_at=now()+interval '30 days' where user_id=$1",[owner]);
+ const saved=[];
+ for(let index=0;index<2;index++){
+  const id=randomUUID();await actor(owner,"select public.create_item_draft($1,'other')",[id]);
+  await actor(owner,'select public.save_item_with_date($1,1,$2,\'\',$3,$4)',[id,'Discovery expense '+index,{kind:'other',label:'Payment',due_on:today,reminders_enabled:false,offsets:[],interval_months:null,payment_amount_minor:10000+index*10000,payment_amount_certainty:'estimated'},'electric-bill']);saved.push(id);
+ }
+ await visit(page,base+'/checkup');await page.getByRole('heading',{name:'Your planning takeaway',exact:true}).waitFor();await measured('checkup_opened');
+ await page.getByRole('link',{name:'View contributing expenses',exact:true}).click();await page.waitForURL(url=>url.searchParams.has('week'));await measured('checkup_insight_inspected');
+ await page.locator('[data-premium-event="insight_source_opened"]').first().click();await page.getByRole('heading',{name:/Discovery expense/}).waitFor();await measured('insight_source_opened');
+ await visit(page,base+'/planner?days=365');await page.getByRole('heading',{name:'Your Household Outlook',exact:true}).waitFor();await measured('extended_planner_used');
+ await visit(page,base+'/settings/billing');await page.getByRole('heading',{name:'Your Premium is active',exact:true}).waitFor();await measured('premium_details_opened');
+ assert((await page.innerText('main')).includes('Premium available until'));await page.screenshot({path:`${output}/${engine.name()}-${width}-active.png`,fullPage:true});
+ assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ assert(payloads.length>0);for(const payload of payloads)assert(Object.keys(payload).every(key=>['id','event','surface','horizon','insight'].includes(key)));
+ await preference(false);assert.equal(await events(),0);
+ const sent=payloads.length;await page.locator('a[href="/dashboard"]:visible').first().click();await preview.waitFor();await preview.scrollIntoViewIfNeeded();await page.waitForLoadState('networkidle');assert.equal(payloads.length,sent);
+ assert.equal((await admin.query('select * from private.premium_experiment_assignments where user_id=$1',[owner])).rowCount,0);
+ await admin.query('delete from public.items where id=any($1::uuid[])',[saved]);await admin.query('delete from private.household_premium_periods where user_id=$1',[owner]);await admin.query('delete from private.rate_limit_buckets where user_id=$1',[owner]);
+ page.off('request',capture);
+ console.log(`✓ Premium discovery: calendar priority, sample, expiry, billing, consent, coarse engagement, opt-out and optional experiment variants: ${engine.name()} ${width}`);
+}
+
 async function testCoreExperience({page,base,owner,actor,admin,today,engine,width,failSave}) {
   await mkdir('artifacts/household-core',{recursive:true});
   await visit(page,base+'/demo');
@@ -261,8 +348,8 @@ async function testCoreExperience({page,base,owner,actor,admin,today,engine,widt
   assert.equal(await page.getByRole('heading',{level:1}).count(),1);
   assert.equal(await planning.getByRole('button',{name:'Calendar',exact:true}).getAttribute('aria-pressed'),'true');
   const premiumPreview=page.locator('section[aria-label="Household Premium planning"]');
-  assert((await premiumPreview.boundingBox()).y<300);
-  assert((await premiumPreview.boundingBox()).y<(await planning.boundingBox()).y);
+  assert.equal(await premiumPreview.count(),1);
+  assert((await premiumPreview.boundingBox()).y>(await planning.boundingBox()).y);
   const grid=planning.locator('[class*="grid"]');
   const todayLine=grid.locator('span').first();
   assert.equal(await todayLine.evaluate(el=>getComputedStyle(el).borderLeftStyle),'solid');
@@ -482,7 +569,7 @@ async function testSpendingCheckupExperience({page,base,owner,actor,admin,today,
   await settleActions(page);await page.getByRole('link',{name:'← Household overview',exact:true}).click();await page.getByRole('link',{name:'Open my checkup',exact:true}).click();await totalCard.locator('p').filter({hasText:'₱11,500'}).first().waitFor();
   const activity=(await admin.query('select activity_type,amount_minor from public.item_activities where item_id=$1',[saved[2]])).rows;assert.equal(activity.length,1);assert.equal(activity[0].activity_type,'payment');assert.equal(Number(activity[0].amount_minor),10000);
   await admin.query("update private.household_premium_periods set starts_at=now()-interval '31 days',ends_at=now()-interval '1 day' where user_id=$1",[owner]);
-  await visit(page,base+'/checkup');await page.getByRole('heading',{name:'Turn your saved expenses into a clearer plan',exact:true}).waitFor();
+  await visit(page,base+'/checkup');await page.getByRole('heading',{name:'Your Premium trial has ended',exact:true}).waitFor();
   await page.getByRole('link',{name:'View my Free payment plan',exact:true}).click();await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();assert((await page.getByRole('region',{name:'Your Total Household Spending',exact:true}).textContent()).includes('₱11,500'));
   await admin.query('delete from public.items where id=any($1::uuid[])',[saved]);await admin.query('delete from private.household_premium_periods where user_id=$1',[owner]);
   console.log(`✓ Spending Checkup: Free gate, sample, low data, full-account totals, period/category navigation, record links, pagination, stale period, read retry, amount/payment refresh and expiry: ${engine.name()} ${width}`);
@@ -786,7 +873,7 @@ async function testServicePayments({page,base,owner,actor,admin,today,engine,wid
   console.log('✓ Maintenance payments, cost confirmation, cancellation, retry, service history and schedules: '+engine.name()+' '+width);
 }
 
-async function testPremiumExperience({page,context,base,owner,actor,admin,engine,width,failSave}) {
+async function testPremiumExperience({page,context,base,owner,actor,admin,engine,width,failSave,holdAcknowledgement}) {
  const output='artifacts/household-premium';await mkdir(output,{recursive:true});
  await visit(page,base+'/planner?days=365');
  await page.getByRole('heading',{name:'Your Household Outlook',exact:true}).waitFor();
@@ -797,7 +884,7 @@ async function testPremiumExperience({page,context,base,owner,actor,admin,engine
  await page.getByRole('button',{name:'Show me how',exact:true}).click();
  const guide=page.getByRole('dialog');await guide.getByRole('button',{name:/Android/}).click();
  // Keyboard activation keeps each step independent of the mobile sticky footer's scroll position.
- for(let n=0;n<3;n++){const next=guide.getByRole('button',{name:'Next',exact:true});await next.focus();await next.press('Enter');await page.waitForFunction(value=>document.querySelector('dialog progress')?.value===value,n+2);}
+ for(let n=0;n<3;n++){await page.waitForFunction(()=>document.activeElement===document.querySelector('dialog[open] h2'));const next=guide.getByRole('button',{name:'Next',exact:true});await next.focus();await next.press('Enter');await page.waitForFunction(value=>document.querySelector('dialog progress')?.value===value,n+2);}
  await guide.getByText(/30-day Premium gift activates automatically/).waitFor();await guide.getByRole('button',{name:'Got it',exact:true}).click();
  assert.equal((await admin.query('select count(*)::int n from private.household_premium_periods where user_id=$1',[owner])).rows[0].n,0);
  // Simulated standalone detection. Native installation still requires physical-device acceptance.
@@ -807,11 +894,21 @@ async function testPremiumExperience({page,context,base,owner,actor,admin,engine
  });
  failSave();await visit(page,base+'/dashboard');
  await page.getByRole('button',{name:'Retry gift activation',exact:true}).waitFor();await page.getByRole('button',{name:'Retry gift activation',exact:true}).click();
- const gift=page.getByRole('dialog',{name:/Hooray!/});await gift.waitFor();
+ const gift=page.getByRole('dialog',{name:/Hooray!/});await gift.waitFor();assert(!(await gift.innerText()).includes('KeeplyPH'));
  await gift.getByText('No card. No payment details. No automatic charges.',{exact:true}).waitFor();
  assert.equal((await admin.query('select count(*)::int n from private.household_premium_periods where user_id=$1',[owner])).rows[0].n,1);
  assert.equal((await admin.query('select count(*)::int n from private.push_subscriptions where user_id=$1',[owner])).rows[0].n,0);
  await gift.screenshot({path:`${output}/${engine.name()}-${width}-gift.png`});
+ failSave();await gift.getByRole('link',{name:'Open my spending checkup',exact:true}).click();await page.getByRole('heading',{name:'Your 30-Day Spending Checkup',exact:true}).waitFor();await page.waitForLoadState('networkidle');
+ assert.equal((await admin.query('select celebrated_at from private.household_premium_periods where user_id=$1',[owner])).rows[0].celebrated_at,null);
+ await visit(page,base+'/dashboard');await gift.waitFor();await gift.getByRole('link',{name:'Open my spending checkup',exact:true}).click();await page.getByRole('heading',{name:'Your 30-Day Spending Checkup',exact:true}).waitFor();await page.waitForLoadState('networkidle');
+ assert.equal((await admin.query('select celebrated_at from private.household_premium_periods where user_id=$1',[owner])).rows[0].celebrated_at!==null,true);
+ await admin.query('update private.household_premium_periods set celebrated_at=null where user_id=$1',[owner]);await visit(page,base+'/dashboard');await gift.waitFor();
+ const held=holdAcknowledgement();await gift.getByRole('link',{name:'Open my spending checkup',exact:true}).click();await held.arrived;
+ await page.keyboard.press('Escape');await gift.waitFor({state:'hidden'});
+ const heldResponse=page.waitForResponse(response=>response.url()===base+'/dashboard'&&response.request().method()==='POST');held.release();await heldResponse;await settleActions(page);await page.waitForLoadState('networkidle');
+ assert.equal(new URL(page.url()).pathname,'/dashboard');assert.equal((await admin.query('select celebrated_at from private.household_premium_periods where user_id=$1',[owner])).rows[0].celebrated_at!==null,true);
+ await admin.query('update private.household_premium_periods set celebrated_at=null where user_id=$1',[owner]);await visit(page,base+'/dashboard');await gift.waitFor();
  const acknowledgement=page.waitForResponse(response=>response.url()===base+'/dashboard'&&response.request().method()==='POST');
  await page.keyboard.press('Escape');await gift.waitFor({state:'hidden'});await acknowledgement;await settleActions(page);await page.waitForLoadState('networkidle');
  await visit(page,base+'/planner?days=365');await page.getByRole('heading',{name:'Your Household Outlook',exact:true}).waitFor();

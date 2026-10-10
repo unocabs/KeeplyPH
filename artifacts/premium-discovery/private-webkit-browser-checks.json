@@ -1,0 +1,1355 @@
+{
+  "reports": [
+    {
+      "engine": "webkit",
+      "width": 390,
+      "discovery": [
+        "calendar priority",
+        "one invitation",
+        "sample navigation",
+        "trial expiry",
+        "billing benefits and expiry",
+        "no repeat gift invitation",
+        "consent",
+        "coarse engagement",
+        "measurement failure does not block navigation",
+        "opt-out removes linked data",
+        "stable experiment assignment and both placements"
+      ],
+      "outlook": [
+        "Free gate",
+        "low data",
+        "full totals and contributors",
+        "month comparison",
+        "partial-month coverage",
+        "record navigation",
+        "cursor pagination",
+        "amount refresh",
+        "failed-read retry",
+        "stale month",
+        "expiry preserves Free access"
+      ],
+      "checkup": [
+        "Free gate",
+        "isolated sample",
+        "low data",
+        "full-account totals",
+        "period and category navigation",
+        "source record links",
+        "pagination",
+        "stale bookmark",
+        "failed-read retry",
+        "amount and payment refresh",
+        "expiry preserves Free access"
+      ],
+      "premium": [
+        "automatic signed-in standalone gift",
+        "activation error retry",
+        "no notification requirement",
+        "modal and Escape dismissal",
+        "server acknowledgement",
+        "duplicate prevention",
+        "private year access",
+        "expiry returns to 30 days",
+        "sample amount validation and cancellation",
+        "monthly totals respond",
+        "sample edits survive month navigation",
+        "checkout hidden before verification",
+        "no overflow"
+      ],
+      "passed": [
+        "completion",
+        "actual cost",
+        "service next date",
+        "correction",
+        "audit history",
+        "cancel",
+        "void",
+        "skip",
+        "reopen",
+        "late completion",
+        "validation",
+        "server failure",
+        "retry",
+        "no overflow",
+        "account-wide review",
+        "historical deep link",
+        "cycle pagination",
+        "single Premium preview after Free calendar",
+        "single planning view",
+        "demo review",
+        "demo history",
+        "demo creation",
+        "name-first save",
+        "add date later",
+        "provider persistence",
+        "form cancellation",
+        "creation failure retry",
+        "existing vehicle",
+        "purchase save",
+        "compact schedule and amount",
+        "collapsed validation reveal",
+        "readiness preferences",
+        "readiness cancellation and retry",
+        "occurrence amount confirmation",
+        "amount cancellation and retry",
+        "account-wide insights",
+        "expanded search",
+        "demo insights",
+        "stable zero timing",
+        "leading zero replacement",
+        "service expected cost",
+        "service cost payment count",
+        "action hierarchy",
+        "direct checklist service entry"
+      ]
+    }
+  ],
+  "errors": [],
+  "cancelledPrefetches": [
+    {
+      "message": "/localhost:34574/demo/settings/alerts?_rsc=M1YBeNmtM7H-s1o9 due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/demo/settings/alerts?_rsc=M1YBeNmtM7H-s1o9 due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/demo/checkup",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/demo/dashboard?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/planner?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655017655
+        },
+        {
+          "url": "https://localhost:34574/settings",
+          "at": 1791655018850
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655019644
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655020695
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655021382
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655023189
+        }
+      ],
+      "at": 1791655023191
+    },
+    {
+      "message": "/localhost:34574/demo/settings?_rsc=M1YBeNmtM7H-s1o9 due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/demo/settings?_rsc=M1YBeNmtM7H-s1o9 due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/demo/checkup",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/demo/dashboard?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/planner?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655017655
+        },
+        {
+          "url": "https://localhost:34574/settings",
+          "at": 1791655018850
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655019644
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655020695
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655021382
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655023189
+        }
+      ],
+      "at": 1791655023191
+    },
+    {
+      "message": "/localhost:34574/dashboard?_rsc=ouwhT13CzTQ2_mVs due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/dashboard?_rsc=ouwhT13CzTQ2_mVs due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/demo/checkup",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/demo/dashboard?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/planner?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655017655
+        },
+        {
+          "url": "https://localhost:34574/settings",
+          "at": 1791655018850
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655019644
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655020695
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655021382
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655023189
+        }
+      ],
+      "at": 1791655023191
+    },
+    {
+      "message": "/localhost:34574/demo/items/payments?_rsc=M1YBeNmtM7H-s1o9 due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/demo/items/payments?_rsc=M1YBeNmtM7H-s1o9 due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/demo/checkup",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/demo/dashboard?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/planner?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655017655
+        },
+        {
+          "url": "https://localhost:34574/settings",
+          "at": 1791655018850
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655019644
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655020695
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655021382
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655023189
+        }
+      ],
+      "at": 1791655023191
+    },
+    {
+      "message": "/localhost:34574/demo/planner?days=90&_rsc=M1YBeNmtM7H-s1o9 due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/demo/planner?days=90&_rsc=M1YBeNmtM7H-s1o9 due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/demo/checkup",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/demo/dashboard?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/planner?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655017655
+        },
+        {
+          "url": "https://localhost:34574/settings",
+          "at": 1791655018850
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655019644
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655020695
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655021382
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655023189
+        }
+      ],
+      "at": 1791655023191
+    },
+    {
+      "message": "/localhost:34574/add/other?preset=internet-bill&_rsc=bnWt9VdVz43iOiFB due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/add/other?preset=internet-bill&_rsc=bnWt9VdVz43iOiFB due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/add?category=bills",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/demo/dashboard?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/planner?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/?_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=mobile-bill&_rsc=JzC0RFywyNajpXYa",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=electric-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=water-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/planner?days=365",
+          "at": 1791655024303
+        },
+        {
+          "url": "https://localhost:34574/settings/billing",
+          "at": 1791655025420
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1791655026306
+        },
+        {
+          "url": "https://localhost:34574/planner?days=365",
+          "at": 1791655028160
+        },
+        {
+          "url": "https://localhost:34574/settings/billing",
+          "at": 1791655029085
+        },
+        {
+          "url": "https://localhost:34574/settings",
+          "at": 1791655029801
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655031140
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655032114
+        }
+      ],
+      "at": 1791655032115
+    },
+    {
+      "message": "/localhost:34574/add/other?preset=rent&_rsc=bnWt9VdVz43iOiFB due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/add/other?preset=rent&_rsc=bnWt9VdVz43iOiFB due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/add?category=bills",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/demo/dashboard?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/planner?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/?_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=mobile-bill&_rsc=JzC0RFywyNajpXYa",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=electric-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=water-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/planner?days=365",
+          "at": 1791655024303
+        },
+        {
+          "url": "https://localhost:34574/settings/billing",
+          "at": 1791655025420
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1791655026306
+        },
+        {
+          "url": "https://localhost:34574/planner?days=365",
+          "at": 1791655028160
+        },
+        {
+          "url": "https://localhost:34574/settings/billing",
+          "at": 1791655029085
+        },
+        {
+          "url": "https://localhost:34574/settings",
+          "at": 1791655029801
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655031140
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655032114
+        }
+      ],
+      "at": 1791655032115
+    },
+    {
+      "message": "/localhost:34574/add/other?preset=association-dues&_rsc=bnWt9VdVz43iOiFB due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/add/other?preset=association-dues&_rsc=bnWt9VdVz43iOiFB due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/add?category=bills",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/demo/dashboard?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/planner?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/?_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=mobile-bill&_rsc=JzC0RFywyNajpXYa",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=electric-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=water-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/planner?days=365",
+          "at": 1791655024303
+        },
+        {
+          "url": "https://localhost:34574/settings/billing",
+          "at": 1791655025420
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1791655026306
+        },
+        {
+          "url": "https://localhost:34574/planner?days=365",
+          "at": 1791655028160
+        },
+        {
+          "url": "https://localhost:34574/settings/billing",
+          "at": 1791655029085
+        },
+        {
+          "url": "https://localhost:34574/settings",
+          "at": 1791655029801
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655031140
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655032114
+        }
+      ],
+      "at": 1791655032115
+    },
+    {
+      "message": "/localhost:34574/add/other?_rsc=JzC0RFywyNajpXYa due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/add/other?_rsc=JzC0RFywyNajpXYa due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/add?category=bills",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=j79Vj4yH5aoiafxS",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655018849
+        },
+        {
+          "url": "https://localhost:34574/demo/dashboard?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/planner?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/?_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=mobile-bill&_rsc=JzC0RFywyNajpXYa",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=electric-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=water-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/planner?days=365",
+          "at": 1791655024303
+        },
+        {
+          "url": "https://localhost:34574/settings/billing",
+          "at": 1791655025420
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1791655026306
+        },
+        {
+          "url": "https://localhost:34574/planner?days=365",
+          "at": 1791655028160
+        },
+        {
+          "url": "https://localhost:34574/settings/billing",
+          "at": 1791655029085
+        },
+        {
+          "url": "https://localhost:34574/settings",
+          "at": 1791655029801
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655031140
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655032114
+        }
+      ],
+      "at": 1791655032115
+    },
+    {
+      "message": "/localhost:34574/settings?_rsc=u4HEpLNZhP-Q0aZY due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/settings?_rsc=u4HEpLNZhP-Q0aZY due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/items",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/?_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=mobile-bill&_rsc=JzC0RFywyNajpXYa",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=electric-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=water-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=IOe_mmh6jQxP6_Ru",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655035432
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=IOe_mmh6jQxP6_Ru",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655035432
+        },
+        {
+          "url": "https://localhost:34574/items?filter=dates&_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        },
+        {
+          "url": "https://localhost:34574/settings/billing?_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        },
+        {
+          "url": "https://localhost:34574/settings/alerts?_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        },
+        {
+          "url": "https://localhost:34574/feedback?_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/planner?days=365",
+          "at": 1791655063212
+        },
+        {
+          "url": "https://localhost:34574/items/52491a7a-3484-4b29-ae09-727d2f0771e7",
+          "at": 1791655064129
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655066878
+        },
+        {
+          "url": "https://localhost:34574/demo",
+          "at": 1791655068871
+        },
+        {
+          "url": "https://localhost:34574/demo/items/cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "at": 1791655070218
+        },
+        {
+          "url": "https://localhost:34574/demo/add/other?preset=electric-bill",
+          "at": 1791655070882
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=electric-bill",
+          "at": 1791655071569
+        },
+        {
+          "url": "https://localhost:34574/add/car?focus=service",
+          "at": 1791655073856
+        }
+      ],
+      "at": 1791655073856
+    },
+    {
+      "message": "/localhost:34574/items/16175783-8ecc-4048-bdba-d09c9d052674?_rsc=u4HEpLNZhP-Q0aZY due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/items/16175783-8ecc-4048-bdba-d09c9d052674?_rsc=u4HEpLNZhP-Q0aZY due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/items",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/?_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=mobile-bill&_rsc=JzC0RFywyNajpXYa",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=electric-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=water-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=IOe_mmh6jQxP6_Ru",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655035432
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=IOe_mmh6jQxP6_Ru",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655035432
+        },
+        {
+          "url": "https://localhost:34574/items?filter=dates&_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        },
+        {
+          "url": "https://localhost:34574/settings/billing?_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        },
+        {
+          "url": "https://localhost:34574/settings/alerts?_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        },
+        {
+          "url": "https://localhost:34574/feedback?_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/planner?days=365",
+          "at": 1791655063212
+        },
+        {
+          "url": "https://localhost:34574/items/52491a7a-3484-4b29-ae09-727d2f0771e7",
+          "at": 1791655064129
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655066878
+        },
+        {
+          "url": "https://localhost:34574/demo",
+          "at": 1791655068871
+        },
+        {
+          "url": "https://localhost:34574/demo/items/cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "at": 1791655070218
+        },
+        {
+          "url": "https://localhost:34574/demo/add/other?preset=electric-bill",
+          "at": 1791655070882
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=electric-bill",
+          "at": 1791655071569
+        },
+        {
+          "url": "https://localhost:34574/add/car?focus=service",
+          "at": 1791655073856
+        }
+      ],
+      "at": 1791655073856
+    },
+    {
+      "message": "/localhost:34574/items/a4d51a83-162c-4728-9e0a-d5216587f424?_rsc=u4HEpLNZhP-Q0aZY due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/items/a4d51a83-162c-4728-9e0a-d5216587f424?_rsc=u4HEpLNZhP-Q0aZY due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/items",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/?_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=mobile-bill&_rsc=JzC0RFywyNajpXYa",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=electric-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=water-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=IOe_mmh6jQxP6_Ru",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655035432
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=IOe_mmh6jQxP6_Ru",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655035432
+        },
+        {
+          "url": "https://localhost:34574/items?filter=dates&_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        },
+        {
+          "url": "https://localhost:34574/settings/billing?_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        },
+        {
+          "url": "https://localhost:34574/settings/alerts?_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        },
+        {
+          "url": "https://localhost:34574/feedback?_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/planner?days=365",
+          "at": 1791655063212
+        },
+        {
+          "url": "https://localhost:34574/items/52491a7a-3484-4b29-ae09-727d2f0771e7",
+          "at": 1791655064129
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655066878
+        },
+        {
+          "url": "https://localhost:34574/demo",
+          "at": 1791655068871
+        },
+        {
+          "url": "https://localhost:34574/demo/items/cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "at": 1791655070218
+        },
+        {
+          "url": "https://localhost:34574/demo/add/other?preset=electric-bill",
+          "at": 1791655070882
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=electric-bill",
+          "at": 1791655071569
+        },
+        {
+          "url": "https://localhost:34574/add/car?focus=service",
+          "at": 1791655073856
+        }
+      ],
+      "at": 1791655073856
+    },
+    {
+      "message": "/localhost:34574/items/52491a7a-3484-4b29-ae09-727d2f0771e7?_rsc=u4HEpLNZhP-Q0aZY due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/items/52491a7a-3484-4b29-ae09-727d2f0771e7?_rsc=u4HEpLNZhP-Q0aZY due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/items",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/demo/items?_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/demo/items?filter=dates&_rsc=M1YBeNmtM7H-s1o9",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655023187
+        },
+        {
+          "url": "https://localhost:34574/?_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=mobile-bill&_rsc=JzC0RFywyNajpXYa",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=electric-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=water-bill&_rsc=bnWt9VdVz43iOiFB",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655032114
+        },
+        {
+          "url": "https://localhost:34574/demo/checkup?_rsc=IOe_mmh6jQxP6_Ru",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655035432
+        },
+        {
+          "url": "https://localhost:34574/checkup?_rsc=IOe_mmh6jQxP6_Ru",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655035432
+        },
+        {
+          "url": "https://localhost:34574/items?filter=dates&_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        },
+        {
+          "url": "https://localhost:34574/settings/billing?_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        },
+        {
+          "url": "https://localhost:34574/settings/alerts?_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        },
+        {
+          "url": "https://localhost:34574/feedback?_rsc=u4HEpLNZhP-Q0aZY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1791655073855
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/planner?days=365",
+          "at": 1791655063212
+        },
+        {
+          "url": "https://localhost:34574/items/52491a7a-3484-4b29-ae09-727d2f0771e7",
+          "at": 1791655064129
+        },
+        {
+          "url": "https://localhost:34574/dashboard",
+          "at": 1791655066878
+        },
+        {
+          "url": "https://localhost:34574/demo",
+          "at": 1791655068871
+        },
+        {
+          "url": "https://localhost:34574/demo/items/cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          "at": 1791655070218
+        },
+        {
+          "url": "https://localhost:34574/demo/add/other?preset=electric-bill",
+          "at": 1791655070882
+        },
+        {
+          "url": "https://localhost:34574/add/other?preset=electric-bill",
+          "at": 1791655071569
+        },
+        {
+          "url": "https://localhost:34574/add/car?focus=service",
+          "at": 1791655073856
+        }
+      ],
+      "at": 1791655073856
+    }
+  ],
+  "limitations": [
+    "Local Auth and REST stand-ins; real server actions and isolated PostgreSQL",
+    "Standalone detection is simulated; no physical installation or hosted provider verification"
+  ]
+}

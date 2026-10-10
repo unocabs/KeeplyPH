@@ -32,7 +32,7 @@ export async function updatePreferences(_previous: ActionResult, form: FormData)
   if (error) return { error: errorMessage(error) };
   const { error: analyticsError } = await supabase.rpc('update_analytics_preference', { p_enabled: form.get('analytics_enabled') === 'on' });
   if (analyticsError) return { error: errorMessage(analyticsError) };
-  revalidatePath('/settings'); revalidatePath('/dashboard');
+  revalidatePath('/','layout');
   return { success: 'Your preferences are saved.' };
 }
 export async function deleteAccount(_previous: ActionResult, form: FormData): Promise<ActionResult> {

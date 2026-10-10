@@ -1,0 +1,442 @@
+{
+  "environment": "Local production HTTPS",
+  "results": [
+    {
+      "engine": "chromium",
+      "path": "/",
+      "width": 320,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 185.65625,
+          "navActionsLeft": 197.65625
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/demo",
+      "width": 320,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 222.671875
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/login",
+      "width": 320,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 268.671875
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/pricing",
+      "width": 320,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 185.65625,
+          "navActionsLeft": 209.359375
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/",
+      "width": 390,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 214.671875,
+          "navActionsLeft": 239.96875
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/demo",
+      "width": 390,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 222.671875
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/login",
+      "width": 390,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 268.671875
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/pricing",
+      "width": 390,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 214.671875,
+          "navActionsLeft": 279.359375
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/",
+      "width": 768,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 279.421875,
+          "navActionsLeft": 456.203125
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/demo",
+      "width": 768,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 192.453125,
+          "parentRight": 195
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/login",
+      "width": 768,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 438.671875
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/pricing",
+      "width": 768,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 279.421875,
+          "navActionsLeft": 607.609375
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/",
+      "width": 1280,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 315.265625,
+          "navActionsLeft": 932.359375
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/demo",
+      "width": 1280,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 199.453125,
+          "parentRight": 217
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/login",
+      "width": 1280,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 694.671875
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/pricing",
+      "width": 1280,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 315.265625,
+          "navActionsLeft": 1083.765625
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/",
+      "width": 320,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 185.65625,
+          "navActionsLeft": 197.65625
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/demo",
+      "width": 320,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 222.671875
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/login",
+      "width": 320,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 268.671875
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/pricing",
+      "width": 320,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 185.65625,
+          "navActionsLeft": 209.359375
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/",
+      "width": 390,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 214.671875,
+          "navActionsLeft": 239.96875
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/demo",
+      "width": 390,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 222.671875
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/login",
+      "width": 390,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 268.671875
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/pricing",
+      "width": 390,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 214.671875,
+          "navActionsLeft": 279.359375
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/",
+      "width": 768,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 279.421875,
+          "navActionsLeft": 456.203125
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/demo",
+      "width": 768,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 192.453125,
+          "parentRight": 195
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/login",
+      "width": 768,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 438.671875
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/pricing",
+      "width": 768,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 279.421875,
+          "navActionsLeft": 607.609375
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/",
+      "width": 1280,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 315.265625,
+          "navActionsLeft": 932.359375
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/demo",
+      "width": 1280,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 199.453125,
+          "parentRight": 217
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/login",
+      "width": 1280,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 694.671875
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/pricing",
+      "width": 1280,
+      "overflow": false,
+      "brands": [
+        {
+          "text": "KeeplyPH.com",
+          "label": "KeeplyPH.com home",
+          "right": 315.265625,
+          "navActionsLeft": 1083.765625
+        }
+      ]
+    }
+  ],
+  "preservedSEO": 17
+}

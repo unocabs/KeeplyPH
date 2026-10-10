@@ -1,0 +1,41 @@
+{
+  "source": "https://schema.org/version/latest/schemaorg-current-https.jsonld",
+  "checked": "Rendered homepage and bill tracker JSON-LD; recognised types/properties, applicable domains, resolved local entity references",
+  "types": [
+    "schema:WebSite",
+    "schema:WebApplication",
+    "schema:Organization",
+    "schema:WebPage",
+    "schema:BreadcrumbList",
+    "schema:ListItem"
+  ],
+  "properties": [
+    "name",
+    "url",
+    "inLanguage",
+    "publisher",
+    "about",
+    "applicationCategory",
+    "operatingSystem",
+    "description",
+    "mainEntityOfPage",
+    "featureList",
+    "logo",
+    "isPartOf",
+    "mainEntity",
+    "breadcrumb",
+    "itemListElement",
+    "position",
+    "item"
+  ],
+  "references": [
+    "https://www.keeplyph.com/#website",
+    "https://www.keeplyph.com/#organization",
+    "https://www.keeplyph.com/#app",
+    "https://www.keeplyph.com/#webpage",
+    "https://www.keeplyph.com/bill-tracker#webpage",
+    "https://www.keeplyph.com/bill-tracker#breadcrumb"
+  ],
+  "result": "passed",
+  "limitation": "Vocabulary checks, not external rich-result certification."
+}
