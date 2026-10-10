@@ -4,7 +4,7 @@ import { CategoryGlyph } from './icons/category-glyph';
 import { categoryIcons, templateIcons, purchaseIcons, presetIcons, dateIcons } from './icons/icon-specs';
 import { isReminderPreset, type TemplateKey, type ReminderPreset, type DateKind } from '@/features/templates';
 import { itemCategory, paymentPreset } from '@/features/templates/categories';
-import type { ItemWithDetails } from '@/features/items/domain';
+import type { ItemIdentity } from '@/features/items/domain';
 import type { Category } from '@/lib/domain';
 import { supportsMotorcycleBrand } from '@/features/items/motorcycle-brands';
 import { supportsCarBrand } from '@/features/items/car-brands';
@@ -62,7 +62,7 @@ export function ReminderIcon(props: IconProps) {
   return <span className={'reminder-icon group-' + group} aria-hidden="true">{supportsMotorcycleBrand(props.template, props.preset) && props.motorcycleBrand ? <CarBrandLogo kind="motorcycle" brand={props.motorcycleBrand} fallback={<TemplateIcon {...props} />} /> : supportsCarBrand(props.template, props.preset) && props.brand ? <CarBrandLogo brand={props.brand} fallback={<TemplateIcon {...props} />} /> : <TemplateIcon {...props} />}</span>;
 }
 /** Use the same item artwork wherever a household record appears. */
-export function ItemIdentityIcon({ item, size = 22 }: { item?: ItemWithDetails; size?: number }) {
+export function ItemIdentityIcon({ item, size = 22 }: { item?: ItemIdentity; size?: number }) {
   return <ReminderIcon template={item?.template_key ?? 'other'} productType={item?.product_type} productName={item?.product_name} category={item?.category} preset={item?.reminder_preset} brand={item?.car_brand} motorcycleBrand={item?.motorcycle_brand} subscriptionBrand={item?.subscription_brand} utilityId={item?.utility_id} insurerId={item?.insurer_id} lenderId={item?.lender_id} size={size} />;
 }
 /** A date's purpose is separate from the item it belongs to. */

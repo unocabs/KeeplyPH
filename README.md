@@ -1,12 +1,14 @@
 # Keeply
 
-Receipts and warranties, together in one private place. Next.js + Supabase, built for **keeplyph.com**.
+Household obligations, organised in one private place. Next.js + Supabase, built for **keeplyph.com**.
 
 ## Current status
 
-The local MVP includes Google OAuth integration, owner-isolated purchases and warranties, private uploads, search and filters, reminder scheduling, PayMongo 30-day/permanent reminder packs, item coverage management, settings, and account deletion.
+The current application includes household records, bills and maintenance, purchase/warranty documents, history, readiness, search, core alerts and Premium planning up to a year ahead. Installing and opening Keeply while signed in grants 30 days of full Premium automatically, without a card or notification permission. New prepaid plans are ₱59 for 30 days or ₱499 per year, with no automatic charges.
 
-**No external accounts or paid services have been provisioned.** Supabase, Google OAuth, PayMongo, Resend, DNS, and scheduled jobs still need configuration. Live service integration has not been verified. The sample preview works without credentials and never writes to an account.
+For the October 10 release, follow [the household Premium rollout guide](docs/household-premium-setup.md) before deployment. All earlier 34 hosted migrations were confirmed applied on October 9. The two new migrations have been verified locally and still require hosted application. New Premium checkout is gated by `PREMIUM_PAYMENTS_ENABLED` as well as `PAYMENTS_ENABLED` until provider acceptance checks pass. The sample account works without credentials and never writes to a private account.
+
+The setup sections below describe a fresh project and include historical slot offers. The rollout guide supersedes those offers, installation rewards and individual email delivery for current deployments. Hosted integrations and physical-device acceptance must be checked separately from local tests.
 
 ## Run locally
 

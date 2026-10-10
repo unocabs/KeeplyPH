@@ -23,23 +23,23 @@ function coverage(overrides = {}, slots = usage, demo = false) {
 describe('compact reminder alert status', () => {
   it.each([0, 4, 9, 10])('renders real account usage of %i / 10 without a warning', used => {
     const html = coverage({}, { ...usage, reminders: used, slot_limit: 10 });
-    expect(html).toContain(`${used} / 10`);
-    expect(html).toContain('alert slots');
+    expect(html).not.toContain(`${used} / 10`);
+    expect(html).not.toContain('alert slots');
     expect(html).toContain('Reminder alert enabled');
     expect(html).toContain('coverage-enabled');
     expect(html).not.toContain('alert error');
-    expect(html).toContain('href="/settings/billing"');
-    expect(html).toContain('Add more alert slots');
+    expect(html).toContain('href="/settings/alerts"');
+    expect(html).not.toContain('Add more alert slots');
   });
-  it('keeps the existing demo purchase route', () => {
-    expect(coverage({}, usage, true)).toContain('href="/demo/settings/billing"');
+  it('links to demo alert preferences', () => {
+    expect(coverage({}, usage, true)).toContain('href="/demo/settings/alerts"');
   });
-  it('offers enable for off coverage and keeps the management disclosure', () => {
+  it('offers enable for off coverage without capacity management', () => {
     const html = coverage({ coverage: 'off' });
     expect(html).toContain('Reminder alerts off');
     expect(html).toContain('Enable alerts');
-    expect(html).toContain('Move a slot here');
-    expect(html).toContain('<details');
+    expect(html).not.toContain('Move a slot here');
+    expect(html).toContain('href="/settings/alerts"');
     expect(html).not.toContain('Reminder alert enabled');
   });
   it('does not imply delivery is enabled when paused or no dates can alert', () => {

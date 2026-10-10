@@ -1,15 +1,18 @@
 import { alertsPaused } from '@/lib/alert-options';
 import 'server-only';
 import { requireUser } from '@/lib/auth';
-import type { ItemWithDetails } from './domain';
+import type { ItemIdentity, ItemWithDetails } from './domain';
 export interface ItemQuery { filter?:string; q?:string; template?:string; cursor?:string; cursorId?:string }
 export async function getHouseholdInsights(): Promise<import('./insights').HouseholdInsights> {
  const {supabase}=await requireUser();const {data,error}=await supabase.rpc('household_insights',{});
  if(error)throw new Error('Unable to load household insights. Please retry.');return data as unknown as import('./insights').HouseholdInsights;
 }
 export async function getPaymentPlan(before?:string,beforeId?:string): Promise<import('./insights').PaymentPlan> {
- const {supabase}=await requireUser();const {data,error}=await supabase.rpc('household_payment_plan',{p_before:before || null,p_before_id:beforeId || null});
- if(error)throw new Error('Unable to load payment planning. Please retry.');return data as unknown as import('./insights').PaymentPlan;
+ const {supabase,userId}=await requireUser();const {data,error}=await supabase.rpc('household_payment_plan',{p_before:before || null,p_before_id:beforeId || null});
+ if(error)throw new Error('Unable to load payment planning. Please retry.');
+ const plan=data as unknown as import('./insights').PaymentPlan;
+ const identities=await getItemIdentities(supabase,userId,plan.rows.map(row=>row.item_id));
+ return {...plan,rows:plan.rows.map(row=>({...row,identity:identities.get(row.item_id)}))};
 }
 export async function getPaymentActionContexts(plan:import('./insights').PaymentPlan):Promise<Record<string,import('./insights').PaymentActionContext>> {
  const ids=[...new Set(plan.rows.filter(row=>row.occurrence_id).map(row=>row.date_id))];
@@ -71,4 +74,20 @@ export async function getVehicleChoices(template: 'car' | 'motorcycle'): Promise
     choices.push(...data);
     if (data.length < 200) return choices;
   }
+}
+
+export async function getHouseholdPlanner(days:import('@/features/premium/planner').PlannerHorizon,month?:string,before?:string,beforeId?:string):Promise<import('@/features/premium/planner').HouseholdPlanner> {
+ const {supabase,userId}=await requireUser();const {data,error}=await supabase.rpc('household_planner',{p_days:days,p_month:month||null,p_before:before||null,p_before_id:beforeId||null});
+ if(error)throw new Error('Unable to load your household plan. Please retry.');
+ const plan=data as unknown as import('@/features/premium/planner').HouseholdPlanner;
+ const identities=await getItemIdentities(supabase,userId,plan.rows.map(row=>row.item_id));
+ return {...plan,rows:plan.rows.map(row=>({...row,identity:identities.get(row.item_id)}))};
+}
+
+async function getItemIdentities(supabase:Awaited<ReturnType<typeof requireUser>>['supabase'],userId:string,itemIds:string[]):Promise<Map<string,ItemIdentity>> {
+ const ids=[...new Set(itemIds)];
+ if(!ids.length)return new Map();
+ const {data:items,error}=await supabase.from('items').select('id,template_key,product_type,product_name,category,reminder_preset,car_brand,motorcycle_brand,subscription_brand,utility_id,insurer_id,lender_id').eq('user_id',userId).in('id',ids);
+ if(error)throw new Error('Unable to load household records. Please retry.');
+ return new Map(items.map(item=>[item.id,item]));
 }

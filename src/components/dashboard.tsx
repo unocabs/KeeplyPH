@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { PremiumPlannerPreview } from './premium-planner-preview';
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import { ArrowRight, Bell, CalendarDays, CheckCircle2, CircleAlert, ReceiptText, ShieldCheck, LayoutDashboard, Wallet, Wrench, FileText, Lightbulb, Sun, Search } from 'lucide-react';
@@ -50,12 +51,13 @@ export function Dashboard({ items, usage, name, today, demo = false, setup, unco
       <h2>What would you like to organise first?</h2>
       <p>Start with a bill, appliance warranty or home service. Save a name now, add details when you have them, and choose whether you want alerts.</p>
       <div className={styles.welcomeActions}><AddItemButton label="Add my first item" /><Link className="text-button" href="/demo">Explore a sample account <ArrowRight size={16} aria-hidden="true" /></Link></div>
-      <p className={styles.welcomeFootnote}>Save unlimited items. Get alerts for {3 + (usage.bonus_slots ?? 0)} items free.</p>
-    </section>{setup}<p className="privacy-note"><ShieldCheck size={15} aria-hidden="true" />Your household records and files are private to your account.</p>
+      <p className={styles.welcomeFootnote}>Keep your household records and choose the alerts that help.</p>
+    </section><PremiumPlannerPreview demo={demo} premium={usage.household_premium}/>{setup}<p className="privacy-note"><ShieldCheck size={15} aria-hidden="true" />Your household records and files are private to your account.</p>
   </div>;
 
   return <div className={styles.dashboard}>
     <div className={'page-heading ' + styles.heading}><div><h1>Your household, organised.</h1><p>Welcome back, {name.split(' ')[0] || 'there'}.</p></div><AddItemButton demo={demo} /></div>
+    <PremiumPlannerPreview demo={demo} premium={usage.household_premium}/>
     <DashboardNavigation hasPlan={!!insights} pathname={pathname} />
     <section id="coming-up" className={styles.chapter} aria-labelledby="planning-heading">
     <div className={styles.chapterLabel}><CalendarDays size={15} aria-hidden="true"/>Coming up</div>
@@ -83,7 +85,7 @@ export function Dashboard({ items, usage, name, today, demo = false, setup, unco
       <div className={'section-heading ' + styles.libraryHeading}><div><h2 tabIndex={-1} id="all-reminders-heading">Your household records</h2><p className="section-description">Find the details and history you’ve kept.</p></div><Link href={base + '/items' + browseQuery}>Browse all items <ArrowRight size={15} aria-hidden="true" /></Link></div>
     <div className={'stat-grid ' + styles.stats}>
       <Link href={base + '/items'} className="stat-card"><span className="stat-icon violet"><ReceiptText size={21} aria-hidden="true" /></span><div><span>Household items</span><strong>{usage.active_reminders ?? active.length}</strong><p>The things you manage</p></div></Link>
-      <Link href={base + '/items?filter=reminders'} className="stat-card"><span className="stat-icon green"><Bell size={21} aria-hidden="true" /></span><div><span>Alert coverage</span><strong>{usage.reminders}<small> / {usage.slot_limit ?? 3}</small></strong><p>Alert slots in use</p></div></Link>
+      <Link href={base + '/items?filter=reminders'} className="stat-card"><span className="stat-icon green"><Bell size={21} aria-hidden="true" /></span><div><span>Alert coverage</span><strong>{usage.reminders}</strong><p>Items with alerts</p></div></Link>
       <Link href={base + '/items?filter=upcoming'} className="stat-card"><span className="stat-icon amber"><CalendarDays size={21} aria-hidden="true" /></span><div><span>Upcoming dates</span><strong>{usage.upcoming ?? upcoming.length}</strong><p>Next 30 days</p></div></Link>
     </div>
       <div className={styles.filters} role="group" aria-label="Filter household records by category"><button type="button" aria-pressed={category === 'all'} onClick={() => setCategory('all')}><LayoutDashboard size={18} aria-hidden="true" />All{completePreview && <span>{active.length}</span>}</button>{categories.map(group => <button key={group.key} type="button" aria-pressed={category === group.key} onClick={() => setCategory(group.key)}><TemplateIcon template="other" group={group.key} size={18} />{categoryLabel(group.key)}</button>)}</div>

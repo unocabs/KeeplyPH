@@ -79,7 +79,7 @@ export function sampleItems(today = todayIn()): ItemWithDetails[] {
       const due = day(today, offset);
       const frequency = options.recurrence;
       const anchor = frequency ? addMonths(due, -frequency * 2) : null;
-      const timings = frequency ? [14, 7, 1, 0].map(value => ({ unit: 'days' as const, value })) : defaultOffsets(template, kind);
+      const timings = frequency ? [1].map(value => ({ unit: 'days' as const, value })) : defaultOffsets(template, kind);
       const alertDays = covered && offset >= 0 ? [...new Set(timings.map(t => t.unit === 'months' ? addMonths(due, -t.value) : day(due, -t.value)))].filter(d => d >= today).sort() : [];
       const nextAlert = alertDays[0] || null;
       const date: DateWithDetails = {
@@ -109,8 +109,8 @@ export function sampleItems(today = todayIn()): ItemWithDetails[] {
       addDate(kind, label, sample.due, { recurrence: sample.recurrence, amount: sample.amount, history: sample.history });
     }
     if (template === 'car') {
-      addDate('service', 'Maintenance / PMS', 6);
-      addDate('insurance', 'Insurance renewal', 45);
+      addDate('service', 'Maintenance / PMS', 6, {amount:350000});
+      addDate('insurance', 'Insurance renewal', 45, {amount:2400000});
     }
     if (template === 'motorcycle') addDate('service', 'Oil change', 32);
     if (sample.preset === 'life-insurance') addDate('other', 'Policy review', 180);
@@ -149,9 +149,10 @@ export function samplePurchases(items = sampleItems()): PurchaseWithDetails[] {
 export function sampleUsage(items: ItemWithDetails[], today = todayIn()): Usage {
   const rows = dateRows(items);
   return {
+    household_premium: true,
     purchases: items.length, active_reminders: items.length,
     reminders: items.filter(item => item.coverage === 'covered').length,
-    slot_limit: 20, uncovered: items.filter(item => item.coverage === 'off').length,
+    slot_limit: 2147483647, uncovered: items.filter(item => item.coverage === 'off').length,
     storage_bytes: 0, premium: false, premium_until: null,
     upcoming: comingUp(rows, today).length, overdue: rows.filter(row => row.occurrence.due_on < today).length,
   };

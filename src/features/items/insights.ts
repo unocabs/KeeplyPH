@@ -1,6 +1,6 @@
 import { daysUntil, formatDate, formatMoney } from '@/lib/domain';
 import { itemCategory, paymentDate } from '@/features/templates/categories';
-import { currentOccurrence, dateRows, isActiveReminder, type ItemWithDetails, type DateWithDetails, type Occurrence } from './domain';
+import { currentOccurrence, dateRows, isActiveReminder, itemIdentity, type ItemIdentity, type ItemWithDetails, type DateWithDetails, type Occurrence } from './domain';
 import { nextRecurringDate } from './recurrence';
 
 export const readinessKeys = ['purchase_date','warranty','important_date','registration','service_date','service_history'] as const;
@@ -62,7 +62,7 @@ export function occurrenceAmount(date: DateWithDetails, occurrence: Occurrence) 
   return occurrence.amount_certainty ? { amount:occurrence.expected_amount_minor ?? null,certainty:occurrence.amount_certainty }
     : { amount:date.payment_amount_minor ?? null,certainty:date.payment_amount_minor == null ? 'unset' as const : date.payment_amount_certainty || 'unverified' as const };
 }
-export interface PlannedPayment {item_id:string;product_name:string;date_id:string;label:string;occurrence_id:string|null;due_on:string;amount_minor:number|null;certainty:AmountCertainty;projected:boolean}
+export interface PlannedPayment {identity?:ItemIdentity;item_id:string;product_name:string;date_id:string;label:string;occurrence_id:string|null;due_on:string;amount_minor:number|null;certainty:AmountCertainty;projected:boolean}
 export interface PaymentActionContext { revision:number; can_record_payment:boolean }
 export interface PaymentPlan {
   today:string;ends_on:string;currency:'PHP';total:number;confirmed_minor:string;estimated_minor:string;unverified_minor:string;
@@ -106,11 +106,11 @@ export function samplePaymentRows(items:ItemWithDetails[],today:string):PlannedP
     const current=currentOccurrence(date);
     if(!current || !(paymentDate(item.reminder_preset,date.kind,date.label) || date.payment_amount_minor!=null || current.expected_amount_minor!=null))continue;
     const {amount,certainty}=occurrenceAmount(date,current);
-    if(daysUntil(current.due_on,today)>=0 && daysUntil(current.due_on,today)<=30)rows.push({item_id:item.id,product_name:item.product_name!,date_id:date.id,label:date.label,occurrence_id:current.id,due_on:current.due_on,amount_minor:amount,certainty,projected:false});
+    if(daysUntil(current.due_on,today)>=0 && daysUntil(current.due_on,today)<=30)rows.push({identity:itemIdentity(item),item_id:item.id,product_name:item.product_name!,date_id:date.id,label:date.label,occurrence_id:current.id,due_on:current.due_on,amount_minor:amount,certainty,projected:false});
     if(!date.recurrence_months || date.recurrence_policy==='from_completion')continue;
     let next=nextRecurringDate(date.recurrence_anchor || current.due_on,current.due_on>=today?current.due_on:addDays(today,-1),date.recurrence_months,date.recurrence_ends_on || null);
     for(let n=0;n<2 && next && next<=addDays(today,30);n++) {
-      if(!date.occurrences.some(o=>o.due_on===next && ['completed','skipped','superseded'].includes(o.status)))rows.push({item_id:item.id,product_name:item.product_name!,date_id:date.id,label:date.label,occurrence_id:null,due_on:next,amount_minor:date.payment_amount_minor ?? null,certainty:date.payment_amount_minor==null?'unset':date.payment_amount_certainty || 'unverified',projected:true});
+      if(!date.occurrences.some(o=>o.due_on===next && ['completed','skipped','superseded'].includes(o.status)))rows.push({identity:itemIdentity(item),item_id:item.id,product_name:item.product_name!,date_id:date.id,label:date.label,occurrence_id:null,due_on:next,amount_minor:date.payment_amount_minor ?? null,certainty:date.payment_amount_minor==null?'unset':date.payment_amount_certainty || 'unverified',projected:true});
       next=nextRecurringDate(date.recurrence_anchor || current.due_on,next,date.recurrence_months,date.recurrence_ends_on || null);
     }
   }

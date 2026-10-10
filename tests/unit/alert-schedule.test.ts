@@ -16,8 +16,9 @@ describe('alert schedules', () => {
         const html = renderToStaticMarkup(createElement(DateFields, { template: choice.template, preset: choice.preset, value, onChange: () => {} }));
         expect(dateSchema.safeParse(value).success).toBe(true);
         expect(value.reminders_enabled).toBe(true);
-        expect(value.offsets.filter(o => o.unit === 'days' && o.value === 0)).toHaveLength(1);
-        expect(html).toContain('On the due date');
+        expect(value.offsets).toHaveLength(1);
+        expect(value.offsets[0].value).toBeGreaterThan(0);
+        expect(html).toContain('Alert me on the due date');
         if (value.kind === 'warranty') {
           expect(html).not.toContain('Recurring payment');
           expect(html).not.toContain('Repeat frequency');
@@ -65,8 +66,8 @@ describe('alert schedules', () => {
     const custom = [{ unit: 'days' as const, value: 3 }, { unit: 'days' as const, value: 0 }];
     expect(offsetsForRecurrence(custom)).toEqual(custom);
     expect(alertMode(custom, true)).toBe('custom');
-    expect(offsetsForRecurrence([{ unit: 'months', value: 6 }])).toEqual(presetOffsets('standard', true, false));
-    expect(offsetsForRecurrence(presetOffsets('standard', false))).toEqual(presetOffsets('standard', true));
+    expect(offsetsForRecurrence([{ unit: 'months', value: 6 }])).toEqual([{unit:'days',value:1}]);
+    expect(offsetsForRecurrence(presetOffsets('standard', false))).toEqual([{unit:'days',value:1},{unit:'days',value:0}]);
     expect(alertMode([{ unit: 'months', value: 6 }], false)).toBe('custom');
   });
 
@@ -77,9 +78,8 @@ describe('alert schedules', () => {
   });
 
   it('renders existing calendar-month schedules as custom without replacing them', () => {
-    const value = { ...initialDate('passport'), due_on: '2027-10-18' };
+    const value = { ...initialDate('passport'), offsets:[{unit:'months' as const,value:12},{unit:'months' as const,value:6},{unit:'months' as const,value:3},{unit:'days' as const,value:0}], due_on: '2027-10-18' };
     const html = renderToStaticMarkup(createElement(DateFields, { template: 'passport', value, onChange: () => {} }));
-    expect(html).toContain('value="custom" selected');
     expect(html).toContain('12 calendar months before');
     expect(html).toContain('value="2027-10-18"');
     expect(value.offsets.map(o => o.value)).toEqual([12, 6, 3, 0]);
@@ -134,7 +134,7 @@ describe('due-date alert preferences', () => {
   });
   it('preserves opting out through presets and recurring schedule changes', () => {
     const offsets = withDueDateAlert(initialDate('passport').offsets, false);
-    expect(offsetsForRecurrence(offsets)).toEqual(presetOffsets('standard', true, false));
+    expect(offsetsForRecurrence(offsets)).toEqual([{unit:'days',value:1}]);
     expect(presetOffsets('gentle', true, false)).toEqual([{unit:'days',value:7}]);
     expect(alertMode(presetOffsets('standard', false, false), false)).toBe('standard');
   });
@@ -148,11 +148,11 @@ describe('due-date alert preferences', () => {
     const html=renderToStaticMarkup(createElement(DateFields,{template:'other',value:{...value,offsets:[{unit:'days',value:0}]},onChange:()=>{}}));
     expect(html).toContain('Alert me on the due date');
     expect(html).toContain('On the due date');
-    expect(html).toContain('Add an early alert');
+    expect(html).toContain('Add an advance reminder');
     expect(html).not.toContain('Early alert 1');
   });
   it('keeps the due-date checkbox separate from custom early alerts', () => {
-    const html = renderToStaticMarkup(createElement(DateFields, {template:'passport',value:{...initialDate('passport'),due_on:'2032-01-31'},onChange:()=>{}}));
+    const html = renderToStaticMarkup(createElement(DateFields, {template:'passport',value:{...initialDate('passport'),offsets:[{unit:'months',value:12},{unit:'months',value:6},{unit:'months',value:3},{unit:'days',value:0}],due_on:'2032-01-31'},onChange:()=>{}}));
     expect(html).toContain('Early alert 3');
     expect(html).toContain('Alert me on the due date');
     expect(html).not.toContain('Early alert 4');

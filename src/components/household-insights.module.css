@@ -64,6 +64,8 @@
 .editor { border:1px solid #eae8f4; border-radius:12px; padding:16px; margin-top:12px; background:#faf8ff; }
 .paymentList { list-style:none; padding:0; margin-top:20px; display:grid; gap:12px; }
 .paymentRow { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:center; padding:20px; border:1px solid #eae8f4; border-radius:16px; background:#fff; box-shadow:0 2px 8px #29204404; }
+.paymentHeading { display:flex; align-items:flex-start; gap:14px; min-width:0; }
+.paymentHeading>div { min-width:0; overflow-wrap:anywhere; }
 .paymentRow strong { overflow-wrap:anywhere; }
 .paymentRow p { margin-top:6px; font-size:13px; color:#706c83; }
 .amount { text-align:right; padding:12px 16px; border-radius:12px; background:#f8f6fd; }

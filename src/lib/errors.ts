@@ -2,9 +2,12 @@ const messages: Record<string, string> = {
   AUTH_REQUIRED: 'Please sign in to continue.', ACCOUNT_UNAVAILABLE: 'This account is unavailable or being deleted.',
   NOT_FOUND: 'That reminder is no longer available.', CONFLICT: 'This reminder changed in another window. Reload before saving.',
   
+  CHECKOUT_PENDING: 'A different checkout is awaiting confirmation. Review your payment history before starting another.',
+  OFFER_RETIRED: 'This previous offer is no longer available. Review the current Premium plans.',
+  PREMIUM_REQUIRED: 'Premium gives you the longer household planning view.',
   REMINDER_LIMIT: 'Your alert slots are in use. Move a slot from another reminder or add five slots.',
   DRAFT_LIMIT: 'You have 3 unfinished reminders. Finish or remove a draft before adding another.',
-  FILE_COUNT_LIMIT: 'You can attach up to 6 files to a reminder.', STORAGE_LIMIT: 'Your document storage is full. Remove an unneeded file to make room. Alert packs do not add file storage.',
+  FILE_COUNT_LIMIT: 'You can attach up to 6 files to a reminder.', STORAGE_LIMIT: 'Your document storage is full. Remove an unneeded file to make room. Premium planning does not add file storage.',
   FILE_TOO_LARGE: 'Choose a file smaller than 10 MB.', INVALID_FILE: 'This file could not be validated. Try a JPEG, PNG, WebP, or PDF.',
   UPLOAD_EXPIRED: 'This upload expired. Remove it and select the file again.', RATE_LIMITED: 'A few too many requests. Please try again shortly.',
   PACK_ALREADY_OWNED: 'Your permanent alert pack is already active. Choose permanent slots to add more.', SLOT_PACK_LIMIT: 'You can purchase up to 100 extra permanent slots.', DATE_REQUIRED: 'Add an important date to get started.', DATE_LIMIT: 'You can track up to 10 dates per reminder.', DOCUMENTS_NOT_ALLOWED: 'This template stores dates only, without documents.',

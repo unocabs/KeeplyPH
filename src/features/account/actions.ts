@@ -30,8 +30,6 @@ export async function updatePreferences(_previous: ActionResult, form: FormData)
   try { new Intl.DateTimeFormat('en', { timeZone: timezone }); } catch { return { error: 'Choose a valid timezone.' }; }
   const { error } = await supabase.rpc('update_preferences', { p_name: name, p_timezone: timezone, p_email_enabled: profile.email_reminders_enabled });
   if (error) return { error: errorMessage(error) };
-  const { error: renewalError } = await supabase.rpc('update_renewal_preference', { p_enabled: form.get('renewal_emails_enabled') === 'on' });
-  if (renewalError) return { error: errorMessage(renewalError) };
   const { error: analyticsError } = await supabase.rpc('update_analytics_preference', { p_enabled: form.get('analytics_enabled') === 'on' });
   if (analyticsError) return { error: errorMessage(analyticsError) };
   revalidatePath('/settings'); revalidatePath('/dashboard');

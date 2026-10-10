@@ -1,8 +1,7 @@
 'use client';
-import { startTransition, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 import { Smartphone } from 'lucide-react';
-import { claimInstallReward, pushDeviceStatus, registerPushSubscription, removePushSubscription, sendPushTest } from '@/features/alerts/push-actions';
-import { installedApp } from '@/lib/install-guide';
+import { pushDeviceStatus, registerPushSubscription, removePushSubscription, sendPushTest } from '@/features/alerts/push-actions';
 import type { PushDeviceStatus } from '@/lib/push-subscription';
 
 function applicationKey(value: string): Uint8Array<ArrayBuffer> {
@@ -21,12 +20,10 @@ function subscribeBrowserState(update: () => void) {
   return () => { window.removeEventListener('focus', update); window.removeEventListener('keeply-push-permission', update); media.removeEventListener('change', update); };
 }
 const browserPermission = () => 'Notification' in window ? Notification.permission : 'default';
-export function PushOptions({ publicKey, initialCount = 0, demo = false, showReward = false, rewardClaimed = false, setupFlow = false, onConnectedChange }: { publicKey: string | null; initialCount?: number; demo?: boolean; showReward?: boolean; rewardClaimed?: boolean; setupFlow?: boolean; onConnectedChange?: (connected: boolean) => void }) {
+export function PushOptions({ publicKey, initialCount = 0, demo = false, setupFlow = false, onConnectedChange }: { publicKey: string | null; initialCount?: number; demo?: boolean; showReward?: boolean; rewardClaimed?: boolean; setupFlow?: boolean; onConnectedChange?: (connected: boolean) => void }) {
   const headingId = useId();
   const support = useSyncExternalStore(subscribeBrowserState, browserSupport, () => 'checking');
   const permission = useSyncExternalStore(subscribeBrowserState, browserPermission, () => 'default');
-  const installed = useSyncExternalStore(subscribeBrowserState, installedApp, () => false);
-  const [claimedHere, setClaimedHere] = useState(false);
   const [status, setStatus] = useState<PushDeviceStatus>({ enabled: false, registered: false, deviceCount: initialCount });
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState(''), [message, setMessage] = useState('');
   const worker = useRef<ServiceWorkerRegistration | null>(null);
@@ -98,17 +95,6 @@ export function PushOptions({ publicKey, initialCount = 0, demo = false, showRew
       else setMessage(result.success || 'Test sent.');
     } catch { setError('Unable to send the test. Please try again.'); } finally { setBusy(false); }
   }
-  async function claim() {
-    setBusy(true); setError(''); setMessage('');
-    try {
-      const subscription = await worker.current?.pushManager.getSubscription();
-      if (!installedApp() || Notification.permission !== 'granted' || !subscription) throw new Error('Open Keeply from its installed icon and turn on notifications here first.');
-      const result = await claimInstallReward(subscription.endpoint, installedApp());
-      if (result.error) setError(result.error);
-      else { setClaimedHere(true); setMessage(result.success || 'Your 2 permanent free slots are included.'); }
-    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Unable to claim your slots. Please try again.'); }
-    finally { setBusy(false); }
-  }
   const connected = status.enabled && status.registered && permission === 'granted';
   useEffect(() => { if (ready) onConnectedChange?.(connected && permission === 'granted'); }, [ready, connected, permission, onConnectedChange]);
   return <section className="push-options spaced" aria-labelledby={headingId}>
@@ -124,15 +110,6 @@ export function PushOptions({ publicKey, initialCount = 0, demo = false, showRew
       {connected ? <><button type="button" className="button secondary" disabled={busy} onClick={()=>void test()}>Send test notification</button><button type="button" className="text-button" disabled={busy} onClick={()=>void disable()}>Turn off this device</button></> : <button type="button" className={setupFlow ? 'button primary' : 'button secondary'} disabled={busy || (!demo && (!ready || permission === 'denied'))} onClick={()=>void enable()}>{busy ? 'Connecting…' : 'Turn on notifications'}</button>}
     </div>}
     <p className="hint spaced">{setupFlow ? 'Notifications can show reminder names on your lock screen.' : 'You choose which devices receive alerts. Notifications can show reminder names on your lock screen; device settings can silence or delay them.'}</p>
-    {showReward && !demo && <div className="alert info spaced">
-      {rewardClaimed || claimedHere ? <><strong>Your 2 permanent free slots are included.</strong><p>Your one-time reward is available across your devices.</p></> : <>
-        <strong>{setupFlow ? 'Your gift: 2 permanent free alert slots.' : 'Two steps. Two permanent free slots.'}</strong>
-        {(!setupFlow || !installed) && <p>{installed ? '✓ Keeply is open as an installed app.' : 'Open Keeply from its installed icon to complete the installation step.'}</p>}
-        {!setupFlow && <p>{connected && permission === 'granted' ? '✓ Notifications are connected on this device.' : 'Turn on notifications on this device to complete the notification step.'}</p>}
-        <button type="button" className="button primary spaced" disabled={busy || !installed || !connected || permission !== 'granted'} onClick={() => startTransition(() => { void claim(); })}>{busy ? 'Please wait…' : 'Claim 2 permanent free slots'}</button>
-        <p className="hint spaced">Claim once per account. They stay yours permanently.</p>
-      </>}
-    </div>}
     {error && <p className="alert error spaced" role="alert">{error}</p>}{message && <p className="alert success spaced" role="status">{message}</p>}
   </section>;
 }

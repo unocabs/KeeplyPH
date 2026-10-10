@@ -1,0 +1,124 @@
+{
+  "environment": "Local production HTTPS, mobile simulation",
+  "reports": [
+    {
+      "page": "aircon-cleaning-schedule",
+      "scores": {
+        "performance": 97,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "page": "demo",
+      "scores": {
+        "performance": 88,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 66
+      },
+      "warnings": [],
+      "issues": [
+        {
+          "id": "is-crawlable",
+          "title": "Page is blocked from indexing"
+        }
+      ]
+    },
+    {
+      "page": "document-expiry-tracker",
+      "scores": {
+        "performance": 98,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "warnings": [],
+      "issues": [
+        {
+          "id": "color-contrast",
+          "title": "Background and foreground colors do not have a sufficient contrast ratio."
+        }
+      ]
+    },
+    {
+      "page": "home",
+      "scores": {
+        "performance": 96,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "page": "loan-payment-reminder",
+      "scores": {
+        "performance": 98,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "page": "pricing",
+      "scores": {
+        "performance": 98,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "page": "terms",
+      "scores": {
+        "performance": 98,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "page": "vehicle-registration-reminder",
+      "scores": {
+        "performance": 98,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "warnings": [],
+      "issues": [
+        {
+          "id": "color-contrast",
+          "title": "Background and foreground colors do not have a sufficient contrast ratio."
+        }
+      ]
+    },
+    {
+      "page": "warranty-tracker",
+      "scores": {
+        "performance": 98,
+        "accessibility": 96,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "warnings": [],
+      "issues": [
+        {
+          "id": "color-contrast",
+          "title": "Background and foreground colors do not have a sufficient contrast ratio."
+        }
+      ]
+    }
+  ]
+}

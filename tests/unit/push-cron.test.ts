@@ -23,7 +23,7 @@ describe('independent reminder channels', () => {
     try {
       const response = await POST(new Request('https://keeplyph.com/api/cron/notifications', { method: 'POST' }));
       expect(response.status).toBe(200); expect((await response.json()).pushAccepted).toBe(0);
-      expect(mocks.rpc).toHaveBeenCalledWith('claim_notification_jobs', { p_limit: 2, p_daily_limit: 90 });
+      expect(mocks.rpc).toHaveBeenCalledWith('claim_household_emails', { p_limit: 2 });
     } finally { log.mockRestore(); vi.unstubAllEnvs(); }
   });
   it('preserves recurrence advancement when all delivery channels are disabled', async () => {

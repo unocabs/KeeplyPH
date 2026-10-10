@@ -18,7 +18,7 @@ describe('payment card actions',()=>{
     for(const label of ['Mark paid','Edit amount','Add amount','Approx.'])expect(html).toContain(label);
     expect(html).not.toContain('action=amount');
     expect(html).not.toContain('Amount checked');expect(html).not.toContain('Unverified');
-    expect(html).toContain('₱10,148');expect(html).toContain('1 payment needs');expect(html).toContain('Includes 1 estimate');
+    expect(html).toContain('₱13,648');expect(html).toContain('1 payment needs');expect(html).toContain('Includes 2 estimates');
   });
   it('keeps projected dates and unavailable contexts free of unsupported write actions',()=>{
     const data=plan(),row=data.rows[0];
@@ -36,7 +36,7 @@ describe('payment card actions',()=>{
     expect(html).toContain('Edit amount');expect(html).not.toContain('Mark paid');
   });
   it('combines all saved amounts without losing precision or excluding old unverified amounts',()=>{
-    expect(paymentTotal(plan())).toBe('1014800');
+    expect(paymentTotal(plan())).toBe('1364800');
     expect(paymentTotal({confirmed_minor:'9007199254740993',estimated_minor:'2',unverified_minor:'1'})).toBe('9007199254740996');
     const data=plan();const html=renderToStaticMarkup(createElement(HouseholdPaymentPlan,{plan:{...data,estimated_count:0,unset_count:0}}));
     expect(html).not.toContain('Includes 0');expect(html).not.toContain('0 payments need');

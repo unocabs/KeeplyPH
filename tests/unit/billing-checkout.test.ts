@@ -13,16 +13,16 @@ import { safeAuthIntent } from '@/lib/auth-intent';
 
 const id = '11111111-1111-4111-8111-111111111111';
 const url = 'https://checkout.paymongo.com/cs_test';
-function form(product = 'slots_30', slots = '25') {
+function form(product = 'premium_30', slots = '25') {
   const data = new FormData(); data.set('product', product); data.set('slots', slots); return data;
 }
 beforeEach(() => {
   vi.resetAllMocks();
-  vi.stubEnv('PAYMENTS_ENABLED', 'true'); vi.stubEnv('PAYMONGO_MODE', 'test');
+  vi.stubEnv('PAYMENTS_ENABLED', 'true'); vi.stubEnv('PREMIUM_PAYMENTS_ENABLED','true'); vi.stubEnv('PAYMONGO_MODE', 'test');
   vi.stubEnv('PAYMONGO_SECRET_KEY', 'sk_test_example'); vi.stubEnv('PAYMONGO_PAYMENT_METHODS', 'qrph,gcash');
   vi.stubEnv('APP_URL', 'https://www.keeplyph.com');
   mocks.auth.mockResolvedValue({ profile: { id: 'owner' } });
-  mocks.rpc.mockImplementation(async name => ({ data: name === 'create_pack_order' ? { id, create_checkout: true, checkout_url: null, slot_count: 25, amount_minor: 14500 } : null, error: null }));
+  mocks.rpc.mockImplementation(async name => ({ data: name === 'create_premium_order' ? { id, create_checkout: true, checkout_url: null, slot_count: 25, amount_minor: 5900 } : null, error: null }));
   mocks.paymongo.mockResolvedValue({ data: { id: 'cs_test', attributes: { livemode: false, checkout_url: url } } });
   mocks.redirect.mockImplementation(target => { throw new Error('redirect:' + target); });
 });
@@ -39,28 +39,30 @@ describe('Checkout review and return handling', () => {
     expect(safeAuthIntent(`/settings/billing?payment=cancelled&order=${id}`)).toBe(`/settings/billing?payment=cancelled&order=${id}`);
     expect(safeAuthIntent('/settings/billing?payment=paid&order=other')).toBe('/settings/billing');
   });
-  it('opens checkout for the exact server-priced pack and identifies the same order on success and cancellation', async () => {
+  it('opens checkout for the exact server-priced Premium plan and identifies the same order on success and cancellation', async () => {
     await expect(startCheckout({}, form())).rejects.toThrow('redirect:' + url);
     expect(mocks.paymongo).toHaveBeenCalledWith('/v2/checkout_sessions', expect.objectContaining({
       success_url: `https://www.keeplyph.com/settings/billing?payment=return&order=${id}`,
       cancel_url: `https://www.keeplyph.com/settings/billing?payment=cancelled&order=${id}`,
-      line_items: [expect.objectContaining({ amount: 14500, quantity: 1, currency: 'PHP' })],
+      line_items: [expect.objectContaining({ amount: 5900, quantity: 1, currency: 'PHP' })],
       reference_number: id, pass_on_fees: false,
     }));
     expect(mocks.rpc).toHaveBeenCalledWith('attach_checkout', { p_id: id, p_checkout_id: 'cs_test', p_url: url });
   });
   it('reuses an existing checkout instead of creating a second payment attempt', async () => {
-    mocks.rpc.mockResolvedValue({ data: { id, create_checkout: false, checkout_url: url, slot_count: 25, amount_minor: 14500 }, error: null });
+    mocks.rpc.mockResolvedValue({ data: { id, create_checkout: false, checkout_url: url, slot_count: 25, amount_minor: 5900 }, error: null });
     await expect(startCheckout({}, form())).rejects.toThrow('redirect:' + url);
     expect(mocks.paymongo).not.toHaveBeenCalled();
   });
   it('keeps checkout unavailable when payments are disabled and rejects unauthenticated purchases', async () => {
     vi.stubEnv('PAYMENTS_ENABLED', 'false');
     expect(await startCheckout({}, form())).toHaveProperty('error'); expect(mocks.auth).not.toHaveBeenCalled();
-    vi.stubEnv('PAYMENTS_ENABLED', 'true'); mocks.auth.mockRejectedValue(new Error('sign-in required'));
+    vi.stubEnv('PAYMENTS_ENABLED', 'true'); vi.stubEnv('PREMIUM_PAYMENTS_ENABLED','false');
+    expect(await startCheckout({}, form())).toHaveProperty('error'); expect(mocks.auth).not.toHaveBeenCalled();
+    vi.stubEnv('PREMIUM_PAYMENTS_ENABLED','true'); mocks.auth.mockRejectedValue(new Error('sign-in required'));
     await expect(startCheckout({}, form())).rejects.toThrow('sign-in required'); expect(mocks.rpc).not.toHaveBeenCalled();
   });
-  it('rejects invalid quantities and price mismatches before contacting the provider', async () => {
+  it('rejects retired products and price mismatches before contacting the provider', async () => {
     expect(await startCheckout({}, form('slots_30', '26'))).toHaveProperty('error');
     mocks.rpc.mockResolvedValue({ data: { id, create_checkout: true, checkout_url: null, slot_count: 25, amount_minor: 1 }, error: null });
     expect(await startCheckout({}, form())).toHaveProperty('error'); expect(mocks.paymongo).not.toHaveBeenCalled();

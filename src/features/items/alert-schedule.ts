@@ -24,7 +24,7 @@ export function alertMode(offsets: Offset[], recurring: boolean): AlertMode {
 
 /** Preserve valid custom timings when changing the repeat frequency. */
 export function offsetsForRecurrence(offsets: Offset[]): Offset[] {
-  return offsets.every(o => o.unit === 'days' && o.value <= 27) ? offsets : presetOffsets('standard', true, offsets.some(o => o.unit === 'days' && o.value === 0));
+  return offsets.every(o => o.unit === 'days' && o.value <= 27) ? offsets : withDueDateAlert([{unit:'days',value:1}], offsets.some(o => o.unit === 'days' && o.value === 0));
 }
 
 export function timingLabel(offset: Offset): string {

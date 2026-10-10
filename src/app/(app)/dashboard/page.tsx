@@ -9,5 +9,5 @@ export const metadata = { title: 'Overview' };
 export default async function DashboardPage() {
   const { profile, userId } = await requireUser();
   const [items, usage, unconfirmed, insights] = await Promise.all([getDashboardItems(), getUsage(), getUnconfirmedSummary(), getHouseholdInsights()]);
-  return <Dashboard accountId={userId} items={items} usage={usage} unconfirmed={unconfirmed} insights={insights} name={profile.display_name} today={todayIn(profile.timezone)} setup={<InstallSetup publicKey={pushPublicKey()} accountId={userId} claimed={usage.install_reward_claimed} dashboard />} />;
+  return <Dashboard accountId={userId} items={items} usage={usage} unconfirmed={unconfirmed} insights={insights} name={profile.display_name} today={todayIn(profile.timezone)} setup={<InstallSetup publicKey={pushPublicKey()} accountId={userId} claimed={usage.installation_premium_claimed} dashboard />} />;
 }

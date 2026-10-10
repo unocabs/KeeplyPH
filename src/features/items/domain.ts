@@ -9,6 +9,11 @@ export interface ImportantDate extends RecurrenceFields { id: string; item_id: s
 export interface ScheduledAlert { on: string; channel: 'email' | 'push' | 'sms' }
 export interface DateWithDetails extends ImportantDate { selected_occurrence?: Occurrence; scheduled_alerts?: ScheduledAlert[]; next_scheduled_on?: string | null; occurrences: Occurrence[]; offsets: Offset[] }
 export interface ItemWithDetails extends Item { readiness_checks?: import('./insights').ReadinessCheck[]; dates: DateWithDetails[]; documents: Document[]; activity_history?: ActivityPage }
+export type ItemIdentity = Pick<Item, 'template_key' | 'product_type' | 'product_name' | 'category' | 'reminder_preset' | 'car_brand' | 'motorcycle_brand' | 'subscription_brand' | 'utility_id' | 'insurer_id' | 'lender_id'>;
+export function itemIdentity(item: Item): ItemIdentity {
+  const {template_key,product_type,product_name,category,reminder_preset,car_brand,motorcycle_brand,subscription_brand,utility_id,insurer_id,lender_id}=item;
+  return {template_key,product_type,product_name,category,reminder_preset,car_brand,motorcycle_brand,subscription_brand,utility_id,insurer_id,lender_id};
+}
 export interface DateRow { item: ItemWithDetails; date: DateWithDetails; occurrence: Occurrence }
 export function currentOccurrence(date: DateWithDetails) { return date.occurrences.find(o => o.status === 'open'); }
 export function dateRows(items: ItemWithDetails[]): DateRow[] {

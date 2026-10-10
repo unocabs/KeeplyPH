@@ -9,6 +9,7 @@ import { previewPaymentChange, type AmountCertainty, type PaymentActionContext, 
 import { saveOccurrenceAmount } from '@/features/items/insight-actions';
 import { recordOccurrence } from '@/features/items/activity-actions';
 import { PaymentTotals } from './household-insights';
+import { ItemIdentityIcon } from './reminder-icon';
 import styles from './household-insights.module.css';
 
 type AmountChange = { amount:number|null; certainty:AmountCertainty };
@@ -77,7 +78,7 @@ function PaymentCard({row,context,today,base,demo,onChange}:{row:PlannedPayment;
     }catch(error){setError(actionError(error));}finally{submitting.current=false;setBusy(false);}
   }
   return <li ref={card} className={styles.paymentRow} aria-labelledby={title}>
-    <div><Link className={styles.paymentIdentity} href={base+'/items/'+row.item_id+'#date-'+row.date_id}><strong id={title}>{row.product_name}</strong></Link><p>{row.label} · {formatDate(row.due_on)}{row.projected?' · Projected from saved schedule':''}</p></div>
+    <div className={styles.paymentHeading}><ItemIdentityIcon item={row.identity}/><div><Link className={styles.paymentIdentity} href={base+'/items/'+row.item_id+'#date-'+row.date_id}><strong id={title}>{row.product_name}</strong></Link><p>{row.label} · {formatDate(row.due_on)}{row.projected?' · Projected from saved schedule':''}</p></div></div>
     <div className={styles.amount}><strong>{row.amount_minor==null?'No amount added':formatMoney(row.amount_minor)}</strong>{row.certainty==='estimated'&&<p>Approx.</p>}</div>
     {actionable&&!mode&&<div className={styles.paymentActions} role="group" aria-busy={busy} aria-label={'Payment actions for '+row.product_name}>
       {context?.can_record_payment&&<button type="button" data-editor="paid" className={styles.paidAction} disabled={busy} onClick={()=>open('paid')} aria-expanded={false} aria-controls={formId}><CheckCircle2 size={17} aria-hidden="true"/>Mark paid</button>}

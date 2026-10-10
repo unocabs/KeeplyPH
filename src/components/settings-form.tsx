@@ -13,7 +13,7 @@ export function SettingsForm({ profile, demo = false }: { profile: Profile; demo
     <label>Timezone<select name="timezone" defaultValue={profile.timezone}>{zones.map(z => <option key={z}>{z}</option>)}</select></label>
     <Link href={(demo ? '/demo' : '') + '/settings/alerts'} className="button secondary">Alert Options →</Link>
     <p className="hint">Manage email alerts in Alert Options.</p>
-    <label className="checkbox-row"><input name="renewal_emails_enabled" type="checkbox" defaultChecked={profile.renewal_emails_enabled !== false} /><span><strong>Remind me to renew my extra slots</strong><p>One email before the 30-day pack expires and one at expiry. No automatic charges.</p></span></label>
+
     <label className="checkbox-row"><input name="analytics_enabled" type="checkbox" defaultChecked={profile.analytics_enabled || false}/><span><strong>Help improve Keeply (optional)</strong><p>Share counts of saves, alert opt-ins and completions. No names, document contents or due dates. Raw events expire after 90 days; turning this off removes your linked events.</p></span></label>
     {profile.email_delivery_blocked && <p className="alert error">Email delivery is paused after a bounced email or complaint. Contact support before re-enabling delivery.</p>}
     {state.error && <p className="alert error" role="alert">{state.error}</p>}{state.success && <p className="alert success" role="status">{state.success}</p>}

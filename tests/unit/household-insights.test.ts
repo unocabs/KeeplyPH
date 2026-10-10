@@ -5,7 +5,7 @@ const today='2026-10-08';
 describe('household insights',()=>{
   it('separates sample amounts, handles unset amounts and keeps current confirmations scoped',()=>{
     const items=sampleItems(today),plan=samplePaymentPlan(items,today);
-    expect(plan.confirmed_minor).toBe('839900');expect(plan.estimated_minor).toBe('120000');expect(plan.unverified_minor).toBe('54900');expect(plan.unset_count).toBe(1);
+    expect(plan.confirmed_minor).toBe('839900');expect(plan.estimated_minor).toBe('470000');expect(plan.unverified_minor).toBe('54900');expect(plan.unset_count).toBe(1);
     const loan=sampleItems('2026-01-31')[0],due=loan.dates[0].occurrences.find(o=>o.status==='open')!;
     due.due_on='2026-01-31';loan.dates[0].recurrence_anchor=due.due_on;
     const rows=samplePaymentRows([loan],'2026-01-31');
@@ -61,7 +61,7 @@ describe('household insights',()=>{
   });
   it('builds a seven-day saved-data brief including service dates and missing data',()=>{
     const result=sampleInsights(sampleItems(today),today);
-    expect(result.week.ends_on).toBe(addDays(today,6));expect(result.week.payment_count).toBe(2);
+    expect(result.week.ends_on).toBe(addDays(today,6));expect(result.week.payment_count).toBe(3);
     expect(result.week.services[0].product_name).toBe('Family car: Toyota Vios');
     expect(result.readiness.unknown).toBe(1);expect(result.readiness.dismissed).toBe(1);
     expect(sampleInsights([],today).readiness.total).toBe(0);

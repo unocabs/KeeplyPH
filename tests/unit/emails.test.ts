@@ -49,7 +49,7 @@ describe('premium product emails', () => {
     const email = reminderIdeaEmail({ ...base, theme: 'loans', variant: 0, unsubscribe: base.url + '/api/email/unsubscribe?token=preview-only' });
     expect(email.headers['List-Unsubscribe-Post']).toBe('List-Unsubscribe=One-Click');
     expect(email.headers['List-Unsubscribe']).toContain('/api/email/unsubscribe');
-    expect(email.text).toContain('available alert slots');
+    expect(email.text).toContain('grouped into one household email');
   });
   it('exports representative HTML and text previews when requested', async () => {
     const folder = process.env.EMAIL_PREVIEW_DIR;

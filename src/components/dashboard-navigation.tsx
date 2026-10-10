@@ -6,7 +6,7 @@ import styles from './dashboard.module.css';
 
 const sections = [
   { id: 'coming-up', label: 'Coming up', short: 'Coming up', icon: CalendarDays },
-  { id: 'needs-a-check', label: 'Needs a check', short: 'To check', icon: CircleAlert },
+  { id: 'needs-a-check', label: 'Needs a check', short: 'Needs a check', icon: CircleAlert },
   { id: 'plan-and-organise', label: 'Plan & organise', short: 'Plan', icon: Wallet },
   { id: 'saved-records', label: 'Saved records', short: 'Records', icon: FolderOpen },
 ];

@@ -7,15 +7,6 @@ import { pushSubscriptionSchema, type PushDeviceStatus } from '@/lib/push-subscr
 import type { ActionResult } from '@/lib/domain';
 
 function refresh() { revalidatePath('/settings', 'layout'); revalidatePath('/items', 'layout'); revalidatePath('/dashboard'); }
-export async function claimInstallReward(endpoint: string, installed: boolean): Promise<ActionResult> {
-  if (!installed || !endpoint || endpoint.length > 2048) return { error: 'Open Keeply from its installed icon and turn on notifications on this device first.' };
-  if (!pushReady()) return { error: 'Notifications are temporarily unavailable. Return here once they are available to claim your slots.' };
-  const { supabase } = await requireUser();
-  const { data, error } = await supabase.rpc('claim_install_reward', { p_endpoint: endpoint, p_installed: installed });
-  if (error) return { error: error.message.includes('SETUP_REQUIRED') ? 'Turn on notifications in this installed Keeply app before claiming your slots.' : 'Unable to claim your slots right now. Please try again.' };
-  refresh();
-  return { success: (data as { granted?: boolean })?.granted ? 'Added 2 permanent free alert slots to your account.' : 'Your 2 permanent free slots were already claimed and are included in your account.' };
-}
 export async function pushDeviceStatus(endpoint: string | null): Promise<PushDeviceStatus> {
   const { supabase } = await requireUser();
   const { data, error } = await supabase.rpc('push_device_status', { p_endpoint: endpoint?.slice(0, 2048) || null });

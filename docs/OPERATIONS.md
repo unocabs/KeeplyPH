@@ -1,3 +1,5 @@
+> October 10 Premium cutover: use [household-premium-setup.md](household-premium-setup.md) for current product prices, installation gifts, alert capacity, grouped email delivery and deployment order. Slot offers, slot-expiry emails and the feedback slot promotion described below are historical. New Premium checkout needs both payment gates and verified provider acceptance.
+
 # Keeply operations
 
 This app is not connected to live services yet. Complete the provider tests in README.md before launch. Keep production and test data separate.

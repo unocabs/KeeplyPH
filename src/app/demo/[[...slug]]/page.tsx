@@ -18,11 +18,13 @@ import { OccurrenceReviewList, OverdueReminderList } from '@/components/occurren
 import { requiredDate } from '@/features/items/validation';
 import { uuidSchema } from '@/lib/validation';
 import { HouseholdPaymentPlan } from '@/components/payment-plan';
+import { HouseholdPlannerView } from '@/components/household-planner';
+import { plannerHorizon, samplePlanner, samplePlannerRows } from '@/features/premium/planner';
 import { sampleInsights, samplePaymentPlan } from '@/features/items/insights';
 import { dateRows } from '@/features/items/domain';
 import { notFound } from 'next/navigation';
 export const metadata = { title: 'Sample account', robots: { index: false, follow: false } };
-export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ q?: string; filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string; template?: string; before?: string; id?: string }> }) {
+export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ q?: string; filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string; template?: string; before?: string; id?: string; days?: string; month?: string }> }) {
   const { slug = [] } = await params;
   const query = await searchParams;
   const today = todayIn();
@@ -30,7 +32,11 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   const purchases = samplePurchases(items);
   const usage = sampleUsage(items, today);
   let content;
-  if (slug[0] === 'add') {
+  if (slug[0] === 'planner') {
+    const days=plannerHorizon(query.days),month=/^\d{4}-\d{2}-01$/.test(query.month||'')&&requiredDate.safeParse(query.month).success?query.month:undefined;
+    content=<HouseholdPlannerView key={days} plan={samplePlanner(items,today,days,month)} allSampleRows={samplePlannerRows(items,today,days)} premium demo month={month}/>;
+  }
+  else if (slug[0] === 'add') {
     if(!slug[1]) content = <><h1>What would you like to organise first?</h1><TemplateChoices demo initialCategory={query.category} /></>;
     else if(!isTemplate(slug[1])) notFound();
     else content = slug[1] === 'receipt' ? <PurchaseForm demo warrantyFocus={query.focus === 'warranty'} initialCategory={categories.includes(query.category as Category) ? query.category as Category : undefined} /> : <ItemForm template={slug[1]} vehicles={items.filter(item => item.template_key === slug[1])} preset={query.preset} focus={query.focus} renewalDate={query.renewalDate} demo />;
@@ -64,5 +70,5 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   else if (slug[0] === 'settings' && slug[1] === 'alerts') content = <><div className="page-heading"><div><h1>Alert Options</h1><p>Your alerts, in this sample account.</p></div></div><section className="panel narrow-form"><AlertOptions demo initial={{email_reminders_enabled:true}}/></section></>;
   else if (slug[0] === 'settings') content = <><div className="page-heading"><div><h1>Make yourself at home.</h1><p>Your preferences, in this sample account.</p></div></div><SettingsForm demo profile={{ id: 'sample', display_name: 'Alex Reyes', timezone: 'Asia/Manila', email_reminders_enabled: true, email_delivery_blocked: false, deletion_requested_at: null, created_at: '', updated_at: '' }} /></>;
   else content = <Dashboard items={items} usage={usage} name="Alex" today={today} unconfirmed={sampleUnconfirmed(items)} insights={sampleInsights(items,today)} demo />;
-  return <AppShell name="Alex Reyes" hasExtraSlots={false} demo signedIn={await isSignedIn()}>{content}</AppShell>;
+  return <AppShell name="Alex Reyes" hasExtraSlots demo signedIn={await isSignedIn()}>{content}</AppShell>;
 }

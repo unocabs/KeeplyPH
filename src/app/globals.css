@@ -324,6 +324,7 @@ select {
 .coverage-meta{margin-top:4px}.alert-slot-count{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}.alert-slot-count>span{font-weight:400;color:var(--muted)}
 .coverage-details>summary{min-height:0;width:fit-content;padding:2px 0;font-size:11px;color:var(--muted)}
 .coverage-details[open]{margin-top:8px}.coverage-details[open]>summary{margin-bottom:8px}.coverage-controls{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}.coverage-controls>button{min-height:32px}
+.coverage-quick .coverage-controls{grid-column:1/-1}
 .important-dates-quick>.quick-action-link{flex-shrink:0}
 .date-primary-action{width:200px;margin-top:24px}
 @media(max-width:1050px){.reminder-quick-actions{grid-template-columns:1fr}.reminder-quick-card{min-height:0}.coverage-quick .quick-action-body{display:grid;grid-template-columns:1fr auto;column-gap:18px}.coverage-meta{margin-top:0}.coverage-details,.coverage-quick [role=status]{grid-column:1/-1}.important-dates-quick{min-height:96px}}

@@ -16,13 +16,13 @@ describe('expanded demo account', () => {
       expect(items).toHaveLength(17);
       expect(items.filter(item => alertStatus(item) === 'enabled')).toHaveLength(15);
       expect(items.filter(item => item.coverage === 'off')).toHaveLength(2);
-      expect(capabilities(usage)).toMatchObject({ slots: 20, used: 15, available: 5 });
+      expect(capabilities(usage)).toMatchObject({ slots: 2147483647, used: 15, available: 2147483632 });
       expect(usage.active_reminders).toBe(17);
       expect(new Set(items.map(itemCategory))).toEqual(new Set(reminderCategories.map(group => group.key)));
       expect(new Set(items.map(item => item.template_key))).toEqual(new Set(templateKeys));
       const rows = dateRows(items);
-      expect(items[0].dates[0].scheduled_alerts?.map(alert => daysUntil(alert.on, today))).toEqual([2, 3]);
-      expect(items[1].dates[0].scheduled_alerts?.map(alert => daysUntil(alert.on, today))).toEqual([4, 5]);
+      expect(items[0].dates[0].scheduled_alerts?.map(alert => daysUntil(alert.on, today))).toEqual([2]);
+      expect(items[1].dates[0].scheduled_alerts?.map(alert => daysUntil(alert.on, today))).toEqual([4]);
       for (const item of items) for (const date of item.dates) {
         const due = currentOccurrence(date)!.due_on;
         if (alertStatus(item, date) !== 'enabled' || due < today) expect(date.scheduled_alerts).toEqual([]);

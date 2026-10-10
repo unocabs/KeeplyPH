@@ -1,5 +1,6 @@
 import { addIntent, isTemplate } from '@/features/templates';
 import { safeReturnPath } from './domain';
+import { isPremiumProduct } from '@/features/premium/products';
 import { isProduct, isSlotCount } from '@/features/billing/products';
 export function safeAuthIntent(value: string | null | undefined): string {
  const safe=safeReturnPath(value),url=new URL(safe,'https://keeplyph.com');
@@ -9,13 +10,14 @@ export function safeAuthIntent(value: string | null | undefined): string {
    const query = new URLSearchParams();
    const slots = Number(url.searchParams.get('slots')), product = url.searchParams.get('product') || '';
    if (isSlotCount(slots)) query.set('slots', String(slots));
-   if (isProduct(product)) query.set('product', product);
+   if (isProduct(product) || isPremiumProduct(product)) query.set('product', product);
    const payment = url.searchParams.get('payment'), order = url.searchParams.get('order');
    if (['return', 'cancelled'].includes(payment || '') && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(order || '')) {
      query.set('payment', payment!); query.set('order', order!);
    }
    return url.pathname + (query.size ? '?' + query.toString() : '');
  }
+ if(url.pathname==='/planner'){const days=url.searchParams.get('days');return '/planner'+(['30','90','365'].includes(days||'')?'?days='+days:'');}
  if(['/feedback','/dashboard','/add','/items','/purchases','/purchases/new','/settings','/settings/billing','/settings/alerts'].includes(url.pathname))return url.pathname;
  // Opaque record IDs preserve reminder actions across sign-in; ownership is checked on the destination.
  const uuid = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';

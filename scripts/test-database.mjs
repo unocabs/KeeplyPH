@@ -42,7 +42,9 @@ try {
   admin = new pg.Client(config); await admin.connect();
   await admin.query("create role anon; create role authenticated; create role service_role bypassrls; create schema auth; create schema storage; grant usage on schema auth,storage,public to anon,authenticated,service_role; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz,last_sign_in_at timestamptz,raw_user_meta_data jsonb default '{}'::jsonb); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]); create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text); alter table storage.objects enable row level security; grant select on storage.objects to authenticated;");
   let migrationSeed, recurrenceMigrationSeed, dueDateMigrationSeed, activityMigrationSeed;
+  const newMigrations=[];
   for (const name of (await readdir('supabase/migrations')).filter(n => n.endsWith('.sql') && (!process.env.PG_TEST_MIGRATION_THROUGH || n <= process.env.PG_TEST_MIGRATION_THROUGH)).sort()) {
+    if(name>='202610100034_household_premium.sql'){newMigrations.push(name);continue;}
     if (name === '202610060024_expand_dashboard_timeline.sql') {
       const checks = (await admin.query(await readFile('supabase/check-timeline-expansion-prerequisites.sql', 'utf8'))).rows;
       assert.ok(checks.slice(0, -1).every(row => row.status.startsWith('PRESENT')));
@@ -92,6 +94,7 @@ try {
     }
     console.log('Applied ' + name);
   }
+  if(process.env.PG_TEST_PREMIUM_ONLY!=='1') {
   await test('Cutover preserves purchase/warranty UUIDs and accepted job identity/payload',async()=>{
     const row=(await actor(migrationSeed.u,'select * from public.items where id=$1',[migrationSeed.id])).rows[0];
     assert.equal(row.template_key,'receipt');
@@ -1364,6 +1367,10 @@ try {
     await (await import('../tests/database/household-insights.mjs')).testHouseholdInsights({admin,actor,user,test});
   }
 
+  }
+  // Exercise historical contracts before applying the new offer and delivery cutover.
+  for(const name of newMigrations){await admin.query(await readFile(join('supabase/migrations',name),'utf8'));console.log('Applied '+name);}
+  if(newMigrations.length===2)await (await import('../tests/database/household-premium.mjs')).testHouseholdPremium({admin,actor,user,test});
   console.log('\n' + passed + ' database integration tests passed.');
   if (process.env.PG_TEST_BROWSER === '1') await (await import('../tests/browser/household-history.mjs')).testHouseholdBrowser({admin,actor,user});
 } finally {

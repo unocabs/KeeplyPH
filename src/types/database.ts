@@ -14,6 +14,13 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      household_planner: Rpc<{p_days?:number;p_month?:string|null;p_before?:string|null;p_before_id?:string|null}>;
+      activate_installation_premium: Rpc<{p_installed:boolean}>;
+      acknowledge_installation_premium: Rpc<{p_id:string},undefined>;
+      create_premium_order: Rpc<{p_user:string;p_id:string;p_product:string;p_live:boolean}>;
+      claim_household_emails: Rpc<{p_limit:number}>;
+      prepare_household_email: Rpc<{p_id:string;p_lease:string;p_payload:Json}>;
+      finish_household_email: Rpc<{p_id:string;p_lease:string;p_status:string;p_provider_id:string|null},undefined>;
       household_insights: Rpc<Record<string, never>>;
       household_payment_plan: Rpc<{ p_before?: string | null; p_before_id?: string | null }>;
       set_readiness_preference: Rpc<{ p_item: string; p_revision: number; p_criterion: string; p_state: string }, undefined>;

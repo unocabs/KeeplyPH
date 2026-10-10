@@ -4,23 +4,21 @@ import { useState } from 'react';
 import { addMonths, formatDate } from '@/lib/domain';
 import { templates, dateLabels, defaultOffsets, getReminderPreset, type DateKind, type TemplateKey, type Offset } from '@/features/templates';
 import { defaultRecurrenceMonths, paymentDate, presetCategory } from '@/features/templates/categories';
-import { alertMode, offsetsForRecurrence, presetOffsets, timingLabel, withDueDateAlert } from '@/features/items/alert-schedule';
+import { offsetsForRecurrence, timingLabel, withDueDateAlert } from '@/features/items/alert-schedule';
 export interface DateInput extends RecurrenceFields { kind: DateKind; label: string; due_on: string; reminders_enabled: boolean; offsets: Offset[]; interval_months: number | null; last_completed_on?: string }
 export function initialDate(template: TemplateKey, focus?: string, preset?: string | null): DateInput {
   const kind = templates[template].kinds.includes(focus as DateKind) ? focus as DateKind : templates[template].kinds[0];
   const choice = getReminderPreset(template, preset || undefined);
   const months = choice ? defaultRecurrenceMonths(preset) : null;
-  const offsets = choice && presetCategory(preset) === 'loans' ? [{ unit: 'days' as const, value: 7 }, { unit: 'days' as const, value: 0 }] : defaultOffsets(template, kind);
+  const offsets = choice && presetCategory(preset)==='maintenance' ? [{unit:'days' as const,value:7}] : choice && ['loans','bills','subscriptions'].includes(presetCategory(preset)||'') ? [{ unit: 'days' as const, value: 1 }] : defaultOffsets(template, kind);
   return { kind, label: choice?.dateLabel || dateLabels[kind], due_on: '', reminders_enabled: true, offsets: months ? offsetsForRecurrence(offsets) : offsets, interval_months: null, recurrence_months: months, recurrence_ends_on: null, payment_amount_minor: null, payment_amount_certainty: 'unverified' };
 }
 export function DateFields({ template, value, onChange, preset, compact = false }: { template: TemplateKey; value: DateInput; onChange: (v: DateInput) => void; preset?: string | null; compact?: boolean }) {
   const [last, setLast] = useState(value.last_completed_on || '');
   const [ends, setEnds] = useState(Boolean(value.recurrence_ends_on));
-  const [customTimings, setCustomTimings] = useState(false);
   const [editingTimings, setEditingTimings] = useState<Offset[] | null>(null);
   const timingRows = editingTimings ?? withDueDateAlert(value.offsets, false);
   const dueDateAlert = value.offsets.some(offset => offset.unit === 'days' && offset.value === 0);
-  const mode = customTimings ? 'custom' : alertMode(value.offsets, Boolean(value.recurrence_months));
   const choice = getReminderPreset(template, preset || undefined);
   const insurance = presetCategory(preset) === 'insurance';
   const premium = insurance && value.label === choice?.dateLabel;
@@ -29,7 +27,6 @@ export function DateFields({ template, value, onChange, preset, compact = false 
   const insurancePurpose = !insurance ? '' : premium ? 'premium' : value.label === 'Policy renewal / review' ? 'renewal' : 'custom';
   const patch = (p: Partial<DateInput>) => onChange({ ...value, ...p });
   function updateTimings(rows: Offset[]) {
-    setCustomTimings(true);
     setEditingTimings(rows);
     // Draft rows stay visible while editing. Only the checkbox adds a due-date alert.
     const advance = rows.filter(row => row.value > 0).filter((row, index, list) => list.findIndex(other => other.unit === row.unit && other.value === row.value) === index);
@@ -54,16 +51,12 @@ export function DateFields({ template, value, onChange, preset, compact = false 
     {(value.kind !== 'warranty' || value.payment_amount_minor != null) && <details className="optional-details" open={!compact || value.payment_amount_minor != null}><summary>{payment ? 'Payment amount (optional)' : 'Expected cost (optional)'}</summary><label>{premium ? 'Premium amount' : payment ? value.recurrence_months ? 'Amount per payment' : 'Payment amount' : 'Expected cost'} (₱, optional)<input type="number" min="0" max="999999999.99" step="0.01" placeholder="e.g. 2500.00" value={value.payment_amount_minor == null ? '' : value.payment_amount_minor / 100} onChange={e => patch({ payment_amount_minor: e.target.value === '' ? null : Math.round(Number(e.target.value) * 100) })}/><span className="hint">{value.recurrence_months ? 'Used for each scheduled date. You can change the amount for an individual date later.' : 'Included in your payment plan on this date.'} Leave blank if no cost is known. Enter 0 if there is no charge.</span></label>{value.payment_amount_minor != null && <label className="checkbox-row spaced"><input type="checkbox" checked={value.payment_amount_certainty === 'estimated'} onChange={e => patch({ payment_amount_certainty: e.target.checked ? 'estimated' : 'unverified' })}/><span>This is an estimate</span></label>}</details>}
     {value.kind === 'registration' && <p className="hint">Enter the deadline confirmed on your current documents or by LTO. Keeply does not calculate deadlines from plate numbers.</p>}
     {['licence','passport'].includes(template) && <p className="hint">Only a name and date are needed. Do not add your ID number or a scan. Use the printed expiration date; any repeat schedule is your own follow-up plan.</p>}
-    <label className="checkbox-row"><input type="checkbox" checked={value.reminders_enabled} onChange={e => patch({ reminders_enabled: e.target.checked })} /><span><strong>Send me alerts for this date</strong><p>All enabled dates on this reminder share one alert slot. Your first 3 alert slots are free. Reminders always save, even when slots are full.</p></span></label>
+    <label className="checkbox-row"><input type="checkbox" checked={value.reminders_enabled} onChange={e => patch({ reminders_enabled: e.target.checked })} /><span><strong>Send me alerts for this date</strong><p>Choose when to receive a heads-up. Email reminders scheduled for the same day are grouped into one household email.</p></span></label>
     {(!compact || value.reminders_enabled) && <details className="optional-details" open={!compact}><summary>Alert timings</summary><div className="date-fields">
-    <label>Alert schedule<select value={mode} onChange={e => {
-      const selected = e.target.value;
-      setCustomTimings(selected === 'custom'); setEditingTimings(null);
-      if (selected === 'gentle' || selected === 'standard') patch({ offsets: presetOffsets(selected, Boolean(value.recurrence_months), dueDateAlert) });
-    }}><option value="gentle">Gentle · 7 days before</option><option value="standard">Standard · {value.recurrence_months ? '14' : '30'}, 7 and 1 day before</option><option value="custom">Custom · choose your timings</option></select></label>
+    <p className="hint">One advance reminder, with an optional follow-up on the due date.</p>
     <label className="checkbox-row"><input type="checkbox" checked={dueDateAlert} onChange={e => patch({ offsets: withDueDateAlert(value.offsets, e.target.checked) })}/><span><strong>Alert me on the due date</strong><p>Send an alert on the due date, in addition to any early alerts you choose.</p></span></label>
     <div className="schedule-preview" aria-live="polite"><strong>{value.reminders_enabled ? 'Selected alert timings' : 'Alert timings · alerts are off'}</strong><ul className="alert-timings">{value.offsets.map((offset, n) => <li key={n}>{timingLabel(offset)}</li>)}</ul><p className="hint">Around 9 AM in your account timezone. Past alert times are skipped. The due date stays the same.</p></div>
-    {mode === 'custom' ? <div>{timingRows.map((offset, n) => <div className="offset-row" key={n}><label>Early alert {n+1}<input type="number" min={1} max={value.recurrence_months ? 27 : offset.unit === 'months' ? 24 : 365} value={offset.value} onFocus={e => { if (offset.value === 0) e.target.select(); }} onChange={e => {
+    <div>{timingRows.map((offset, n) => <div className="offset-row" key={n}><label>Early alert {n+1}<input type="number" min={1} max={value.recurrence_months ? 27 : offset.unit === 'months' ? 24 : 365} value={offset.value} onFocus={e => { if (offset.value === 0) e.target.select(); }} onChange={e => {
       const number = e.target.value === '' ? 0 : Number(e.target.value);
       e.target.value = String(number);
       updateTimings(timingRows.map((row, index) => index === n ? { ...row, value: number } : row));
@@ -72,10 +65,7 @@ export function DateFields({ template, value, onChange, preset, compact = false 
         e.target.value = '1';
         updateTimings(timingRows.map((row, index) => index === n ? { ...row, value: 1 } : row));
       }
-    }} /></label><label>Unit<select value={offset.unit} onChange={e => updateTimings(timingRows.map((row, index) => index === n ? { unit: e.target.value as Offset['unit'], value: e.target.value === 'months' ? Math.max(1, row.value) : row.value } : row))}><option value="days">Days before</option>{!value.recurrence_months && <option value="months">Calendar months before</option>}</select></label><button className="text-button" type="button" disabled={timingRows.length === 1 && !dueDateAlert && value.reminders_enabled} onClick={() => updateTimings(timingRows.filter((_, index) => index !== n))}>Remove</button></div>)}{timingRows.length < 3 && <button type="button" className="text-button" onClick={() => {
-      const next = [1, 7, 3, 14].find(day => !timingRows.some(offset => offset.unit === 'days' && offset.value === day))!;
-      updateTimings([...timingRows, { unit: 'days', value: next }]);
-    }}>Add an early alert</button>}<p className="hint">Choose up to 3 early alerts. Use the checkbox above for an alert on the due date.</p></div> : <button type="button" className="text-button" onClick={() => setCustomTimings(true)}>Customize timings</button>}
+    }} /></label><label>Unit<select value={offset.unit} onChange={e => updateTimings(timingRows.map((row, index) => index === n ? { unit: e.target.value as Offset['unit'], value: e.target.value === 'months' ? Math.max(1, row.value) : row.value } : row))}><option value="days">Days before</option>{!value.recurrence_months && <option value="months">Calendar months before</option>}</select></label><button className="text-button" type="button" disabled={timingRows.length === 1 && !dueDateAlert && value.reminders_enabled} onClick={() => updateTimings(timingRows.filter((_, index) => index !== n))}>Remove</button></div>)}{timingRows.length===0&&<button type="button" className="text-button" onClick={()=>updateTimings([{unit:'days',value:1}])}>Add an advance reminder</button>}<p className="hint">Choose one advance timing. Existing custom timings are preserved; you can remove any you no longer need.</p></div>
     </div></details>}
   </div>;
 }

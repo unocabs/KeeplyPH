@@ -26,11 +26,11 @@ export function ideaContent(theme: IdeaTheme, variant = 0) {
 export function reminderIdeaEmail(input: { from: string; to: string; url: string; unsubscribe: string; theme: IdeaTheme; variant: number }) {
   const content = ideaContent(input.theme, input.variant);
   const action = input.url + content.href;
-  const coverage = 'You can keep as many dates as you need. Email alerts follow your preferences and available alert slots; review coverage in the app.';
+  const coverage = 'You can keep as many dates as you need. Email alerts follow your preferences. Reminders scheduled for the same day are grouped into one household email.';
   return {
     from: input.from, to: input.to, subject: content.subject,
     headers: { 'List-Unsubscribe': '<' + input.unsubscribe + '>', 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
     text: content.heading + '\n\n' + content.description + '\nTry: ' + content.example + '\n' + content.action + ': ' + action + '\n\n' + coverage + '\n\n' + discoveryText(input.url) + '\n\nYou opted in to Reminder ideas & tips.\nUnsubscribe from ideas & tips: ' + input.unsubscribe + '\nManage email preferences: ' + input.url + '/settings/alerts',
-    html: emailLayout({ url: input.url, preview: content.description, eyebrow: 'A little inspiration', heading: content.heading, body: '<p style="margin:0 0 24px">' + escapeHtml(content.description) + '</p>' + emailPanel('Something you could keep', content.example, 'Save the date you know. Choose the alerts you need.') + emailButton(action, content.action) + '<p style="font-size:13px;color:#655e73">' + escapeHtml(coverage) + ' ' + emailLink(input.url + '/settings/billing', 'Review your alert slots') + '</p>', reason: 'You received this email because you opted in to Reminder ideas & tips. Your deadline alerts have their own preference.', unsubscribe: input.unsubscribe }),
+    html: emailLayout({ url: input.url, preview: content.description, eyebrow: 'A little inspiration', heading: content.heading, body: '<p style="margin:0 0 24px">' + escapeHtml(content.description) + '</p>' + emailPanel('Something you could keep', content.example, 'Save the date you know. Choose the alerts you need.') + emailButton(action, content.action) + '<p style="font-size:13px;color:#655e73">' + escapeHtml(coverage) + ' ' + emailLink(input.url + '/settings/alerts', 'Review your alert preferences') + '</p>', reason: 'You received this email because you opted in to Reminder ideas & tips. Your deadline alerts have their own preference.', unsubscribe: input.unsubscribe }),
   };
 }

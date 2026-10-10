@@ -45,10 +45,10 @@ try {
     await navigate('/');
     assert.match(await page.locator('h1').innerText(),/Your household,\s*a little more organised\./);
     assert.equal(await page.locator('.hero-actions').getByRole('link',{name:'Start organizing for free',exact:true}).getAttribute('href'),'/add');
-    assert.equal(await page.locator('.hero-actions').getByRole('link',{name:'Explore a sample household',exact:true}).getAttribute('href'),'/demo');
+    assert.equal(await page.locator('.hero-actions').getByRole('link',{name:'Explore a sample account',exact:true}).getAttribute('href'),'/demo');
     const showcase=page.locator('section').filter({has:page.locator('#example-title')});
     assert.equal(await showcase.locator('article').count(),4);
-    const total=await showcase.locator('article').filter({has:page.getByRole('heading',{name:'Plan for payments.'})}).getByText(/^₱/).innerText();
+    const total=await showcase.locator('article').filter({has:page.getByRole('heading',{name:'Plan for payments.'})}).locator('strong').filter({hasText:/^₱/}).innerText();
     const historyCard=showcase.locator('article').filter({has:page.getByRole('heading',{name:'Remember the last service.'})});
     assert.equal(await historyCard.locator('ol li').count(),2);
     const readiness=await showcase.locator('progress').getAttribute('value');
@@ -63,8 +63,8 @@ try {
     assert.equal(await page.locator('progress').getAttribute('value'),readiness);
     const guide=page.locator('section').filter({has:page.locator('#sample-capabilities')});await guide.scrollIntoViewIfNeeded();assert.equal(await guide.locator('div a').count(),6);
     await page.screenshot({path:`${output}/${engine.name()}-${width}-demo.png`,fullPage:true});
-    await guide.getByRole('link',{name:/Payment planning/}).click();await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
-    assert.equal(await page.getByText(total,{exact:true}).count(),1);
+    await guide.getByRole('link',{name:/Payment planning/}).click();await page.waitForURL('**/demo/items/payments');await page.waitForLoadState('networkidle');await page.getByRole('heading',{name:'Payments to plan for',exact:true}).waitFor();
+    assert.equal((await page.locator('p').filter({hasText:/^₱.*to plan for/}).innerText()).split('\n')[0],total);
     // A deep-linked editor can be cancelled without changing the sample amount.
     await page.getByRole('button',{name:'Edit amount',exact:true}).first().click();
     const amount=page.locator('form').filter({has:page.getByLabel('Expected amount (PHP)')});await amount.waitFor();
@@ -80,20 +80,20 @@ try {
     await navigate('/');await page.getByRole('link',{name:'Open a sample receipt and warranty',exact:true}).click();
     const receipt=page.getByRole('link',{name:'View sample receipt',exact:true});await receipt.waitFor();
     const popupPromise=page.waitForEvent('popup');await receipt.click();const popup=await popupPromise;await popup.waitForLoadState();assert(popup.url().endsWith('/demo/washing-machine-receipt.svg'));await popup.close();
-    await navigate('/');const faq=page.locator('details').filter({has:page.getByText('Does confirming an amount mark a bill paid?',{exact:true})});await faq.locator('summary').click();assert(await faq.evaluate(element=>element.open));await faq.locator('summary').click();assert.equal(await faq.evaluate(element=>element.open),false);
+    await navigate('/');const faq=page.locator('details').filter({has:page.getByText('How do I plan for upcoming payments?',{exact:true})});await faq.locator('summary').click();assert(await faq.evaluate(element=>element.open));await faq.locator('summary').click();assert.equal(await faq.evaluate(element=>element.open),false);
     reports.push({engine:engine.name(),width,passed:['no overflow','shared sample figures','calendar default','list toggle','keyboard demo navigation','six capability links','payment cancellation','history cancellation','search','readiness filter','sample receipt opens','FAQ open and close']});
     console.log(`Passed public flows: ${engine.name()} ${width}`);
 
     if(width===1280) {
-      const paths=['/','/pricing','/loan-payment-reminder','/warranty-tracker','/vehicle-registration-reminder','/lto-registration-renewal','/aircon-cleaning-schedule','/document-expiry-tracker','/privacy','/terms','/demo','/demo/items/payments','/items/payments'];
+      const paths=['/','/pricing','/loan-payment-reminder','/warranty-tracker','/vehicle-registration-reminder','/lto-registration-renewal','/aircon-cleaning-schedule','/document-expiry-tracker','/privacy','/terms','/demo','/demo/items/payments','/demo/planner?days=365','/items/payments','/planner'];
       for(const path of paths) {
         await navigate(path);
         const result=await page.evaluate(()=>({path:location.pathname,lang:document.documentElement.lang,title:document.title,description:document.querySelector('meta[name="description"]')?.content,canonical:document.querySelector('link[rel="canonical"]')?.href,robots:document.querySelector('meta[name="robots"]')?.content,locale:document.querySelector('meta[property="og:locale"]')?.content,schemas:[...document.querySelectorAll('script[type="application/ld+json"]')].map(script=>JSON.parse(script.textContent))}));
         assert.equal(result.lang,'en-PH');assert.equal(result.locale,'en_PH');assert(result.title&&result.description);
-        if(path.startsWith('/demo')||path==='/items/payments')assert.match(result.robots,/noindex.*nofollow/);
+        if(path.startsWith('/demo')||(path==='/items/payments'||path==='/planner'))assert.match(result.robots,/noindex.*nofollow/);
         else {assert.equal(result.canonical.replace(/\/$/,''),'https://www.keeplyph.com'+(path==='/'?'':path));assert(!result.robots?.includes('noindex'));}
-        if(path==='/items/payments')assert.equal(result.path,'/login');
-        if(path==='/') {const graph=result.schemas[0]['@graph'];assert.equal(graph[0]['@type'],'WebSite');const application=graph.find(node=>node['@type']==='WebApplication');assert.equal(application.name,'Keeply');assert.equal(application.inLanguage,'en-PH');assert(application.featureList.some(feature=>feature.startsWith('Payment planning')));}
+        if((path==='/items/payments'||path==='/planner'))assert.equal(result.path,'/login');
+        if(path==='/') {const graph=result.schemas[0]['@graph'];assert.equal(graph[0]['@type'],'WebSite');const application=graph.find(node=>node['@type']==='WebApplication');assert.equal(application.name,'Keeply');assert.equal(application.inLanguage,'en-PH');assert(application.featureList.some(feature=>feature.includes('Premium')));}
         seo.push({requested:path,...result});
       }
       const sitemap=await (await context.request.get(base+'/sitemap.xml')).text();

@@ -45,6 +45,6 @@ export function HouseholdShowcase() {
         <Link href="/demo#readiness-summary-heading">Explore readiness <ArrowRight size={16} aria-hidden="true"/></Link>
       </article>
     </div>
-    <div className={styles.footer}><div className={styles.documentNote}><span className={styles.documentIcon}><FileText size={24} aria-hidden="true"/></span><p>Keep purchase details and documents together, too. <Link href="/demo/items/11111111-1111-4111-8111-111111111111">Open a sample receipt and warranty <ArrowRight size={15} aria-hidden="true"/></Link></p></div><Link href="/demo" className="button secondary">Explore a sample household <ArrowRight size={16} aria-hidden="true"/></Link></div>
+    <div className={styles.footer}><div className={styles.documentNote}><span className={styles.documentIcon}><FileText size={24} aria-hidden="true"/></span><p>Keep purchase details and documents together, too. <Link href="/demo/items/11111111-1111-4111-8111-111111111111">Open a sample receipt and warranty <ArrowRight size={15} aria-hidden="true"/></Link></p></div><Link href="/demo" className="button secondary">Explore a sample account <ArrowRight size={16} aria-hidden="true"/></Link></div>
   </section>;
 }

@@ -174,7 +174,7 @@ export default async function Page() {
         </ol>
         <p>After a visit, confirm completion and review the next date. A fixed repeating date is a plan, not evidence that a technician visited. Keeply does not book appointments or assess the condition of your aircon.</p>
         <div className="hero-actions"><Link className="button primary" href={reminder}>Set my aircon reminder →</Link><Link className="button secondary" href="/demo/add/aircon">Try the sample form</Link></div>
-        <p className={styles.disclosure}>Google sign-in is required to save your own reminder. The sample form does not save changes or send alerts. Start with 3 free alert slots; <Link href="/pricing">see pricing</Link>.</p>
+        <p className={styles.disclosure}>Google sign-in is required to save your own reminder. The sample form does not save changes or send alerts. Keep household dates and optional alerts together; <Link href="/pricing">see pricing</Link>.</p>
       </section>
 
       <section id="questions" className={`${styles.section} ${styles.faq}`}>
