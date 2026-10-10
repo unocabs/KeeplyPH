@@ -35,7 +35,8 @@ function PaymentCard({row,context,today,base,demo,onChange}:{row:PlannedPayment;
   const form=useRef<HTMLFormElement>(null),editingRevision=useRef(0);
   const card=useRef<HTMLLIElement>(null),restoreFocus=useRef<'amount'|'paid'|null>(null);
   const [mode,setMode]=useState<'amount'|'paid'|null>(null),[amount,setAmount]=useState(''),[estimated,setEstimated]=useState(row.certainty==='estimated');
-  const [paidOn,setPaidOn]=useState(today),[notes,setNotes]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState('');
+  const [paidOn,setPaidOn]=useState(today),[nextService,setNextService]=useState(''),[notes,setNotes]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState('');
+  const service=context?.service_schedule;
   const actionable=Boolean(row.occurrence_id&&!row.projected&&context);
   useEffect(()=>{
     if(mode){form.current?.scrollIntoView({block:'nearest'});form.current?.querySelector<HTMLElement>('input,select')?.focus({preventScroll:true});}
@@ -44,7 +45,7 @@ function PaymentCard({row,context,today,base,demo,onChange}:{row:PlannedPayment;
   function close(){restoreFocus.current=mode;setMode(null);setError('');}
   function open(next:'amount'|'paid') {
     editingRevision.current=context?.revision??0;
-    setAmount(row.amount_minor==null?'':String(row.amount_minor/100));setEstimated(row.certainty==='estimated');setPaidOn(today);setNotes('');setError('');request.current='';setMode(next);
+    setAmount(row.amount_minor==null?'':String(row.amount_minor/100));setEstimated(row.certainty==='estimated');setPaidOn(today);setNextService('');setNotes('');setError('');request.current='';setMode(next);
   }
   async function saveAmount(change:AmountChange) {
     if(submitting.current||!context||!row.occurrence_id)return;
@@ -67,11 +68,13 @@ function PaymentCard({row,context,today,base,demo,onChange}:{row:PlannedPayment;
     try {value=parseMoney(amount);}catch {setError('Enter a valid amount with at most two decimal places.');return;}
     if(amount.trim()&&(value===null||value>99999999999)){setError('Enter the actual amount paid, or leave it empty if you don’t know it.');return;}
     if(!paidOn||paidOn>today){setError('Choose today or an earlier date for a payment you’ve already made.');return;}
+    if(service&&!service.recurrence_months&&nextService&&(nextService<=paidOn||nextService>'2200-12-31')){setError('Choose a next service date after the completion date.');return;}
     submitting.current=true;setBusy(true);setError('');
     try {
       if(!demo){
         request.current ||= crypto.randomUUID();
-        const result=await recordOccurrence(request.current,row.occurrence_id,editingRevision.current,{activity_type:'payment',title:(row.label+' paid').slice(0,160),completed_on:paidOn,amount_minor:value,notes,document_ids:[]},'','fixed');
+        const policy=service?service.recurrence_months?service.recurrence_policy||'fixed':service.interval_months?'from_completion':'manual':'fixed';
+        const result=await recordOccurrence(request.current,row.occurrence_id,editingRevision.current,{activity_type:service?'service':'payment',title:(row.label+(service?' completed and paid':' paid')).slice(0,160),completed_on:paidOn,amount_minor:value,notes,document_ids:[]},service&&!service.recurrence_months?nextService:'',policy);
         if(result.error)throw new Error(result.error);
       }
       setMode(null);onChange('paid');
@@ -87,16 +90,18 @@ function PaymentCard({row,context,today,base,demo,onChange}:{row:PlannedPayment;
     {!actionable&&<p className={styles.projectedHint}>{row.projected?'A planned date, not a saved bill yet. Actions are available on the current saved payment date.':'This payment is no longer available to update. Refresh the page to see the latest details.'}</p>}
     {mode&&<form ref={form} id={formId} className={styles.paymentEditor} onSubmit={mode==='paid'?submitPaid:submitAmount}>
       <fieldset disabled={busy}>
-        <h2><ReceiptText size={18} aria-hidden="true"/>{mode==='paid'?'Record a payment':'Expected amount for this date'}</h2>
-        <p>{mode==='paid'?'Record a payment you’ve already made. Confirm the actual amount and date below. Any repeating schedule will continue.':'For this payment date only. Leave the amount empty to remove it.'}</p>
+        <h2><ReceiptText size={18} aria-hidden="true"/>{mode==='paid'?service?'Record service and payment':'Record a payment':'Expected amount for this date'}</h2>
+        <p>{mode==='paid'?service?'Record a service you’ve completed and paid for. Confirm the actual amount and date below. This also marks the service done.':'Record a payment you’ve already made. Confirm the actual amount and date below. Any repeating schedule will continue.':'For this payment date only. Leave the amount empty to remove it.'}</p>
+        {mode==='paid'&&row.certainty==='estimated'&&row.amount_minor!=null&&<p className="hint spaced">Your saved cost of {formatMoney(row.amount_minor)} was an estimate. Is this the amount you paid? Confirm or correct it below.</p>}
         <div className="field-grid spaced">
-          {mode==='paid'&&<label>Paid on<input type="date" required min="1900-01-01" max={today} value={paidOn} onChange={event=>setPaidOn(event.target.value)}/></label>}
+          {mode==='paid'&&<label>{service?'Completed and paid on':'Paid on'}<input type="date" required min="1900-01-01" max={today} value={paidOn} onChange={event=>setPaidOn(event.target.value)}/></label>}
           <label className={mode==='paid'?undefined:'full'}>{mode==='paid'?'Amount paid (optional, PHP)':'Expected amount (PHP)'}<input type="text" inputMode="decimal" value={amount} onChange={event=>setAmount(event.target.value)} placeholder="0.00"/></label>
           {mode==='amount'&&<label className="checkbox-row full"><input type="checkbox" checked={estimated} onChange={event=>setEstimated(event.target.checked)}/><span>This is an estimate</span></label>}
           {mode==='paid'&&<label className="full">Notes (optional)<textarea rows={2} maxLength={5000} value={notes} onChange={event=>setNotes(event.target.value)}/></label>}
+          {mode==='paid'&&service&&(service.recurrence_months?<p className="hint full">The next service follows your saved repeating schedule.</p>:<label className="full">Next service date (optional)<input type="date" min={paidOn} max="2200-12-31" value={nextService} onChange={event=>setNextService(event.target.value)}/><span className="hint">{service.interval_months?`Leave empty to schedule the next service ${service.interval_months} months after completion.`:'Leave empty to finish this service reminder.'}</span></label>)}
         </div>
         {error&&<p role="alert" className="alert error spaced">{error}</p>}
-        <div className={styles.paymentFormActions}><button type="button" className="button secondary" onClick={close}>Cancel</button><button className="button primary">{busy?'Saving…':mode==='paid'?demo?'Preview paid payment':'Confirm payment recorded':demo?'Review sample amount':'Save expected amount'}</button></div>
+        <div className={styles.paymentFormActions}><button type="button" className="button secondary" onClick={close}>Cancel</button><button className="button primary">{busy?'Saving…':mode==='paid'?demo?'Preview paid payment':service?'Confirm service and payment':'Confirm payment recorded':demo?'Review sample amount':'Save expected amount'}</button></div>
       </fieldset>
     </form>}
     {error&&!mode&&<p role="alert" className={'alert error '+styles.paymentError}>{error}</p>}

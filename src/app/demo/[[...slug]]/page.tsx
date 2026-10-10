@@ -20,7 +20,7 @@ import { uuidSchema } from '@/lib/validation';
 import { HouseholdPaymentPlan } from '@/components/payment-plan';
 import { HouseholdPlannerView } from '@/components/household-planner';
 import { plannerHorizon, samplePlanner, samplePlannerRows } from '@/features/premium/planner';
-import { sampleInsights, samplePaymentPlan } from '@/features/items/insights';
+import { paymentActionContext, sampleInsights, samplePaymentPlan } from '@/features/items/insights';
 import { dateRows } from '@/features/items/domain';
 import { notFound } from 'next/navigation';
 export const metadata = { title: 'Sample account', robots: { index: false, follow: false } };
@@ -43,7 +43,7 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   }
   else if(slug[0] === 'items' && slug[1] === 'payments') {
     const valid = requiredDate.safeParse(query.before).success && uuidSchema.safeParse(query.id).success;
-    const contexts=Object.fromEntries(items.flatMap(item=>item.dates.map(date=>[date.id,{revision:date.revision,can_record_payment:!['service','warranty'].includes(date.kind)}])));
+    const contexts=Object.fromEntries(items.flatMap(item=>item.dates.map(date=>[date.id,paymentActionContext(date)])));
     content = <HouseholdPaymentPlan key={valid?query.before+':'+query.id:'first'} plan={samplePaymentPlan(items,today,valid?query.before:undefined,valid?query.id:undefined)} contexts={contexts} paged={valid} base="/demo" demo/>;
   }
   else if(slug[0] === 'items' && slug[1] === 'review') {

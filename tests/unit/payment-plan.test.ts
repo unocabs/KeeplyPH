@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import { HouseholdPaymentPlan } from '@/components/payment-plan';
 import { sampleItems } from '@/lib/demo';
-import { paymentTotal, previewPaymentChange, samplePaymentPlan, type PaymentPlan } from '@/features/items/insights';
+import { paymentActionContext, paymentTotal, previewPaymentChange, samplePaymentPlan, type PaymentPlan } from '@/features/items/insights';
 
 vi.mock('next/navigation',()=>({useRouter:()=>({refresh:vi.fn()})}));
 vi.mock('@/features/items/insight-actions',()=>({saveOccurrenceAmount:vi.fn()}));
@@ -30,10 +30,19 @@ describe('payment card actions',()=>{
     const unavailable=renderToStaticMarkup(createElement(HouseholdPaymentPlan,{plan:{...data,rows:[row]}}));
     expect(unavailable).not.toContain('Mark paid');
   });
-  it('allows amount review for service costs without marking a service completed as a payment',()=>{
-    const data=plan(),row=data.rows[0];
-    const html=renderToStaticMarkup(createElement(HouseholdPaymentPlan,{plan:{...data,rows:[row]},contexts:{[row.date_id]:{revision:2,can_record_payment:false}}}));
-    expect(html).toContain('Edit amount');expect(html).not.toContain('Mark paid');
+  it.each(['estimated','confirmed','unverified'] as const)('offers Mark paid for %s service costs, including zero',certainty=>{
+    const data=plan(),item=sampleItems(today).find(item=>item.template_key==='car')!;
+    const date=item.dates.find(date=>date.kind==='service')!;
+    const row={...data.rows.find(row=>row.date_id===date.id)!,certainty,amount_minor:0};
+    const context=paymentActionContext(date);
+    const html=renderToStaticMarkup(createElement(HouseholdPaymentPlan,{plan:{...data,rows:[row]},contexts:{[row.date_id]:context}}));
+    expect(html).toContain('Edit amount');expect(html).toContain('Mark paid');expect(html).toContain('₱0');
+    expect(context.service_schedule).toEqual({recurrence_months:date.recurrence_months,recurrence_policy:date.recurrence_policy,interval_months:date.interval_months});
+  });
+  it('keeps warranty tracking separate from marking costs paid',()=>{
+    const item=sampleItems(today).find(item=>item.template_key==='receipt')!;
+    const context=paymentActionContext(item.dates.find(date=>date.kind==='warranty')!);
+    expect(context.can_record_payment).toBe(false);expect(context.service_schedule).toBeUndefined();
   });
   it('combines all saved amounts without losing precision or excluding old unverified amounts',()=>{
     expect(paymentTotal(plan())).toBe('1364800');

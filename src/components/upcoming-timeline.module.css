@@ -6,7 +6,7 @@
 .header :global(.button.primary) { background: var(--primary); box-shadow: 0 4px 12px #6153ca18; }
 .header :global(.button.primary:hover) { background: var(--primary-dark); transform: none; }
 .header :global(.button) { min-height: 44px; border-radius: 12px; font-size: 13px; flex-shrink: 0; }
-.calendar { position: relative; padding: 16px 16px 0; background: #ffffffcf; border: 1px solid #e8e2f5; border-radius: 20px; }
+.calendar { position: relative; padding: 16px 16px 0; background: #ffffffcf; border: 1px solid #ddd4f2; border-radius: 20px; }
 .scale, .row { display: grid; grid-template-columns: var(--label-width) minmax(0, 1fr); gap: var(--label-gap); }
 .axis, .track { position: relative; margin-inline: 20px; }
 .scale { align-items: start; min-height: 42px; }
@@ -15,7 +15,7 @@
 .axis > span { position: absolute; bottom: 12px; transform: translateX(-50%); white-space: nowrap; line-height: 1.15; }
 .axis > span:first-child { color: var(--primary); font-weight: 650; bottom: 6px; }
 .axis small { display: block; font-size: 10px; font-weight: 400; margin-top: 2px; }
-.grid { position: absolute; z-index: 0; inset-block: 0; left: calc(var(--label-width) + var(--label-gap) + 20px); right: 20px; border-radius: 12px; background: linear-gradient(90deg, #f8f7ff90, #f4f7fe90); }
+.grid { position: absolute; z-index: 0; inset-block: 0; left: calc(var(--label-width) + var(--label-gap) + 20px); right: 20px; border-radius: 12px; background: #f3effc; }
 .grid > span { position: absolute; inset-block: 0; border-left: 1px dashed #e3dff0; }
 .grid > span.todayLine { border-left: 1.5px solid #8b74de; }
 .todayLine::before { content: ''; position: absolute; top: -3px; left: -4px; width: 7px; height: 7px; border-radius: 50%; background: #8163dc; }

@@ -146,8 +146,8 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       const pending=new Set();pendingActions.set(page,pending);
       page.on('request',request=>{if(request.method()==='POST')pending.add(request);});
       page.on('requestfinished',request=>pending.delete(request));page.on('requestfailed',request=>pending.delete(request));
-      const actionEditingOnly=process.env.PG_TEST_ACTION_EDITING_ONLY==='1';
-      if(!actionEditingOnly) {
+      const actionEditingOnly=process.env.PG_TEST_ACTION_EDITING_ONLY==='1',paymentOnly=process.env.PG_TEST_PAYMENT_ACTIONS_ONLY==='1';
+      if(!actionEditingOnly&&!paymentOnly) {
       await visit(page,`${base}/items/${item}`); await page.getByRole('heading',{name:'Bedroom aircon',exact:true}).waitFor();
       const history=page.locator('section[aria-labelledby="activity-history-heading"]');
       await history.getByRole('button',{name:'Add activity',exact:true}).click();
@@ -208,9 +208,10 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       await testCoreExperience({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
       await testInsightsExperience({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
       }
-      await testActionEditing({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
-      await testPremiumExperience({page,context,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
-      reports.push({engine:engine.name(),width,premium:['automatic signed-in standalone gift','activation error retry','no notification requirement','modal and Escape dismissal','server acknowledgement','duplicate prevention','private year access','expiry returns to 30 days','sample amount validation and cancellation','monthly totals respond','sample edits survive month navigation','checkout hidden before verification','no overflow'],passed:actionEditingOnly?['saved checklist date and cost','smooth guided record navigation','reduced-motion navigation','separate due-date checkbox','due-date-only schedule','stable zero timing','leading zero replacement','service expected cost','service cost payment count','action hierarchy','direct checklist service entry','cost cancellation','cost validation','server failure and retry']:['completion','actual cost','service next date','correction','audit history','cancel','void','skip','reopen','late completion','validation','server failure','retry','no overflow','account-wide review','historical deep link','cycle pagination','Premium preview before calendar','single planning view','demo review','demo history','demo creation','name-first save','add date later','provider persistence','form cancellation','creation failure retry','existing vehicle','purchase save','compact schedule and amount','collapsed validation reveal','readiness preferences','readiness cancellation and retry','occurrence amount confirmation','amount cancellation and retry','account-wide insights','expanded search','demo insights','stable zero timing','leading zero replacement','service expected cost','service cost payment count','action hierarchy','direct checklist service entry']});
+      if(!paymentOnly)await testActionEditing({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
+      await testServicePayments({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
+      if(!paymentOnly)await testPremiumExperience({page,context,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
+      reports.push({engine:engine.name(),width,premium:paymentOnly?[]:['automatic signed-in standalone gift','activation error retry','no notification requirement','modal and Escape dismissal','server acknowledgement','duplicate prevention','private year access','expiry returns to 30 days','sample amount validation and cancellation','monthly totals respond','sample edits survive month navigation','checkout hidden before verification','no overflow'],passed:paymentOnly?['maintenance Mark paid for estimates and exact amounts','confirm actual cost','cancel leaves history unchanged','invalid amount','failed save retains fields','retry records once','service history and next date','interval recurrence','fixed recurrence','completion-based recurrence','zero amount']:actionEditingOnly?['saved checklist date and cost','smooth guided record navigation','reduced-motion navigation','separate due-date checkbox','due-date-only schedule','stable zero timing','leading zero replacement','service expected cost','service cost payment count','action hierarchy','direct checklist service entry','cost cancellation','cost validation','server failure and retry']:['completion','actual cost','service next date','correction','audit history','cancel','void','skip','reopen','late completion','validation','server failure','retry','no overflow','account-wide review','historical deep link','cycle pagination','Premium preview before calendar','single planning view','demo review','demo history','demo creation','name-first save','add date later','provider persistence','form cancellation','creation failure retry','existing vehicle','purchase save','compact schedule and amount','collapsed validation reveal','readiness preferences','readiness cancellation and retry','occurrence amount confirmation','amount cancellation and retry','account-wide insights','expanded search','demo insights','stable zero timing','leading zero replacement','service expected cost','service cost payment count','action hierarchy','direct checklist service entry']});
       await settleActions(page);
       await context.close(); await browser.close(); browser=null;
     }
@@ -236,7 +237,7 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
     throw error;
   } finally {
     if(browser)await browser.close();
-    server.kill('SIGTERM'); await new Promise(resolve=>server.once('exit',resolve));
+    if(server.exitCode===null&&server.signalCode===null) {server.kill('SIGTERM');await new Promise(resolve=>server.once('exit',resolve));}
     if(tlsProxy)await new Promise(resolve=>tlsProxy.close(resolve));
     if(certificateFolder)await rm(certificateFolder,{recursive:true,force:true});
     await new Promise(resolve=>api.close(resolve));
@@ -554,6 +555,65 @@ async function testActionEditing({page,base,owner,actor,admin,today,engine,width
   await page.screenshot({path:`artifacts/household-insights/${engine.name()}-${width}-action.png`});
   await dialog.getByRole('button',{name:'Close reminder details'}).click();
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+}
+
+async function testServicePayments({page,base,owner,actor,admin,today,engine,width,failSave}) {
+  await mkdir('artifacts/household-insights',{recursive:true});
+  const item=randomUUID(),due=new Date(Date.parse(today+'T00:00:00Z')+2*86400000).toISOString().slice(0,10);
+  await actor(owner,"select public.create_item_draft($1,'car')",[item]);
+  await actor(owner,'select public.save_item_with_date($1,1,$2,$3,$4)',[item,'Kia Stonic maintenance payment','',{kind:'service',label:'Maintenance',due_on:due,reminders_enabled:false,offsets:[],interval_months:null,payment_amount_minor:250000,payment_amount_certainty:'estimated'}]);
+  const date=(await actor(owner,'select public.item_detail($1) data',[item])).rows[0].data.dates[0];
+  // Maintenance costs can be paid whether estimated or exact, with actual service history.
+  await admin.query('delete from private.rate_limit_buckets where user_id=$1',[owner]);
+  await visit(page,base+'/items/payments');
+  const payment=page.getByRole('listitem').filter({has:page.getByRole('link',{name:'Kia Stonic maintenance payment',exact:true})});
+  await payment.getByRole('button',{name:'Mark paid',exact:true}).click();
+  const paidForm=payment.locator('form');
+  await paidForm.getByText(/Your saved cost of ₱2,500 was an estimate/).waitFor();
+  assert.equal(await paidForm.getByLabel('Amount paid (optional, PHP)').inputValue(),'2500');
+  await payment.screenshot({path:`artifacts/household-insights/${engine.name()}-${width}-service-payment.png`});
+  await paidForm.getByRole('button',{name:'Cancel',exact:true}).click();
+  assert.equal((await admin.query('select count(*)::int n from public.item_activities where item_id=$1',[item])).rows[0].n,0);
+  await payment.getByRole('button',{name:'Edit amount',exact:true}).click();
+  await payment.getByLabel('This is an estimate').uncheck();
+  await payment.getByRole('button',{name:'Save expected amount',exact:true}).click();
+  await paidForm.waitFor({state:'hidden'});await settleActions(page);
+  await payment.getByRole('button',{name:'Mark paid',exact:true}).click();
+  assert.equal(await paidForm.getByText(/was an estimate/).count(),0);
+  await paidForm.getByLabel('Amount paid (optional, PHP)').fill('invalid');
+  await paidForm.getByRole('button',{name:'Confirm service and payment',exact:true}).click();
+  await paidForm.getByRole('alert').waitFor();
+  await paidForm.getByLabel('Amount paid (optional, PHP)').fill('1400');
+  const nextService=new Date(Date.parse(today+'T00:00:00Z')+60*86400000).toISOString().slice(0,10);
+  await paidForm.getByLabel('Next service date (optional)').fill(nextService);
+  failSave();await paidForm.getByRole('button',{name:'Confirm service and payment',exact:true}).click();
+  await paidForm.getByRole('alert').waitFor();
+  assert.equal(await paidForm.getByLabel('Amount paid (optional, PHP)').inputValue(),'1400');
+  await paidForm.getByRole('button',{name:'Confirm service and payment',exact:true}).click();
+  await payment.waitFor({state:'hidden'});await settleActions(page);
+  const activities=(await admin.query('select activity_type,amount_minor from public.item_activities where item_id=$1',[item])).rows;
+  assert.equal(activities.length,1);assert.equal(activities[0].activity_type,'service');assert.equal(Number(activities[0].amount_minor),140000);
+  assert.equal((await admin.query("select due_on::text from public.date_occurrences where date_id=$1 and status='open'",[date.id])).rows[0].due_on,nextService);
+  await page.reload();await page.waitForLoadState('networkidle');assert.equal(await payment.count(),0);
+  // Both legacy service intervals and completion-based recurring services keep their next dates.
+  for(const schedule of ['interval','fixed','from_completion']) {
+    const recurring=schedule!=='interval',serviceId=randomUUID(),name=schedule+' paid service';
+    await actor(owner,"select public.create_item_draft($1,'aircon')",[serviceId]);
+    await actor(owner,'select public.save_item_with_date($1,1,$2,$3,$4)',[serviceId,name,'',{kind:'service',label:'Cleaning',due_on:due,reminders_enabled:false,offsets:[],interval_months:recurring?null:3,recurrence_months:recurring?3:null,recurrence_policy:'from_completion',payment_amount_minor:0,payment_amount_certainty:'estimated'}]);
+    if(schedule==='from_completion')await admin.query("update public.important_dates set recurrence_policy='from_completion' where item_id=$1",[serviceId]);
+    await visit(page,base+'/items/payments');
+    const servicePayment=page.getByRole('listitem').filter({has:page.getByRole('link',{name,exact:true})});
+    await servicePayment.getByRole('button',{name:'Mark paid',exact:true}).click();
+    await servicePayment.getByText(/Your saved cost of ₱0 was an estimate/).waitFor();
+    await servicePayment.getByRole('button',{name:'Confirm service and payment',exact:true}).click();
+    await servicePayment.waitFor({state:'hidden'});await settleActions(page);
+    const history=(await admin.query('select activity_type,amount_minor from public.item_activities where item_id=$1',[serviceId])).rows;
+    assert.equal(history.length,1);assert.equal(history[0].activity_type,'service');assert.equal(Number(history[0].amount_minor),0);
+    const next=(await admin.query("select o.due_on::text from public.date_occurrences o join public.important_dates d on d.id=o.date_id where d.item_id=$1 and o.status='open'",[serviceId])).rows[0].due_on;
+    const expected=(await admin.query("select ($1::date+interval '3 months')::date::text due",[schedule==='fixed'?due:today])).rows[0].due;
+    assert.equal(next,expected);
+  }
+  console.log('✓ Maintenance payments, cost confirmation, cancellation, retry, service history and schedules: '+engine.name()+' '+width);
 }
 
 async function testPremiumExperience({page,context,base,owner,actor,admin,engine,width,failSave}) {

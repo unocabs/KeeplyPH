@@ -2,6 +2,7 @@ import { alertsPaused } from '@/lib/alert-options';
 import 'server-only';
 import { requireUser } from '@/lib/auth';
 import type { ItemIdentity, ItemWithDetails } from './domain';
+import { paymentActionContext } from './insights';
 export interface ItemQuery { filter?:string; q?:string; template?:string; cursor?:string; cursorId?:string }
 export async function getHouseholdInsights(): Promise<import('./insights').HouseholdInsights> {
  const {supabase}=await requireUser();const {data,error}=await supabase.rpc('household_insights',{});
@@ -18,9 +19,9 @@ export async function getPaymentActionContexts(plan:import('./insights').Payment
  const ids=[...new Set(plan.rows.filter(row=>row.occurrence_id).map(row=>row.date_id))];
  if(!ids.length)return {};
  const {supabase,userId}=await requireUser();
- const {data,error}=await supabase.from('important_dates').select('id,revision,kind').eq('user_id',userId).in('id',ids);
+ const {data,error}=await supabase.from('important_dates').select('id,revision,kind,recurrence_months,recurrence_policy,interval_months').eq('user_id',userId).in('id',ids);
  if(error)throw new Error('Unable to load payment actions. Please retry.');
- return Object.fromEntries(data.map(date=>[date.id,{revision:date.revision,can_record_payment:!['service','warranty'].includes(date.kind)}]));
+ return Object.fromEntries(data.map(date=>[date.id,paymentActionContext(date)]));
 }
 export async function getItems(query:ItemQuery={}): Promise<ItemWithDetails[]> {
  const {supabase,profile}=await requireUser();

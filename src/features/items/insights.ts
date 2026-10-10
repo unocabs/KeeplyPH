@@ -63,7 +63,13 @@ export function occurrenceAmount(date: DateWithDetails, occurrence: Occurrence) 
     : { amount:date.payment_amount_minor ?? null,certainty:date.payment_amount_minor == null ? 'unset' as const : date.payment_amount_certainty || 'unverified' as const };
 }
 export interface PlannedPayment {identity?:ItemIdentity;item_id:string;product_name:string;date_id:string;label:string;occurrence_id:string|null;due_on:string;amount_minor:number|null;certainty:AmountCertainty;projected:boolean}
-export interface PaymentActionContext { revision:number; can_record_payment:boolean }
+export interface PaymentActionContext {
+  revision:number; can_record_payment:boolean;
+  service_schedule?:Pick<DateWithDetails,'recurrence_months'|'recurrence_policy'|'interval_months'>;
+}
+export function paymentActionContext(date:Pick<DateWithDetails,'revision'|'kind'|'recurrence_months'|'recurrence_policy'|'interval_months'>):PaymentActionContext {
+  return {revision:date.revision,can_record_payment:date.kind!=='warranty',...(date.kind==='service'?{service_schedule:{recurrence_months:date.recurrence_months,recurrence_policy:date.recurrence_policy,interval_months:date.interval_months}}:{})};
+}
 export interface PaymentPlan {
   today:string;ends_on:string;currency:'PHP';total:number;confirmed_minor:string;estimated_minor:string;unverified_minor:string;
   confirmed_count:number;estimated_count:number;unverified_count:number;unset_count:number;has_more:boolean;rows:PlannedPayment[];
