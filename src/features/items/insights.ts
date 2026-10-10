@@ -36,7 +36,7 @@ export function readinessSavedValue(item:ItemWithDetails,key:ReadinessKey):{valu
   const due=current?.due_on ?? [...date.occurrences].sort((a,b)=>b.due_on.localeCompare(a.due_on))[0]?.due_on;
   if(!due)return null;
   const amount=current?occurrenceAmount(date,current):null;
-  return {value:(current?'':'Last recorded: ')+formatDate(due),detail:amount?.amount==null?undefined:(amount.certainty==='estimated'?'Estimated cost: ':amount.certainty==='unverified'?'Unverified cost: ':'Expected cost: ')+formatMoney(amount.amount)};
+  return {value:(current?'':'Last recorded: ')+formatDate(due),detail:amount?.amount==null?undefined:(amount.certainty==='estimated'?'Estimated cost: ':'Expected cost: ')+formatMoney(amount.amount)};
 }
 /** Sample account mirror of the database rules. Private records use authoritative checks. */
 export function readinessChecks(item: ItemWithDetails): ReadinessCheck[] {

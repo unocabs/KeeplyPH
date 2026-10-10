@@ -93,7 +93,7 @@ export function Dashboard({ items, usage, name, today, demo = false, setup, unco
       <label className={styles.sort}><span className="sr-only">Sort household records</span><select value={sort} onChange={event => setSort(event.target.value)}><option value="recent">Recently added</option><option value="due">Due soon</option></select></label>
       <div className={'purchase-grid ' + styles.cards}>{sorted.slice(0, 6).map(item => <ItemCard key={item.id} item={item} base={base} today={today} compact />)}</div>
       {!matched.length && <p className={styles.empty}>{active.length ? 'No records in this category.' : 'Add an item. A name is a good start.'}</p>}
-      <div className={styles.browse}><p>{completePreview && matched.length <= 6 ? 'Your records, ready when you need them.' : 'Showing a selection. Browse all items for the complete list.'}</p></div>
+      {completePreview && matched.length <= 6 && <div className={styles.browse}><p>Your records, ready when you need them.</p></div>}
     </section>
     {demo && <section className={'panel ' + styles.examples} aria-labelledby="sample-capabilities"><h2 id="sample-capabilities">Explore what you can keep</h2><p className="section-description">Explore these fictional records. Sample changes are previews only and are not saved. No alerts are sent.</p><div className={styles.exampleLinks}>
       <Link href={base + '/items/payments'}><span className={styles.exampleTitle}><span className={styles.exampleIcon}><Wallet size={21} aria-hidden="true"/></span><strong>Payment planning</strong></span><span>Check upcoming payment amounts <ArrowRight size={15} aria-hidden="true" /></span></Link>
