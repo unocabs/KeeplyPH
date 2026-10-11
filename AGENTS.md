@@ -16,6 +16,16 @@ Position Keeply as an app for organising household obligations. Alerts support t
 
 Use "Explore a sample account" for the general demo CTA. Order categories around household usefulness, beginning with bills, home maintenance, and purchases/warranties. Keep category identifiers and existing saved records stable when updating presentation.
 
+## User research and improvement decisions
+
+For requests to improve Keeply's product, flows, positioning, or Free/Premium offering, first read [the research index and decision notes](docs/research/README.md). Consult the relevant sections of [the deep household-admin research](docs/research/2026-10-household-admin-psychology-and-market.md) before recommending or implementing material changes.
+
+The standing goal is to help Philippine households managing bills, home maintenance, and purchases/warranties understand what needs attention, what to do next, who is handling it, what has been handled, and where the proof is. Prioritise reduced mental effort, clear next actions, truthful status, useful records, respectful recovery, and reliable complete flows.
+
+Distinguish published research, competitor documentation, anecdotal reviews, observed Keeply user feedback, owner preferences, and assistant hypotheses. Do not present a provisional rating or desk-research inference as validated customer demand. Recheck time-sensitive claims when they materially affect a decision. Let relevant observed user behaviour and newer evidence update the recommendations, while assessing context and evidence quality.
+
+For material product decisions, record the user problem, supporting evidence, expected outcome, and validation result or remaining uncertainty in the research decision notes. Record actual feedback accurately and without personal or household-sensitive data. Preserve the dated deep-research report as a baseline; add dated updates and corrections through the research index. Prefer focused improvements to existing flows where evidence supports them. Research recommendations do not themselves authorise unrelated feature work.
+
 ## Premium feature quality
 
 The owner wants Keeply to feel premium. Do not add extra or new features unless they provide a complete, polished, reliable experience. Prefer fewer finished features over half-baked ideas, placeholders, or functionality that requires awkward workarounds.

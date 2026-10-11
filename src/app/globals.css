@@ -316,9 +316,10 @@ select {
 @media(max-width:720px){
   .public-nav{padding-block:16px}
   .brand-lockup-described{grid-template-columns:44px auto;column-gap:5px}
-  .brand-lockup-described .brand{gap:5px;font-size:24px}
+  .brand-lockup-described .brand{gap:5px;font-size:22px}
   .brand-lockup-described .brand-logo{width:44px;height:44px}
 }
+@media(max-width:480px){.brand-lockup-described .brand{font-size:20px}}
 @media(max-width:400px){
   .public-nav{padding-inline:12px;gap:8px}
   .public-nav>div{gap:8px}
@@ -326,7 +327,7 @@ select {
 }
 @media(max-width:360px){
   .brand-lockup-described{grid-template-columns:40px auto;column-gap:4px}
-  .brand-lockup-described .brand{gap:4px}
+  .brand-lockup-described .brand{gap:4px;font-size:16px}
   .brand-lockup-described .brand-logo{width:40px;height:40px}
   .brand-lockup-described .brand-app-type{font-size:10px}
   .public-nav .button{padding-inline:8px}
