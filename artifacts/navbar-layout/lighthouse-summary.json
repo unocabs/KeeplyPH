@@ -1,0 +1,22 @@
+[
+  {
+    "page": "/",
+    "scores": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "warnings": []
+  },
+  {
+    "page": "/bill-tracker",
+    "scores": {
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "warnings": []
+  }
+]

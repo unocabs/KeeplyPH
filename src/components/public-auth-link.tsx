@@ -5,6 +5,6 @@ import { isSignedIn } from '@/lib/auth';
 export async function PublicAuthLink() {
   const signedIn = await isSignedIn();
   return <Link className="button secondary" href={signedIn ? '/dashboard' : '/login'}>
-    <span>{signedIn ? 'Open your vault' : 'Sign in'}</span><ArrowRight size={15} aria-hidden="true" />
+    <span>{signedIn ? 'Open app' : 'Sign in'}</span><ArrowRight size={15} aria-hidden="true" />
   </Link>;
 }

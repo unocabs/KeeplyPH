@@ -87,7 +87,7 @@ export default async function BillTrackerPage() {
   return <>
     <script type="application/ld+json" nonce={nonce} dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
     <nav className={'public-nav ' + styles.nav} aria-label="Main navigation">
-      <Brand />
+      <Brand showAppType />
       <div><a href="#why-keeply">Why Keeply</a><a href="#beyond-bills">Beyond bills</a><Link href="/pricing">Pricing</Link><PublicAuthLink /></div>
     </nav>
 

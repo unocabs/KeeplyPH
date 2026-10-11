@@ -117,7 +117,7 @@
   .container { padding-inline: 20px; }
   .nav { padding-inline: 20px; }
   .nav > div { gap: 12px; }
-  .nav > div > a:not(:global(.button)) { display: none; }
+  .nav > div > a:not(:global(.button)):not([href="/pricing"]) { display: none; }
   .breadcrumb { padding-top: 20px; }
   .hero { grid-template-columns: 1fr; gap: 32px; padding: 35px 0 55px; }
   .hero h1 { font-size: clamp(36px, 8.5vw, 54px); line-height: 1.12; }
@@ -156,8 +156,11 @@
   .finalCta > p:not(.eyebrow) { font-size: 13px; }
   .actions { gap: 10px 20px; }
 }
+@media (max-width: 400px) {
+  .nav { padding-inline: 12px; }
+  .nav > div { gap: 8px; }
+}
 @media (max-width: 380px) {
-  .nav { padding-inline: 16px; }
   .hero h1 { font-size: 36px; }
   .heroPhoto { height: 290px; }
   .heroVisual { padding-bottom: 128px; }

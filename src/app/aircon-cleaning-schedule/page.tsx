@@ -40,7 +40,7 @@ export default async function Page() {
   };
   return <>
     <script type="application/ld+json" nonce={nonce} dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
-    <nav className="public-nav" aria-label="Main navigation"><Brand /><div><Link href="/warranty-tracker">Receipts &amp; warranties</Link><PublicAuthLink /></div></nav>
+    <nav className="public-nav" aria-label="Main navigation"><Brand showAppType /><div><Link href="/warranty-tracker">Receipts &amp; warranties</Link><PublicAuthLink /></div></nav>
     <main id="main-content" className={styles.guide}>
       <header className={styles.hero}>
         <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden="true"> / </span><span>Aircon cleaning schedule</span></nav>
