@@ -26,6 +26,7 @@ function dayAfter(today: string, days: number) {
 export function UpcomingTimeline({ rows, today, base = '', embedded = false }: { rows: DateRow[]; today: string; base?: string; embedded?: boolean }) {
   const [selected, setSelected] = useState<DateRow | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [pointerFocusedDate, setPointerFocusedDate] = useState<string | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const rowsId = useId();
@@ -40,6 +41,7 @@ export function UpcomingTimeline({ rows, today, base = '', embedded = false }: {
     <div className={styles.grid} aria-hidden="true">{[0, 7, 14, 21, 30].map(day => <span key={day} className={day === 0 ? styles.todayLine : undefined} style={{ left: `${day / 30 * 100}%` }} />)}</div>
     {visible.map(row => {
       const due = row.occurrence.due_on;
+      const dueToday = due === today;
       return <div className={styles.row} key={row.date.id} data-category={itemCategory(row.item)}>
         <div className={styles.identity}><strong>{row.item.product_name}</strong><span>{reminderProviderLabel(row.item) && <>{reminderProviderLabel(row.item)} · </>}{row.date.label} · {daysUntil(due, today) === 0 ? 'Today' : shortDate(due)}</span></div>
         <div className={styles.track}>
@@ -56,8 +58,9 @@ export function UpcomingTimeline({ rows, today, base = '', embedded = false }: {
               <span role="tooltip" id={`${row.date.id}-alert-${first}`} className={styles.tooltip}>{labels.map(label => <span key={label}>{label}</span>)}</span>
             </span>;
           })}
-          <button type="button" className={styles.due} style={{ left: `${timelinePosition(due, today)}%` }} title={[reminderProviderLabel(row.item), row.date.label].filter(Boolean).join(' · ')} aria-label={`${row.item.product_name}${reminderProviderLabel(row.item) ? ' · ' + reminderProviderLabel(row.item) + ' · ' + categoryLabel(itemCategory(row.item)) : ''} due ${formatDate(due)}. View reminder details`} aria-haspopup="dialog" onClick={event => { event.currentTarget.focus(); setSelected(row); dialog.current?.showModal(); }}>
+          <button type="button" className={styles.due} data-due-today={dueToday ? '' : undefined} data-pointer-focus={pointerFocusedDate === row.date.id ? '' : undefined} style={{ left: `${timelinePosition(due, today)}%` }} title={[reminderProviderLabel(row.item), row.date.label].filter(Boolean).join(' · ')} aria-label={`${row.item.product_name}${reminderProviderLabel(row.item) ? ' · ' + reminderProviderLabel(row.item) + ' · ' + categoryLabel(itemCategory(row.item)) : ''} due ${dueToday ? 'today, ' : ''}${formatDate(due)}. View reminder details`} aria-haspopup="dialog" onPointerDown={() => setPointerFocusedDate(row.date.id)} onKeyDown={() => setPointerFocusedDate(null)} onBlur={() => { if (!dialog.current?.open) setPointerFocusedDate(null); }} onClick={event => { setPointerFocusedDate(event.detail > 0 ? row.date.id : null); event.currentTarget.focus(); setSelected(row); dialog.current?.showModal(); }}>
             <ReminderIcon productType={row.item.product_type} productName={row.item.product_name} template={row.item.template_key} category={row.item.category} preset={row.item.reminder_preset} brand={row.item.car_brand} motorcycleBrand={row.item.motorcycle_brand} subscriptionBrand={row.item.subscription_brand} utilityId={row.item.utility_id} insurerId={row.item.insurer_id} lenderId={row.item.lender_id} size={20} />
+            {dueToday && <span className={styles.todayBadge} aria-hidden="true">Today</span>}
           </button>
         </div>
       </div>;
