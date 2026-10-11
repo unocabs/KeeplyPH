@@ -9,7 +9,7 @@ import {premiumExpiry} from '@/features/premium/discovery';
 import {PremiumAccessMessage} from './premium-access-message';
 import { PremiumPlans } from './premium-plans';
 export interface BillingOrder {id:string;amount_minor:number;currency:string;status:string;created_at:string;period_ends_at:string|null;product?:string;slot_count?:number;can_resume?:boolean}
-export function Billing({usage,orders=[],enabled=false,returned,returnedOrderId,demo=false,testMode=false,support='rgianmcabrera@gmail.com',timezone='Asia/Manila',premiumUntilLabel,pendingOrderId}:{usage:Usage;orders?:BillingOrder[];enabled?:boolean;returned?:string;returnedOrderId?:string;demo?:boolean;testMode?:boolean;methods?:string[];support?:string;timezone?:string;premiumUntilLabel?:string;pendingOrderId?:string}) {
+export function Billing({usage,orders=[],enabled=false,returned,returnedOrderId,demo=false,testMode=false,support='support@keeplyph.com',timezone='Asia/Manila',premiumUntilLabel,pendingOrderId}:{usage:Usage;orders?:BillingOrder[];enabled?:boolean;returned?:string;returnedOrderId?:string;demo?:boolean;testMode?:boolean;methods?:string[];support?:string;timezone?:string;premiumUntilLabel?:string;pendingOrderId?:string}) {
  const [state,action,pending]=useActionState(startCheckout,{}),router=useRouter();
  const order=returnedOrderId?orders.find(entry=>entry.id===returnedOrderId):undefined,awaiting=pendingOrderId?orders.find(entry=>entry.id===pendingOrderId):undefined;
  return <div data-premium-surface="billing"><div className="page-heading"><div><span className="eyebrow">A LITTLE MORE BREATHING ROOM</span><h1>Ease into the months ahead.</h1><p>Use your 30-Day Spending Checkup, compare monthly costs and plan up to a year ahead.</p></div></div>

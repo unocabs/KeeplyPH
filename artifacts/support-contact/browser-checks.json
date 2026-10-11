@@ -1,0 +1,117 @@
+{
+  "environment": "Local production HTTPS with SUPPORT_EMAIL unset to test the default contact",
+  "reports": [
+    {
+      "engine": "chromium",
+      "path": "/terms",
+      "widths": [
+        320,
+        393,
+        1280
+      ],
+      "contacts": [
+        {
+          "text": "support@keeplyph.com",
+          "href": "mailto:support@keeplyph.com"
+        },
+        {
+          "text": "support@keeplyph.com",
+          "href": "mailto:support@keeplyph.com?subject=Keeply%20payment%20help"
+        },
+        {
+          "text": "support@keeplyph.com",
+          "href": "mailto:support@keeplyph.com"
+        }
+      ],
+      "metadata": {
+        "title": "Terms · Keeply",
+        "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+        "canonical": "https://www.keeplyph.com/terms",
+        "lang": "en-PH",
+        "locale": "en_PH",
+        "schemas": []
+      }
+    },
+    {
+      "engine": "chromium",
+      "path": "/privacy",
+      "widths": [
+        320,
+        393,
+        1280
+      ],
+      "contacts": [
+        {
+          "text": "support@keeplyph.com",
+          "href": "mailto:support@keeplyph.com"
+        }
+      ],
+      "metadata": {
+        "title": "Privacy · Keeply",
+        "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+        "canonical": "https://www.keeplyph.com/privacy",
+        "lang": "en-PH",
+        "locale": "en_PH",
+        "schemas": []
+      }
+    },
+    {
+      "engine": "webkit",
+      "path": "/terms",
+      "widths": [
+        320,
+        393,
+        1280
+      ],
+      "contacts": [
+        {
+          "text": "support@keeplyph.com",
+          "href": "mailto:support@keeplyph.com"
+        },
+        {
+          "text": "support@keeplyph.com",
+          "href": "mailto:support@keeplyph.com?subject=Keeply%20payment%20help"
+        },
+        {
+          "text": "support@keeplyph.com",
+          "href": "mailto:support@keeplyph.com"
+        }
+      ],
+      "metadata": {
+        "title": "Terms · Keeply",
+        "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+        "canonical": "https://www.keeplyph.com/terms",
+        "lang": "en-PH",
+        "locale": "en_PH",
+        "schemas": []
+      }
+    },
+    {
+      "engine": "webkit",
+      "path": "/privacy",
+      "widths": [
+        320,
+        393,
+        1280
+      ],
+      "contacts": [
+        {
+          "text": "support@keeplyph.com",
+          "href": "mailto:support@keeplyph.com"
+        }
+      ],
+      "metadata": {
+        "title": "Privacy · Keeply",
+        "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+        "canonical": "https://www.keeplyph.com/privacy",
+        "lang": "en-PH",
+        "locale": "en_PH",
+        "schemas": []
+      }
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "Browser viewport simulations; no email was sent and mailbox delivery was not tested"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "environment": "Live production https://www.keeplyph.com",
+  "deployment": "https://vercel.com/rgianmcabrera-8935/keeply-ph/FTL5bh1424yCQ9c9iitt3P87k6cu",
+  "sourceCommit": "7258d521a748630f912db74eab323e6b74807784",
+  "configuration": {
+    "name": "SUPPORT_EMAIL",
+    "value": "support@keeplyph.com",
+    "environments": [
+      "Production",
+      "Preview"
+    ]
+  },
+  "pages": [
+    {
+      "path": "/terms",
+      "status": 200,
+      "links": [
+        "mailto:support@keeplyph.com",
+        "mailto:support@keeplyph.com?subject=Keeply%20payment%20help",
+        "mailto:support@keeplyph.com"
+      ]
+    },
+    {
+      "path": "/privacy",
+      "status": 200,
+      "links": [
+        "mailto:support@keeplyph.com"
+      ]
+    }
+  ],
+  "limitations": [
+    "Existing production source redeployed with updated environment configuration; local fallback changes remain uncommitted",
+    "Mailbox receipt and email delivery were not tested"
+  ]
+}
