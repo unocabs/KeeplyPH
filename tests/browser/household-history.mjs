@@ -170,6 +170,7 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       page.on('request',request=>{if(request.method()==='POST')pending.add(request);});
       page.on('requestfinished',request=>pending.delete(request));page.on('requestfailed',request=>pending.delete(request));
       const actionEditingOnly=process.env.PG_TEST_ACTION_EDITING_ONLY==='1',paymentOnly=process.env.PG_TEST_PAYMENT_ACTIONS_ONLY==='1';
+      await testCompletionAmounts({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;}});
       if(!actionEditingOnly&&!paymentOnly) {
       await testPremiumDiscoveryExperience({page,base,owner,actor,admin,today,engine,width,failMeasurement:()=>{failNextMeasurement=true;return()=>!failNextMeasurement;}});
       await testFreeSpendingClarity({page,base,owner,actor,admin,today,engine,width});
@@ -271,6 +272,41 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
     if(certificateFolder)await rm(certificateFolder,{recursive:true,force:true});
     await new Promise(resolve=>api.close(resolve));
   }
+}
+
+async function testCompletionAmounts({page,base,owner,actor,admin,today,engine,width,failSave}) {
+  const completion=page.locator('form').filter({has:page.getByRole('heading',{name:'Record completion',exact:true})});
+  for(const [name,saved,override,certainty,initial,entered,actual] of [
+    ['saved schedule',125050,null,null,'1250.5',null,125050],
+    ['date override',125050,90000,'confirmed','900','950',95000],
+    ['zero cost',0,null,null,'0',null,0],
+    ['unknown actual',125050,null,null,'1250.5','',null],
+    ['unknown expected',125050,null,'unset','',null,null],
+  ]) {
+    const item=randomUUID();await actor(owner,"select public.create_item_draft($1,'other')",[item]);
+    await actor(owner,'select public.save_item_with_date($1,1,$2,$3,$4,$5)',[item,'Completion '+name,'',{kind:'other',label:'Monthly payment',due_on:today,reminders_enabled:false,offsets:[],interval_months:null,recurrence_months:1,payment_amount_minor:saved,payment_amount_certainty:'estimated'},'electric-bill']);
+    const date=(await admin.query('select id from public.important_dates where item_id=$1',[item])).rows[0];
+    await admin.query('update public.date_occurrences set expected_amount_minor=$1,amount_certainty=$2 where date_id=$3',[override,certainty,date.id]);
+    const open=async()=>{await page.locator('button.date-primary-action').click();await completion.waitFor();};
+    await visit(page,base+'/items/'+item);await open();
+    assert.equal(await completion.getByLabel('Amount paid').inputValue(),initial);
+    await completion.getByLabel('Amount paid').fill('42');await completion.getByRole('button',{name:'Cancel',exact:true}).click();
+    assert.equal((await admin.query('select count(*)::int n from public.item_activities where item_id=$1',[item])).rows[0].n,0);
+    await open();assert.equal(await completion.getByLabel('Amount paid').inputValue(),initial);
+    if(entered!==null)await completion.getByLabel('Amount paid').fill(entered);
+    if(name==='saved schedule') {
+      failSave();await completion.getByRole('button',{name:'Confirm payment recorded',exact:true}).click();await completion.getByRole('alert').waitFor();
+      assert.equal(await completion.getByLabel('Amount paid').inputValue(),initial);
+      assert.equal((await admin.query('select count(*)::int n from public.item_activities where item_id=$1',[item])).rows[0].n,0);
+    }
+    await completion.getByRole('button',{name:'Confirm payment recorded',exact:true}).click();await completion.waitFor({state:'hidden'});await settleActions(page);
+    const activities=(await admin.query('select amount_minor from public.item_activities where item_id=$1',[item])).rows;
+    assert.equal(activities.length,1);assert.equal(activities[0].amount_minor===null?null:Number(activities[0].amount_minor),actual);
+    assert.equal(Number((await admin.query('select payment_amount_minor from public.important_dates where id=$1',[date.id])).rows[0].payment_amount_minor),saved);
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    await admin.query('delete from public.items where id=$1',[item]);
+  }
+  console.log(`✓ Completion amount: schedule default, date override, zero, clearing, unknown, cancel and failed-save retry: ${engine.name()} ${width}`);
 }
 
 async function testPremiumDiscoveryExperience({page,base,owner,actor,admin,today,engine,width,failMeasurement}) {

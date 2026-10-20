@@ -1,0 +1,37 @@
+Create a 53-second vertical TikTok tutorial, 9:16, 1080 x 1920, titled "How to log an internet bill in Keeply". Audience: people organising household bills. Use warm, natural Taglish voiceover with a Filipino accent, clear pronunciation, and a friendly, practical tone. Keep the final duration between 40 and 60 seconds. Use Keeply as the spoken brand name and keeplyph.com as the website.
+
+Use the six supplied images in filename order. Images 00 and 05 are AI-generated lifestyle visuals. Images 01 through 04 are actual mobile screenshots of Keeply's public sample account, with fictional bill details. Use these screenshots directly for the interface scenes, preserving their exact text and layout. Do not invent screens, payment confirmations, button labels, or a successful save. Add a discreet "Sample account preview" label to interface scenes. The sample button says "Review sample item". The actual signed-in form uses "Save item". Explain saving with a separate caption, without changing the sample screenshot or animating a click on the sample button.
+
+Visual direction: clean cream and lavender palette, readable bold captions, restrained zooms and pans, simple cuts and subtle tap highlights. Make the phone interface large enough to read. Focus each crop on the relevant field. Keep captions away from the right-side TikTok controls and bottom overlay area, and do not cover fields being explained. Add light instrumental music under the narration, with speech clearly dominant. No talking avatar, fabricated testimonial, fake notifications, stock app UI, or claims that Keeply pays bills. Caption the narration accurately, highlighting only key phrases.
+
+Use this sequence and voiceover:
+
+0-5 seconds | 00-opening.png
+Visual: gentle push-in on the woman checking her fictional bill. Headline: "Internet bill due na naman?"
+Voiceover: "Internet bill due na naman? Eto kung paano i-log sa Keeply."
+
+5-12 seconds | 01-choose-internet-bill.jpg
+Visual: show Bills & utilities, then highlight Internet Bill. Caption: "Add item > Bills & utilities > Internet Bill". The caption explains the navigation; do not fabricate missing screens.
+Voiceover: "Sa account mo, tap Add item, Bills and utilities, then Internet Bill."
+
+12-20 seconds | 02-name-provider.jpg
+Visual: highlight A helpful name, then the optional provider section. Caption: "Name your bill. Provider is optional."
+Voiceover: "Pangalanan, tulad ng Home internet bill. Optional: buksan ang provider section at piliin ang biller mo."
+
+20-31 seconds | 03-date-monthly-amount.jpg
+Visual: slowly move between Next payment, Monthly, and Amount per payment. Caption: "Due date + Monthly + Amount". Add "Example only" beside the fictional amount. Show 25 October 2026 and PHP 1,699 only as example data, not as pricing or today's date.
+Voiceover: "Ilagay ang next payment date. Check Monthly kung buwan-buwan. Sa Payment amount, ilagay ang halaga. Halimbawa, one thousand six hundred ninety-nine pesos."
+
+31-40 seconds | 04-alerts.jpg
+Visual: highlight optional alerts and the example setting, 1 day before. Caption: "Optional: choose your alert timing". Do not show an alert being delivered.
+Voiceover: "Gusto mo ng heads-up? I-on ang alerts, then piliin kung ilang araw before due date."
+
+40-46 seconds | transition from 04-alerts.jpg to 05-closing.png
+Visual: separate instructional caption: "In your account: review, then Save item". Follow with "Pay through your provider". Do not show a fake save success or imply payment was made.
+Voiceover: "Review your details, then tap Save item. Keeply tracks your bill; sa provider ka pa rin magbabayad."
+
+46-53 seconds | 05-closing.png
+Visual: gentle push-in. End card text: "Keeply", "Keep household bills organised", "keeplyph.com". Secondary CTA: "Explore a sample account". Hold the website long enough to read.
+Voiceover: "Mas madaling balikan ang amount at due date. Try Keeply at keeplyph dot com."
+
+Prioritise the real interface references over generated reinterpretations. Preserve the distinction between logging a bill, setting optional alerts, and paying the provider. Do not promise automatic bill detection, automatic payment, or guaranteed reminder delivery.

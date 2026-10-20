@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import { activitySchema, completionType } from '@/features/items/activity';
+import { activitySchema, completionType, type ItemActivity } from '@/features/items/activity';
 import { safeAuthIntent } from '@/lib/auth-intent';
 import { sampleItems, sampleUsage } from '@/lib/demo';
 import { ActivityEditor } from '@/components/activity-editor';
@@ -45,11 +45,36 @@ describe('household history presentation', () => {
     expect(html).toContain('Edit Details'); expect(html).toContain('Remove recorded activity');
   });
   it('keeps optional actual amounts empty and offers review without pretending the sample saves', () => {
-    const date=aircon.dates[0], occurrence=date.occurrences.find(o => o.status === 'open')!;
+    const date={...aircon.dates[0],payment_amount_minor:null}, occurrence={...date.occurrences.find(o => o.status === 'open')!,amount_certainty:null,expected_amount_minor:null};
     const html=renderToStaticMarkup(createElement(ActivityEditor,{item:aircon,date,occurrence,today,demo:true,onClose:vi.fn()}));
     expect(html).toContain('Record completion'); expect(html).toContain('This sample does not save changes');
     expect(html).toContain('Schedule from the completion date'); expect(html).toContain('Review sample activity');
     expect(html).toContain('placeholder="0.00" value=""');
+  });
+  it.each([
+    [125050, null, null, '1250.5'],
+    [125050, 90000, 'confirmed', '900'],
+    [125050, 0, 'confirmed', '0'],
+    [0, null, null, '0'],
+    [125050, null, 'unset', ''],
+  ] as const)('defaults completion to the effective expected amount (%s, %s, %s)', (saved, override, certainty, value) => {
+    const date={...aircon.dates[0],payment_amount_minor:saved,payment_amount_certainty:'estimated' as const};
+    const occurrence={...date.occurrences.find(o=>o.status==='open')!,expected_amount_minor:override,amount_certainty:certainty};
+    const html=renderToStaticMarkup(createElement(ActivityEditor,{item:aircon,date,occurrence,today,demo:true,onClose:vi.fn()}));
+    expect(html).toContain(`placeholder="0.00" value="${value}"`);
+    if(value)expect(html).toContain('Confirm or change the amount below');
+    if(certainty===null)expect(html).toContain('(estimate)');
+  });
+  it('keeps independent activities blank and corrections faithful to their recorded amount', () => {
+    const date={...aircon.dates[0],payment_amount_minor:125050};
+    const occurrence=date.occurrences.find(o=>o.status==='open')!;
+    const render=(activity?: ItemActivity)=>renderToStaticMarkup(createElement(ActivityEditor,{item:aircon,today,date,occurrence,activity,onClose:vi.fn()}));
+    for(const amount_minor of [null,0,65000]) {
+      const activity={...aircon.activity_history!.activities[0],amount_minor};
+      expect(render(activity)).toContain(`placeholder="0.00" value="${amount_minor==null?'':String(amount_minor/100)}"`);
+    }
+    const independent=renderToStaticMarkup(createElement(ActivityEditor,{item:aircon,today,onClose:vi.fn()}));
+    expect(independent).toContain('placeholder="0.00" value=""');
   });
   it('shows unresolved totals from the account query even when the preview has no such record', () => {
     const html=renderToStaticMarkup(createElement(Dashboard,{items,usage:sampleUsage(items,today),today,name:'Alex',unconfirmed:{total:45,has_more:true,rows:[{item_id:aircon.id,product_name:'Older service',date_id:aircon.dates[0].id,occurrence_id:'22222222-2222-4222-8222-222222222222',due_on:'2026-01-01',label:'Service'}]}}));

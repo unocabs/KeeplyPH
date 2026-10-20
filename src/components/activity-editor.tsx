@@ -3,7 +3,8 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { actionError } from '@/lib/action-error';
-import { addMonths, formatDate, parseMoney } from '@/lib/domain';
+import { addMonths, formatDate, formatMoney, parseMoney } from '@/lib/domain';
+import { occurrenceAmount } from '@/features/items/planning';
 import { nextRecurringDate } from '@/features/items/recurrence';
 import { activityLabels, activityTitle, completionType, type ItemActivity } from '@/features/items/activity';
 import { recordOccurrence, saveActivity } from '@/features/items/activity-actions';
@@ -17,10 +18,12 @@ export function ActivityEditor({ item, today, activity, date, occurrence, demo =
   const router = useRouter();
   const request = useRef('');
   const submitting = useRef(false);
+  const expected = !activity && date && occurrence ? occurrenceAmount(date, occurrence) : null;
+  const initialAmount = activity ? activity.amount_minor : expected?.amount;
   const [type, setType] = useState(activity?.activity_type || (date ? completionType(item, date) : 'service'));
   const [title, setTitle] = useState(activity?.title || (date ? activityTitle(item, date) : ''));
   const [completed, setCompleted] = useState(activity?.completed_on || today);
-  const [amount, setAmount] = useState(activity?.amount_minor == null ? '' : String(activity.amount_minor / 100));
+  const [amount, setAmount] = useState(initialAmount == null ? '' : String(initialAmount / 100));
   const [notes, setNotes] = useState(activity?.notes || '');
   const [documents, setDocuments] = useState(activity?.document_ids || []);
   const [reason, setReason] = useState('');
@@ -62,6 +65,7 @@ export function ActivityEditor({ item, today, activity, date, occurrence, demo =
     <fieldset disabled={busy}>
       <h3>{activity ? 'Correct activity' : occurrence ? 'Record completion' : 'Add an activity'}</h3>
       {occurrence && <p className="hint spaced">For {date?.label}, scheduled {formatDate(occurrence.due_on)}. Record something you have already done.</p>}
+      {expected?.amount != null && <p className="hint spaced">Expected amount: {formatMoney(expected.amount)}{expected.certainty === 'estimated' ? ' (estimate)' : ''}. Confirm or change the amount below to match what you actually paid. Leave it empty if the actual amount is unknown.</p>}
       {demo && <p className="alert info spaced">This sample does not save changes or make payments.</p>}
       <div className="field-grid spaced">
         {!occurrence && <label className="full">Activity type<select aria-label="Activity type" value={type} onChange={event => setType(event.target.value as typeof type)}>{Object.entries(activityLabels).filter(([key]) => key !== 'warranty_closed' || type === 'warranty_closed').map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>}
