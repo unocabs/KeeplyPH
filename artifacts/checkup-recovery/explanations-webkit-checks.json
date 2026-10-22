@@ -1,0 +1,671 @@
+{
+  "reports": [
+    {
+      "engine": "webkit",
+      "width": 390,
+      "premiumCheckup": [
+        "saved payday",
+        "date boundaries",
+        "cancel and failed-save retry",
+        "first use",
+        "capture retry",
+        "no change",
+        "same-date comparison",
+        "source logos",
+        "expiry",
+        "responsive layout"
+      ],
+      "checkup": [
+        "Free gate",
+        "sample logos",
+        "empty state",
+        "full-account totals",
+        "primary amount editor",
+        "cancel and failed-save retry",
+        "period/category navigation",
+        "pagination",
+        "read retry",
+        "amount/payment refresh",
+        "expiry",
+        "responsive timeline"
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "/localhost:34574/items/17c652c0-f01b-4835-823c-dbf03b3b517f?date=fffa7461-f7e3-4a24-bd66-56fa55e96864&occurrence=57f884b4-1146-4809-9a25-6388621fb5eb&action=amount&_rsc=9aNQlQIh1kDs5mbe due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/items/17c652c0-f01b-4835-823c-dbf03b3b517f?date=fffa7461-f7e3-4a24-bd66-56fa55e96864&occurrence=57f884b4-1146-4809-9a25-6388621fb5eb&action=amount&_rsc=9aNQlQIh1kDs5mbe due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/checkup?mode=payday",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/api/metrics",
+          "method": "POST",
+          "error": "cancelled",
+          "at": 1792687944223
+        },
+        {
+          "url": "https://localhost:34574/items/368d5a8f-ffcf-4597-9468-8f839d92a808?_rsc=HQJ6r_xFQvPDpH0a",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687949101
+        },
+        {
+          "url": "https://localhost:34574/checkup?mode=payday&_rsc=TuuAzPNsImTtyJiY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687974571
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/checkup?week=2000-01-01&category=vehicles",
+          "at": 1792687957187
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687958130
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687959164
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687960252
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687961728
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687970658
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687972730
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687974572
+        }
+      ],
+      "at": 1792687974645
+    },
+    {
+      "message": "/localhost:34574/dashboard?_rsc=9aNQlQIh1kDs5mbe due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/dashboard?_rsc=9aNQlQIh1kDs5mbe due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/checkup?mode=payday",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/api/metrics",
+          "method": "POST",
+          "error": "cancelled",
+          "at": 1792687944223
+        },
+        {
+          "url": "https://localhost:34574/items/368d5a8f-ffcf-4597-9468-8f839d92a808?_rsc=HQJ6r_xFQvPDpH0a",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687949101
+        },
+        {
+          "url": "https://localhost:34574/checkup?mode=payday&_rsc=TuuAzPNsImTtyJiY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687974571
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/checkup?week=2000-01-01&category=vehicles",
+          "at": 1792687957187
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687958130
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687959164
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687960252
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687961728
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687970658
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687972730
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687974572
+        }
+      ],
+      "at": 1792687974646
+    },
+    {
+      "message": "/localhost:34574/planner?_rsc=9aNQlQIh1kDs5mbe due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/planner?_rsc=9aNQlQIh1kDs5mbe due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/checkup?mode=payday",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/api/metrics",
+          "method": "POST",
+          "error": "cancelled",
+          "at": 1792687944223
+        },
+        {
+          "url": "https://localhost:34574/items/368d5a8f-ffcf-4597-9468-8f839d92a808?_rsc=HQJ6r_xFQvPDpH0a",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687949101
+        },
+        {
+          "url": "https://localhost:34574/checkup?mode=payday&_rsc=TuuAzPNsImTtyJiY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687974571
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/checkup?week=2000-01-01&category=vehicles",
+          "at": 1792687957187
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687958130
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687959164
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687960252
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687961728
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687970658
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687972730
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687974572
+        }
+      ],
+      "at": 1792687974646
+    },
+    {
+      "message": "/localhost:34574/items?_rsc=9aNQlQIh1kDs5mbe due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/items?_rsc=9aNQlQIh1kDs5mbe due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/checkup?mode=payday",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/api/metrics",
+          "method": "POST",
+          "error": "cancelled",
+          "at": 1792687944223
+        },
+        {
+          "url": "https://localhost:34574/items/368d5a8f-ffcf-4597-9468-8f839d92a808?_rsc=HQJ6r_xFQvPDpH0a",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687949101
+        },
+        {
+          "url": "https://localhost:34574/checkup?mode=payday&_rsc=TuuAzPNsImTtyJiY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687974571
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/checkup?week=2000-01-01&category=vehicles",
+          "at": 1792687957187
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687958130
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687959164
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687960252
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687961728
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687970658
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687972730
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687974572
+        }
+      ],
+      "at": 1792687974646
+    },
+    {
+      "message": "/localhost:34574/items?filter=dates&_rsc=9aNQlQIh1kDs5mbe due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/items?filter=dates&_rsc=9aNQlQIh1kDs5mbe due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/checkup?mode=payday",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/api/metrics",
+          "method": "POST",
+          "error": "cancelled",
+          "at": 1792687944223
+        },
+        {
+          "url": "https://localhost:34574/items/368d5a8f-ffcf-4597-9468-8f839d92a808?_rsc=HQJ6r_xFQvPDpH0a",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687949101
+        },
+        {
+          "url": "https://localhost:34574/checkup?mode=payday&_rsc=TuuAzPNsImTtyJiY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687974571
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/checkup?week=2000-01-01&category=vehicles",
+          "at": 1792687957187
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687958130
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687959164
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687960252
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687961728
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687970658
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687972730
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687974572
+        }
+      ],
+      "at": 1792687974646
+    },
+    {
+      "message": "/localhost:34574/settings/alerts?_rsc=9aNQlQIh1kDs5mbe due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/settings/alerts?_rsc=9aNQlQIh1kDs5mbe due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/checkup?mode=payday",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/api/metrics",
+          "method": "POST",
+          "error": "cancelled",
+          "at": 1792687944223
+        },
+        {
+          "url": "https://localhost:34574/items/368d5a8f-ffcf-4597-9468-8f839d92a808?_rsc=HQJ6r_xFQvPDpH0a",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687949101
+        },
+        {
+          "url": "https://localhost:34574/checkup?mode=payday&_rsc=TuuAzPNsImTtyJiY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687974571
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/checkup?week=2000-01-01&category=vehicles",
+          "at": 1792687957187
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687958130
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687959164
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687960252
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687961728
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687970658
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687972730
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687974572
+        }
+      ],
+      "at": 1792687974646
+    },
+    {
+      "message": "/localhost:34574/feedback?_rsc=9aNQlQIh1kDs5mbe due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/feedback?_rsc=9aNQlQIh1kDs5mbe due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/checkup?mode=payday",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/api/metrics",
+          "method": "POST",
+          "error": "cancelled",
+          "at": 1792687944223
+        },
+        {
+          "url": "https://localhost:34574/items/368d5a8f-ffcf-4597-9468-8f839d92a808?_rsc=HQJ6r_xFQvPDpH0a",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687949101
+        },
+        {
+          "url": "https://localhost:34574/checkup?mode=payday&_rsc=TuuAzPNsImTtyJiY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687974571
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/checkup?week=2000-01-01&category=vehicles",
+          "at": 1792687957187
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687958130
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687959164
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687960252
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687961728
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687970658
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687972730
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687974572
+        }
+      ],
+      "at": 1792687974646
+    },
+    {
+      "message": "/localhost:34574/settings?_rsc=9aNQlQIh1kDs5mbe due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/settings?_rsc=9aNQlQIh1kDs5mbe due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/checkup?mode=payday",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/api/metrics",
+          "method": "POST",
+          "error": "cancelled",
+          "at": 1792687944223
+        },
+        {
+          "url": "https://localhost:34574/items/368d5a8f-ffcf-4597-9468-8f839d92a808?_rsc=HQJ6r_xFQvPDpH0a",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687949101
+        },
+        {
+          "url": "https://localhost:34574/checkup?mode=payday&_rsc=TuuAzPNsImTtyJiY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687974571
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/checkup?week=2000-01-01&category=vehicles",
+          "at": 1792687957187
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687958130
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687959164
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687960252
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687961728
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687970658
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687972730
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687974572
+        }
+      ],
+      "at": 1792687974646
+    },
+    {
+      "message": "/localhost:34574/checkup?mode=30&_rsc=HQJ6r_xFQvPDpH0a due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/checkup?mode=30&_rsc=HQJ6r_xFQvPDpH0a due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/checkup?mode=payday",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/api/metrics",
+          "method": "POST",
+          "error": "cancelled",
+          "at": 1792687944223
+        },
+        {
+          "url": "https://localhost:34574/items/368d5a8f-ffcf-4597-9468-8f839d92a808?_rsc=HQJ6r_xFQvPDpH0a",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687949101
+        },
+        {
+          "url": "https://localhost:34574/checkup?mode=payday&_rsc=TuuAzPNsImTtyJiY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687974571
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/checkup?week=2000-01-01&category=vehicles",
+          "at": 1792687957187
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687958130
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687959164
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687960252
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687961728
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687970658
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687972730
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687974572
+        }
+      ],
+      "at": 1792687974647
+    },
+    {
+      "message": "/localhost:34574/items/17c652c0-f01b-4835-823c-dbf03b3b517f?_rsc=9aNQlQIh1kDs5mbe due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34574/items/17c652c0-f01b-4835-823c-dbf03b3b517f?_rsc=9aNQlQIh1kDs5mbe due to access control checks.\n    at N (https://localhost:34574/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34574/checkup?mode=payday",
+      "engine": "webkit",
+      "width": 390,
+      "recentNetwork": [
+        {
+          "url": "https://localhost:34574/api/metrics",
+          "method": "POST",
+          "error": "cancelled",
+          "at": 1792687944223
+        },
+        {
+          "url": "https://localhost:34574/items/368d5a8f-ffcf-4597-9468-8f839d92a808?_rsc=HQJ6r_xFQvPDpH0a",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687949101
+        },
+        {
+          "url": "https://localhost:34574/checkup?mode=payday&_rsc=TuuAzPNsImTtyJiY",
+          "method": "GET",
+          "error": "cancelled",
+          "at": 1792687974571
+        }
+      ],
+      "recentNavigations": [
+        {
+          "url": "https://localhost:34574/checkup?week=2000-01-01&category=vehicles",
+          "at": 1792687957187
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687958130
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687959164
+        },
+        {
+          "url": "https://localhost:34574/checkup?category=vehicles",
+          "at": 1792687960252
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687961728
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687970658
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687972730
+        },
+        {
+          "url": "https://localhost:34574/checkup",
+          "at": 1792687974572
+        }
+      ],
+      "at": 1792687974647
+    }
+  ],
+  "cancelledPrefetches": [],
+  "limitations": [
+    "Local Auth and REST stand-ins; real server actions and isolated PostgreSQL",
+    "Standalone detection is simulated; no physical installation or hosted provider verification"
+  ],
+  "explanation_update": {
+    "date": "2026-10-23",
+    "unit_tests": 381,
+    "result": "Journey assertions completed. The final global page-error check failed because of canceled navigation/prefetch diagnostics in the local WebKit HTTPS harness. Repeated on retry. Do not treat this run as a fully passing browser suite.",
+    "scope": "Explanatory copy and unavailable-comparison guidance. Existing interactions and data calculations are unchanged.",
+    "limits": [
+      "Local production app, disposable PostgreSQL, Auth/REST stand-ins and self-signed HTTPS proxy",
+      "No hosted or physical-device verification"
+    ]
+  }
+}

@@ -8,6 +8,7 @@ import { checkupHref, checkupRange, checkupInsights, sampleCheckupComparison, sa
 import { paymentTotal, samplePaymentPlan } from '@/features/items/insights';
 import type { ItemWithDetails } from '@/features/items/domain';
 import { SpendingCheckupView, SpendingCheckupInvitation } from '@/components/spending-checkup';
+import { CheckupChangesView } from '@/components/checkup-changes';
 import { safeAuthIntent } from '@/lib/auth-intent';
 
 vi.mock('next/navigation',()=>({useRouter:()=>({push:vi.fn(),refresh:vi.fn()})}));
@@ -52,6 +53,7 @@ describe('30-Day Spending Checkup',()=>{
    const plan=sampleSpendingCheckup([],fixtures[0].today),html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan}));
    expect(html).toContain('Your checkup starts with one expense');expect(html).toContain('href="/demo/checkup"');expect(html).not.toContain('Highest-cost upcoming period');expect(html).not.toContain('₱0');
    expect(html).toContain('href="/add?category=bills"');expect(html).toContain('Add its next date and an amount if you know it.');
+   expect(html).toContain('Paid, completed and overdue dates are left out');expect(html).toContain('items without an upcoming expense date won’t appear here');
    const invitation=renderToStaticMarkup(createElement(SpendingCheckupInvitation,{usage:{household_premium:false} as import('@/lib/domain').Usage}));expect(invitation).toContain('₱59');expect(invitation).toContain('Free payment plan');expect(invitation).not.toContain('Your planning takeaway');
  });
  it('explains insufficient comparison data without hiding a useful amount or item identity',()=>{
@@ -65,7 +67,7 @@ describe('30-Day Spending Checkup',()=>{
  it('guides missing amounts and preserves correct zero amounts without inventing costs',()=>{
    const today=fixtures[0].today;
    const missing=renderToStaticMarkup(createElement(SpendingCheckupView,{plan:sampleSpendingCheckup(items({today,expenses:[{offset:1,amount:null}]}),today)}));
-   expect(missing).toContain('Your dates are a good start.');expect(missing).toContain('Add amount');expect(missing).toContain('action=amount');expect(missing).not.toContain('₱0');
+   expect(missing).toContain('Your dates are a good start.');expect(missing).toContain('none of these upcoming expenses has an amount');expect(missing).toContain('Add amount');expect(missing).toContain('action=amount');expect(missing).not.toContain('₱0');
    const zero=renderToStaticMarkup(createElement(SpendingCheckupView,{plan:sampleSpendingCheckup(items({today,expenses:[{offset:1,amount:0,certainty:'confirmed'}]}),today)}));
    expect(zero).toContain('Saved amounts total zero');expect(zero).toContain('Keep any correct zero amounts as they are.');expect(zero).not.toContain('Add the missing amounts');
  });
@@ -74,15 +76,22 @@ describe('30-Day Spending Checkup',()=>{
    expect(plan.total).toBe(0);expect(plan.after_payday_count).toBe(1);
    const html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan,demo:true}));
    expect(html).toContain('See the next 30 days');expect(html).toContain(`href="/demo/checkup?mode=30&amp;payday=${payday}"`);expect(html).not.toContain('₱0');
+   expect(html).toContain('Expenses due on payday or later are outside this view.');
  });
  it('recovers empty filters and exhausted pages without calling the whole account empty',()=>{
    const today=fixtures[0].today,records=items({today,expenses:[{offset:1,amount:25000}]});
    const filtered=sampleSpendingCheckup(records,today,{category:'vehicles'});
    const html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan:filtered}));
    expect(html).toContain('No expenses match this selection yet.');expect(html).toContain('View all upcoming expenses');expect(html).toContain('₱250');expect(html).not.toContain('Your checkup starts with one expense');
+   expect(html).toContain('This category has no upcoming expenses in the dates shown above.');
+   const week=sampleSpendingCheckup(records,today,{week:addDays(today,7)});
+   expect(renderToStaticMarkup(createElement(SpendingCheckupView,{plan:week}))).toContain('No upcoming expenses fall in this seven-day period.');
+   const both=sampleSpendingCheckup(records,today,{week:addDays(today,7),category:'vehicles'});
+   expect(renderToStaticMarkup(createElement(SpendingCheckupView,{plan:both}))).toContain('No upcoming expenses match both this category and this seven-day period.');
    const last=sampleSpendingCheckup(records,today).rows[0],page=sampleSpendingCheckup(records,today,{before:last.due_on,id:last.date_id});
    const ended=renderToStaticMarkup(createElement(SpendingCheckupView,{plan:page,paged:true}));
    expect(ended).toContain('You’ve reached the end of this page.');expect(ended).toContain('First page');expect(ended).toContain('View all upcoming expenses');
+   expect(ended).toContain('This page starts after the last matching expense.');
  });
  it('preserves the checkup destination through sign-in without accepting query injection',()=>{
    expect(safeAuthIntent('/checkup?user=someone-else&premium=true')).toBe('/checkup');
@@ -133,6 +142,20 @@ describe('30-Day Spending Checkup',()=>{
 });
 
 describe('Payday checkup',()=>{
+ it('explains why change content is absent without confusing unknown history with first use',()=>{
+  const base=sampleSpendingCheckup([],'2026-10-23');
+  const first=renderToStaticMarkup(createElement(CheckupChangesView,{plan:{...base,comparison:{status:'first_use'}}}));
+  expect(first).toContain('There isn’t a saved checkup to compare with yet.');expect(first).toContain('Open your plan to save');
+  const missing=renderToStaticMarkup(createElement(CheckupChangesView,{plan:base}));
+  expect(missing).toContain('We don’t have comparison information for this view yet.');expect(missing).not.toContain('There isn’t a saved checkup');
+  const outside=renderToStaticMarkup(createElement(CheckupChangesView,{plan:{...base,comparison:{status:'outside_coverage'}}}));
+  expect(outside).toContain('so a fair comparison isn’t available yet');
+  const available={status:'available' as const,reviewed_on:'2026-10-22',previous_minor:'0',current_minor:'0',previous_missing:0,current_missing:0,previous_known:0,current_known:0,change_count:0,page:0,has_more:false,rows:[]};
+  const unchanged=renderToStaticMarkup(createElement(CheckupChangesView,{plan:{...base,comparison:available}}));
+  expect(unchanged).toContain('There’s no change list because');expect(unchanged).toContain('these same dates');
+  const end=renderToStaticMarkup(createElement(CheckupChangesView,{plan:{...base,comparison:{...available,change_count:30,page:2}}}));
+  expect(end).toContain('This page starts after the last change');expect(end).toContain('Previous changes');
+ });
  it('excludes payday and preserves zero, unknown, exact sums and truncated weeks',()=>{
   const today='2026-12-28',records=items({today,expenses:[{offset:0,amount:0,certainty:'confirmed'},{offset:7,amount:189900,certainty:'unverified'},{offset:7,amount:null},{offset:8,amount:350000,certainty:'estimated'}]});
   const plan=sampleSpendingCheckup(records,today,{payday:addDays(today,8),mode:'payday'});
