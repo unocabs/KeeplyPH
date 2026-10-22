@@ -16,7 +16,13 @@ Position Keeply as an app for organising household obligations. Alerts support t
 
 Use "Explore a sample account" for the general demo CTA. Order categories around household usefulness, beginning with bills, home maintenance, and purchases/warranties. Keep category identifiers and existing saved records stable when updating presentation.
 
+## Item logos and visual identity
+
+Always show the item's recognisable visual identity alongside its name wherever an individual household item is presented, including lists, cards, timelines, calendar entries, summaries, action prompts, review screens, and design concepts. Use the saved provider or brand logo when available. Otherwise use the existing product or category icon, and retain a useful icon fallback if an image cannot load. Keep names visible and artwork consistent across surfaces. Reuse the shared item identity components in application code, preserve logo proportions, and do not invent a brand for an unbranded item. Do not remove artwork to make a layout more compact.
+
 ## User research and improvement decisions
+
+For customer-facing amounts, show a normal entered amount without a confirmed, unconfirmed, unverified, or not-yet-confirmed status. Label only estimates ("Estimated amount") and missing amounts. Do not split totals into confirmation groups or ask users to reconfirm an amount simply because it has not been saved a second time. Apply this rule across summaries, lists, records, editors, and design concepts. Payment and completion status remain separate from an amount's estimate label.
 
 For requests to improve Keeply's product, flows, positioning, or Free/Premium offering, first read [the research index and decision notes](docs/research/README.md). Consult the relevant sections of [the deep household-admin research](docs/research/2026-10-household-admin-psychology-and-market.md) before recommending or implementing material changes.
 

@@ -54,4 +54,47 @@ describe('30-Day Spending Checkup',()=>{
  it('preserves the checkup destination through sign-in without accepting query injection',()=>{
    expect(safeAuthIntent('/checkup?user=someone-else&premium=true')).toBe('/checkup');
  });
+ it('shows truthful totals, date order and item artwork before collapsed analysis',()=>{
+   const plan=sampleSpendingCheckup(sampleItems(fixtures[0].today),fixtures[0].today);
+   const html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan,demo:true}));
+   expect(html).toContain('Your household ahead');expect(html).toContain('Cost breakdown');
+   expect(html).toContain('subscription-brands/netflix.webp');expect(html).toContain('utilities/meralco.webp');
+   expect(html.indexOf('id="checkup-expenses"')).toBeLessThan(html.indexOf('Cost breakdown'));
+   expect(html).not.toMatch(/<details[^>]*open/);
+   expect(html).not.toMatch(/confirmed amount|amount confirmed|not confirmed|not yet confirmed|Confirm a saved amount/i);
+   for(const row of plan.rows)expect(html.toLowerCase()).toContain(`datetime="${row.due_on}"`);
+ });
+ it('prioritises unknown amounts and guards the linked occurrence',()=>{
+   const plan=sampleSpendingCheckup(items(fixtures[2]),fixtures[2].today);
+   const html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan}));
+   expect(html).toContain('Saved amounts total zero');expect(html).toContain('2 upcoming expenses need an amount');
+   expect(html).toContain('Add the missing amounts');expect(html).toContain('action=amount');
+   expect(html).toContain('occurrence='+plan.rows[0].occurrence_id);
+   expect(html).toContain('Amount to add');expect(html).not.toContain('null of recorded costs');
+ });
+ it('does not infer an account-wide next item or quiet period from a filtered page',()=>{
+   const plan=sampleSpendingCheckup(items(fixtures[3]),fixtures[3].today,{category:'vehicles'});
+   const html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan}));
+   expect(html).toMatch(/<details[^>]*open/);expect(html).not.toContain('action=amount');
+   expect(html).not.toContain('No upcoming expenses saved before');expect(html).not.toContain('No more upcoming expenses saved through');
+   expect(html).toContain('₱1,000');
+ });
+ it('treats every non-estimated entered amount as ordinary, including legacy amounts',()=>{
+   const today=fixtures[0].today;
+   const plan=sampleSpendingCheckup(items({today,expenses:[{offset:0,amount:10000,certainty:'unverified'},{offset:1,amount:20000,certainty:'confirmed'}]}),today);
+   const html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan}));
+   expect(html).toContain('₱300');expect(html).toContain('Prepare for your next expense');
+   expect(html).not.toMatch(/confirmed|unverified|confirm a saved amount|Estimated costs included/i);
+   expect(html).not.toContain('action=amount');
+ });
+ it('never presents projected dates as editable occurrences or a partial page as complete',()=>{
+   const plan=sampleSpendingCheckup(items(fixtures[1]),fixtures[1].today);
+   plan.rows=plan.rows.filter(row=>row.projected);
+   const html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan}));
+   expect(html).toContain('Review saved schedule');expect(html).not.toContain('action=amount');
+   const records=items({...fixtures[0],expenses:Array.from({length:29},()=>({offset:0,amount:100,certainty:'confirmed'}))});
+   const full=sampleSpendingCheckup(records,fixtures[0].today);
+   const paged=renderToStaticMarkup(createElement(SpendingCheckupView,{plan:full}));
+   expect(paged).toContain('More expenses');expect(paged).not.toContain('No more upcoming expenses saved through');
+ });
 });

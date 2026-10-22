@@ -2,7 +2,9 @@
 
 This milestone adds `/checkup` for Premium accounts and `/demo/checkup` for the fictional sample account. The dashboard's existing Premium entry and a link in the household planner open the Checkup. Free accounts see a short explanation with separate links to the sample, Premium plans, and their existing Free payment plan.
 
-The Checkup includes the existing household spending total, estimated contribution, missing-cost guidance, the highest-cost upcoming period, category contributions, and a deterministic planning takeaway. Period and category links open the contributing expenses on the same page. Each expense links to its saved record. Amount and payment actions remain in the existing Free payment editor. No bank data, AI service, background job, historical snapshot, or what-if scenario is introduced. Spending-change attribution remains deferred.
+The Checkup presents one household preparation total, a next-action prompt, and a chronological expense timeline. Entered amounts display normally, with labels only for estimates and missing amounts. The historical internal confirmation buckets still contribute to the same total, without confirmation subtotals, badges or reconfirmation prompts. Item logos or fallback icons accompany both timeline entries and item-specific prompts. Period and category analysis lives in an expandable Cost breakdown, after the timeline. Period and category links open the contributing expenses on the same page and retain full-account totals. Each expense links to its saved record. Amount prompts open the existing occurrence editor with a specific occurrence guard; projected dates open the saved schedule's record instead. Payment recording remains in the existing Free payment editor. No bank data, AI service, background job, historical snapshot, or what-if scenario is introduced. Spending-change attribution remains deferred.
+
+The first unfiltered page prioritises a missing amount, then an estimate, then the next expense. It uses only available first-page records and makes no claim to rank unseen records. When an amount needing review is outside that page, or the list is filtered or paginated, the prompt opens the full payment plan without identifying a next item. Empty plans invite adding a household expense. Unknown-only plans show no numeric total; a known zero is explicitly labelled. Introductory timeline messages appear only on the unfiltered first page. Ending messages additionally require no further pages. The household category order begins with bills, maintenance, and purchases/warranties; identifiers and saved records are unchanged.
 
 ## Calculation and access rules
 
@@ -47,9 +49,18 @@ PG_TEST_PRODUCTION=1 npm run test:household-ui
 node tests/browser/public-experience.mjs
 ```
 
+For only the signed-in checkup browser flows after building, run `PG_TEST_PRODUCTION=1 PG_TEST_CHECKUP_ONLY=1 npm run test:household-ui`. The database harness still runs its isolated integration checks first. This focused mode covers the primary occurrence-editor link, cancellation, validation, failed-save recovery, filters, pagination, refresh after changes, expiry, and sample artwork.
+
 The database commands create and destroy isolated local PostgreSQL databases. Browser checks use local production servers and local Auth/REST stand-ins, with real application server actions and SQL functions. They do not verify physical devices, hosted OAuth, Storage, push/email delivery, or PayMongo. They never write to hosted Supabase.
 
 ## Verification results
+
+### Timeline and amount wording update, 22 October 2026
+
+- 362 unit tests, lint, type checking, the production build, and 242 isolated database integration tests passed.
+- Focused private production checks passed in Chromium at 1280px and 390px and WebKit at 390px. Public/sample checks passed in Chromium at 1280px, 390px, and 320px and WebKit at 390px. They include editor cancellation and failed-save recovery, full-account totals across filters/pages, refresh after edits/payments, and the absence of amount confirmation labels. Existing rendered public/private indexing smoke checks passed; the public suite checked metadata and indexing on 18 routes.
+- Additional local HTTPS checks verified item artwork, deliberately broken-logo fallbacks, and doubled-text layouts without overflow in Chromium at 320px and WebKit at 390px. Results are in [timeline-identity-checks.json](../artifacts/household-checkup/timeline-identity-checks.json). These checks simulate browsers and viewport sizes. Physical devices, hosted Supabase and deployment remain unverified.
+- A local mobile Lighthouse audit of `/demo/checkup` scored 94 for performance and 100 for accessibility and best practices. The visible-label/name audit passed after timeline links were updated to expose all their visible content and describe the date separately. The sample's SEO score is 66 because it intentionally remains `noindex, nofollow`; the rendered public-page indexing checks passed. See [lighthouse-timeline.json](../artifacts/household-checkup/lighthouse-timeline.json). This is a local HTTP audit, not a hosted performance measurement or external structured-data certification.
 
 Local checks on October 10, 2026:
 

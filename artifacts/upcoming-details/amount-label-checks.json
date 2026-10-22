@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-22",
+  "environment": "Local production HTTPS, sample account",
+  "reports": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "result": "passed",
+      "checks": [
+        "Amount for non-estimates",
+        "Estimated amount for estimates",
+        "No redundant status suffix",
+        "Record amount summary",
+        "Payment, planner and checkup labels",
+        "No horizontal overflow",
+        "Sample noindex and public metadata smoke"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "result": "passed",
+      "checks": [
+        "Amount for non-estimates",
+        "Estimated amount for estimates",
+        "No redundant status suffix",
+        "Record amount summary",
+        "Payment, planner and checkup labels",
+        "No horizontal overflow",
+        "Sample noindex and public metadata smoke"
+      ]
+    }
+  ],
+  "unexpected_browser_errors": [],
+  "limitations": [
+    "Physical devices and hosted deployment were not tested",
+    "Financial data and server actions were not changed"
+  ]
+}

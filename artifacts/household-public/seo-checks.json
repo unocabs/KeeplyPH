@@ -5,8 +5,8 @@
       "requested": "/",
       "path": "/",
       "lang": "en-PH",
-      "title": "Household Bills, Maintenance, Warranties & Renewals",
-      "description": "Organise household bills, maintenance, warranties and renewals with Keeply. Keep important dates and useful details together, with optional alerts.",
+      "title": "Household Admin App: Bills, Maintenance & Warranties · Keeply",
+      "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
       "canonical": "https://www.keeplyph.com/",
       "locale": "en_PH",
       "schemas": [
@@ -15,32 +15,121 @@
           "@graph": [
             {
               "@type": "WebSite",
+              "@id": "https://www.keeplyph.com/#website",
               "name": "Keeply",
               "url": "https://www.keeplyph.com",
-              "inLanguage": "en-PH"
+              "inLanguage": "en-PH",
+              "publisher": {
+                "@id": "https://www.keeplyph.com/#organization"
+              },
+              "about": {
+                "@id": "https://www.keeplyph.com/#app"
+              }
             },
             {
               "@type": "WebApplication",
+              "@id": "https://www.keeplyph.com/#app",
               "name": "Keeply",
               "url": "https://www.keeplyph.com",
               "applicationCategory": "LifestyleApplication",
               "operatingSystem": "Web browser",
-              "description": "Organise household bills, maintenance, warranties and renewals with Keeply. Keep important dates and useful details together, with optional alerts.",
+              "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+              "inLanguage": "en-PH",
+              "publisher": {
+                "@id": "https://www.keeplyph.com/#organization"
+              },
+              "mainEntityOfPage": {
+                "@id": "https://www.keeplyph.com/#webpage"
+              },
               "featureList": [
-                "Household planning up to a year ahead with Premium",
-                "Monthly household costs from saved amounts",
                 "Household bills and recurring payment dates",
                 "Home maintenance and service history",
                 "Purchase receipts and warranty dates",
-                "Upcoming payment totals with optional estimates",
+                "Upcoming payment totals from saved amounts, with estimates identified",
+                "Household planning up to a year ahead with Premium",
+                "Monthly household costs from saved amounts",
                 "Category-aware record completeness",
                 "Weekly household brief from saved data",
                 "Search notes, history, dates and authorised file names",
                 "Vehicle registration and insurance dates",
                 "ID and passport expiry dates",
                 "Optional alerts"
-              ],
-              "inLanguage": "en-PH"
+              ]
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://www.keeplyph.com/#organization",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "logo": "https://www.keeplyph.com/brand/keeply-logo.png"
+            },
+            {
+              "@type": "WebPage",
+              "@id": "https://www.keeplyph.com/#webpage",
+              "url": "https://www.keeplyph.com",
+              "name": "Household Admin App: Bills, Maintenance & Warranties · Keeply",
+              "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+              "inLanguage": "en-PH",
+              "isPartOf": {
+                "@id": "https://www.keeplyph.com/#website"
+              },
+              "mainEntity": {
+                "@id": "https://www.keeplyph.com/#app"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "requested": "/bill-tracker",
+      "path": "/bill-tracker",
+      "lang": "en-PH",
+      "title": "Bill Tracker & Bill Reminder App · Keeply",
+      "description": "Track household bills, due dates and payments with Keeply. Choose reminders and keep maintenance, warranties and other household admin in the same account.",
+      "canonical": "https://www.keeplyph.com/bill-tracker",
+      "locale": "en_PH",
+      "schemas": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": "https://www.keeplyph.com/bill-tracker#webpage",
+              "url": "https://www.keeplyph.com/bill-tracker",
+              "name": "Bill Tracker & Bill Reminder App · Keeply",
+              "description": "Track household bills, due dates and payments with Keeply. Choose reminders and keep maintenance, warranties and other household admin in the same account.",
+              "inLanguage": "en-PH",
+              "isPartOf": {
+                "@id": "https://www.keeplyph.com/#website"
+              },
+              "about": {
+                "@id": "https://www.keeplyph.com/#app"
+              },
+              "publisher": {
+                "@id": "https://www.keeplyph.com/#organization"
+              },
+              "breadcrumb": {
+                "@id": "https://www.keeplyph.com/bill-tracker#breadcrumb"
+              }
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://www.keeplyph.com/bill-tracker#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.keeplyph.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Bill tracker",
+                  "item": "https://www.keeplyph.com/bill-tracker"
+                }
+              ]
             }
           ]
         }
@@ -60,8 +149,8 @@
       "requested": "/loan-payment-reminder",
       "path": "/loan-payment-reminder",
       "lang": "en-PH",
-      "title": "Loan Payment Reminders · Keeply",
-      "description": "Remember personal, home, car, government and online loan payments with Keeply. Set monthly reminders, an optional peso amount and your loan end date.",
+      "title": "Loan Payment Tracker & Recurring Reminders · Keeply",
+      "description": "Track loan payment dates and record payments with Keeply. Organise personal, home and car loan schedules, optional amounts and reminders through your end date.",
       "canonical": "https://www.keeplyph.com/loan-payment-reminder",
       "locale": "en_PH",
       "schemas": []
@@ -70,8 +159,8 @@
       "requested": "/warranty-tracker",
       "path": "/warranty-tracker",
       "lang": "en-PH",
-      "title": "Receipt & warranty tracker · Keeply",
-      "description": "Keep purchase receipts and warranty dates together. Optional private files and alerts you choose, with a free Keeply account.",
+      "title": "Receipt & Warranty Tracker for Home Purchases · Keeply",
+      "description": "Track appliance and purchase warranties with Keeply. Keep receipts, store details and warranty dates together, with optional expiry alerts and a free account.",
       "canonical": "https://www.keeplyph.com/warranty-tracker",
       "locale": "en_PH",
       "schemas": []
@@ -80,8 +169,8 @@
       "requested": "/vehicle-registration-reminder",
       "path": "/vehicle-registration-reminder",
       "lang": "en-PH",
-      "title": "Car & motorcycle registration alerts · Keeply",
-      "description": "Remember user-confirmed vehicle registration, insurance renewal and service dates with Keeply. Car and motorcycle templates, optional alerts.",
+      "title": "Vehicle Registration & Maintenance Tracker · Keeply",
+      "description": "Keep car and motorcycle registration, insurance renewals and maintenance history together with Keeply. Add confirmed dates and choose optional reminders.",
       "canonical": "https://www.keeplyph.com/vehicle-registration-reminder",
       "locale": "en_PH",
       "schemas": []
@@ -212,8 +301,8 @@
       "requested": "/document-expiry-tracker",
       "path": "/document-expiry-tracker",
       "lang": "en-PH",
-      "title": "Passport & driver’s license expiry alerts · Keeply",
-      "description": "Remember passport and driver’s license expiration with Keeply. Store a label and printed expiry date without uploading an identity scan.",
+      "title": "Document Expiry Tracker for Passports & IDs · Keeply",
+      "description": "Track passport, driver’s license and other ID expiry dates with Keeply. Save a label and printed date, choose optional alerts and keep identity scans out.",
       "canonical": "https://www.keeplyph.com/document-expiry-tracker",
       "locale": "en_PH",
       "schemas": []
@@ -223,7 +312,7 @@
       "path": "/privacy",
       "lang": "en-PH",
       "title": "Privacy · Keeply",
-      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
       "canonical": "https://www.keeplyph.com/privacy",
       "locale": "en_PH",
       "schemas": []
@@ -233,7 +322,7 @@
       "path": "/terms",
       "lang": "en-PH",
       "title": "Terms · Keeply",
-      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
       "canonical": "https://www.keeplyph.com/terms",
       "locale": "en_PH",
       "schemas": []
@@ -243,7 +332,7 @@
       "path": "/demo",
       "lang": "en-PH",
       "title": "Sample account · Keeply",
-      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
       "robots": "noindex, nofollow",
       "locale": "en_PH",
       "schemas": []
@@ -253,7 +342,7 @@
       "path": "/demo/items/payments",
       "lang": "en-PH",
       "title": "Sample account · Keeply",
-      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
       "robots": "noindex, nofollow",
       "locale": "en_PH",
       "schemas": []
@@ -263,7 +352,7 @@
       "path": "/demo/planner",
       "lang": "en-PH",
       "title": "Sample account · Keeply",
-      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
       "robots": "noindex, nofollow",
       "locale": "en_PH",
       "schemas": []
@@ -273,7 +362,7 @@
       "path": "/demo/checkup",
       "lang": "en-PH",
       "title": "Sample account · Keeply",
-      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
       "robots": "noindex, nofollow",
       "locale": "en_PH",
       "schemas": []
@@ -283,7 +372,7 @@
       "path": "/login",
       "lang": "en-PH",
       "title": "Sign in · Keeply",
-      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
       "robots": "noindex, nofollow",
       "locale": "en_PH",
       "schemas": []
@@ -293,7 +382,7 @@
       "path": "/login",
       "lang": "en-PH",
       "title": "Sign in · Keeply",
-      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
       "robots": "noindex, nofollow",
       "locale": "en_PH",
       "schemas": []
@@ -303,7 +392,7 @@
       "path": "/login",
       "lang": "en-PH",
       "title": "Sign in · Keeply",
-      "description": "Organise household bills, maintenance, warranties and renewals. Keep important dates and useful details together, with optional alerts.",
+      "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
       "robots": "noindex, nofollow",
       "locale": "en_PH",
       "schemas": []
@@ -311,6 +400,7 @@
   ],
   "sitemap": [
     "https://www.keeplyph.com",
+    "https://www.keeplyph.com/bill-tracker",
     "https://www.keeplyph.com/pricing",
     "https://www.keeplyph.com/loan-payment-reminder",
     "https://www.keeplyph.com/warranty-tracker",

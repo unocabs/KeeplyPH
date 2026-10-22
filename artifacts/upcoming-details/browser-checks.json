@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-22",
+  "environment": "Local production build over HTTPS, local Auth/REST stand-ins, real server actions and isolated PostgreSQL",
+  "command": "PG_TEST_BROWSER=1 PG_TEST_PRODUCTION=1 PG_TEST_PAYMENT_ACTIONS_ONLY=1 npm run test:db",
+  "unit_tests_passed": 357,
+  "database_integration_tests_passed": 242,
+  "checks": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "production_build": "passed",
+    "existing_http_smoke": "passed",
+    "rendered_public_private_indexing": "passed",
+    "unexpected_browser_errors": []
+  },
+  "browser_runs": [
+    { "engine": "chromium", "width": 1280, "result": "passed" },
+    { "engine": "chromium", "width": 390, "additional_panel_width": 320, "simulated_double_text_size": "passed", "result": "passed" },
+    { "engine": "webkit", "width": 390, "additional_panel_width": 320, "simulated_double_text_size": "passed", "result": "passed" }
+  ],
+  "upcoming_panel_checks": [
+    "Item name heading, amount and certainty, grouped due date and timing",
+    "Subscription review opens existing renewal record without completing payment",
+    "Service action opens the matching service completion form",
+    "Warranty expiry excludes original purchase price and links to existing receipt",
+    "Unknown amount opens existing amount editor and cancellation retains unknown",
+    "Sample activity review does not save or make payments",
+    "Keyboard opening, initial close-control focus, Escape, close and focus return",
+    "No horizontal overflow at 320px, 390px, desktop or simulated doubled text sizes",
+    "Long saved names remain readable",
+    "Real payment recording through the panel uses schedule amounts or occurrence overrides",
+    "Estimated, confirmed, known zero and explicit unknown amounts remain distinct",
+    "Cancellation preserves data, failed saves retain fields, retry records once",
+    "Stale amount links do not edit the next occurrence",
+    "Existing service payment, cost confirmation, cancellation, retry and recurrence flows"
+  ],
+  "limitations": [
+    "Hosted Supabase and physical iPhones were not tested",
+    "Doubled text sizes were simulated in the browser, not native device text settings",
+    "No comparative household usability study has been conducted",
+    "Initial test run stopped on an ambiguous vehicle-date locator; corrected earliest-date selection and rerun passed"
+  ]
+}

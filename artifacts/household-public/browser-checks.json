@@ -5,6 +5,7 @@
       "engine": "chromium",
       "width": 1280,
       "passed": [
+        "bill landing images, sample data, categories, keyboard FAQ and bill entry/back navigation",
         "no overflow",
         "Premium pricing benefits and privacy copy",
         "single sample invitation after calendar",
@@ -29,6 +30,7 @@
       "engine": "chromium",
       "width": 390,
       "passed": [
+        "bill landing images, sample data, categories, keyboard FAQ and bill entry/back navigation",
         "no overflow",
         "Premium pricing benefits and privacy copy",
         "single sample invitation after calendar",
@@ -53,6 +55,7 @@
       "engine": "webkit",
       "width": 390,
       "passed": [
+        "bill landing images, sample data, categories, keyboard FAQ and bill entry/back navigation",
         "no overflow",
         "Premium pricing benefits and privacy copy",
         "single sample invitation after calendar",
@@ -77,6 +80,7 @@
       "engine": "chromium",
       "width": 320,
       "passed": [
+        "bill landing images, sample data, categories, keyboard FAQ and bill entry/back navigation",
         "no overflow",
         "Premium pricing benefits and privacy copy",
         "single sample invitation after calendar",
@@ -109,6 +113,12 @@
     {
       "engine": "chromium",
       "width": 1280,
+      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
       "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
@@ -127,25 +137,7 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/?_rsc=bME4Q4px3YJ1rAzL",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/add?_rsc=4uavnN5mX1q-K87W",
+      "url": "https://localhost:34576/demo/planner?days=365&_rsc=4uavnN5mX1q-K87W",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -157,19 +149,7 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/planner?days=365&_rsc=4uavnN5mX1q-K87W",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/?_rsc=WzUDN3am5ctH078F",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/?_rsc=UnGutxUMZihRxjHi",
+      "url": "https://localhost:34576/add?_rsc=4uavnN5mX1q-K87W",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -187,19 +167,13 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo?_rsc=5CB68i4pnAekjehf",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
       "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
+      "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -211,7 +185,199 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
+      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo?_rsc=EX0wAFBq3MNn4kwA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/dashboard?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?date=dddddddd-dddd-4ddd-8ddd-000000000100&action=complete&due=2026-10-25&_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?date=dddddddd-dddd-4ddd-8ddd-000000000110&action=complete&due=2026-10-27&_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000004?date=dddddddd-dddd-4ddd-8ddd-000000000140&action=complete&due=2026-10-29&_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000002?date=dddddddd-dddd-4ddd-8ddd-000000000120&action=complete&due=2026-10-31&_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000004?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000002?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/privacy?_rsc=Xj4VoSv5gdhjFGoP",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/add?category=bills&_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/privacy?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/terms?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/checkup?week=2026-10-29&_rsc=EI6C0jtTtH79iK7l",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000008?_rsc=M1YBeNmtM7H-s1o9",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/checkup?category=bills&_rsc=M1YBeNmtM7H-s1o9",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/checkup?category=subscriptions&_rsc=M1YBeNmtM7H-s1o9",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/dashboard?_rsc=UYlhAAtTaaUAy0hA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/planner?_rsc=UYlhAAtTaaUAy0hA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/login?_rsc=UYlhAAtTaaUAy0hA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=UYlhAAtTaaUAy0hA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000004?_rsc=UYlhAAtTaaUAy0hA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000002?_rsc=UYlhAAtTaaUAy0hA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/terms?_rsc=UYlhAAtTaaUAy0hA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/privacy?_rsc=UYlhAAtTaaUAy0hA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000006?_rsc=UYlhAAtTaaUAy0hA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/login?_rsc=Xj4VoSv5gdhjFGoP",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/dashboard?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -235,252 +401,6 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/settings/alerts?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/settings?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?date=dddddddd-dddd-4ddd-8ddd-000000000100&action=complete&due=2026-10-14&_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000002?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000004?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000002?date=dddddddd-dddd-4ddd-8ddd-000000000120&action=complete&due=2026-10-20&_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000004?date=dddddddd-dddd-4ddd-8ddd-000000000140&action=complete&due=2026-10-18&_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/terms?_rsc=Xj4VoSv5gdhjFGoP",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000006?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/privacy?_rsc=Xj4VoSv5gdhjFGoP",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/terms?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/checkup?week=2026-10-18&_rsc=M1YBeNmtM7H-s1o9",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/checkup?category=education&_rsc=M1YBeNmtM7H-s1o9",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/checkup?category=vehicles&_rsc=M1YBeNmtM7H-s1o9",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/checkup?week=2026-10-18&_rsc=EI6C0jtTtH79iK7l",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/login?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/settings?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/settings/alerts?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000007?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/planner?days=365&month=2026-10-01&_rsc=gtGsBUUA2ZRrPQnP",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/add?_rsc=H79ruE6jsFCU5Hb5",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000004?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000002?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000006?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/planner?days=365&_rsc=gtGsBUUA2ZRrPQnP",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/planner?days=365&before=2027-01-16&id=dddddddd-dddd-4ddd-8ddd-000000000110&_rsc=gtGsBUUA2ZRrPQnP",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/privacy?_rsc=H79ruE6jsFCU5Hb5",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/terms?_rsc=H79ruE6jsFCU5Hb5",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000008?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000012?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/terms?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/privacy?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/11111111-1111-4111-8111-111111111111?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
       "url": "https://localhost:34576/login?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
@@ -499,37 +419,13 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
       "url": "https://localhost:34576/demo/items/payments?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/privacy?_rsc=fVcg_TTbwO2x5LpU",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/terms?_rsc=fVcg_TTbwO2x5LpU",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=HP2D8KAKzi4quLgZ",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?_rsc=HP2D8KAKzi4quLgZ",
+      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -541,37 +437,7 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/pricing?_rsc=5CB68i4pnAekjehf",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/login?_rsc=5CB68i4pnAekjehf",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/add?_rsc=5CB68i4pnAekjehf",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo?_rsc=5CB68i4pnAekjehf",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
       "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -583,25 +449,19 @@
     {
       "engine": "chromium",
       "width": 1280,
+      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
       "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
       "url": "https://localhost:34576/privacy?_rsc=8VpfsGAZ33xzkeSA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/terms?_rsc=8VpfsGAZ33xzkeSA",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -619,13 +479,13 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/items?_rsc=hGXjM0XDN4ZY3pOq",
+      "url": "https://localhost:34576/demo/settings?_rsc=hGXjM0XDN4ZY3pOq",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=hGXjM0XDN4ZY3pOq",
+      "url": "https://localhost:34576/demo/items?_rsc=hGXjM0XDN4ZY3pOq",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -637,25 +497,25 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/settings?_rsc=hGXjM0XDN4ZY3pOq",
+      "url": "https://localhost:34576/demo/dashboard?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
       "url": "https://localhost:34576/demo/settings/alerts?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/settings?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -667,19 +527,13 @@
     {
       "engine": "chromium",
       "width": 1280,
+      "url": "https://localhost:34576/demo/items/payments?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
       "url": "https://localhost:34576/api/metrics",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/add?_rsc=5CB68i4pnAekjehf",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo?_rsc=5CB68i4pnAekjehf",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -691,13 +545,13 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
+      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
+      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -709,43 +563,25 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/items/payments?_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/demo/dashboard?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/settings?_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?date=dddddddd-dddd-4ddd-8ddd-000000000100&occurrence=dddddddd-dddd-4ddd-8ddd-000000001002&action=complete&due=2026-09-14&_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/settings/alerts?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/88888888-8888-4888-8888-888888888888?date=dddddddd-dddd-4ddd-8ddd-000000000260&occurrence=dddddddd-dddd-4ddd-8ddd-000000002603&action=complete&due=2026-08-27&_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/privacy?_rsc=oh4SZ7qelZVNqwHC",
+      "url": "https://localhost:34576/demo/items?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -757,7 +593,19 @@
     {
       "engine": "chromium",
       "width": 1280,
+      "url": "https://localhost:34576/privacy?_rsc=oh4SZ7qelZVNqwHC",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
       "url": "https://localhost:34576/api/metrics",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/pricing?_rsc=5CB68i4pnAekjehf",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -775,49 +623,7 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/pricing?_rsc=5CB68i4pnAekjehf",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
       "url": "https://localhost:34576/demo?_rsc=5CB68i4pnAekjehf",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/dashboard?_rsc=6putMpgjcVjFvNYS",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=6putMpgjcVjFvNYS",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/planner?_rsc=6putMpgjcVjFvNYS",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items?_rsc=6putMpgjcVjFvNYS",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -841,7 +647,7 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/purchases/11111111-1111-4111-8111-111111111111?_rsc=6putMpgjcVjFvNYS",
+      "url": "https://localhost:34576/terms?_rsc=mldjHl_F6iYLUaOs",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -853,13 +659,13 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/terms?_rsc=6putMpgjcVjFvNYS",
+      "url": "https://localhost:34576/privacy?_rsc=6putMpgjcVjFvNYS",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/privacy?_rsc=6putMpgjcVjFvNYS",
+      "url": "https://localhost:34576/terms?_rsc=6putMpgjcVjFvNYS",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -871,19 +677,61 @@
     {
       "engine": "chromium",
       "width": 1280,
+      "url": "https://localhost:34576/pricing?_rsc=5CB68i4pnAekjehf",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo?_rsc=2HHYcpiQ6trPK0sG",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/pricing?_rsc=_upO1sv3KWsGuPRm",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/?_rsc=_upO1sv3KWsGuPRm",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/api/metrics",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/add/other?preset=electric-bill&_rsc=JzC0RFywyNajpXYa",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/api/metrics",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/pricing?_rsc=5CB68i4pnAekjehf",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/login?_rsc=5CB68i4pnAekjehf",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
       "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -895,31 +743,55 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/planner?days=365&_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/api/metrics",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
       "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/planner?days=365&_rsc=4uavnN5mX1q-K87W",
+      "url": "https://localhost:34576/?_rsc=2HHYcpiQ6trPK0sG",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/pricing?_rsc=2HHYcpiQ6trPK0sG",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/login?_rsc=2HHYcpiQ6trPK0sG",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/add?category=bills&_rsc=2HHYcpiQ6trPK0sG",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo?_rsc=2HHYcpiQ6trPK0sG",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/login?_rsc=_upO1sv3KWsGuPRm",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/?_rsc=_upO1sv3KWsGuPRm",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/pricing?_rsc=_upO1sv3KWsGuPRm",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -931,25 +803,13 @@
     {
       "engine": "chromium",
       "width": 1280,
+      "url": "https://localhost:34576/demo/planner?days=365&_rsc=4uavnN5mX1q-K87W",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
       "url": "https://localhost:34576/add?_rsc=4uavnN5mX1q-K87W",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/add/other?preset=personal-loan&_rsc=79EvEfsFJhlyA-iz",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/pricing?_rsc=79EvEfsFJhlyA-iz",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/login?_rsc=79EvEfsFJhlyA-iz",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -961,13 +821,7 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/api/metrics",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo?_rsc=OHT5OSflr34U0ePT",
+      "url": "https://localhost:34576/pricing?_rsc=79EvEfsFJhlyA-iz",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -979,31 +833,7 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/?_rsc=dqu1qxmEWMJf4zGq",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/login?_rsc=1ua0S-HDIIWSYvi5",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/?_rsc=yV13fY7b-wQzKSwW",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/login?_rsc=yV13fY7b-wQzKSwW",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/vehicle-registration-reminder?_rsc=yV13fY7b-wQzKSwW",
+      "url": "https://localhost:34576/?_rsc=OHT5OSflr34U0ePT",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1015,43 +845,55 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo?_rsc=aSkcBi9axp_2gGLR",
+      "url": "https://localhost:34576/demo?_rsc=dqu1qxmEWMJf4zGq",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/?_rsc=AzEfjLowzCiDOVgd",
+      "url": "https://localhost:34576/?_rsc=1ua0S-HDIIWSYvi5",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/pricing?_rsc=pfWg1qw4uMxqj7N2",
+      "url": "https://localhost:34576/api/metrics",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/?_rsc=Jm_KudBfn_F9em99",
+      "url": "https://localhost:34576/pricing?_rsc=aSkcBi9axp_2gGLR",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/pricing?_rsc=Jm_KudBfn_F9em99",
+      "url": "https://localhost:34576/login?_rsc=aSkcBi9axp_2gGLR",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/?_rsc=aSkcBi9axp_2gGLR",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/settings/alerts?_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/?_rsc=UnGutxUMZihRxjHi",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/login?_rsc=UnGutxUMZihRxjHi",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/settings?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1063,25 +905,7 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/dashboard?_rsc=HP2D8KAKzi4quLgZ",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/login?_rsc=HP2D8KAKzi4quLgZ",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=HP2D8KAKzi4quLgZ",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo/settings/alerts?_rsc=HP2D8KAKzi4quLgZ",
+      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1093,13 +917,49 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=HP2D8KAKzi4quLgZ",
+      "url": "https://localhost:34576/demo/settings/alerts?_rsc=HP2D8KAKzi4quLgZ",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=HP2D8KAKzi4quLgZ",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/login?_rsc=HP2D8KAKzi4quLgZ",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=HP2D8KAKzi4quLgZ",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/planner?_rsc=UYlhAAtTaaUAy0hA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/login?_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
       "url": "https://localhost:34576/demo/checkup?_rsc=UYlhAAtTaaUAy0hA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1123,49 +983,31 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/settings/alerts?_rsc=M1YBeNmtM7H-s1o9",
+      "url": "https://localhost:34576/login?_rsc=M1YBeNmtM7H-s1o9",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/items/payments?_rsc=M1YBeNmtM7H-s1o9",
+      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=M1YBeNmtM7H-s1o9",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/checkup?week=2026-10-18&_rsc=M1YBeNmtM7H-s1o9",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=M1YBeNmtM7H-s1o9",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/checkup?category=vehicles&_rsc=M1YBeNmtM7H-s1o9",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?date=dddddddd-dddd-4ddd-8ddd-000000000110&occurrence=dddddddd-dddd-4ddd-8ddd-000000001103&action=amount&_rsc=M1YBeNmtM7H-s1o9",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo/checkup?category=education&_rsc=M1YBeNmtM7H-s1o9",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/privacy?_rsc=sW2A7HEmFQnSVIMx",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/terms?_rsc=sW2A7HEmFQnSVIMx",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo?_rsc=sW2A7HEmFQnSVIMx",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?_rsc=M1YBeNmtM7H-s1o9",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1177,31 +1019,7 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/?_rsc=sW2A7HEmFQnSVIMx",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/demo?_rsc=sW2A7HEmFQnSVIMx",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
       "url": "https://localhost:34576/terms?_rsc=sW2A7HEmFQnSVIMx",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/privacy?_rsc=sW2A7HEmFQnSVIMx",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 1280,
-      "url": "https://localhost:34576/terms?_rsc=_H_fFy2_Q06N8BA7",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1213,13 +1031,19 @@
     {
       "engine": "chromium",
       "width": 1280,
+      "url": "https://localhost:34576/demo?_rsc=_H_fFy2_Q06N8BA7",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 1280,
       "url": "https://localhost:34576/terms?_rsc=sW2A7HEmFQnSVIMx",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/privacy?_rsc=sW2A7HEmFQnSVIMx",
+      "url": "https://localhost:34576/demo?_rsc=sW2A7HEmFQnSVIMx",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1231,7 +1055,7 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "url": "https://localhost:34576/demo?_rsc=sW2A7HEmFQnSVIMx",
+      "url": "https://localhost:34576/privacy?_rsc=sW2A7HEmFQnSVIMx",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1243,79 +1067,31 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/demo/planner?days=365&_rsc=4uavnN5mX1q-K87W",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/add?_rsc=4uavnN5mX1q-K87W",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
       "url": "https://localhost:34576/api/metrics",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
+      "url": "https://localhost:34576/pricing?_rsc=5CB68i4pnAekjehf",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
       "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
+      "url": "https://localhost:34576/demo?_rsc=EX0wAFBq3MNn4kwA",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/demo/items/payments?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/demo/dashboard?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1327,7 +1103,19 @@
     {
       "engine": "chromium",
       "width": 390,
+      "url": "https://localhost:34576/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
       "url": "https://localhost:34576/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1339,7 +1127,7 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/demo/settings?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1357,43 +1145,19 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/items/11111111-1111-4111-8111-111111111111?_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000002?_rsc=M1YBeNmtM7H-s1o9",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/items/cccccccc-cccc-4ccc-8ccc-cccccccccccc?_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/demo/checkup?week=2026-10-29&_rsc=EI6C0jtTtH79iK7l",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/privacy?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/terms?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/demo/add?category=bills&_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/demo/items/88888888-8888-4888-8888-888888888888?date=dddddddd-dddd-4ddd-8ddd-000000000260&occurrence=dddddddd-dddd-4ddd-8ddd-000000002603&action=complete&due=2026-08-27&_rsc=M1YBeNmtM7H-s1o9",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/demo/checkup?_rsc=akwUgtk9QfrvkHsU",
+      "url": "https://localhost:34576/demo/checkup?category=subscriptions&_rsc=M1YBeNmtM7H-s1o9",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1405,19 +1169,7 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/checkup?category=education&_rsc=M1YBeNmtM7H-s1o9",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/demo/checkup?_rsc=EI6C0jtTtH79iK7l",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/demo/settings/alerts?_rsc=UYlhAAtTaaUAy0hA",
+      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1429,19 +1181,19 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=UYlhAAtTaaUAy0hA",
+      "url": "https://localhost:34576/demo/settings/alerts?_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000007?_rsc=UYlhAAtTaaUAy0hA",
+      "url": "https://localhost:34576/demo/settings?_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/planner?days=365&month=2026-10-01&_rsc=gtGsBUUA2ZRrPQnP",
+      "url": "https://localhost:34576/demo/checkup?_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1453,31 +1205,19 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000002?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
       "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000004?_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=UYlhAAtTaaUAy0hA",
+      "url": "https://localhost:34576/add?_rsc=H79ruE6jsFCU5Hb5",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/privacy?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/terms?_rsc=UYlhAAtTaaUAy0hA",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000012?_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1507,73 +1247,7 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/login?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/demo/settings?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
       "url": "https://localhost:34576/demo/settings/alerts?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/api/metrics",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/add?_rsc=5CB68i4pnAekjehf",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/demo?_rsc=5CB68i4pnAekjehf",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/demo/dashboard?_rsc=hGXjM0XDN4ZY3pOq",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 390,
-      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1597,7 +1271,31 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/privacy?_rsc=oq3ci4Ou8DjIhuAu",
+      "url": "https://localhost:34576/demo/items/cccccccc-cccc-4ccc-8ccc-cccccccccccc?_rsc=HP2D8KAKzi4quLgZ",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?_rsc=HP2D8KAKzi4quLgZ",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=HP2D8KAKzi4quLgZ",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/demo/items/11111111-1111-4111-8111-111111111111?_rsc=HP2D8KAKzi4quLgZ",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=HP2D8KAKzi4quLgZ",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1615,13 +1313,31 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
+      "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
+      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/privacy?_rsc=oq3ci4Ou8DjIhuAu",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/terms?_rsc=oq3ci4Ou8DjIhuAu",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/api/metrics",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1633,13 +1349,13 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo?_rsc=tXyZJ52UQVBCVsD3",
+      "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1657,13 +1373,31 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/settings?_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
       "url": "https://localhost:34576/demo/settings/alerts?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/demo/settings?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/demo/items/payments?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1681,13 +1415,13 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000009?_rsc=oq3ci4Ou8DjIhuAu",
+      "url": "https://localhost:34576/demo/items/22222222-2222-4222-8222-222222222222?_rsc=oq3ci4Ou8DjIhuAu",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo/items/22222222-2222-4222-8222-222222222222?_rsc=oq3ci4Ou8DjIhuAu",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000009?_rsc=oq3ci4Ou8DjIhuAu",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1717,7 +1451,7 @@
     {
       "engine": "chromium",
       "width": 390,
-      "url": "https://localhost:34576/demo?_rsc=5CB68i4pnAekjehf",
+      "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1735,7 +1469,19 @@
     {
       "engine": "chromium",
       "width": 390,
+      "url": "https://localhost:34576/demo/items/11111111-1111-4111-8111-111111111111?_rsc=0W5JfKe8qU9FZCjD",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
       "url": "https://localhost:34576/demo/dashboard?_rsc=6putMpgjcVjFvNYS",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/demo/items?_rsc=6putMpgjcVjFvNYS",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1775,6 +1521,24 @@
       "error": "net::ERR_ABORTED"
     },
     {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "url": "https://localhost:34576/vehicle-registration-reminder?_rsc=5CB68i4pnAekjehf",
+      "error": "net::ERR_ABORTED"
+    },
+    {
       "engine": "webkit",
       "width": 390,
       "url": "https://localhost:34576/demo/items/22222222-2222-4222-8222-222222222222?_rsc=oq3ci4Ou8DjIhuAu",
@@ -1807,13 +1571,7 @@
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
+      "url": "https://localhost:34576/login?_rsc=5CB68i4pnAekjehf",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1825,19 +1583,19 @@
     {
       "engine": "chromium",
       "width": 320,
+      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
       "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/?_rsc=WzUDN3am5ctH078F",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/login?_rsc=WzUDN3am5ctH078F",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1855,43 +1613,31 @@
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/demo?_rsc=5CB68i4pnAekjehf",
+      "url": "https://localhost:34576/demo?_rsc=EX0wAFBq3MNn4kwA",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?date=dddddddd-dddd-4ddd-8ddd-000000000100&action=complete&due=2026-10-25&_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/items?_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?date=dddddddd-dddd-4ddd-8ddd-000000000110&action=complete&due=2026-10-27&_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1921,13 +1667,13 @@
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/demo/add?category=bills&_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/terms?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/terms?_rsc=ImvJ2tS2G70zB7fO",
+      "url": "https://localhost:34576/demo/add?category=bills&_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1939,13 +1685,19 @@
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/demo/checkup?week=2026-10-18&_rsc=M1YBeNmtM7H-s1o9",
+      "url": "https://localhost:34576/demo/checkup?category=bills&_rsc=M1YBeNmtM7H-s1o9",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/demo/checkup?category=vehicles&_rsc=M1YBeNmtM7H-s1o9",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000002?_rsc=M1YBeNmtM7H-s1o9",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/demo/checkup?week=2026-10-29&_rsc=EI6C0jtTtH79iK7l",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1957,31 +1709,19 @@
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/demo/checkup?category=education&_rsc=M1YBeNmtM7H-s1o9",
+      "url": "https://localhost:34576/demo/settings/alerts?_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/demo/checkup?week=2026-10-18&_rsc=EI6C0jtTtH79iK7l",
+      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/demo/items?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/planner?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/checkup?_rsc=UYlhAAtTaaUAy0hA",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000007?_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -1993,25 +1733,19 @@
     {
       "engine": "chromium",
       "width": 320,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000004?_rsc=UYlhAAtTaaUAy0hA",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
       "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/terms?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/add?_rsc=UYlhAAtTaaUAy0hA",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/privacy?_rsc=UYlhAAtTaaUAy0hA",
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000002?_rsc=UYlhAAtTaaUAy0hA",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -2041,37 +1775,7 @@
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/demo/settings?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/items/cccccccc-cccc-4ccc-8ccc-cccccccccccc?_rsc=HP2D8KAKzi4quLgZ",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?_rsc=HP2D8KAKzi4quLgZ",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=HP2D8KAKzi4quLgZ",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/items/11111111-1111-4111-8111-111111111111?_rsc=HP2D8KAKzi4quLgZ",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000001?_rsc=HP2D8KAKzi4quLgZ",
+      "url": "https://localhost:34576/login?_rsc=ImvJ2tS2G70zB7fO",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -2083,7 +1787,61 @@
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/demo/planner?_rsc=hGXjM0XDN4ZY3pOq",
+      "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/demo/dashboard?_rsc=hGXjM0XDN4ZY3pOq",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=hGXjM0XDN4ZY3pOq",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/demo/items?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/demo/settings/alerts?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/demo/settings?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/login?_rsc=ImvJ2tS2G70zB7fO",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/demo/items/cccccccc-cccc-4ccc-8ccc-cccccccccccc?_rsc=oq3ci4Ou8DjIhuAu",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/demo/items/11111111-1111-4111-8111-111111111111?_rsc=oq3ci4Ou8DjIhuAu",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -2107,43 +1865,25 @@
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/items?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/settings/alerts?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/settings?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
-      "url": "https://localhost:34576/demo/items/payments?_rsc=ImvJ2tS2G70zB7fO",
-      "error": "net::ERR_ABORTED"
-    },
-    {
-      "engine": "chromium",
-      "width": 320,
       "url": "https://localhost:34576/privacy?_rsc=oh4SZ7qelZVNqwHC",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/terms?_rsc=oh4SZ7qelZVNqwHC",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000009?_rsc=oq3ci4Ou8DjIhuAu",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/demo/items/22222222-2222-4222-8222-222222222222?_rsc=oq3ci4Ou8DjIhuAu",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -2155,7 +1895,7 @@
     {
       "engine": "chromium",
       "width": 320,
-      "url": "https://localhost:34576/demo?_rsc=5CB68i4pnAekjehf",
+      "url": "https://localhost:34576/add?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -2168,6 +1908,12 @@
       "engine": "chromium",
       "width": 320,
       "url": "https://localhost:34576/login?_rsc=tXyZJ52UQVBCVsD3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/pricing?_rsc=tXyZJ52UQVBCVsD3",
       "error": "net::ERR_ABORTED"
     },
     {
@@ -2191,6 +1937,24 @@
     {
       "engine": "chromium",
       "width": 320,
+      "url": "https://localhost:34576/demo/items?filter=dates&_rsc=6putMpgjcVjFvNYS",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/demo/purchases/11111111-1111-4111-8111-111111111111?_rsc=6putMpgjcVjFvNYS",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/terms?_rsc=6putMpgjcVjFvNYS",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
       "url": "https://localhost:34576/api/metrics",
       "error": "net::ERR_ABORTED"
     },
@@ -2198,6 +1962,12 @@
       "engine": "chromium",
       "width": 320,
       "url": "https://localhost:34576/?_rsc=tXyZJ52UQVBCVsD3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "url": "https://localhost:34576/api/metrics",
       "error": "net::ERR_ABORTED"
     }
   ],

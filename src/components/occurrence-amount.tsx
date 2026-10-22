@@ -13,7 +13,9 @@ export function OccurrenceAmount({date,occurrence,demo=false,archived=false}:{da
   const [preview,setPreview]=useState(initial),[editing,setEditing]=useState(false),[closedLink,setClosedLink]=useState(false),[estimated,setEstimated]=useState(initial.certainty==='estimated'),[amount,setAmount]=useState(initial.amount==null?'':String(initial.amount/100));
   const [busy,setBusy]=useState(false),[error,setError]=useState(''),[message,setMessage]=useState('');
   const shown=demo?preview:initial;
-  const linked=intent.get('action')==='amount'&&intent.get('date')===date.id,open=editing||(linked&&!closedLink);
+  const amountIntent=intent.get('action')==='amount'&&intent.get('date')===date.id;
+  const staleLink=amountIntent&&intent.has('occurrence')&&intent.get('occurrence')!==occurrence.id;
+  const linked=amountIntent&&!staleLink,open=editing||(linked&&!closedLink);
   function close() {setEditing(false);setClosedLink(true);if(linked){const query=new URLSearchParams(intent);query.delete('action');query.delete('date');window.history.replaceState(null,'',pathname+(query.size?'?'+query:'')+'#date-'+date.id);}}
   function save(parsed:number|null,certainty:AmountCertainty|'inherit') {
     if(submitting.current)return;setError('');submitting.current=true;setBusy(true);
@@ -32,12 +34,13 @@ export function OccurrenceAmount({date,occurrence,demo=false,archived=false}:{da
     }catch(e){setError(actionError(e));}
   }
   return <div className="spaced">
-    <p><strong>Expected amount:</strong> {shown.amount==null?'Amount not yet known':formatMoney(shown.amount)}{shown.amount!=null&&<span className="hint"> · {shown.certainty==='estimated'?'Estimated amount':shown.certainty==='confirmed'?'Confirmed amount':'Saved amount'}</span>}</p>
+    {staleLink&&<p className="alert info spaced">This amount link was for an earlier date. Review the current date before changing its amount.</p>}
+    <p><strong>{shown.amount!=null&&shown.certainty==='estimated'?'Estimated amount:':'Amount:'}</strong> {shown.amount==null?'Amount not yet known':formatMoney(shown.amount)}</p>
     {!archived&&!open&&<button type="button" className="text-button spaced" onClick={()=>{setEstimated(shown.certainty==='estimated');setAmount(shown.amount==null?'':String(shown.amount/100));setEditing(true);setError('');}}>{shown.amount==null?'Add expected cost':'Edit expected amount'}</button>}
     {open&&<form className={styles.editor} onSubmit={submit}><fieldset disabled={busy||transitioning}><h3>Expected amount for this date</h3>
       <label className="spaced">Expected amount (PHP)<input type="text" inputMode="decimal" value={amount} onChange={e=>setAmount(e.target.value)} placeholder="0.00"/></label>
       <label className="checkbox-row spaced"><input type="checkbox" checked={estimated} onChange={e=>setEstimated(e.target.checked)}/><span>This is an estimate</span></label>
-      <p className="hint spaced">Uncheck when you know the confirmed amount. Leave empty if the amount isn’t known yet. Enter 0 only for a known zero cost. Saving a cost does not mark it paid. Future dates keep their schedule amount.</p>
+      <p className="hint spaced">Select “This is an estimate” only when the amount is approximate. Leave empty if the amount isn’t known yet. Enter 0 only for a known zero cost. Saving a cost does not mark it paid. Future dates keep their schedule amount.</p>
       {error&&<p role="alert" className="alert error spaced">{error}</p>}
       <div className="form-actions"><button type="button" className="button secondary" onClick={close}>Cancel</button><button className="button primary">{busy||transitioning?'Saving…':demo?'Review sample amount':'Save expected amount'}</button></div>
       {occurrence.amount_certainty!=null&&<button type="button" className="text-button spaced" onClick={()=>void save(null,'inherit')}>Reset to schedule amount</button>}

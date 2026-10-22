@@ -11,6 +11,12 @@ import { pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
 import { setTimeout as delay } from 'node:timers/promises';
 
+async function openCheckupBreakdown(page) {
+  await page.waitForLoadState('networkidle');
+  const details=page.locator('details').filter({has:page.getByText('Cost breakdown',{exact:true})});
+  if(!await details.evaluate(element=>element.open))await details.locator('summary').click();
+}
+
 const playwright = process.env.PLAYWRIGHT_MODULE
   ? await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href)
   : createRequire(import.meta.url)('playwright');
@@ -41,7 +47,7 @@ try {
     const context=await browser.newContext({viewport:{width,height:900},ignoreHTTPSErrors:true,reducedMotion:'reduce'});
     const page=await context.newPage();page.on('pageerror',error=>errors.push({engine:engine.name(),width,url:page.url(),message:error.message,stack:error.stack}));
     page.on('requestfailed',request=>failedRequests.push({engine:engine.name(),width,url:request.url(),error:request.failure()?.errorText}));
-    const navigate=async path=>{await page.waitForLoadState('networkidle');const response=await page.goto(base+path);assert.equal(response.status(),200,path);await page.waitForLoadState('networkidle');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),path+' overflow');};
+    const navigate=async path=>{await page.waitForLoadState('networkidle');const response=await page.goto(base+path);assert.equal(response.status(),200,path);await page.waitForLoadState('networkidle');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),path+' overflow');if(path.startsWith('/demo'))assert.doesNotMatch(await page.locator('main').innerText(),/confirmed amounts?|amounts? (?:not )?confirmed|not yet confirmed|uses saved amounts you haven’t confirmed/i);};
     await navigate('/');
     assert.match(await page.locator('h1').innerText(),/Your household,\s*a little more organised\./);
     assert.equal(await page.locator('.hero-actions').getByRole('link',{name:'Start organizing for free',exact:true}).getAttribute('href'),'/add');
@@ -67,14 +73,14 @@ try {
     assert.equal(await page.locator('progress').getAttribute('value'),readiness);
     const guide=page.locator('section').filter({has:page.locator('#sample-capabilities')});await guide.scrollIntoViewIfNeeded();assert.equal(await guide.locator('div a').count(),6);
     await page.screenshot({path:`${output}/${engine.name()}-${width}-demo.png`,fullPage:true});
-    await page.getByRole('link',{name:'Explore Premium',exact:true}).click();await page.getByRole('heading',{name:'Your 30-Day Spending Checkup',exact:true}).waitFor();await page.waitForLoadState('networkidle');
-    const checkupTotal=page.locator('section[aria-labelledby="checkup-total-heading"]');assert((await checkupTotal.textContent()).includes(total));assert((await checkupTotal.textContent()).includes('₱4,700 of this total is estimated.'));
+    await page.getByRole('link',{name:'Explore Premium',exact:true}).click();await page.getByRole('heading',{name:'Your household ahead',exact:true}).waitFor();await page.waitForLoadState('networkidle');
+    const checkupTotal=page.locator('section[aria-labelledby="checkup-total-heading"]');assert((await checkupTotal.textContent()).includes(total));assert((await checkupTotal.textContent()).includes('₱4,700 estimated'));
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
     await page.screenshot({path:`${output}/${engine.name()}-${width}-checkup.png`,fullPage:true});
-    const periodLink=page.getByRole('link',{name:'View contributing expenses',exact:true});await periodLink.focus();await periodLink.press('Enter');await page.waitForURL(url=>url.searchParams.has('week'));
+    await openCheckupBreakdown(page);const periodLink=page.getByRole('link',{name:'View contributing expenses',exact:true});await periodLink.focus();await periodLink.press('Enter');await page.waitForURL(url=>url.searchParams.has('week'));
     const checkupExpenses=page.locator('section[aria-labelledby="checkup-expenses"]');assert(await checkupExpenses.locator('ol>li').count()>0);
-    await checkupExpenses.getByRole('link',{name:'Show all expenses',exact:true}).click();
-    await page.getByRole('link',{name:/^Vehicles/}).click();await page.waitForURL(url=>url.searchParams.get('category')==='vehicles');
+    await checkupExpenses.getByRole('link',{name:'Show all expenses',exact:true}).click();await page.getByRole('heading',{name:'What’s coming up',exact:true}).waitFor();
+    await openCheckupBreakdown(page);await page.getByRole('link',{name:/^Vehicles/}).click();await page.waitForURL(url=>url.searchParams.get('category')==='vehicles');
     assert.equal(await checkupExpenses.locator('ol>li').count(),1);assert((await checkupTotal.textContent()).includes(total));
     await navigate('/demo/planner?days=365');await page.getByRole('heading',{name:'Your Household Outlook',exact:true}).waitFor();
     const outlookTotal=page.locator('section[aria-labelledby="outlook-total-heading"]');await outlookTotal.waitFor();

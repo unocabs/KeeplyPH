@@ -1,0 +1,20 @@
+[
+  {
+    "engine": "chromium",
+    "width": 320,
+    "artwork": 6,
+    "fallback": true,
+    "doubledTextOverflow": false,
+    "offenders": [],
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "width": 390,
+    "artwork": 6,
+    "fallback": true,
+    "doubledTextOverflow": false,
+    "offenders": [],
+    "errors": []
+  }
+]

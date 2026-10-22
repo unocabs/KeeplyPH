@@ -3,65 +3,60 @@
     {
       "engine": "chromium",
       "width": 1280,
-      "passed": [
-        "saved checklist date and cost",
-        "smooth guided record navigation",
-        "reduced-motion navigation",
-        "separate due-date checkbox",
-        "due-date-only schedule",
-        "stable zero timing",
-        "leading zero replacement",
-        "service expected cost",
-        "service cost payment count",
-        "action hierarchy",
-        "direct checklist service entry",
-        "cost cancellation",
-        "cost validation",
-        "server failure and retry"
+      "checkup": [
+        "Free gate",
+        "sample logos",
+        "empty state",
+        "full-account totals",
+        "primary amount editor",
+        "cancel and failed-save retry",
+        "period/category navigation",
+        "pagination",
+        "read retry",
+        "amount/payment refresh",
+        "expiry",
+        "responsive timeline"
       ]
     },
     {
       "engine": "chromium",
       "width": 390,
-      "passed": [
-        "saved checklist date and cost",
-        "smooth guided record navigation",
-        "reduced-motion navigation",
-        "separate due-date checkbox",
-        "due-date-only schedule",
-        "stable zero timing",
-        "leading zero replacement",
-        "service expected cost",
-        "service cost payment count",
-        "action hierarchy",
-        "direct checklist service entry",
-        "cost cancellation",
-        "cost validation",
-        "server failure and retry"
+      "checkup": [
+        "Free gate",
+        "sample logos",
+        "empty state",
+        "full-account totals",
+        "primary amount editor",
+        "cancel and failed-save retry",
+        "period/category navigation",
+        "pagination",
+        "read retry",
+        "amount/payment refresh",
+        "expiry",
+        "responsive timeline"
       ]
     },
     {
       "engine": "webkit",
       "width": 390,
-      "passed": [
-        "saved checklist date and cost",
-        "smooth guided record navigation",
-        "reduced-motion navigation",
-        "separate due-date checkbox",
-        "due-date-only schedule",
-        "stable zero timing",
-        "leading zero replacement",
-        "service expected cost",
-        "service cost payment count",
-        "action hierarchy",
-        "direct checklist service entry",
-        "cost cancellation",
-        "cost validation",
-        "server failure and retry"
+      "checkup": [
+        "Free gate",
+        "sample logos",
+        "empty state",
+        "full-account totals",
+        "primary amount editor",
+        "cancel and failed-save retry",
+        "period/category navigation",
+        "pagination",
+        "read retry",
+        "amount/payment refresh",
+        "expiry",
+        "responsive timeline"
       ]
     }
   ],
   "errors": [],
+  "cancelledPrefetches": [],
   "limitations": [
     "Local Auth and REST stand-ins; real server actions and isolated PostgreSQL",
     "No hosted provider or physical-device verification"

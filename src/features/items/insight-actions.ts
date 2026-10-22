@@ -15,7 +15,7 @@ export async function saveReadinessPreference(item:string,revision:number,key:st
 }
 export async function saveOccurrenceAmount(occurrence:string,revision:number,amount:number|null,certainty:string):Promise<ActionResult> {
   if(!uuidSchema.safeParse(occurrence).success || !Number.isInteger(revision) || revision<1 || !['confirmed','estimated','unverified','unset','inherit'].includes(certainty) ||
-    (['unset','inherit'].includes(certainty) ? amount!==null : amount===null || !Number.isSafeInteger(amount) || amount<0 || amount>99999999999))return {error:'Check the amount and whether it is confirmed or estimated.'};
+    (['unset','inherit'].includes(certainty) ? amount!==null : amount===null || !Number.isSafeInteger(amount) || amount<0 || amount>99999999999))return {error:'Check the amount and try again.'};
   const {supabase}=await requireUser();
   const {error}=await supabase.rpc('set_occurrence_amount',{p_occurrence:occurrence,p_revision:revision,p_amount:amount,p_certainty:certainty});
   if(error)return {error:errorMessage(error)};

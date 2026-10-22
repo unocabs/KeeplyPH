@@ -5,7 +5,8 @@ import { sampleItems, sampleUsage } from '@/lib/demo';
 import { timelineAlerts, timelineAlertGroups, timelinePosition, timelineRows } from '@/features/items/timeline';
 import { Dashboard } from '@/components/dashboard';
 import { sampleInsights } from '@/features/items/insights';
-import { UpcomingTimeline } from '@/components/upcoming-timeline';
+import { UpcomingDateSummary, UpcomingTimeline } from '@/components/upcoming-timeline';
+import type { DateRow } from '@/features/items/domain';
 import type { Usage } from '@/lib/domain';
 
 // Closed add dialogs show catalog previews independently of a saved reminder's identity.
@@ -30,6 +31,82 @@ function fixture(due = '2027-01-03') {
   ];
   return item;
 }
+
+function summary(row: DateRow, base = '') {
+  return renderToStaticMarkup(createElement(UpcomingDateSummary, { row, today, base, titleId: 'selected-date-title', onClose() {} }));
+}
+
+describe('upcoming date summary', () => {
+  it('prioritises identity and the selected payment amount, preserving certainty, unknown and zero', () => {
+    const row = timelineRows([fixture()], today)[0];
+    row.item.product_name = 'Our electricity bill'; row.item.reminder_preset = 'electric-bill'; row.date.kind = 'other';
+    row.date.payment_amount_minor = 999900;
+    for (const [certainty, value, label, expected] of [
+      ['confirmed', 123456, 'Amount', '₱1,234.56'],
+      ['estimated', 234500, 'Estimated amount', '₱2,345'],
+      ['unverified', 345600, 'Amount', '₱3,456'],
+      ['unset', null, 'Amount', 'Amount not set'],
+      ['confirmed', 0, 'Amount', '₱0'],
+    ] as const) {
+      row.occurrence.amount_certainty = certainty; row.occurrence.expected_amount_minor = value;
+      const html = summary(row);
+      expect(html).toContain('<h2 id="selected-date-title">Our electricity bill</h2>');
+      expect(html).toContain(label); expect(html).toContain(expected);
+      expect(html).not.toMatch(/Saved amount|Confirmed amount|Not confirmed/);
+      expect(html).not.toContain('₱9,999'); expect(html).not.toContain('Alerts enabled');
+      expect(html).not.toContain('Email / Device'); expect(html).not.toContain('Unpaid');
+      expect(html).toContain(value == null ? 'Add amount' : 'Record payment');
+      if (value == null) expect(html).not.toContain('₱0');
+    }
+    row.occurrence.amount_certainty = null; row.occurrence.expected_amount_minor = null;
+    expect(summary(row)).toContain('₱9,999');
+  });
+  it('uses existing contextual flows and keeps sample actions inside the sample account', () => {
+    const row = timelineRows([fixture()], today)[0];
+    row.item.reminder_preset = 'electric-bill'; row.date.kind = 'other'; row.date.payment_amount_minor = 120000;
+    const link = new URLSearchParams({ date: row.date.id, action: 'complete', due: row.occurrence.due_on }).toString().replaceAll('&', '&amp;');
+    expect(summary(row, '/demo')).toContain(`/demo/items/${row.item.id}?${link}#date-${row.date.id}`);
+    row.occurrence.amount_certainty = 'unset'; row.occurrence.expected_amount_minor = null;
+    const amountLink = new URLSearchParams({ date: row.date.id, occurrence: row.occurrence.id, action: 'amount' }).toString().replaceAll('&', '&amp;');
+    expect(summary(row, '/demo')).toContain(`/demo/items/${row.item.id}?${amountLink}#date-${row.date.id}`);
+    row.item.reminder_preset = 'streaming'; row.occurrence.amount_certainty = null;
+    const html = summary(row, '/demo');
+    expect(html).toContain('Review renewal'); expect(html).not.toContain('action=complete');
+    expect(html).toContain('View full record');
+  });
+  it('leads with the service date and only includes a cost when relevant', () => {
+    const row = timelineRows([fixture(today)], today)[0];
+    row.item.reminder_preset = null; row.date.kind = 'service'; row.date.payment_amount_minor = null;
+    row.occurrence.amount_certainty = null; row.occurrence.expected_amount_minor = null;
+    let html = summary(row);
+    expect(html).toContain('Service due'); expect(html).toContain('Due today'); expect(html).toContain('Record service');
+    expect(html).not.toContain('Expected amount'); expect(html).not.toContain('Amount not set');
+    row.occurrence.amount_certainty = 'estimated'; row.occurrence.expected_amount_minor = 150000;
+    html = summary(row);
+    expect(html.indexOf('Service due')).toBeLessThan(html.indexOf('Estimated amount'));
+    expect(html).toContain('₱1,500');
+  });
+  it('keeps warranty expiry and existing purchase proof separate from purchase price or payment', () => {
+    const row = timelineRows([fixture(today)], today)[0];
+    row.item.template_key = 'receipt'; row.item.reminder_preset = null; row.item.price_minor = 4500000;
+    row.date.kind = 'warranty'; row.date.payment_amount_minor = 4500000;
+    const html = summary(row, '/demo');
+    expect(html).toContain('Recorded warranty expiry'); expect(html).toContain('Expires today');
+    expect(html).toContain('Review warranty'); expect(html).toContain('View receipt &amp; purchase details');
+    expect(html).toContain(`href="/demo/purchases/${row.item.id}"`);
+    expect(html).not.toContain('₱'); expect(html).not.toContain('action=complete');
+    expect(html).not.toContain('Record payment');
+  });
+  it('retains date-specific context, truthful past timing and read-only archived records', () => {
+    const row = timelineRows([fixture()], today)[0];
+    row.date.notes = 'Check the latest statement'; row.item.notes = 'An older general note';
+    row.occurrence.due_on = '2026-12-19'; row.item.archived_at = today;
+    const html = summary(row);
+    expect(html).toContain('Check the latest statement'); expect(html).not.toContain('An older general note');
+    expect(html).toContain('Overdue · 1 day ago'); expect(html).not.toContain('class="button primary"');
+    expect(html).toContain('View full record');
+  });
+});
 
 describe('dashboard timeline', () => {
   it('groups the shared demo and account dashboard around calendar, checks, planning and records', () => {

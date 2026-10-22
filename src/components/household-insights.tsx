@@ -12,7 +12,6 @@ export function PaymentTotals({plan}:{plan:PaymentPlan}) {
   return <div className={styles.paymentBudget}>
     {known>0 ? <p className={styles.budgetAmount}>{formatTotal(paymentTotal(plan))}<span>{paymentTotal(plan)==='0'?'Saved amounts total zero':plan.unset_count>0?'Known upcoming costs':'Upcoming costs to prepare for'}</span></p> : <p className={styles.budgetEmpty}>{plan.total>0?'Amounts not added yet':'No upcoming expenses'}</p>}
     {plan.estimated_count>0&&<p className={styles.budgetNote}>{formatTotal(plan.estimated_minor)} of this total is estimated.</p>}
-    {plan.unverified_count>0&&<p className={styles.budgetNote}>{formatTotal(plan.unverified_minor)} uses saved amounts you haven’t confirmed.</p>}
     {plan.unset_count>0&&<div className={styles.budgetGuidance}><p><strong>Make your spending picture more accurate</strong></p><p>{plan.unset_count} upcoming {plan.unset_count===1?'expense needs':'expenses need'} an amount. Add an estimate to include {plan.unset_count===1?'it':'them'} in your total.</p></div>}
     {plan.total===0&&<p className={styles.budgetNote}>Add bills, renewals, or expected maintenance costs to build your upcoming spending picture.</p>}
   </div>;
