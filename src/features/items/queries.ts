@@ -87,15 +87,16 @@ export async function getHouseholdPlanner(days:import('@/features/premium/planne
 
 export async function getSpendingCheckup(filter:import('@/features/premium/checkup').CheckupFilter={}):Promise<import('@/features/premium/checkup').SpendingCheckup|null> {
  const {supabase,userId}=await requireUser();
- const args={p_week:filter.week||null,p_category:filter.category||null,p_before:filter.before||null,p_before_id:filter.id||null};
- let response=await supabase.rpc('household_spending_checkup',args);
- // A bookmarked period can leave the rolling window. Return to the current overview.
- if(response.error?.message.includes('INVALID_INPUT'))response=await supabase.rpc('household_spending_checkup',{...args,p_week:null,p_before:null,p_before_id:null});
+ const changePage=/^\d{1,6}$/.test(filter.changePage||'')?Math.min(Number(filter.changePage),100000):0;
+ const args={p_mode:['30','payday'].includes(filter.mode||'')?filter.mode!:'saved',p_week:filter.week||null,p_category:filter.category||null,p_before:filter.before||null,p_before_id:filter.id||null,p_change_page:changePage};
+ let response=await supabase.rpc('household_checkup_plan',args);
+ if(response.error?.message.includes('INVALID_INPUT'))response=await supabase.rpc('household_checkup_plan',{...args,p_week:null,p_before:null,p_before_id:null});
  if(response.error?.message.includes('PREMIUM_REQUIRED'))return null;
  if(response.error)throw new Error('Unable to load your spending checkup. Please retry.');
  const plan=response.data as unknown as import('@/features/premium/checkup').SpendingCheckup;
- const identities=await getItemIdentities(supabase,userId,plan.rows.map(row=>row.item_id));
- return {...plan,rows:plan.rows.map(row=>({...row,identity:identities.get(row.item_id)}))};
+ const changes=plan.comparison?.status==='available'?plan.comparison.rows:[];
+ const identities=await getItemIdentities(supabase,userId,[...plan.rows,...changes].map(row=>row.item_id));
+ return {...plan,rows:plan.rows.map(row=>({...row,identity:identities.get(row.item_id)})),comparison:plan.comparison?.status==='available'?{...plan.comparison,rows:changes.map(row=>({...row,identity:identities.get(row.item_id)}))}:plan.comparison};
 }
 
 export async function getHouseholdOutlook(days:import('@/features/premium/planner').PlannerHorizon,month?:string,before?:string,beforeId?:string):Promise<import('@/features/premium/outlook').HouseholdOutlook|null> {

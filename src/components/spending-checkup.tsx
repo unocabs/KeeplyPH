@@ -3,10 +3,12 @@ import { ArrowRight, CalendarDays, ChevronDown, CircleHelp, Sparkles } from 'luc
 import {premiumExpiry,premiumExpiryHeading} from '@/features/premium/discovery';
 import { formatDate, formatMoney,type Usage } from '@/lib/domain';
 import { formatTotal, paymentTotal } from '@/features/items/insights';
-import { checkupInsights, spendingCategories, spendingCategoryLabel, spendingShare, type CheckupRow, type SpendingCheckup } from '@/features/premium/checkup';
+import { checkupHref, checkupInsights, spendingCategories, spendingCategoryLabel, spendingShare, type CheckupActions, type CheckupRow, type SpendingCheckup } from '@/features/premium/checkup';
 import { premiumProducts } from '@/features/premium/products';
 import { ItemIdentityIcon } from './reminder-icon';
 import styles from './spending-checkup.module.css';
+import { CheckupCapture, CheckupRangeControls } from './checkup-controls';
+import { CheckupChangeSummary } from './checkup-changes';
 
 export function SpendingCheckupInvitation({usage}:{usage:Usage}) {
  return <div data-premium-surface="checkup"><Link className="back-link" href="/dashboard">← Household overview</Link>
@@ -22,12 +24,11 @@ function expenseHref(row:CheckupRow,base:string,edit=false) {
  return `${base}/items/${row.item_id}${query}#date-${row.date_id}`;
 }
 
-export function SpendingCheckupView({plan,demo=false,paged=false}:{plan:SpendingCheckup;demo?:boolean;paged?:boolean}) {
+export function SpendingCheckupView({plan,demo=false,paged=false,actions={}}:{plan:SpendingCheckup;demo?:boolean;paged?:boolean;actions?:CheckupActions}) {
  const base=demo?'/demo':'',insights=checkupInsights(plan),highest=insights?.highest,total=paymentTotal(plan);
  const known=plan.confirmed_count+plan.estimated_count+plan.unverified_count;
  const href=(filter:{week?:string|null;category?:string|null;before?:string;id?:string}={})=>{
-   const query=new URLSearchParams(Object.entries(filter).filter((entry):entry is [string,string]=>Boolean(entry[1])));
-   return base+'/checkup'+(query.size?'?'+query:'')+'#checkup-expenses';
+   return checkupHref(base,plan,filter)+'#checkup-expenses';
  };
  const categories=[...plan.categories].sort((a,b)=>spendingCategories.indexOf(a.category)-spendingCategories.indexOf(b.category));
  const selectedWeek=plan.weeks.find(week=>week.starts_on===plan.week),last=plan.rows.at(-1);
@@ -43,16 +44,19 @@ export function SpendingCheckupView({plan,demo=false,paged=false}:{plan:Spending
  const first=plan.rows[0];
  return <div className={styles.checkup} data-premium-surface="checkup">
    <Link className="back-link" href={base+'/dashboard'}>← Household overview</Link>
-   <header className={styles.heading}><span className="eyebrow">{demo?'PREMIUM SAMPLE · FICTIONAL EXPENSES':'KEEPLY PREMIUM · 30-DAY SPENDING CHECKUP'}</span><h1>Your household ahead</h1><p>{formatDate(plan.today,true)} to {formatDate(plan.ends_on,true)}</p></header>
+   <header className={styles.heading}><span className="eyebrow">{demo?'PREMIUM SAMPLE · FICTIONAL EXPENSES':'KEEPLY PREMIUM'}</span><h1>Your household ahead</h1><p>{formatDate(plan.today,true)} to {formatDate(plan.ends_on,true)}</p></header>
+   {plan.mode&&<CheckupRangeControls plan={plan} demo={demo} savePaydayAction={actions.savePayday}/>}
    <section className={styles.total} aria-labelledby="checkup-total-heading">
-     <h2 id="checkup-total-heading" className={styles.srOnly}>Upcoming household costs</h2>
+     <h2 id="checkup-total-heading" className={styles.heroEyebrow}>{plan.mode==='payday'?'BEFORE YOUR NEXT PAYDAY':'YOUR UPCOMING HOUSEHOLD COSTS'}</h2>
      {known>0?<><p className={styles.totalAmount}>{formatTotal(total)}</p><p className={styles.totalLabel}>{total==='0'?'Saved amounts total zero':plan.unset_count>0?'Known upcoming costs':'To prepare for upcoming expenses'}</p></>:<p className={styles.totalEmpty}>{plan.total>0?'Amounts not added yet':'No upcoming expenses'}</p>}
-     <p className={styles.count}>{plan.total} upcoming {plan.total===1?'expense':'expenses'} in your full household plan</p>
+     <p className={styles.count}>{plan.total} upcoming {plan.total===1?'expense':'expenses'} in this period</p>
      {plan.estimated_count>0&&<ul className={styles.certainty} aria-label="Estimated costs included">
        {plan.estimated_count>0&&<li className={styles.estimated}>{formatTotal(plan.estimated_minor)} estimated</li>}
      </ul>}
      {plan.unset_count>0&&<p className={styles.missing}>{plan.unset_count} upcoming {plan.unset_count===1?'expense needs':'expenses need'} an amount. Missing amounts are excluded from the total.</p>}
    </section>
+   {plan.comparison&&<CheckupChangeSummary plan={plan} demo={demo}/>}
+   {actions.capture&&<CheckupCapture key={plan.today} captureAction={actions.capture} firstUse={plan.comparison?.status==='first_use'}/>}
    <section className={styles.nextStep} aria-labelledby="checkup-next-heading">
      <p className={styles.eyebrow}><CircleHelp size={15} aria-hidden="true"/>{needsReview?'An amount to check':'Your next step'}</p>
      <h2 id="checkup-next-heading">{reviewTitle}</h2>
@@ -76,6 +80,7 @@ export function SpendingCheckupView({plan,demo=false,paged=false}:{plan:Spending
      {fullFirstPage&&last&&!plan.has_more&&last.due_on<plan.ends_on&&<p className={styles.timelineEnd}>No more upcoming expenses saved through {formatDate(plan.ends_on,true)}</p>}
      <div className={styles.actions}>{paged&&<Link className="button secondary" href={href({week:plan.week,category:plan.category})}>First page</Link>}{plan.has_more&&last&&<Link className="button secondary" href={href({week:plan.week,category:plan.category,before:last.due_on,id:last.date_id})}>More expenses <ArrowRight size={16} aria-hidden="true"/></Link>}</div>
    </section>
+   {(plan.after_payday_count??0)>0&&<Link className={styles.afterPayday} href={checkupHref(base,{...plan,mode:'30'})}>{plan.after_payday_count} more {plan.after_payday_count===1?'expense':'expenses'} on or after payday in the next 30 days <ArrowRight size={16} aria-hidden="true"/></Link>}
    {plan.total>0&&<details className={styles.breakdown} open={Boolean(selection)}>
      <summary>Cost breakdown<ChevronDown size={18} aria-hidden="true"/></summary>
      {highest&&insights&&<section className={styles.period} aria-labelledby="checkup-period-heading">

@@ -1,0 +1,20 @@
+[
+  {
+    "engine": "chromium",
+    "width": 320,
+    "logos": true,
+    "brokenLogoFallback": true,
+    "doubledText": true,
+    "changes": true,
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "width": 390,
+    "logos": true,
+    "brokenLogoFallback": true,
+    "doubledText": true,
+    "changes": true,
+    "errors": []
+  }
+]

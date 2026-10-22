@@ -1,14 +1,16 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import fixtures from '../fixtures/spending-checkup.json';
 import { sampleItems } from '@/lib/demo';
 import { addDays, type AmountCertainty } from '@/features/items/planning';
-import { checkupInsights, sampleSpendingCheckup, spendingShare } from '@/features/premium/checkup';
+import { checkupHref, checkupRange, checkupInsights, sampleCheckupComparison, sampleSpendingCheckup, spendingShare } from '@/features/premium/checkup';
 import { paymentTotal, samplePaymentPlan } from '@/features/items/insights';
 import type { ItemWithDetails } from '@/features/items/domain';
 import { SpendingCheckupView, SpendingCheckupInvitation } from '@/components/spending-checkup';
 import { safeAuthIntent } from '@/lib/auth-intent';
+
+vi.mock('next/navigation',()=>({useRouter:()=>({push:vi.fn(),refresh:vi.fn()})}));
 
 interface FixtureExpense { offset:number; amount:number|null; certainty?:string; template?:string; kind?:string; schedule_amount?:number; recurrence_months?:number }
 function items(fixture:{today:string;expenses:FixtureExpense[]}):ItemWithDetails[] {
@@ -96,5 +98,36 @@ describe('30-Day Spending Checkup',()=>{
    const full=sampleSpendingCheckup(records,fixtures[0].today);
    const paged=renderToStaticMarkup(createElement(SpendingCheckupView,{plan:full}));
    expect(paged).toContain('More expenses');expect(paged).not.toContain('No more upcoming expenses saved through');
+ });
+});
+
+describe('Payday checkup',()=>{
+ it('excludes payday and preserves zero, unknown, exact sums and truncated weeks',()=>{
+  const today='2026-12-28',records=items({today,expenses:[{offset:0,amount:0,certainty:'confirmed'},{offset:7,amount:189900,certainty:'unverified'},{offset:7,amount:null},{offset:8,amount:350000,certainty:'estimated'}]});
+  const plan=sampleSpendingCheckup(records,today,{payday:addDays(today,8),mode:'payday'});
+  expect(plan.ends_on).toBe('2027-01-04');expect(plan.total).toBe(3);expect(paymentTotal(plan)).toBe('189900');expect(plan.unset_count).toBe(1);
+  expect(plan.weeks).toHaveLength(2);expect(plan.weeks.at(-1)?.ends_on).toBe(plan.ends_on);expect(plan.after_payday_count).toBe(1);
+  expect(plan.rows.every(row=>row.due_on<addDays(today,8))).toBe(true);
+  expect(paymentTotal(sampleSpendingCheckup(records,today,{payday:addDays(today,8),mode:'30'}))).toBe('539900');
+ });
+ it('uses the default window for passed or unsupported dates without assuming another payday',()=>{
+  const today='2028-02-28';
+  expect(checkupRange(today,'2028-03-01','payday')).toEqual({mode:'payday',ends_on:'2028-02-29'});
+  for(const payday of [undefined,today,addDays(today,-1),addDays(today,366)])expect(checkupRange(today,payday,'payday')).toEqual({mode:'30',ends_on:addDays(today,30)});
+  expect(checkupRange(today,addDays(today,365),'payday').ends_on).toBe(addDays(today,364));
+ });
+ it('keeps the chosen range through filters and change pages, and keeps sample dates out of private URLs',()=>{
+  const plan={mode:'payday' as const,saved_payday:'2026-10-30'};
+  expect(checkupHref('/demo',plan,{view:'changes',changePage:'2'})).toBe('/demo/checkup?mode=payday&payday=2026-10-30&view=changes&changePage=2');
+  expect(checkupHref('',plan,{category:'bills'})).toBe('/checkup?mode=payday&category=bills');
+ });
+ it('makes the fictional comparison reconcile and labels it explicitly',()=>{
+  const today='2026-10-22',records=sampleItems(today),filter={payday:addDays(today,8),mode:'payday'},comparison=sampleCheckupComparison(records,today,filter);
+  expect(comparison.status).toBe('available');if(comparison.status!=='available')return;
+  expect(comparison.previous_minor).toBe('489900');expect(comparison.current_minor).toBe('539900');expect(comparison.rows[0].product_name).toContain('Toyota');
+  expect(comparison.previous_missing).toBe(1);expect(comparison.rows[0].before_minor).toBe('300000');expect(comparison.rows[0].after_minor).toBe('350000');
+  const plan={...sampleSpendingCheckup(records,today,filter),comparison};
+  const html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan,demo:true}));expect(html).toContain('Illustrative comparison');expect(html).toContain('₱500 more in known costs');
+  expect(html).not.toMatch(/unconfirmed|confirmed amounts|not yet confirmed/);
  });
 });

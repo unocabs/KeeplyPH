@@ -5,12 +5,15 @@ import { uuidSchema } from '@/lib/validation';
 import { spendingCategories, type CheckupFilter } from '@/features/premium/checkup';
 import { SpendingCheckupView, SpendingCheckupInvitation } from '@/components/spending-checkup';
 
-export const metadata={title:'30-Day Spending Checkup'};
+import { CheckupChangesView } from '@/components/checkup-changes';
+import { saveCheckupPayday, captureCheckup } from '@/features/premium/checkup-actions';
+
+export const metadata={title:'Household Spending Checkup'};
 export default async function CheckupPage({searchParams}:{searchParams:Promise<CheckupFilter>}) {
  const [query,usage]=await Promise.all([searchParams,getUsage()]);
  if(!usage.household_premium)return <SpendingCheckupInvitation usage={usage}/>;
  const cursor=requiredDate.safeParse(query.before).success&&uuidSchema.safeParse(query.id).success;
  const plan=await getSpendingCheckup({week:requiredDate.safeParse(query.week).success?query.week:undefined,
-   category:spendingCategories.includes(query.category??'')?query.category:undefined,before:cursor?query.before:undefined,id:cursor?query.id:undefined});
- return plan?<SpendingCheckupView plan={plan} paged={cursor}/>:<SpendingCheckupInvitation usage={usage}/>;
+   category:spendingCategories.includes(query.category??'')?query.category:undefined,before:cursor?query.before:undefined,id:cursor?query.id:undefined,mode:query.mode,changePage:query.changePage});
+ return plan?query.view==='changes'?<CheckupChangesView plan={plan}/>:<SpendingCheckupView plan={plan} paged={cursor} actions={{savePayday:saveCheckupPayday,capture:captureCheckup}}/>:<SpendingCheckupInvitation usage={usage}/>;
 }

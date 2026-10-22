@@ -23,10 +23,11 @@ import { plannerHorizon, samplePlanner, samplePlannerRows } from '@/features/pre
 import { paymentActionContext, sampleInsights, samplePaymentPlan } from '@/features/items/insights';
 import { dateRows } from '@/features/items/domain';
 import { notFound } from 'next/navigation';
-import { sampleSpendingCheckup, spendingCategories } from '@/features/premium/checkup';
+import { sampleCheckupComparison, sampleSpendingCheckup, spendingCategories } from '@/features/premium/checkup';
+import { CheckupChangesView } from '@/components/checkup-changes';
 import { SpendingCheckupView } from '@/components/spending-checkup';
 export const metadata = { title: 'Sample account', robots: { index: false, follow: false } };
-export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ q?: string; filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string; template?: string; before?: string; id?: string; days?: string; month?: string; week?:string }> }) {
+export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ q?: string; filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string; template?: string; before?: string; id?: string; days?: string; month?: string; week?:string; mode?:string; payday?:string; view?:string }> }) {
   const { slug = [] } = await params;
   const query = await searchParams;
   const today = todayIn();
@@ -36,7 +37,9 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   let content;
   if (slug[0] === 'checkup') {
     const cursor=requiredDate.safeParse(query.before).success&&uuidSchema.safeParse(query.id).success;
-    content=<SpendingCheckupView plan={sampleSpendingCheckup(items,today,{week:requiredDate.safeParse(query.week).success?query.week:undefined,category:spendingCategories.includes(query.category??'')?query.category:undefined,before:cursor?query.before:undefined,id:cursor?query.id:undefined})} paged={cursor} demo/>;
+    const filter={week:requiredDate.safeParse(query.week).success?query.week:undefined,category:spendingCategories.includes(query.category??'')?query.category:undefined,before:cursor?query.before:undefined,id:cursor?query.id:undefined,mode:query.mode,payday:requiredDate.safeParse(query.payday).success?query.payday:undefined};
+    const plan={...sampleSpendingCheckup(items,today,filter),comparison:sampleCheckupComparison(items,today,filter)};
+    content=query.view==='changes'?<CheckupChangesView plan={plan} demo/>:<SpendingCheckupView plan={plan} paged={cursor} demo/>;
   }
   else if (slug[0] === 'planner') {
     const days=plannerHorizon(query.days),month=/^\d{4}-\d{2}-01$/.test(query.month||'')&&requiredDate.safeParse(query.month).success?query.month:undefined;
