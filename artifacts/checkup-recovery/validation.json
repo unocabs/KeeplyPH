@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-23",
+  "unit_tests": 379,
+  "database_tests": 248,
+  "checks": [
+    "lint",
+    "typecheck",
+    "production build"
+  ],
+  "private_browsers": [
+    "Chromium 1280px",
+    "Chromium 390px",
+    "WebKit 390px"
+  ],
+  "coverage": [
+    "Loading to loaded content",
+    "Empty plan and add navigation",
+    "Missing amounts and amount-editor cancellation",
+    "Correct zero amounts",
+    "Limited comparison data with totals and item identity retained",
+    "Empty filters and show-all recovery",
+    "Empty payday period and widening to 30 days",
+    "Retry pending state",
+    "Repeated read failure and subsequent successful retry",
+    "Saved-expenses fallback navigation",
+    "Existing payday and capture success, cancellation, failures and retry",
+    "Existing filters, pagination, editing, payment refresh and expiry"
+  ],
+  "public_browsers": [
+    "Chromium 1280px",
+    "Chromium 390px",
+    "Chromium 320px",
+    "WebKit 390px"
+  ],
+  "rendered_seo_routes": 18,
+  "lighthouse": {
+    "performance": 84,
+    "accessibility": 100,
+    "best_practices": 100,
+    "seo": 66,
+    "note": "The sample intentionally remains noindex. Local mobile run with concurrent browser suites, not a hosted performance comparison."
+  },
+  "limitations": [
+    "Local production app, disposable PostgreSQL and Auth/REST stand-ins",
+    "Hosted Supabase, physical devices and original screenshot failure cause were not verified",
+    "Comprehension improvement remains a hypothesis, not a measured household outcome"
+  ]
+}

@@ -7,3 +7,4 @@
 @media(prefers-reduced-motion:no-preference){.rowCard,.nextStep>.action{transition:background .15s,border-color .15s}}
 
 .comparisonHelp{color:#746782;font-size:12px;margin-top:24px;line-height:1.7}.comparisonHelp summary{min-height:44px;padding:10px 0;cursor:pointer;color:#62438e;font-weight:600}.comparisonHelp p{margin:8px 0 12px}
+.readiness{font-size:13px;line-height:1.75;color:var(--muted);margin:16px 0 26px;max-width:620px}.readiness h2{font-size:16px;color:#57466e;margin-bottom:8px}.readiness p+p{margin-top:8px}

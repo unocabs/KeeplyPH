@@ -7,6 +7,7 @@ import { SpendingCheckupView, SpendingCheckupInvitation } from '@/components/spe
 
 import { CheckupChangesView } from '@/components/checkup-changes';
 import { saveCheckupPayday, captureCheckup } from '@/features/premium/checkup-actions';
+import { AppLoadError } from '@/components/app-load-error';
 
 export const metadata={title:'Household Spending Checkup'};
 export default async function CheckupPage({searchParams}:{searchParams:Promise<CheckupFilter>}) {
@@ -15,5 +16,6 @@ export default async function CheckupPage({searchParams}:{searchParams:Promise<C
  const cursor=requiredDate.safeParse(query.before).success&&uuidSchema.safeParse(query.id).success;
  const plan=await getSpendingCheckup({week:requiredDate.safeParse(query.week).success?query.week:undefined,
    category:spendingCategories.includes(query.category??'')?query.category:undefined,before:cursor?query.before:undefined,id:cursor?query.id:undefined,mode:query.mode,changePage:query.changePage});
+ if(plan&&'status' in plan)return <AppLoadError planning/>;
  return plan?query.view==='changes'?<CheckupChangesView plan={plan}/>:<SpendingCheckupView plan={plan} paged={cursor} actions={{savePayday:saveCheckupPayday,capture:captureCheckup}}/>:<SpendingCheckupInvitation usage={usage}/>;
 }

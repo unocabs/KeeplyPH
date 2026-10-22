@@ -50,8 +50,39 @@ describe('30-Day Spending Checkup',()=>{
  });
  it('keeps low-data sample education separate from real totals',()=>{
    const plan=sampleSpendingCheckup([],fixtures[0].today),html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan}));
-   expect(html).toContain('Build a useful checkup');expect(html).toContain('href="/demo/checkup"');expect(html).not.toContain('Highest-cost upcoming period');expect(html).not.toContain('₱0');
+   expect(html).toContain('Your checkup starts with one expense');expect(html).toContain('href="/demo/checkup"');expect(html).not.toContain('Highest-cost upcoming period');expect(html).not.toContain('₱0');
+   expect(html).toContain('href="/add?category=bills"');expect(html).toContain('Add its next date and an amount if you know it.');
    const invitation=renderToStaticMarkup(createElement(SpendingCheckupInvitation,{usage:{household_premium:false} as import('@/lib/domain').Usage}));expect(invitation).toContain('₱59');expect(invitation).toContain('Free payment plan');expect(invitation).not.toContain('Your planning takeaway');
+ });
+ it('explains insufficient comparison data without hiding a useful amount or item identity',()=>{
+   const today=fixtures[0].today,plan=sampleSpendingCheckup(items({today,expenses:[{offset:1,amount:25000,certainty:'confirmed'}]}),today);
+   const html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan}));
+   expect(html).toContain('A little more detail, a clearer picture');expect(html).toContain('at least two different saved expenses');
+   expect(html).toContain('₱250');expect(html).toContain('reminder-icon');expect(html).toContain('View expense');
+   expect(html).not.toContain('id="checkup-period-heading"');
+   expect(html.indexOf('id="checkup-more-data-heading"')).toBeLessThan(html.indexOf('id="checkup-expenses"'));
+ });
+ it('guides missing amounts and preserves correct zero amounts without inventing costs',()=>{
+   const today=fixtures[0].today;
+   const missing=renderToStaticMarkup(createElement(SpendingCheckupView,{plan:sampleSpendingCheckup(items({today,expenses:[{offset:1,amount:null}]}),today)}));
+   expect(missing).toContain('Your dates are a good start.');expect(missing).toContain('Add amount');expect(missing).toContain('action=amount');expect(missing).not.toContain('₱0');
+   const zero=renderToStaticMarkup(createElement(SpendingCheckupView,{plan:sampleSpendingCheckup(items({today,expenses:[{offset:1,amount:0,certainty:'confirmed'}]}),today)}));
+   expect(zero).toContain('Saved amounts total zero');expect(zero).toContain('Keep any correct zero amounts as they are.');expect(zero).not.toContain('Add the missing amounts');
+ });
+ it('offers a wider range for an empty payday period without losing the saved payday',()=>{
+   const today=fixtures[0].today,payday=addDays(today,3),plan=sampleSpendingCheckup(items({today,expenses:[{offset:4,amount:10000}]}),today,{payday,mode:'payday'});
+   expect(plan.total).toBe(0);expect(plan.after_payday_count).toBe(1);
+   const html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan,demo:true}));
+   expect(html).toContain('See the next 30 days');expect(html).toContain(`href="/demo/checkup?mode=30&amp;payday=${payday}"`);expect(html).not.toContain('₱0');
+ });
+ it('recovers empty filters and exhausted pages without calling the whole account empty',()=>{
+   const today=fixtures[0].today,records=items({today,expenses:[{offset:1,amount:25000}]});
+   const filtered=sampleSpendingCheckup(records,today,{category:'vehicles'});
+   const html=renderToStaticMarkup(createElement(SpendingCheckupView,{plan:filtered}));
+   expect(html).toContain('No expenses match this selection yet.');expect(html).toContain('View all upcoming expenses');expect(html).toContain('₱250');expect(html).not.toContain('Your checkup starts with one expense');
+   const last=sampleSpendingCheckup(records,today).rows[0],page=sampleSpendingCheckup(records,today,{before:last.due_on,id:last.date_id});
+   const ended=renderToStaticMarkup(createElement(SpendingCheckupView,{plan:page,paged:true}));
+   expect(ended).toContain('You’ve reached the end of this page.');expect(ended).toContain('First page');expect(ended).toContain('View all upcoming expenses');
  });
  it('preserves the checkup destination through sign-in without accepting query injection',()=>{
    expect(safeAuthIntent('/checkup?user=someone-else&premium=true')).toBe('/checkup');

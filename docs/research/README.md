@@ -1,6 +1,6 @@
 # Keeply user research and product decisions
 
-Updated 22 October 2026.
+Updated 23 October 2026.
 
 ## Purpose
 
@@ -62,6 +62,14 @@ For a material change, add a dated entry here or link a separate research note. 
 Record feedback without names, account numbers, credentials, unredacted receipts, or other household-sensitive information. Link only appropriately redacted supporting material.
 
 ## Recorded direction and findings
+
+### 23 October 2026: make checkup readiness and recovery useful
+
+**Problem and evidence:** the owner supplied a checkup loading-failure screenshot and asked for cheerful guidance when data is not ready. This is direct owner feedback. The screenshot establishes a failed load, not an empty account or insufficient data. Baseline sections 2.2, 2.3, 2.4 and 6B support testing trustworthy recovery, a clear next action and honest uncertainty. They do not validate a particular message or tone.
+
+**Decision and expected outcome:** distinguish loading, a successfully loaded empty period, missing amounts, insufficient comparison data, empty filters, exhausted pages and failed reads. Keep useful totals and item artwork visible when comparison data is limited. Explain the comparison threshold without asking users to change correct zero amounts. Offer existing amount editing, add-expense, sample-account, show-all and wider-period actions as appropriate. Failed checkup reads return an explicit unavailable state with retry and saved-expense navigation, preserving authentication redirects and Premium access checks. Expected benefit: understand what is available and take one useful next step without mistaking a failed request for missing records or adding duplicates.
+
+**Validation and limitations:** 379 unit tests, 248 isolated database checks, lint, type checking and the production build passed. Local production flows passed in Chromium at 1280px/390px and WebKit at 390px, covering loading, sparse data, correct zeros, amount-editor cancellation, filter recovery, payday widening, repeated failures, pending retry feedback, successful retry and saved-expense navigation. Existing checkup editing, payment, capture, expiry and source-record flows also passed. Public/sample checks passed in Chromium at 1280px/390px/320px and WebKit at 390px, including rendered SEO checks on 18 routes. Local mobile Lighthouse scored 84/100/100 for performance/accessibility/best practices; SEO was 66 because the sample intentionally remains noindex. Public metadata, structured data, sitemap and indexing configuration are unchanged. See the [verification record](../../artifacts/checkup-recovery/validation.json) and [recovery preview](../../artifacts/checkup-recovery/chromium-1280-read-error.png). These checks use disposable PostgreSQL and local Auth/REST stand-ins. Hosted services, physical devices and the original screenshot's failure cause were not verified. Observe household comprehension before treating the expected benefit as established.
 
 ### 22 October 2026: implement the Premium payday and change checkup
 

@@ -1,0 +1,40 @@
+{
+  "reports": [
+    {
+      "engine": "webkit",
+      "width": 390,
+      "premiumCheckup": [
+        "saved payday",
+        "date boundaries",
+        "cancel and failed-save retry",
+        "first use",
+        "capture retry",
+        "no change",
+        "same-date comparison",
+        "source logos",
+        "expiry",
+        "responsive layout"
+      ],
+      "checkup": [
+        "Free gate",
+        "sample logos",
+        "empty state",
+        "full-account totals",
+        "primary amount editor",
+        "cancel and failed-save retry",
+        "period/category navigation",
+        "pagination",
+        "read retry",
+        "amount/payment refresh",
+        "expiry",
+        "responsive timeline"
+      ]
+    }
+  ],
+  "errors": [],
+  "cancelledPrefetches": [],
+  "limitations": [
+    "Local Auth and REST stand-ins; real server actions and isolated PostgreSQL",
+    "Standalone detection is simulated; no physical installation or hosted provider verification"
+  ]
+}

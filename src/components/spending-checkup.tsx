@@ -39,7 +39,7 @@ export function SpendingCheckupView({plan,demo=false,paged=false,actions={}}:{pl
    : plan.estimated_count>0 ? plan.rows.find(row=>row.certainty==='estimated')
    : plan.rows[0] : undefined;
  const needsReview=plan.unset_count+plan.estimated_count>0;
- const reviewTitle=plan.total===0?'Build a useful checkup':plan.unset_count>0?'Add the missing amounts':plan.estimated_count>0?'Check an estimated cost':'Prepare for your next expense';
+ const reviewTitle=plan.total===0?'Your checkup starts with one expense':plan.unset_count>0?'Add the missing amounts':plan.estimated_count>0?'Check an estimated cost':'Prepare for your next expense';
  const reviewAction=review ? review.projected?'Review saved schedule':needsReview?review.amount_minor==null?'Add amount':'Review expected amount':'View expense' : plan.total===0?'Add a household expense':'Review expected costs';
  const first=plan.rows[0];
  return <div className={styles.checkup} data-premium-surface="checkup">
@@ -55,15 +55,19 @@ export function SpendingCheckupView({plan,demo=false,paged=false,actions={}}:{pl
      </ul>}
      {plan.unset_count>0&&<p className={styles.missing}>{plan.unset_count} upcoming {plan.unset_count===1?'expense needs':'expenses need'} an amount. Missing amounts are excluded from the total.</p>}
    </section>
+   {plan.total===0&&<p className={styles.readiness}>There aren’t any upcoming expenses saved for these dates yet. Start with a bill or maintenance cost, and we’ll help you see what to prepare for. Your checkup grows with the expenses you save.</p>}
    {plan.comparison&&<CheckupChangeSummary plan={plan} demo={demo}/>}
    {actions.capture&&<CheckupCapture key={plan.today} captureAction={actions.capture} firstUse={plan.comparison?.status==='first_use'}/>}
    <section className={styles.nextStep} aria-labelledby="checkup-next-heading">
      <p className={styles.eyebrow}><CircleHelp size={15} aria-hidden="true"/>{needsReview?'An amount to check':'Your next step'}</p>
      <h2 id="checkup-next-heading">{reviewTitle}</h2>
-     {review?<div className={styles.reviewIdentity}><ItemIdentityIcon item={review.identity}/><div><strong>{review.product_name}</strong><p>{review.label} · {formatDate(review.due_on,true)}</p><p>{review.amount_minor==null?'Amount not yet known':formatMoney(review.amount_minor)+(review.certainty==='estimated'?' estimated':'')}</p></div></div>:<p className={styles.muted}>{plan.total===0?'Add a bill or expected maintenance cost to see what your household needs to prepare for.':plan.unset_count>0?'Add expected costs when you know them. An estimate can help you prepare.':needsReview?'Review the amounts saved in your household plan before preparing for upcoming expenses.':'Review your saved upcoming expenses and their dates.'}</p>}
+     {review?<div className={styles.reviewIdentity}><ItemIdentityIcon item={review.identity}/><div><strong>{review.product_name}</strong><p>{review.label} · {formatDate(review.due_on,true)}</p><p>{review.amount_minor==null?'Amount not yet known':formatMoney(review.amount_minor)+(review.certainty==='estimated'?' estimated':'')}</p></div></div>:<p className={styles.muted}>{plan.total===0?'Add its next date and an amount if you know it. A clearly labelled estimate is welcome too.':plan.unset_count>0?'Add expected costs when you know them. An estimate can help you prepare.':needsReview?'Review the amounts saved in your household plan before preparing for upcoming expenses.':'Review your saved upcoming expenses and their dates.'}</p>}
+     {plan.total>0&&known===0&&<p className={styles.muted}>Your dates are a good start. Add an amount when you know it, or use an estimate, to bring your upcoming total to life.</p>}
      <Link className={styles.action} href={review?expenseHref(review,base,needsReview):base+(plan.total===0?'/add?category=bills':'/items/payments')}>{reviewAction}<ArrowRight size={16} aria-hidden="true"/></Link>
      {plan.total===0&&!demo&&<Link className="text-button" href="/demo/checkup" data-premium-event="premium_sample_opened">Explore a sample account</Link>}
+     {plan.total===0&&plan.mode==='payday'&&<Link className="text-button" href={checkupHref(base,{...plan,mode:'30'})}>See the next 30 days</Link>}
    </section>
+   {plan.total>0&&!insights&&<aside className={styles.readiness} aria-labelledby="checkup-more-data-heading"><h2 id="checkup-more-data-heading">A little more detail, a clearer picture</h2><p>{known===0?'There aren’t enough amounts yet to compare your upcoming periods. Add a known amount or an estimate to your saved expenses when you’re ready.':'There isn’t enough cost data yet to highlight a highest-cost period. This comparison uses at least two different saved expenses with amounts above zero. Your saved dates and totals are still useful as they are.'}</p>{known>0&&total==='0'&&<p>Keep any correct zero amounts as they are. Only add expenses that belong in your household plan.</p>}</aside>}
    <section className={styles.expenses} aria-labelledby="checkup-expenses">
      <div className={styles.listHeading}><div><h2 tabIndex={-1} id="checkup-expenses">{selection||'What’s coming up'}</h2><p className={styles.muted}>{plan.filtered_total} {plan.filtered_total===1?'expense':'expenses'}{selection?' in this selection':paged?' in the full plan':' in date order'}{plan.has_more?' · More on the next page':''}</p></div>{(selection||paged)&&<Link className="text-button" href={href()}>Show all expenses</Link>}</div>
      {fullFirstPage&&first&&<div className={styles.timelineStart}><span>Today · {formatDate(plan.today)}</span>{first.due_on>plan.today&&<p>No upcoming expenses saved before {formatDate(first.due_on,true)}</p>}</div>}
@@ -76,7 +80,7 @@ export function SpendingCheckupView({plan,demo=false,paged=false,actions={}}:{pl
          </Link>
        </li>;
      })}</ol>
-     {!plan.rows.length&&<p className={styles.empty}>{plan.filtered_total===0?'No upcoming expenses in this selection.':'No more expenses on this page.'}</p>}
+     {!plan.rows.length&&<div className={styles.empty}><p>{plan.filtered_total===0?selection?'No expenses match this selection yet. Try showing all expenses to see the rest of your plan.':plan.total===0?'Your next saved expense will appear here when its date falls in this period.':'No expenses match this selection yet.':'You’ve reached the end of this page. Return to the first page to review your expenses.'}</p>{(selection||paged)&&<Link className={styles.action} href={href()}>View all upcoming expenses <ArrowRight size={16} aria-hidden="true"/></Link>}</div>}
      {fullFirstPage&&last&&!plan.has_more&&last.due_on<plan.ends_on&&<p className={styles.timelineEnd}>No more upcoming expenses saved through {formatDate(plan.ends_on,true)}</p>}
      <div className={styles.actions}>{paged&&<Link className="button secondary" href={href({week:plan.week,category:plan.category})}>First page</Link>}{plan.has_more&&last&&<Link className="button secondary" href={href({week:plan.week,category:plan.category,before:last.due_on,id:last.date_id})}>More expenses <ArrowRight size={16} aria-hidden="true"/></Link>}</div>
    </section>
