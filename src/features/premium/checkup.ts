@@ -14,6 +14,7 @@ export interface SpendingCheckup extends Omit<PaymentPlan,'rows'> {
   weeks:SpendingPeriod[]; categories:SpendingCategory[]; rows:CheckupRow[];
   filtered_total:number; week:string|null; category:string|null;
   source_count:number; positive_source_count:number;
+  availability?:'30_day_only';
   mode?:'30'|'payday'; saved_payday?:string|null; expired_payday?:boolean; after_payday_count?:number; comparison?:CheckupComparison;
 }
 export interface CheckupFilter { week?:string; category?:string; before?:string; id?:string; mode?:string; payday?:string; view?:string; changePage?:string }

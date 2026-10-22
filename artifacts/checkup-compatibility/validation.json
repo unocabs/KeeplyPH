@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-23",
+  "unit_tests": 388,
+  "database_tests": 72,
+  "checks": [
+    "production build",
+    "typecheck",
+    "lint",
+    "public/private HTTP and rendered-indexing smoke checks"
+  ],
+  "browsers": [
+    "Chromium 1280px",
+    "Chromium 390px",
+    "WebKit 390px"
+  ],
+  "scenarios": [
+    "Missing new RPC uses the existing 30-day RPC",
+    "Existing expenses, totals and item artwork remain visible",
+    "Payday and comparison controls/writes are absent during fallback",
+    "Category filters and stale extended-range bookmarks",
+    "Amount editor opens and cancellation leaves stored values unchanged",
+    "New RPC availability restores full controls and capture"
+  ],
+  "limitations": [
+    "Local production application with disposable PostgreSQL and Auth/REST stand-ins",
+    "Hosted checks verified API availability only, not signed-in household records",
+    "No hosted SQL mutations or application deployment",
+    "No physical-device verification"
+  ]
+}

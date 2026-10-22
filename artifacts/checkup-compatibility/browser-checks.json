@@ -1,0 +1,46 @@
+{
+  "reports": [
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "checkup": [
+        "Missing new RPC preserves existing 30-day records",
+        "Accurate totals and item artwork",
+        "Unsupported controls and writes absent",
+        "Category filters and stale bookmarks",
+        "Amount editing cancellation",
+        "Full checkup returns when the new RPC is available"
+      ]
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "checkup": [
+        "Missing new RPC preserves existing 30-day records",
+        "Accurate totals and item artwork",
+        "Unsupported controls and writes absent",
+        "Category filters and stale bookmarks",
+        "Amount editing cancellation",
+        "Full checkup returns when the new RPC is available"
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "checkup": [
+        "Missing new RPC preserves existing 30-day records",
+        "Accurate totals and item artwork",
+        "Unsupported controls and writes absent",
+        "Category filters and stale bookmarks",
+        "Amount editing cancellation",
+        "Full checkup returns when the new RPC is available"
+      ]
+    }
+  ],
+  "errors": [],
+  "cancelledPrefetches": [],
+  "limitations": [
+    "Local Auth and REST stand-ins; real server actions and isolated PostgreSQL",
+    "Standalone detection is simulated; no physical installation or hosted provider verification"
+  ]
+}

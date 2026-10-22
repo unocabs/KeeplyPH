@@ -17,5 +17,5 @@ export default async function CheckupPage({searchParams}:{searchParams:Promise<C
  const plan=await getSpendingCheckup({week:requiredDate.safeParse(query.week).success?query.week:undefined,
    category:spendingCategories.includes(query.category??'')?query.category:undefined,before:cursor?query.before:undefined,id:cursor?query.id:undefined,mode:query.mode,changePage:query.changePage});
  if(plan&&'status' in plan)return <AppLoadError planning readFailure/>;
- return plan?query.view==='changes'?<CheckupChangesView plan={plan}/>:<SpendingCheckupView plan={plan} paged={cursor} actions={{savePayday:saveCheckupPayday,capture:captureCheckup}}/>:<SpendingCheckupInvitation usage={usage}/>;
+ return plan?query.view==='changes'&&plan.availability!=='30_day_only'?<CheckupChangesView plan={plan}/>:<SpendingCheckupView plan={plan} paged={cursor} actions={plan.availability==='30_day_only'?{}:{savePayday:saveCheckupPayday,capture:captureCheckup}}/>:<SpendingCheckupInvitation usage={usage}/>;
 }

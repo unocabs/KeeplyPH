@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { sampleSpendingCheckup } from '@/features/premium/checkup';
+import { sampleItems } from '@/lib/demo';
 
 const mocks=vi.hoisted(()=>({requireUser:vi.fn(),rpc:vi.fn(),from:vi.fn(),identities:vi.fn()}));
 vi.mock('server-only',()=>({}));
@@ -44,5 +45,39 @@ describe('Checkup read recovery',()=>{
    mocks.rpc.mockResolvedValueOnce({data:null,error:{message:'INVALID_INPUT'}}).mockResolvedValueOnce({data:plan,error:null});
    expect(await getSpendingCheckup({week:'2000-01-01',category:'bills',mode:'30'})).toMatchObject({total:0});
    expect(mocks.rpc).toHaveBeenLastCalledWith('household_checkup_plan',expect.objectContaining({p_week:null,p_before:null,p_before_id:null,p_category:'bills',p_mode:'30'}));
+ });
+ it('restores existing 30-day records when only the new RPC is missing, with item artwork and no unsupported capabilities',async()=>{
+   const records=sampleItems('2026-10-23'),plan=sampleSpendingCheckup(records,'2026-10-23');
+   mocks.rpc.mockResolvedValueOnce({data:null,error:{code:'PGRST202',message:'Could not find the function public.household_checkup_plan in the schema cache'}})
+     .mockResolvedValueOnce({data:{...plan,mode:'payday',saved_payday:'2026-11-01',comparison:{status:'first_use'}},error:null});
+   mocks.identities.mockResolvedValue({data:records,error:null});
+   const result=await getSpendingCheckup({mode:'payday',view:'changes',category:'bills'});
+   expect(result).toMatchObject({availability:'30_day_only',total:plan.total,ends_on:plan.ends_on,mode:undefined,comparison:undefined,saved_payday:undefined});
+   expect(mocks.rpc).toHaveBeenLastCalledWith('household_spending_checkup',{p_week:null,p_category:'bills',p_before:null,p_before_id:null});
+   expect(result&&'rows' in result?result.rows.map(row=>row.identity?.product_name):[]).toEqual(plan.rows.map(row=>row.product_name));
+ });
+ it.each([
+   {code:'42501',message:'Permission denied'},
+   {code:'XX000',message:'Database error'},
+   {code:'PGRST202',message:'Could not find the function public.other_function'},
+ ])('does not mask unrelated errors with a different planning scope: $code $message',async error=>{
+   mocks.rpc.mockResolvedValue({data:null,error});
+   expect(await getSpendingCheckup({mode:'payday'})).toEqual({status:'unavailable'});
+   expect(mocks.rpc).toHaveBeenCalledOnce();
+ });
+ it('revalidates a stale extended-period bookmark through the legacy RPC',async()=>{
+   mocks.rpc.mockResolvedValueOnce({data:null,error:{code:'PGRST202',message:'household_checkup_plan missing'}})
+     .mockResolvedValueOnce({data:null,error:{message:'INVALID_INPUT'}})
+     .mockResolvedValueOnce({data:sampleSpendingCheckup([],'2026-10-23'),error:null});
+   expect(await getSpendingCheckup({week:'2027-01-01',category:'bills',before:'2027-01-02',id:'old-cursor',mode:'payday'})).toMatchObject({availability:'30_day_only',total:0});
+   expect(mocks.rpc).toHaveBeenLastCalledWith('household_spending_checkup',{p_week:null,p_category:'bills',p_before:null,p_before_id:null});
+ });
+ it.each([
+   [{code:'PGRST202',message:'household_spending_checkup missing'},{status:'unavailable'}],
+   [{message:'PREMIUM_REQUIRED'},null],
+ ])('preserves an unavailable or expired legacy result',async(error,expected)=>{
+   mocks.rpc.mockResolvedValueOnce({data:null,error:{code:'PGRST202',message:'household_checkup_plan missing'}})
+     .mockResolvedValueOnce({data:null,error});
+   expect(await getSpendingCheckup()).toEqual(expected);
  });
 });

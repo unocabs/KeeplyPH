@@ -45,6 +45,7 @@ export function SpendingCheckupView({plan,demo=false,paged=false,actions={}}:{pl
  return <div className={styles.checkup} data-premium-surface="checkup">
    <Link className="back-link" href={base+'/dashboard'}>← Household overview</Link>
    <header className={styles.heading}><span className="eyebrow">{demo?'PREMIUM SAMPLE · FICTIONAL EXPENSES':'KEEPLY PREMIUM'}</span><h1>Your household ahead</h1><p>{formatDate(plan.today,true)} to {formatDate(plan.ends_on,true)}</p></header>
+   {plan.availability==='30_day_only'&&<aside className={styles.baseline} aria-label="Available planning period"><div><strong>Showing your next 30 days</strong><p>Your saved expenses are available in the 30-day view. Payday planning and change comparisons aren’t available right now.</p></div></aside>}
    {plan.mode&&<CheckupRangeControls plan={plan} demo={demo} savePaydayAction={actions.savePayday}/>}
    <section className={styles.total} aria-labelledby="checkup-total-heading">
      <h2 id="checkup-total-heading" className={styles.heroEyebrow}>{plan.mode==='payday'?'BEFORE YOUR NEXT PAYDAY':'YOUR UPCOMING HOUSEHOLD COSTS'}</h2>

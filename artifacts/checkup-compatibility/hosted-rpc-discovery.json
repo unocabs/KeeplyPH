@@ -1,0 +1,39 @@
+{
+  "checked_on": "2026-10-23",
+  "environment": "Configured hosted Supabase API",
+  "read_only": true,
+  "user_records_accessed": false,
+  "hosted_migrations_applied": false,
+  "observations": [
+    {
+      "function": "household_checkup_plan",
+      "arguments": [
+        "p_mode",
+        "p_week",
+        "p_category",
+        "p_before",
+        "p_before_id",
+        "p_change_page"
+      ],
+      "http_status": 404,
+      "error_code": "PGRST202",
+      "message": "Could not find the function public.household_checkup_plan(p_before, p_before_id, p_category, p_change_page, p_mode, p_week) in the schema cache"
+    },
+    {
+      "function": "household_spending_checkup",
+      "public_http_status": 401,
+      "server_http_status": 403,
+      "error_code": "42501",
+      "message": "permission denied for function household_spending_checkup"
+    },
+    {
+      "function": "household_outlook",
+      "public_http_status": 401,
+      "server_http_status": 403,
+      "error_code": "42501",
+      "message": "permission denied for function household_outlook"
+    }
+  ],
+  "conclusion": "The hosted API cannot resolve the updated checkup function. Earlier checkup/outlook functions are defined. Household record deletion was not assessed.",
+  "remaining_check": "Run the existing read-only premium prerequisite SQL in Supabase SQL Editor to distinguish missing database prerequisites from a stale API schema cache."
+}

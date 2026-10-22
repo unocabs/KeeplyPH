@@ -64,7 +64,8 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
   let failNextSave = false;
   let failNextCheckup = false, failNextCheckupCapture=false;
   let failNextOutlook = false;
-  let failNextMeasurement = false, acknowledgementGate, checkupReadGate;
+  let failNextMeasurement = false, acknowledgementGate, checkupReadGate, missingCheckupRpc=false, checkupWrites=0;
+  const checkupCompatibility={setMissing(value){missingCheckupRpc=value;},writes:()=>checkupWrites};
   function holdCheckupRead() {
     const arrived=Promise.withResolvers(),release=Promise.withResolvers();
     checkupReadGate={arrived,release};return {arrived:arrived.promise,release:release.resolve};
@@ -100,6 +101,8 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
         let body = ''; for await (const chunk of req) body += chunk;
         const args = JSON.parse(body || '{}'), keys = Object.keys(args);
         if (!keys.every(key => /^p_[a-z_]+$/.test(key))) throw new Error('Invalid RPC arguments');
+        if(missingCheckupRpc&&name==='household_checkup_plan'){res.writeHead(404);res.end(JSON.stringify({code:'PGRST202',message:'Could not find the function public.household_checkup_plan in the schema cache'}));return;}
+        if(['capture_household_checkup','set_household_checkup_payday'].includes(name))checkupWrites++;
         if(checkupReadGate&&name==='household_checkup_plan'){const gate=checkupReadGate;checkupReadGate=null;gate.arrived.resolve();await gate.release.promise;}
         if(failNextOutlook&&name==='household_outlook'){failNextOutlook=false;res.writeHead(503);res.end(JSON.stringify({message:'Test outlook interruption'}));return;}
         if(failNextCheckupCapture&&name==='capture_household_checkup'){failNextCheckupCapture=false;res.writeHead(503);res.end(JSON.stringify({message:'Test capture interruption'}));return;}
@@ -181,8 +184,13 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       const pending=new Set();pendingActions.set(page,pending);
       page.on('request',request=>{if(request.method()==='POST')pending.add(request);});
       page.on('requestfinished',request=>pending.delete(request));page.on('requestfailed',request=>pending.delete(request));
+      if(process.env.PG_TEST_CHECKUP_COMPATIBILITY_ONLY==='1') {
+        await testCheckupCompatibility({page,base,owner,actor,admin,today,engine,width,compatibility:checkupCompatibility});
+        reports.push({engine:engine.name(),width,checkup:['Missing new RPC preserves existing 30-day records','Accurate totals and item artwork','Unsupported controls and writes absent','Category filters and stale bookmarks','Amount editing cancellation','Full checkup returns when the new RPC is available']});
+        await settleActions(page);await context.close();await browser.close();browser=null;continue;
+      }
       if(process.env.PG_TEST_CHECKUP_ONLY==='1') {
-        await testSpendingCheckupExperience({page,base,owner,actor,admin,today,engine,width,holdRead:holdCheckupRead,failRead:()=>{failNextCheckup=true;},failSave:()=>{failNextSave=true;}});
+        await testSpendingCheckupExperience({page,base,owner,actor,admin,today,engine,width,compatibility:checkupCompatibility,holdRead:holdCheckupRead,failRead:()=>{failNextCheckup=true;},failSave:()=>{failNextSave=true;}});
         await testPremiumCheckupExperience({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;},failCapture:()=>{failNextCheckupCapture=true;}});
         reports.push({engine:engine.name(),width,premiumCheckup:['saved payday','date boundaries','cancel and failed-save retry','first use','capture retry','no change','same-date comparison','source logos','expiry','responsive layout'],checkup:['Free gate','sample logos','empty state','full-account totals','primary amount editor','cancel and failed-save retry','period/category navigation','pagination','read retry','amount/payment refresh','expiry','responsive timeline']});
         await settleActions(page);await context.close();await browser.close();browser=null;continue;
@@ -193,7 +201,7 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
       if(!actionEditingOnly&&!paymentOnly) {
       await testPremiumDiscoveryExperience({page,base,owner,actor,admin,today,engine,width,failMeasurement:()=>{failNextMeasurement=true;return()=>!failNextMeasurement;}});
       await testFreeSpendingClarity({page,base,owner,actor,admin,today,engine,width});
-      await testSpendingCheckupExperience({page,base,owner,actor,admin,today,engine,width,holdRead:holdCheckupRead,failRead:()=>{failNextCheckup=true;},failSave:()=>{failNextSave=true;}});
+      await testSpendingCheckupExperience({page,base,owner,actor,admin,today,engine,width,compatibility:checkupCompatibility,holdRead:holdCheckupRead,failRead:()=>{failNextCheckup=true;},failSave:()=>{failNextSave=true;}});
       await testPremiumCheckupExperience({page,base,owner,actor,admin,today,engine,width,failSave:()=>{failNextSave=true;},failCapture:()=>{failNextCheckupCapture=true;}});
       await testHouseholdOutlookExperience({page,base,owner,actor,admin,today,engine,width,failRead:()=>{failNextOutlook=true;}});
       await visit(page,`${base}/items/${item}`); await page.getByRole('heading',{name:'Bedroom aircon',exact:true}).waitFor();
@@ -665,7 +673,45 @@ async function testFreeSpendingClarity({page,base,owner,actor,admin,today,engine
   await admin.query('delete from private.rate_limit_buckets where user_id=$1',[owner]);
 }
 
-async function testSpendingCheckupExperience({page,base,owner,actor,admin,today,engine,width,holdRead,failRead,failSave}) {
+async function testCheckupCompatibility({page,base,owner,actor,admin,today,engine,width,compatibility}) {
+  await actor(owner,'select public.activate_installation_premium(true)');
+  const day=n=>new Date(Date.parse(today+'T00:00:00Z')+n*86400000).toISOString().slice(0,10);
+  for(const [index,amount] of [25000,100000,null].entries()) {
+    const item=randomUUID();await actor(owner,"select public.create_item_draft($1,'other')",[item]);
+    await actor(owner,'select public.save_item_with_date($1,1,$2,$3,$4,$5)',[item,'Compatibility expense '+index,'',{kind:'other',label:'Expected cost',due_on:day(index+1),reminders_enabled:false,offsets:[],interval_months:null,payment_amount_minor:amount,payment_amount_certainty:'estimated'},'electric-bill']);
+  }
+  const before=(await admin.query('select to_jsonb(o) data from public.date_occurrences o where user_id=$1 order by id',[owner])).rows;
+  compatibility.setMissing(true);const writes=compatibility.writes();
+  try {
+    await visit(page,base+'/checkup?mode=payday&view=changes');
+    await page.getByText('Showing your next 30 days',{exact:true}).waitFor();
+    const total=page.locator('section[aria-labelledby="checkup-total-heading"]'),expenses=page.locator('section[aria-labelledby="checkup-expenses"]');
+    assert((await total.innerText()).includes('₱1,250'));assert.equal(await expenses.locator('ol>li').count(),3);
+    assert.equal(await expenses.locator('ol>li .reminder-icon').count(),3);
+    assert.equal(await page.getByRole('navigation',{name:'Checkup period',exact:true}).count(),0);
+    assert.equal(await page.getByRole('link',{name:'See what changed',exact:true}).count(),0);
+    assert.equal(compatibility.writes(),writes);
+    await openCheckupBreakdown(page);await page.getByRole('link',{name:/^Bills & utilities/}).click();await page.waitForURL(url=>url.searchParams.get('category')==='bills');await page.waitForLoadState('networkidle');
+    assert.equal(await expenses.locator('ol>li').count(),3);
+    await visit(page,base+'/checkup?mode=payday&week='+day(42));
+    await page.getByText('Showing your next 30 days',{exact:true}).waitFor();assert.equal(await expenses.locator('ol>li').count(),3);
+    await visit(page,base+'/checkup');
+    await page.getByRole('region',{name:'Add the missing amounts',exact:true}).getByRole('link',{name:'Add amount',exact:true}).click();await page.waitForLoadState('networkidle');
+    const editor=page.locator('form').filter({has:page.getByRole('heading',{name:'Expected amount for this date',exact:true})});
+    await editor.getByLabel('Expected amount (PHP)').fill('500');await editor.getByRole('button',{name:'Cancel',exact:true}).click();await editor.waitFor({state:'hidden'});
+    await page.goBack();await page.waitForLoadState('networkidle');await page.getByText('Showing your next 30 days',{exact:true}).waitFor();
+    assert((await total.innerText()).includes('₱1,250'));assert.equal(compatibility.writes(),writes);
+    assert.deepEqual((await admin.query('select to_jsonb(o) data from public.date_occurrences o where user_id=$1 order by id',[owner])).rows,before);
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    await mkdir('artifacts/checkup-compatibility',{recursive:true});await page.screenshot({path:`artifacts/checkup-compatibility/${engine.name()}-${width}.png`,fullPage:true});
+  } finally { compatibility.setMissing(false); }
+  await visit(page,base+'/checkup');await page.getByRole('navigation',{name:'Checkup period',exact:true}).waitFor();
+  assert.equal(await page.getByText('Showing your next 30 days',{exact:true}).count(),0);
+  assert(compatibility.writes()>writes);
+  console.log(`✓ Checkup compatibility preserves records and restores full support: ${engine.name()} ${width}`);
+}
+
+async function testSpendingCheckupExperience({page,base,owner,actor,admin,today,engine,width,compatibility,holdRead,failRead,failSave}) {
   await mkdir('artifacts/household-checkup',{recursive:true});
   const totalCard=page.locator('section[aria-labelledby="checkup-total-heading"]'),expenses=page.locator('section[aria-labelledby="checkup-expenses"]');
   await visit(page,base+'/checkup?premium=true&category=vehicles');
@@ -766,6 +812,31 @@ async function testSpendingCheckupExperience({page,base,owner,actor,admin,today,
   await openCheckupBreakdown(page);await page.getByRole('heading',{name:'Highest-cost upcoming period',exact:true}).waitFor();assert.equal(await expenses.locator('ol>li').count(),1);
   await visit(page,base+'/checkup');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await page.screenshot({path:`artifacts/household-checkup/${engine.name()}-${width}-private.png`,fullPage:true});
+  // Reproduce the hosted API mismatch without changing the database or using service privileges.
+  compatibility.setMissing(true);
+  const writesBeforeFallback=compatibility.writes();
+  try {
+    await visit(page,base+'/checkup?mode=payday&view=changes');
+    await page.getByText('Showing your next 30 days',{exact:true}).waitFor();
+    assert((await totalCard.textContent()).includes('₱11,600'));
+    assert.equal(await page.getByRole('navigation',{name:'Checkup period',exact:true}).count(),0);
+    assert.equal(await page.getByRole('link',{name:'See what changed',exact:true}).count(),0);
+    assert.equal(await page.getByRole('heading',{name:'What changed',exact:true,level:1}).count(),0);
+    assert.equal(await expenses.locator('ol>li .reminder-icon').count(),25);
+    assert.equal(compatibility.writes(),writesBeforeFallback);
+    await openCheckupBreakdown(page);await page.getByRole('link',{name:/^Bills & utilities/}).click();
+    await page.waitForURL(url=>url.searchParams.get('category')==='bills');
+    await expenses.getByRole('link',{name:'More expenses',exact:true}).click();await page.waitForURL(url=>url.searchParams.has('before'));
+    assert.equal(await expenses.locator('ol>li').count(),3);assert((await totalCard.textContent()).includes('₱11,600'));
+    await visit(page,base+'/checkup?mode=payday&week='+day(42)+'&category=vehicles');
+    await expenses.locator('ol>li').waitFor();assert.equal(await expenses.locator('ol>li').count(),1);
+    await expenses.getByRole('link',{name:/^Checkup family car/}).click();await page.getByRole('heading',{name:'Checkup family car',exact:true}).waitFor();await page.waitForLoadState('networkidle');
+    await visit(page,base+'/checkup');await page.getByText('Showing your next 30 days',{exact:true}).waitFor();
+    assert.equal(compatibility.writes(),writesBeforeFallback);
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    await mkdir('artifacts/checkup-compatibility',{recursive:true});
+    await page.screenshot({path:`artifacts/checkup-compatibility/${engine.name()}-${width}.png`,fullPage:true});
+  } finally { compatibility.setMissing(false); }
   const before=(await admin.query('select to_jsonb(o) data from public.date_occurrences o where user_id=$1 order by id',[owner])).rows;
   failRead();await visit(page,base+'/checkup?category=vehicles');
   await page.getByRole('heading',{name:'Let’s give that another try',exact:true}).waitFor();

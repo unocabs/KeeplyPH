@@ -90,12 +90,20 @@ export async function getSpendingCheckup(filter:import('@/features/premium/check
  // Keep authentication redirects outside recovery. A failed read is never an empty plan.
  try {
  const changePage=/^\d{1,6}$/.test(filter.changePage||'')?Math.min(Number(filter.changePage),100000):0;
- const args={p_mode:['30','payday'].includes(filter.mode||'')?filter.mode!:'saved',p_week:filter.week||null,p_category:filter.category||null,p_before:filter.before||null,p_before_id:filter.id||null,p_change_page:changePage};
+ const commonArgs={p_week:filter.week||null,p_category:filter.category||null,p_before:filter.before||null,p_before_id:filter.id||null};
+ const args={...commonArgs,p_mode:['30','payday'].includes(filter.mode||'')?filter.mode!:'saved',p_change_page:changePage};
  let response=await supabase.rpc('household_checkup_plan',args);
- if(response.error?.message.includes('INVALID_INPUT'))response=await supabase.rpc('household_checkup_plan',{...args,p_week:null,p_before:null,p_before_id:null});
+ // A rolling deployment may expose the existing 30-day RPC before the newer one.
+ // Never substitute a different period for a network, permission or database error.
+ const legacy=response.error?.code==='PGRST202'&&response.error.message.includes('household_checkup_plan');
+ if(legacy)response=await supabase.rpc('household_spending_checkup',commonArgs);
+ if(response.error?.message.includes('INVALID_INPUT'))response=legacy
+   ?await supabase.rpc('household_spending_checkup',{...commonArgs,p_week:null,p_before:null,p_before_id:null})
+   :await supabase.rpc('household_checkup_plan',{...args,p_week:null,p_before:null,p_before_id:null});
  if(response.error?.message.includes('PREMIUM_REQUIRED'))return null;
  if(response.error||!response.data)return {status:'unavailable'};
- const plan=response.data as unknown as import('@/features/premium/checkup').SpendingCheckup;
+ const data=response.data as unknown as import('@/features/premium/checkup').SpendingCheckup;
+ const plan=legacy?{...data,availability:'30_day_only' as const,mode:undefined,saved_payday:undefined,expired_payday:undefined,after_payday_count:undefined,comparison:undefined}:data;
  const changes=plan.comparison?.status==='available'?plan.comparison.rows:[];
  const identities=await getItemIdentities(supabase,userId,[...plan.rows,...changes].map(row=>row.item_id));
  return {...plan,rows:plan.rows.map(row=>({...row,identity:identities.get(row.item_id)})),comparison:plan.comparison?.status==='available'?{...plan.comparison,rows:changes.map(row=>({...row,identity:identities.get(row.item_id)}))}:plan.comparison};
