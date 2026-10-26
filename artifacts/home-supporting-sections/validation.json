@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-26",
+  "build": "passed",
+  "lint": "passed",
+  "planningUnitTests": 40,
+  "browserChecks": {
+    "environment": "Local production build with HTTPS; no external Google sign-in, hosted writes or physical devices",
+    "checks": [
+      {
+        "browser": "chromium",
+        "width": 1280,
+        "photos": "loaded, responsive, lazy",
+        "layout": "two photo cards",
+        "samplePreview": "three monthly totals and payment amounts match real sample planner",
+        "identities": "all three item logos loaded",
+        "flows": "loan sign-in intent, sample cancellation, guide, calculator error/success and reminder intent, sample edit cancellation/error/success",
+        "metadata": "preserved; JSON-LD parsed and graph types checked",
+        "overflow": false
+      },
+      {
+        "browser": "chromium",
+        "width": 768,
+        "photos": "loaded, responsive, lazy",
+        "layout": "two photo cards",
+        "samplePreview": "three monthly totals and payment amounts match real sample planner",
+        "identities": "all three item logos loaded",
+        "flows": "loan sign-in intent, sample cancellation, guide, calculator error/success and reminder intent, sample edit cancellation/error/success",
+        "metadata": "preserved; JSON-LD parsed and graph types checked",
+        "overflow": false
+      },
+      {
+        "browser": "chromium",
+        "width": 390,
+        "photos": "loaded, responsive, lazy",
+        "layout": "stacked photo cards",
+        "samplePreview": "three monthly totals and payment amounts match real sample planner",
+        "identities": "all three item logos loaded",
+        "flows": "loan sign-in intent, sample cancellation, guide, calculator error/success and reminder intent, sample edit cancellation/error/success",
+        "metadata": "preserved; JSON-LD parsed and graph types checked",
+        "overflow": false
+      },
+      {
+        "browser": "chromium",
+        "width": 320,
+        "photos": "loaded, responsive, lazy",
+        "layout": "stacked photo cards",
+        "samplePreview": "three monthly totals and payment amounts match real sample planner",
+        "identities": "all three item logos loaded",
+        "flows": "loan sign-in intent, sample cancellation, guide, calculator error/success and reminder intent, sample edit cancellation/error/success",
+        "metadata": "preserved; JSON-LD parsed and graph types checked",
+        "overflow": false
+      },
+      {
+        "browser": "webkit",
+        "width": 390,
+        "photos": "loaded, responsive, lazy",
+        "layout": "stacked photo cards",
+        "samplePreview": "three monthly totals and payment amounts match real sample planner",
+        "identities": "all three item logos loaded",
+        "flows": "loan sign-in intent, sample cancellation, guide, calculator error/success and reminder intent, sample edit cancellation/error/success",
+        "metadata": "preserved; JSON-LD parsed and graph types checked",
+        "overflow": false
+      }
+    ],
+    "errors": [],
+    "sitemap": "passed",
+    "robots": "passed"
+  },
+  "edgeChecks": {
+    "checks": [
+      {
+        "browser": "chromium",
+        "doubledText320": "no clipping or horizontal overflow",
+        "imageFailure390": "category/product artwork fallbacks retained with visible names and usable actions",
+        "reducedMotion": true
+      },
+      {
+        "browser": "webkit",
+        "doubledText320": "no clipping or horizontal overflow",
+        "imageFailure390": "category/product artwork fallbacks retained with visible names and usable actions",
+        "reducedMotion": true
+      }
+    ]
+  },
+  "lighthouse": {
+    "mobile": {
+      "scores": {
+        "performance": 91,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100,
+        "agentic-browsing": 100
+      },
+      "cls": 0,
+      "warnings": []
+    },
+    "desktop": {
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100,
+        "agentic-browsing": 100
+      },
+      "cls": 0,
+      "warnings": []
+    }
+  },
+  "scopeCheck": "Metadata, structured data, hero, category priorities, appliance section, FAQ and footer match the prior source",
+  "photos": "Reused existing bills-desk.webp and registration-paperwork.webp; no new generated images",
+  "offer": "Checked existing authenticated, installed and one-time 720-hour entitlement contract; access rules unchanged",
+  "limitations": [
+    "Local production build and browser emulation only; no physical-device or household usability study.",
+    "External Google OAuth, signed-in hosted saves, installed-app gift activation and live deployment were not performed. Signed-out destinations, preserved login intents and sample flows were checked locally.",
+    "Structured data JSON, graph types, preserved source, rendered metadata and sitemap/robots were checked locally; Google Rich Results Test was not run.",
+    "The existing shared brand accessible-name mismatch remains a Lighthouse experimental finding despite the weighted accessibility score of 100."
+  ]
+}

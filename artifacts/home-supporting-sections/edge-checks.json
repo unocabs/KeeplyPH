@@ -1,0 +1,16 @@
+{
+  "checks": [
+    {
+      "browser": "chromium",
+      "doubledText320": "no clipping or horizontal overflow",
+      "imageFailure390": "category/product artwork fallbacks retained with visible names and usable actions",
+      "reducedMotion": true
+    },
+    {
+      "browser": "webkit",
+      "doubledText320": "no clipping or horizontal overflow",
+      "imageFailure390": "category/product artwork fallbacks retained with visible names and usable actions",
+      "reducedMotion": true
+    }
+  ]
+}

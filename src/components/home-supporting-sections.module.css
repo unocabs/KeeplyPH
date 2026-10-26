@@ -1,0 +1,158 @@
+.toolsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin: 32px 0 0;
+}
+
+.photoCard {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e3deea;
+  border-radius: 20px;
+  background: #fff;
+  overflow: hidden;
+  scroll-margin-top: 30px;
+  box-shadow: 0 3px 12px #30213d04;
+}
+
+.photo {
+  position: relative;
+  aspect-ratio: 12 / 5;
+  background: #eee8de;
+}
+
+.photo img { object-fit: cover; }
+
+.cardBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 28px;
+}
+
+.cardBody h2, .premiumCopy h2 {
+  font-size: clamp(24px, 2.6vw, 30px);
+  line-height: 1.25;
+  letter-spacing: -.7px;
+  text-wrap: balance;
+}
+
+.cardBody > p {
+  margin: 16px 0 24px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-top: auto;
+  width: 100%;
+}
+
+.actions :global(.button), .premiumCopy :global(.button) {
+  max-width: 100%;
+  min-height: 48px;
+  white-space: normal;
+  text-align: left;
+}
+
+.actions svg, .premiumCopy :global(.button) svg { flex-shrink: 0; }
+
+.guideLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.guideLink:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+.premium {
+  display: grid;
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: 36px;
+  padding: 36px;
+  margin-top: 40px;
+  background: linear-gradient(125deg, #f0eafa, #f8f6fc);
+  border: 1px solid #ded5ed;
+  border-radius: 24px;
+}
+
+.premiumCopy, .plannerPreview { min-width: 0; }
+.premiumLabel { display: block; color: #66517e; font-size: 13px; font-weight: 600; margin-bottom: 16px; }
+.premiumCopy h2 { font-size: clamp(28px, 3.3vw, 38px); max-width: 380px; }
+.premiumCopy > p { font-size: 17px; line-height: 1.8; color: var(--muted); margin: 20px 0 26px; max-width: 380px; }
+.premiumCopy .offer { font-size: 13px; line-height: 1.8; margin: 20px 0 0; }
+
+.plannerPreview {
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e1daec;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px #49346208;
+}
+
+.previewHeading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.previewHeading h3 { font-size: 19px; line-height: 1.4; }
+.sampleLabel { color: #62596f; font-size: 11px; }
+.period { margin-top: 8px; font-size: 12px; color: #62596f; line-height: 1.7; }
+.costLabel { font-size: 12px; color: #62596f; margin-top: 24px; }
+
+.months { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 12px 0 24px; }
+.months > div { min-width: 0; }
+.months dt { font-size: 11px; color: #62596f; line-height: 1.6; }
+.months dd { margin: 7px 0 0; }
+.months strong { display: block; font-size: 18px; font-weight: 650; line-height: 1.35; letter-spacing: -.4px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.months dd span { display: block; font-size: 10px; color: #62596f; line-height: 1.6; margin-top: 6px; }
+.paymentsHeading { font-size: 12px; font-weight: 600; margin: 0; }
+.payments { list-style: none; padding: 0; margin: 8px 0 0; }
+.payments li { display: flex; align-items: center; gap: 10px; padding: 14px 0; border-top: 1px solid #eee9f3; }
+.payments li > :global(.reminder-icon) { flex-shrink: 0; width: 34px; height: 34px; border-radius: 9px; }
+.paymentIdentity { min-width: 0; flex: 1; }
+.paymentIdentity strong { display: block; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+.paymentIdentity time { display: block; font-size: 11px; color: #62596f; line-height: 1.6; margin-top: 3px; }
+.paymentAmount { flex: 0 0 auto; max-width: 110px; text-align: right; }
+.paymentAmount strong { display: block; font-size: 12px; line-height: 1.6; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.paymentAmount span { display: block; font-size: 10px; color: #62596f; line-height: 1.6; }
+.previewNote { border-top: 1px solid #eee9f3; padding-top: 14px; margin-top: 0; font-size: 11px; line-height: 1.7; color: #62596f; }
+
+@media (max-width: 960px) {
+  .premium { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .premiumCopy h2, .premiumCopy > p { max-width: 560px; }
+}
+
+@media (max-width: 760px) {
+  .toolsGrid { grid-template-columns: minmax(0, 1fr); }
+  .cardBody { padding: 24px; }
+  .premium { margin-top: 32px; padding: 24px; }
+}
+
+@media (max-width: 480px) {
+  .toolsGrid { gap: 20px; }
+  .cardBody { padding: 22px; }
+  .premium { padding: 22px; border-radius: 20px; gap: 24px; }
+  .premiumCopy > p { font-size: 16px; }
+  .plannerPreview { padding: 18px; }
+  .months { gap: 10px; }
+  .months strong { font-size: 16px; }
+  .payments li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 6px 10px; }
+  .paymentAmount { grid-column: 2; max-width: none; text-align: left; }
+}
+
+@media (max-width: 360px) {
+  .plannerPreview { padding: 16px; }
+  .months { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .months > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; align-items: start; }
+  .months dd { margin: 0; }
+}

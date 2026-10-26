@@ -63,6 +63,14 @@ Record feedback without names, account numbers, credentials, unredacted receipts
 
 ## Recorded direction and findings
 
+### 26 October 2026: improve the homepage supporting sections
+
+**Problem and evidence:** the owner requests a UI plan for the homepage's recurring-payment, car-registration and Premium sections, allowing simple realistic photos. The screenshot and live-page review show long similarly weighted panels; the loan example's next-payment date is already past. These are owner direction and interface observations, not validated customer demand.
+
+**Decision and expected outcome:** the owner approved the plan. Implement two concise photo cards for payments and registration, followed by a wider Premium section with an actual sample-planner preview. Preserve household category priorities, existing destinations, item artwork, amount rules and offer conditions. Reuse existing photos. Expected benefit is clearer scanning and next actions. The [design and implementation record](2026-10-26-homepage-feature-sections-plan.md) records copy, imagery, implementation and validation.
+
+**Validation and uncertainty:** build, lint and 40 existing planning tests passed. Local production checks passed in Chrome at 1280px/768px/390px/320px and WebKit at 390px, including totals matching the real sample planner, links, sign-in intent preservation, calculator errors/success, sample cancellation/error/success, logos, 320px doubled text and 390px image failure fallbacks. Public metadata, structured data, sitemap and robots checks passed. Lighthouse scored 100 in all weighted desktop categories; mobile scored 91 performance and 100 accessibility/best practices/SEO, with zero layout shift. See the [validation record](../../artifacts/home-supporting-sections/validation.json). The existing shared-brand accessible-name experimental finding remains. Physical devices, external OAuth, hosted saves, installed gift activation, household comprehension and conversion effects remain unverified. No hosted deployment was performed.
+
 ### 26 October 2026: show calculator reactions and their vote totals
 
 **Problem and evidence:** the owner requests that Helpful, Easy to use and Love it always be visible, with the number of votes exposed. Source inspection confirms the existing controls require a successful calculator result and hide when availability cannot be established. This is direct owner direction and a code observation, not measured customer demand. The baseline's trust and respectful-attention principles support clear optional feedback and truthful loading/failure states.

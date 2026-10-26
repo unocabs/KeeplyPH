@@ -1,0 +1,63 @@
+{
+  "environment": "Local production build with HTTPS; no external Google sign-in, hosted writes or physical devices",
+  "checks": [
+    {
+      "browser": "chromium",
+      "width": 1280,
+      "photos": "loaded, responsive, lazy",
+      "layout": "two photo cards",
+      "samplePreview": "three monthly totals and payment amounts match real sample planner",
+      "identities": "all three item logos loaded",
+      "flows": "loan sign-in intent, sample cancellation, guide, calculator error/success and reminder intent, sample edit cancellation/error/success",
+      "metadata": "preserved; JSON-LD parsed and graph types checked",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "width": 768,
+      "photos": "loaded, responsive, lazy",
+      "layout": "two photo cards",
+      "samplePreview": "three monthly totals and payment amounts match real sample planner",
+      "identities": "all three item logos loaded",
+      "flows": "loan sign-in intent, sample cancellation, guide, calculator error/success and reminder intent, sample edit cancellation/error/success",
+      "metadata": "preserved; JSON-LD parsed and graph types checked",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "width": 390,
+      "photos": "loaded, responsive, lazy",
+      "layout": "stacked photo cards",
+      "samplePreview": "three monthly totals and payment amounts match real sample planner",
+      "identities": "all three item logos loaded",
+      "flows": "loan sign-in intent, sample cancellation, guide, calculator error/success and reminder intent, sample edit cancellation/error/success",
+      "metadata": "preserved; JSON-LD parsed and graph types checked",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "width": 320,
+      "photos": "loaded, responsive, lazy",
+      "layout": "stacked photo cards",
+      "samplePreview": "three monthly totals and payment amounts match real sample planner",
+      "identities": "all three item logos loaded",
+      "flows": "loan sign-in intent, sample cancellation, guide, calculator error/success and reminder intent, sample edit cancellation/error/success",
+      "metadata": "preserved; JSON-LD parsed and graph types checked",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "width": 390,
+      "photos": "loaded, responsive, lazy",
+      "layout": "stacked photo cards",
+      "samplePreview": "three monthly totals and payment amounts match real sample planner",
+      "identities": "all three item logos loaded",
+      "flows": "loan sign-in intent, sample cancellation, guide, calculator error/success and reminder intent, sample edit cancellation/error/success",
+      "metadata": "preserved; JSON-LD parsed and graph types checked",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "sitemap": "passed",
+  "robots": "passed"
+}
