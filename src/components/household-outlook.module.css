@@ -2,3 +2,13 @@
 @media(max-width:700px){.overview{grid-template-columns:1fr}.card,.comparison,.selectedMonth{padding:20px}.compareChoices,.compareFigures{grid-template-columns:1fr}.compareFigures>div+div{border-top:1px solid var(--line);padding-top:16px}.contributors li{flex-direction:column;gap:8px}.contributors li>div:last-child{text-align:left}}
 
 .datesHeading{scroll-margin-top:90px}
+
+.contributors li > :global(.reminder-icon) { width: 36px; height: 36px; flex-shrink: 0; }
+.contributors li > div:first-of-type { flex: 1; }
+.inlineIdentity { display: inline-flex; align-items: center; gap: 5px; flex-wrap: wrap; max-width: 100%; vertical-align: middle; }
+.inlineIdentity > :global(.reminder-icon) { width: 24px; height: 24px; flex-shrink: 0; }
+@media (max-width: 700px) {
+  .contributors li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 6px 12px; }
+  .contributors li > :global(.reminder-icon) { grid-row: span 2; }
+  .contributors li > div:last-child { grid-column: 2; }
+}

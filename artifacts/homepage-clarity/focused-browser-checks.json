@@ -1,0 +1,105 @@
+{
+  "environment": "Local production build over HTTPS",
+  "report": [
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "checks": [
+        "no horizontal overflow",
+        "item artwork",
+        "keyboard category disclosure",
+        "sample month and total reconciliation",
+        "contributor artwork",
+        "both paid-plan sign-in intents",
+        "installation sign-in intent"
+      ],
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 768,
+      "checks": [
+        "no horizontal overflow",
+        "item artwork",
+        "keyboard category disclosure",
+        "sample month and total reconciliation",
+        "contributor artwork",
+        "both paid-plan sign-in intents",
+        "installation sign-in intent"
+      ],
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "checks": [
+        "no horizontal overflow",
+        "item artwork",
+        "keyboard category disclosure",
+        "sample month and total reconciliation",
+        "contributor artwork",
+        "both paid-plan sign-in intents",
+        "installation sign-in intent"
+      ],
+      "passed": true
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "checks": [
+        "no horizontal overflow",
+        "item artwork",
+        "keyboard category disclosure",
+        "sample month and total reconciliation",
+        "contributor artwork",
+        "both paid-plan sign-in intents",
+        "installation sign-in intent"
+      ],
+      "passed": true
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "checks": [
+        "no horizontal overflow",
+        "item artwork",
+        "keyboard category disclosure",
+        "sample month and total reconciliation",
+        "contributor artwork",
+        "both paid-plan sign-in intents",
+        "installation sign-in intent"
+      ],
+      "passed": true
+    }
+  ],
+  "diagnostics": [
+    {
+      "engine": "webkit",
+      "width": 390,
+      "url": "https://localhost:34576/demo/planner?days=365&month=2026-12-01#outlook-selected-heading",
+      "message": "/localhost:34576/demo/settings?_rsc=UYlhAAtTaaUAy0hA due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34576/demo/settings?_rsc=UYlhAAtTaaUAy0hA due to access control checks.\n    at N (https://localhost:34576/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)"
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "url": "https://localhost:34576/demo/planner?days=365&month=2026-12-01#outlook-selected-heading",
+      "message": "/localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=UYlhAAtTaaUAy0hA due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34576/demo/items/99999999-9999-4999-8999-999999999999?_rsc=UYlhAAtTaaUAy0hA due to access control checks.\n    at N (https://localhost:34576/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)"
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "url": "https://localhost:34576/demo/planner?days=365&month=2026-12-01#outlook-selected-heading",
+      "message": "/localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000007?_rsc=UYlhAAtTaaUAy0hA due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000007?_rsc=UYlhAAtTaaUAy0hA due to access control checks.\n    at N (https://localhost:34576/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)"
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "url": "https://localhost:34576/demo/planner?days=365&month=2026-12-01#outlook-selected-heading",
+      "message": "/localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?_rsc=UYlhAAtTaaUAy0hA due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34576/demo/items/dddddddd-dddd-4ddd-8ddd-000000000000?_rsc=UYlhAAtTaaUAy0hA due to access control checks.\n    at N (https://localhost:34576/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)"
+    }
+  ]
+}

@@ -390,3 +390,24 @@ select {
 
 .demo-banner { color: #716027; }
 @media (max-width: 720px) { .demo-banner { font-size: 11px; line-height: 1.5; padding: 10px 16px; } }
+
+/* Focus public pages on understanding the household task and choosing a next step. */
+.landing-home { padding-top: 40px; }
+.landing-home .category-section { margin: 48px 0; }
+.home-category-priorities { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.home-category-priorities > a { align-items: flex-start; }
+.home-category-priorities .home-category-copy strong { font-size: 14px; }
+.landing-pricing .pricing-section-heading { font-size: 26px; margin-bottom: 12px; }
+.landing-pricing .plan-list li { font-size: 14px; align-items: flex-start; }
+.landing-pricing .plan-list svg { flex-shrink: 0; margin-top: 3px; }
+.landing-pricing .button { white-space: normal; }
+@media(max-width: 760px) {
+  .landing-home { padding-top: 28px; }
+  .home-category-priorities { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}
+.landing-home, .landing-pricing { overflow-wrap: anywhere; }
+.landing-home + .app-footer > div { flex-wrap: wrap; }
+@media(max-width: 480px) {
+  .public-nav { flex-wrap: wrap; }
+  .public-nav > div { margin-left: auto; }
+}

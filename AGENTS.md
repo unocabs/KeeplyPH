@@ -16,6 +16,14 @@ Position Keeply as an app for organising household obligations. Alerts support t
 
 Use "Explore a sample account" for the general demo CTA. Order categories around household usefulness, beginning with bills, home maintenance, and purchases/warranties. Keep category identifiers and existing saved records stable when updating presentation.
 
+## Solve real-world problems first
+
+Keeply's focus is solving real-world household problems. Adding features is not a goal in itself. Before recommending or implementing any enhancement or change, always ask: "What real-world problem are we solving?"
+
+Identify who experiences the problem, the situation in which it occurs, what is difficult today, and how the proposed change will make that task easier or more reliable. Apply this to features, design, copy, flows, Free/Premium offers, and technical work. Distinguish observed problems from assumptions and state how an assumed problem or expected benefit can be validated.
+
+Choose the simplest complete solution that addresses the problem. Prefer improving, simplifying, fixing, or removing friction in existing experiences when that is sufficient. Do not add features merely for novelty, to match competitors, to fill a page, or to make Premium's feature list longer. Judge success by whether the real-world problem is reduced, not by the number of features shipped.
+
 ## Item logos and visual identity
 
 Always show the item's recognisable visual identity alongside its name wherever an individual household item is presented, including lists, cards, timelines, calendar entries, summaries, action prompts, review screens, and design concepts. Use the saved provider or brand logo when available. Otherwise use the existing product or category icon, and retain a useful icon fallback if an image cannot load. Keep names visible and artwork consistent across surfaces. Reuse the shared item identity components in application code, preserve logo proportions, and do not invent a brand for an unbranded item. Do not remove artwork to make a layout more compact.

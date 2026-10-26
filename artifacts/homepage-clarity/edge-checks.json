@@ -1,0 +1,36 @@
+[
+  {
+    "engine": "chromium",
+    "path": "/",
+    "width": 320,
+    "doubledText": "passed"
+  },
+  {
+    "engine": "chromium",
+    "path": "/pricing",
+    "width": 320,
+    "doubledText": "passed"
+  },
+  {
+    "engine": "chromium",
+    "imageFailure": "passed",
+    "identities": 19
+  },
+  {
+    "engine": "webkit",
+    "path": "/",
+    "width": 320,
+    "doubledText": "passed"
+  },
+  {
+    "engine": "webkit",
+    "path": "/pricing",
+    "width": 320,
+    "doubledText": "passed"
+  },
+  {
+    "engine": "webkit",
+    "imageFailure": "passed",
+    "identities": 19
+  }
+]

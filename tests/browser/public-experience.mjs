@@ -20,10 +20,10 @@ async function openCheckupBreakdown(page) {
 const playwright = process.env.PLAYWRIGHT_MODULE
   ? await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href)
   : createRequire(import.meta.url)('playwright');
-const output = 'artifacts/household-public';
+const output = process.env.PUBLIC_TEST_OUTPUT || 'artifacts/household-public';
 const appPort = Number(process.env.PUBLIC_TEST_APP_PORT || 34575), tlsPort = Number(process.env.PUBLIC_TEST_TLS_PORT || 34576), base = `https://localhost:${tlsPort}`;
 const temporary = await mkdtemp(join(tmpdir(), 'keeply-public-'));
-const reports = [], seo = [], errors = [], failedRequests = [];
+const reports = [], seo = [], errors = [], failedRequests = [], navigations = [];
 let app, proxy, browser;
 await mkdir(output, {recursive:true});
 try {
@@ -45,22 +45,51 @@ try {
   for (const [engine,width] of [[playwright.chromium,1280],[playwright.chromium,390],[playwright.webkit,390],[playwright.chromium,320]]) {
     browser = await engine.launch(engine.name()==='chromium'?{channel:process.env.PLAYWRIGHT_CHROMIUM_CHANNEL||'chrome'}:{});
     const context=await browser.newContext({viewport:{width,height:900},ignoreHTTPSErrors:true,reducedMotion:'reduce'});
-    const page=await context.newPage();page.on('pageerror',error=>errors.push({engine:engine.name(),width,url:page.url(),message:error.message,stack:error.stack}));
-    page.on('requestfailed',request=>failedRequests.push({engine:engine.name(),width,url:request.url(),error:request.failure()?.errorText}));
+    const page=await context.newPage();page.on('pageerror',error=>errors.push({engine:engine.name(),width,at:Date.now(),url:page.url(),message:error.message,stack:error.stack}));
+    page.on('request',request=>{if(request.isNavigationRequest())navigations.push({engine:engine.name(),width,at:Date.now(),url:request.url()});});
+    page.on('requestfailed',request=>failedRequests.push({engine:engine.name(),width,at:Date.now(),method:request.method(),url:request.url(),error:request.failure()?.errorText}));
     const navigate=async path=>{await page.waitForLoadState('networkidle');const response=await page.goto(base+path);assert.equal(response.status(),200,path);await page.waitForLoadState('networkidle');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),path+' overflow');if(path.startsWith('/demo'))assert.doesNotMatch(await page.locator('main').innerText(),/confirmed amounts?|amounts? (?:not )?confirmed|not yet confirmed|uses saved amounts you haven’t confirmed/i);};
     await navigate('/');
     assert.match(await page.locator('h1').innerText(),/Your household,\s*a little more organised\./);
     assert.equal(await page.locator('.hero-actions').getByRole('link',{name:'Start organizing for free',exact:true}).getAttribute('href'),'/add');
     assert.equal(await page.locator('.hero-actions').getByRole('link',{name:'Explore a sample account',exact:true}).getAttribute('href'),'/demo');
     const showcase=page.locator('section').filter({has:page.locator('#example-title')});
-    assert.equal(await showcase.locator('article').count(),4);
-    const total=await showcase.locator('article').filter({has:page.getByRole('heading',{name:'Plan for payments.'})}).locator('strong').filter({hasText:/^₱/}).innerText();
+    assert.equal(await showcase.locator('article').count(),3);
+    const overview=page.locator('section[aria-labelledby="home-overview-heading"]');
+    const total=await overview.locator('strong').filter({hasText:/^₱/}).first().innerText();
+    assert.equal(await overview.locator('li .reminder-icon').count(),3);
+    const more=page.getByText('More things you can organise',{exact:true});
+    await more.focus();await page.keyboard.press('Enter');
+    assert.equal(await page.locator('.home-template-directory a').count(),11);
+    await page.keyboard.press('Enter');
+    const example=page.getByRole('group',{name:'Sample monthly cost comparison'});
+    const months=await example.locator('dt time').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('datetime')));
+    assert.equal(months.length,2);
+    const figures=await example.locator('dd strong').allTextContents();
+    const inspectHref=await example.getByRole('link',{name:'See all expenses for this month'}).getAttribute('href');
+    await example.getByRole('link',{name:'See all expenses for this month'}).click();
+    await page.locator('#outlook-selected-heading').waitFor();
+    const inspected=new URL(page.url()).searchParams.get('month');
+    assert.equal(inspected,new URL(inspectHref,base).searchParams.get('month'));
+    assert((await page.locator('section[aria-labelledby="outlook-selected-heading"]').innerText()).includes(figures[months.indexOf(inspected.slice(0,7))]));
+    await navigate('/');
     const historyCard=showcase.locator('article').filter({has:page.getByRole('heading',{name:'Remember the last service.'})});
     assert.equal(await historyCard.locator('ol li').count(),2);
-    const readiness=await showcase.locator('progress').getAttribute('value');
+    assert.equal(await showcase.getByRole('link',{name:'Open receipt and warranty',exact:true}).count(),1);
     await page.screenshot({path:`${output}/${engine.name()}-${width}-home.png`,fullPage:true});
     if(width===390)await showcase.screenshot({path:`${output}/${engine.name()}-${width}-showcase.png`});
-    await navigate('/pricing');assert.equal(await page.locator('.plan-card').count(),2);assert.equal(await page.getByText('30-Day Spending Checkup with period and category insights',{exact:true}).count(),2);assert((await page.locator('main').innerText()).includes('Renew when you choose. No automatic charges.'));await page.screenshot({path:`${output}/${engine.name()}-${width}-pricing.png`,fullPage:true});
+    await navigate('/pricing');assert.equal(await page.locator('.plan-card').count(),2);assert.equal(await page.getByText('Find higher-cost periods in your Spending Checkup',{exact:true}).count(),2);assert((await page.locator('main').innerText()).includes('Renew when you choose. No automatic charges.'));await page.screenshot({path:`${output}/${engine.name()}-${width}-pricing.png`,fullPage:true});
+    for(const [index,product] of ['premium_30','premium_year'].entries()) {
+      await page.getByRole('link',{name:'Explore this plan',exact:true}).nth(index).click();
+      await page.waitForURL(url=>url.pathname==='/login');
+      await page.waitForLoadState('networkidle');
+      assert.equal(await page.locator('input[name="next"]').inputValue(),'/settings/billing?product='+product);
+      await navigate('/pricing');
+    }
+    await page.getByRole('link',{name:/^See installation steps/}).click();
+    await page.waitForURL(url=>url.pathname==='/login');
+    await page.waitForLoadState('networkidle');
+    assert.equal(await page.locator('input[name="next"]').inputValue(),'/settings/alerts');
     await navigate('/privacy');assert((await page.locator('main').innerText()).includes('These events do not contain household amounts'));
     await navigate('/');
     // Keyboard navigation opens the real default calendar, rather than a decorative mockup.
@@ -70,7 +99,7 @@ try {
     const discovery=page.getByRole('region',{name:'Household Premium planning'});assert.equal(await discovery.count(),1);assert((await discovery.boundingBox()).y>(await page.locator('#planning-heading').boundingBox()).y);
     await page.getByRole('button',{name:'List',exact:true}).click();assert.equal(await page.getByRole('button',{name:'List',exact:true}).getAttribute('aria-pressed'),'true');
     await page.getByRole('button',{name:'Calendar',exact:true}).click();
-    assert.equal(await page.locator('progress').getAttribute('value'),readiness);
+    assert(Number(await page.locator('progress').getAttribute('value'))>0);
     const guide=page.locator('section').filter({has:page.locator('#sample-capabilities')});await guide.scrollIntoViewIfNeeded();assert.equal(await guide.locator('div a').count(),6);
     await page.screenshot({path:`${output}/${engine.name()}-${width}-demo.png`,fullPage:true});
     await page.getByRole('link',{name:'Explore Premium',exact:true}).click();await page.getByRole('heading',{name:'Your household ahead',exact:true}).waitFor();await page.waitForLoadState('networkidle');
@@ -127,9 +156,9 @@ try {
     await navigate('/demo');await page.getByRole('link',{name:/Search your records/}).click();
     await page.waitForURL('**/demo/items?q=cleaning');await page.waitForLoadState('networkidle');
     await page.getByRole('heading',{name:'Bedroom aircon: next cleaning',exact:true}).waitFor();await page.waitForLoadState('networkidle');
-    await navigate('/');await page.getByRole('link',{name:'Explore readiness',exact:true}).click();await page.locator('#readiness-summary-heading').waitFor();await page.waitForLoadState('networkidle');
+    await navigate('/demo#readiness-summary-heading');await page.locator('#readiness-summary-heading').waitFor();await page.waitForLoadState('networkidle');
     await page.getByRole('link',{name:'Add useful details',exact:true}).click();await page.waitForURL('**/demo/items?filter=incomplete');await page.waitForLoadState('networkidle');await page.getByRole('heading',{name:'Family car: Toyota Vios',exact:true}).waitFor();await page.waitForLoadState('networkidle');
-    await navigate('/');await page.getByRole('link',{name:'Open a sample receipt and warranty',exact:true}).click();
+    await navigate('/');await page.getByRole('link',{name:'Open receipt and warranty',exact:true}).click();
     const receipt=page.getByRole('link',{name:'View sample receipt',exact:true});await receipt.waitFor();
     const popupPromise=page.waitForEvent('popup');await receipt.click();const popup=await popupPromise;await popup.waitForLoadState();assert(popup.url().endsWith('/demo/washing-machine-receipt.svg'));await popup.close();
     await navigate('/');const faq=page.locator('details').filter({has:page.getByText('How do I plan for upcoming payments?',{exact:true})});await faq.locator('summary').click();assert(await faq.evaluate(element=>element.open));await faq.locator('summary').click();assert.equal(await faq.evaluate(element=>element.open),false);
@@ -166,7 +195,7 @@ try {
     }
     await context.close();await browser.close();browser=null;
   }
-  await writeFile(output+'/browser-checks.json',JSON.stringify({environment:'Local production over HTTPS with test-only certificate trust',reports,errors,failedRequests,limitations:['Simulated browser sizes, not physical devices','No hosted OAuth, Storage, payment or alert delivery verification']},null,2));
+  await writeFile(output+'/browser-checks.json',JSON.stringify({environment:'Local production over HTTPS with test-only certificate trust',reports,errors,failedRequests,navigations,limitations:['Simulated browser sizes, not physical devices','No hosted OAuth, Storage, payment or alert delivery verification']},null,2));
   assert.deepEqual(errors,[]);
   console.log(JSON.stringify({passed:reports.map(report=>`${report.engine} ${report.width}`),seoPages:seo.length,output},null,2));
   if(process.env.PUBLIC_TEST_HOLD==='true') {console.log('HTTPS server ready for Lighthouse on '+base);await new Promise(resolve=>{process.once('SIGINT',resolve);process.once('SIGTERM',resolve);});}
