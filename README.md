@@ -75,6 +75,14 @@ Verify with **two Google accounts**: create a purchase and upload a test receipt
 
 The scheduler invokes **POST** endpoints with an Authorization Bearer header. It does not rely on Vercel Hobby's cron frequency. Both endpoints reject requests without the exact secret.
 
+### Receiving support email
+
+Sending-domain verification does not create a mailbox for `SUPPORT_EMAIL`. Verify the exact receiving domain in Resend, enable receiving, and publish the receiving MX record shown by Resend. For `support@keeplyph.com`, this must be on `keeplyph.com`, even when outgoing mail uses `mail.keeplyph.com`. Preserve the existing sending-domain records.
+
+Set the server-only `SUPPORT_FORWARD_TO` to the monitored inbox, keep `EMAIL_FROM` on a verified sending domain, and use a Resend API key with full access so it can retrieve incoming messages. Add `email.received` to the existing signed Resend webhook at the canonical `https://www.keeplyph.com/api/webhooks/resend` URL. Retain its existing delivery, bounce, and complaint events and signing secret. Deploy after changing environment variables.
+
+The webhook forwards only messages addressed to `SUPPORT_EMAIL`, preserving the body, attachments, inline images, and the original sender's reply address. Forwarding errors return HTTP 500 so Resend can retry. Retries use an idempotency key to avoid duplicate forwarding within Resend's idempotency window. Incoming originals remain available in Resend's receiving view subject to its retention policy. Verify with a real external message, a reply, and an attachment in the destination inbox before treating the setup as ready. In-app feedback remains stored privately in Supabase and is separate from this email inbox.
+
 Reminders are scheduled at 09:00 in the account timezone, at 30/7/1 days before expiration. New opt-ins do not backfill reminders before today. If several thresholds were missed, only the latest due one is sent. Free includes three item reminder slots. All enabled dates on one covered item share a slot. Saved items are unlimited. Choose 5–100 extra slots in steps of five. Each five costs ₱29 for 30 days, manually renewed, or ₱249 permanently. Oldest selections retain coverage on expiry; excess selections pause without deleting their date preferences.
 
 The worker conservatively reserves at most **90 attempts/day globally**. This can delay reminders during bursts; watch queue age and upgrade capacity when needed. Up to two reminder emails, one pack-renewal email, and two SMS jobs are processed per invocation, with row leases, retry delays, a frozen request, and a stable Resend idempotency key. Unknown outcomes stop retrying before Resend's 24-hour deduplication window expires; see the operations guide.
