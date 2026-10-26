@@ -110,7 +110,9 @@ export async function testHouseholdBrowser({ admin, actor, user }) {
         if(failNextMeasurement&&name==='record_premium_event'){failNextMeasurement=false;res.writeHead(503);res.end(JSON.stringify({message:'Test measurement interruption'}));return;}
         if(acknowledgementGate&&name==='acknowledge_installation_premium'){const gate=acknowledgementGate;acknowledgementGate=null;gate.arrived.resolve();await gate.release.promise;}
         if (failNextSave && ['set_household_checkup_payday','acknowledge_installation_premium','complete_occurrence','save_item_activity','save_utility_item_with_date','set_readiness_preference','set_occurrence_amount','save_important_date','activate_installation_premium'].includes(name)) { failNextSave = false; res.writeHead(503); res.end(JSON.stringify({ message: 'Test connection interruption' })); return; }
-        const result = await actor(owner, `select public.${name}(${keys.map((key, i) => `${key}=>$${i+1}`).join(',')}) as value`, Object.values(args));
+        // Match PostgREST's POST transaction access mode instead of always using READ WRITE.
+        const readOnly=(await admin.query("select bool_and(p.provolatile<>'v') read_only from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname=$1",[name])).rows[0].read_only===true;
+        const result = await actor(owner, `select public.${name}(${keys.map((key, i) => `${key}=>$${i+1}`).join(',')}) as value`, Object.values(args),'authenticated',readOnly);
         res.end(JSON.stringify(result.rows[0].value)); return;
       }
       const table = url.pathname.split('/').at(-1);

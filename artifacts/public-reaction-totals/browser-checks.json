@@ -1,0 +1,46 @@
+{
+  "environment": "Local production build, isolated PostgreSQL with core/030/042 and a local RPC HTTP bridge; browser emulation, no hosted writes",
+  "checks": [
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "alwaysVisible": "before calculation, after valid/invalid input, after vote and when unavailable",
+      "counts": "real empty zero, exact save count, per-choice counts, combined total, failed-read recovery",
+      "retry": "committed response lost, reload and same receipt retry counted once",
+      "keyboard": "Enter submits",
+      "overflow": false,
+      "seo": "passed"
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "alwaysVisible": "before calculation, after valid/invalid input, after vote and when unavailable",
+      "counts": "real empty zero, exact save count, per-choice counts, combined total, failed-read recovery",
+      "retry": "committed response lost, reload and same receipt retry counted once",
+      "keyboard": "Enter submits",
+      "overflow": false,
+      "seo": "passed"
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "alwaysVisible": "before calculation, after valid/invalid input, after vote and when unavailable",
+      "counts": "real empty zero, exact save count, per-choice counts, combined total, failed-read recovery",
+      "retry": "committed response lost, reload and same receipt retry counted once",
+      "keyboard": "Enter submits",
+      "overflow": false,
+      "seo": "passed"
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "alwaysVisible": "before calculation, after valid/invalid input, after vote and when unavailable",
+      "counts": "real empty zero, exact save count, per-choice counts, combined total, failed-read recovery",
+      "retry": "committed response lost, reload and same receipt retry counted once",
+      "keyboard": "Enter submits",
+      "overflow": false,
+      "seo": "passed"
+    }
+  ],
+  "errors": []
+}

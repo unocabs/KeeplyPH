@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-26",
+  "timezone": "Asia/Manila",
+  "commit": "3c26832eec517d59c99733e10401c36daba30ee4",
+  "deployment": "https://vercel.com/rgianmcabrera-8935/keeply-ph/8Cog7nEpMU4DzBn6oWupdtFFA89U",
+  "deploymentStatus": "Ready, Production",
+  "dns": {
+    "receivingDomain": "keeplyph.com",
+    "dkimStatus": "Verified",
+    "receivingStatus": "Verified",
+    "mx": "10 receive-apne1.forge.rmta.net.",
+    "resolversChecked": ["ns1.vercel-dns.com", "1.1.1.1", "8.8.8.8"],
+    "existingSendingDomainPreserved": "mail.keeplyph.com"
+  },
+  "localChecks": {
+    "unitTests": "12 passed: tests/unit/support-email.test.ts",
+    "typecheck": "passed",
+    "targetedEslint": "passed",
+    "productionBuild": "passed"
+  },
+  "liveChecks": {
+    "testSendAuthorised": true,
+    "supportRecipient": "support@keeplyph.com",
+    "receivingMailbox": "rgianmcabrera@gmail.com",
+    "gmailInboxDelivery": "passed",
+    "htmlBody": "passed",
+    "textAttachmentPreview": "passed, original test contents visible",
+    "replyTarget": "passed, original sender selected by Gmail Reply",
+    "replyCancellation": "passed, empty test reply discarded without sending",
+    "incomingWebhook": "HTTP 200, forwarded true",
+    "incomingWebhookReplay": "HTTP 200, forwarded true, attempts 2",
+    "duplicatePrevention": "passed, single message after replay and Gmail reload",
+    "outgoingDeliveredEvent": "Success",
+    "unsignedWebhook": "HTTP 400, Invalid signature"
+  },
+  "publicPages": {
+    "home": "HTTP 200, rendered canonical https://www.keeplyph.com",
+    "robots": "HTTP 200",
+    "sitemap": "HTTP 200",
+    "publicMetadataAndIndexingChangesInCommit": false,
+    "lighthouse": "Not run: this commit changes backend email handling only"
+  },
+  "limitations": [
+    "No actual reply was sent; the reply recipient and cancellation were verified in Gmail.",
+    "Live test used one small text attachment. Inline image preservation and error paths were checked in unit tests.",
+    "Resend sending limits, message size limits, retention, and the 24-hour idempotency window still apply.",
+    "Messages that already exhausted sender retries must be resent.",
+    "In-app feedback submissions continue to be stored privately in Supabase; this repair covers email to the support address."
+  ],
+  "screenshots": [
+    "gmail-delivered-test.jpg",
+    "gmail-delivery.jpg",
+    "attachment-preview.jpg",
+    "resend-webhook-replay.jpg",
+    "receiving-domain-verified.jpg"
+  ]
+}

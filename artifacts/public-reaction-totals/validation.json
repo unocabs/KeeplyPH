@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-26",
+  "build": "passed",
+  "lint": "passed",
+  "apiUnitTests": 15,
+  "databaseIntegrationTests": 251,
+  "browsers": {
+    "environment": "Local production build, isolated PostgreSQL with core/030/042 and a local RPC HTTP bridge; browser emulation, no hosted writes",
+    "checks": [
+      {
+        "engine": "chromium",
+        "width": 1280,
+        "alwaysVisible": "before calculation, after valid/invalid input, after vote and when unavailable",
+        "counts": "real empty zero, exact save count, per-choice counts, combined total, failed-read recovery",
+        "retry": "committed response lost, reload and same receipt retry counted once",
+        "keyboard": "Enter submits",
+        "overflow": false,
+        "seo": "passed"
+      },
+      {
+        "engine": "chromium",
+        "width": 390,
+        "alwaysVisible": "before calculation, after valid/invalid input, after vote and when unavailable",
+        "counts": "real empty zero, exact save count, per-choice counts, combined total, failed-read recovery",
+        "retry": "committed response lost, reload and same receipt retry counted once",
+        "keyboard": "Enter submits",
+        "overflow": false,
+        "seo": "passed"
+      },
+      {
+        "engine": "chromium",
+        "width": 320,
+        "alwaysVisible": "before calculation, after valid/invalid input, after vote and when unavailable",
+        "counts": "real empty zero, exact save count, per-choice counts, combined total, failed-read recovery",
+        "retry": "committed response lost, reload and same receipt retry counted once",
+        "keyboard": "Enter submits",
+        "overflow": false,
+        "seo": "passed"
+      },
+      {
+        "engine": "webkit",
+        "width": 390,
+        "alwaysVisible": "before calculation, after valid/invalid input, after vote and when unavailable",
+        "counts": "real empty zero, exact save count, per-choice counts, combined total, failed-read recovery",
+        "retry": "committed response lost, reload and same receipt retry counted once",
+        "keyboard": "Enter submits",
+        "overflow": false,
+        "seo": "passed"
+      }
+    ],
+    "errors": []
+  },
+  "edgeCases": {
+    "environment": "Local production build and isolated real PostgreSQL via local RPC bridge",
+    "checks": [
+      {
+        "engine": "chromium",
+        "serverRenderedControls": true,
+        "storageDeniedSave": true,
+        "unsupportedBrowserVisibleDisabled": true,
+        "navigationDuringCommittedSave": "same receipt restored and counted once",
+        "rapidDoubleClick": "one request and one receipt",
+        "networkFailure": "explicit retry succeeds without losing selection"
+      },
+      {
+        "engine": "webkit",
+        "serverRenderedControls": true,
+        "storageDeniedSave": true,
+        "unsupportedBrowserVisibleDisabled": true,
+        "navigationDuringCommittedSave": "same receipt restored and counted once",
+        "rapidDoubleClick": "one request and one receipt",
+        "networkFailure": "explicit retry succeeds without losing selection"
+      }
+    ]
+  },
+  "visual": {
+    "checks": [
+      {
+        "engine": "chromium",
+        "width": 1280,
+        "readableDisabledControls": true,
+        "overflow": false
+      },
+      {
+        "engine": "chromium",
+        "width": 390,
+        "readableDisabledControls": true,
+        "overflow": false
+      },
+      {
+        "engine": "chromium",
+        "width": 320,
+        "readableDisabledControls": true,
+        "overflow": false
+      },
+      {
+        "engine": "webkit",
+        "width": 390,
+        "readableDisabledControls": true,
+        "overflow": false
+      },
+      {
+        "engine": "chromium",
+        "initialReadTimeout": "visible disabled controls after 10 seconds, explicit refresh restores voting"
+      }
+    ],
+    "sitemap": "passed",
+    "robots": "passed"
+  },
+  "lighthouse": {
+    "calculator": {
+      "scores": {
+        "performance": 96,
+        "accessibility": 97,
+        "best-practices": 100,
+        "seo": 100,
+        "agentic-browsing": 100
+      },
+      "cls": 0,
+      "warnings": []
+    },
+    "privacy": {
+      "scores": {
+        "performance": 98,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100,
+        "agentic-browsing": 100
+      },
+      "cls": 0,
+      "warnings": []
+    }
+  },
+  "hostedReadOnlyDiscovery": {
+    "existingReactionsReady": true,
+    "newTotalsRpc": "PGRST202 before application"
+  },
+  "migration": {
+    "file": "supabase/migrations/202610260042_public_reaction_totals.sql",
+    "run": "isolated disposable PostgreSQL only",
+    "hostedApplied": false
+  },
+  "limitations": [
+    "Physical devices and hosted vote writes were not tested.",
+    "No deployment or hosted migration performed.",
+    "Existing calculator badge-contrast and shared brand accessible-name findings remain; reaction controls have no new Lighthouse accessibility findings.",
+    "Structured data JSON, expected Article/BreadcrumbList types and public indexing were checked locally; external Google Rich Results validation was not run."
+  ]
+}

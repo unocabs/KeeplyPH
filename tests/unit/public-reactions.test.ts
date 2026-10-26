@@ -7,16 +7,38 @@ import { GET, POST } from '@/app/api/reactions/route';
 const id = '11111111-1111-4111-8111-111111111111';
 const request = (body: string, type = 'application/json') => new Request('https://www.keeplyph.com/api/reactions', { method: 'POST', headers: { 'Content-Type': type }, body });
 describe('public calculator reactions', () => {
- beforeEach(() => { vi.resetAllMocks(); vi.stubEnv('PUBLIC_REACTIONS_ENABLED', 'true'); mocks.origin.mockReturnValue(true); mocks.configured.mockReturnValue(true); mocks.rpc.mockResolvedValue({ data: true, error: null }); });
- it('hides the controls when disabled or the migration is missing', async () => {
+ beforeEach(() => { vi.resetAllMocks(); vi.stubEnv('PUBLIC_REACTIONS_ENABLED', 'true'); mocks.origin.mockReturnValue(true); mocks.configured.mockReturnValue(true); mocks.rpc.mockImplementation(async (name: string) => ({ data: name === 'public_reaction_totals' ? { helpful: 12, easy: 3, love: 1 } : true, error: null })); });
+ it('reports voting unavailable when disabled or the migration is missing', async () => {
   vi.stubEnv('PUBLIC_REACTIONS_ENABLED', 'false'); expect(await (await GET()).json()).toEqual({ available: false }); expect(mocks.rpc).not.toHaveBeenCalled();
   vi.stubEnv('PUBLIC_REACTIONS_ENABLED', 'true'); mocks.rpc.mockResolvedValue({ error: { message: 'missing function' } }); expect(await (await GET()).json()).toEqual({ available: false });
  });
  it('fails closed if readiness throws', async () => { mocks.rpc.mockRejectedValue(new Error('offline')); expect(await (await GET()).json()).toEqual({ available: false }); });
  it('acknowledges a saved reaction without collecting plate or account data', async () => {
   const response = await POST(request(JSON.stringify({ id, reaction: 'helpful' })));
-  expect(response.status).toBe(200); expect(await response.json()).toEqual({ saved: true });
+  expect(response.status).toBe(200); expect(await response.json()).toEqual({ saved: true, totals: { helpful: 12, easy: 3, love: 1, total: 16 } });
   expect(mocks.rpc).toHaveBeenCalledWith('record_public_reaction', { p_id: id, p_reaction: 'helpful' });
+ });
+ it('returns only validated aggregate counts and their total with no caching', async () => {
+  const response = await GET();
+  expect(response.headers.get('Cache-Control')).toBe('no-store');
+  expect(await response.json()).toEqual({ available: true, totals: { helpful: 12, easy: 3, love: 1, total: 16 } });
+ });
+ it('distinguishes an empty count from unavailable totals without disabling working voting', async () => {
+  mocks.rpc.mockImplementation(async (name: string) => name === 'public_reactions_ready' ? { data: true } : { data: { helpful: 0, easy: 0, love: 0 } });
+  expect(await (await GET()).json()).toEqual({ available: true, totals: { helpful: 0, easy: 0, love: 0, total: 0 } });
+  mocks.rpc.mockImplementation(async (name: string) => name === 'public_reactions_ready' ? { data: true } : { error: { message: 'missing totals function' } });
+  expect(await (await GET()).json()).toEqual({ available: true, totals: null });
+ });
+ it.each([
+  null, {}, { helpful: -1, easy: 0, love: 0 }, { helpful: '2', easy: 0, love: 0 },
+  { helpful: 1.5, easy: 0, love: 0 }, { helpful: Number.MAX_SAFE_INTEGER, easy: 1, love: 0 },
+ ])('does not expose invalid count data: %j', async totals => {
+  mocks.rpc.mockImplementation(async (name: string) => name === 'public_reactions_ready' ? { data: true } : { data: totals });
+  expect(await (await GET()).json()).toEqual({ available: true, totals: null });
+ });
+ it('acknowledges a saved vote even if the subsequent count read fails', async () => {
+  mocks.rpc.mockImplementation(async (name: string) => { if (name === 'public_reaction_totals') throw new Error('offline'); return { error: null }; });
+  expect(await (await POST(request(JSON.stringify({ id, reaction: 'love' })))).json()).toEqual({ saved: true, totals: null });
  });
  it('rejects foreign origins and disabled writes', async () => {
   mocks.origin.mockReturnValue(false); expect((await POST(request('{}'))).status).toBe(403);

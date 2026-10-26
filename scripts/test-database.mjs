@@ -15,10 +15,10 @@ function command(name, args) {
   const result = spawnSync(join(bin, name), args, { encoding: 'utf8' });
   if (result.error || result.status !== 0) throw new Error(name + ': ' + (result.error?.message || result.stderr || result.stdout));
 }
-async function actor(user, sql, args = [], role = 'authenticated') {
+async function actor(user, sql, args = [], role = 'authenticated', readOnly = false) {
   const client = new pg.Client(config); await client.connect();
   try {
-    await client.query('begin');
+    await client.query(readOnly?'begin read only':'begin');
     await client.query('set local role ' + role);
     await client.query("select set_config('request.jwt.claim.sub',$1,true)", [user || '']);
     const result = await client.query(sql, args);
@@ -1349,7 +1349,8 @@ try {
       assert.equal((await admin.query('select * from private.public_reaction_receipts where id=$1',[id])).rowCount,0);
       assert.equal(Number((await admin.query("select sum(count) as count from private.public_reaction_counts where reaction='helpful'")).rows[0].count),1);
       const checks=(await admin.query(await readFile('supabase/check-public-reactions-prerequisites.sql','utf8'))).rows;
-      assert.ok(checks.every(row=>row.status.startsWith('PRESENT')));
+      assert.ok(checks.slice(0,2).every(row=>row.status.startsWith('PRESENT')));
+      assert.ok(checks.at(-1).status.startsWith('MISSING'));
       await admin.query("update private.rate_limit_buckets set count=120 where action='public_reactions'");
       await assert.rejects(actor(null, 'select public.record_public_reaction($1,$2)', [randomUUID(),'love'], 'service_role'), /RATE_LIMITED/);
     });
@@ -1391,6 +1392,14 @@ try {
         const rows=(await admin.query(await readFile('supabase/check-premium-checkup-prerequisites.sql','utf8'))).rows;
         assert.equal(rows.length,41);assert(rows.slice(0,-1).every(row=>row.status.startsWith('PRESENT')));assert(rows.at(-1).status.startsWith('MISSING'));
       });
+      if(name==='202610230041_checkup_rpc_transaction_mode.sql')await test('Reproduces the installed checkup failing in the STABLE RPC read-only transaction',async()=>{
+        const volatility=(await admin.query("select provolatile from pg_proc where oid='public.household_checkup_plan(text,date,text,date,uuid,integer)'::regprocedure")).rows[0].provolatile;
+        assert.equal(volatility,'s');
+        const owner=await user();
+        await actor(owner,'select public.activate_installation_premium(true)');
+        await assert.rejects(actor(owner,"select public.household_checkup_plan('30')",[],'authenticated',true),error=>error.code==='25006'&&/SELECT FOR UPDATE/.test(error.message));
+        assert.equal((await actor(owner,"select public.household_checkup_plan('30') data")).rows[0].data.total,0);
+      });
       await admin.query(await readFile(join('supabase/migrations',name),'utf8'));console.log('Applied '+name);
     }
     await testHouseholdPlanning({admin,actor,user,test},seeds);
@@ -1399,7 +1408,26 @@ try {
   if(newMigrations.includes('202610100037_household_spending_checkup.sql'))await (await import('../tests/database/spending-checkup.mjs')).testSpendingCheckup({admin,actor,user,test});
   if(newMigrations.includes('202610110038_household_outlook.sql'))await (await import('../tests/database/household-outlook.mjs')).testHouseholdOutlook({admin,actor,user,test});
   if(newMigrations.includes('202610110039_premium_discovery.sql'))await (await import('../tests/database/premium-discovery.mjs')).testPremiumDiscovery({admin,actor,user,test});
-  if(newMigrations.includes('202610220040_premium_checkup.sql'))await (await import('../tests/database/premium-checkup.mjs')).testPremiumCheckup({admin,actor,user,test});
+  if(newMigrations.includes('202610220040_premium_checkup.sql'))await (await import('../tests/database/premium-checkup.mjs')).testPremiumCheckup({admin,actor,user,test,rpcModeRepaired:newMigrations.includes('202610230041_checkup_rpc_transaction_mode.sql')});
+  if(newMigrations.includes('202610260042_public_reaction_totals.sql'))await test('Public vote totals expose only accurate all-time aggregates through the server role',async()=>{
+    const before=(await admin.query('select coalesce(sum(count),0)::int n from private.public_reaction_counts')).rows[0].n;
+    const read=async()=>(await actor(null,'select public.public_reaction_totals() data',[],'service_role',true)).rows[0].data;
+    const original=await read();assert.equal(original.helpful+original.easy+original.love,before);assert.deepEqual(Object.keys(original).sort(),['easy','helpful','love']);
+    const receiptRows=(await admin.query('select count(*)::int n from private.public_reaction_receipts')).rows[0].n;
+    for(const role of ['anon','authenticated']){
+      await assert.rejects(actor(null,'select public.public_reaction_totals()',[],role),/permission denied/);
+      await assert.rejects(actor(null,'select * from private.public_reaction_receipts',[],role),/permission denied/);
+    }
+    await admin.query("delete from private.rate_limit_buckets where action='public_reactions'");
+    const id=randomUUID();await Promise.all(Array.from({length:4},()=>actor(null,'select public.record_public_reaction($1,$2)',[id,'love'],'service_role')));
+    assert.deepEqual(await read(),{...original,love:original.love+1});
+    assert.equal((await admin.query('select count(*)::int n from private.public_reaction_receipts')).rows[0].n,receiptRows+1);
+    await admin.query("insert into private.public_reaction_counts(day,reaction,count) values(current_date-800,'easy',7)");
+    assert.deepEqual(await read(),{...original,easy:original.easy+7,love:original.love+1});
+    await admin.query('begin');
+    try{await admin.query('delete from private.public_reaction_counts');assert.deepEqual((await admin.query('select public.public_reaction_totals() data')).rows[0].data,{helpful:0,easy:0,love:0});}finally{await admin.query('rollback');}
+    const checks=(await admin.query(await readFile('supabase/check-public-reactions-prerequisites.sql','utf8'))).rows;assert(checks.every(row=>row.status.startsWith('PRESENT')));
+  });
   console.log('\n' + passed + ' database integration tests passed.');
   if (process.env.PG_TEST_BROWSER === '1') await (await import('../tests/browser/household-history.mjs')).testHouseholdBrowser({admin,actor,user});
 } finally {

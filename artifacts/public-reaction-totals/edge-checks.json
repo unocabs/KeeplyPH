@@ -1,0 +1,23 @@
+{
+  "environment": "Local production build and isolated real PostgreSQL via local RPC bridge",
+  "checks": [
+    {
+      "engine": "chromium",
+      "serverRenderedControls": true,
+      "storageDeniedSave": true,
+      "unsupportedBrowserVisibleDisabled": true,
+      "navigationDuringCommittedSave": "same receipt restored and counted once",
+      "rapidDoubleClick": "one request and one receipt",
+      "networkFailure": "explicit retry succeeds without losing selection"
+    },
+    {
+      "engine": "webkit",
+      "serverRenderedControls": true,
+      "storageDeniedSave": true,
+      "unsupportedBrowserVisibleDisabled": true,
+      "navigationDuringCommittedSave": "same receipt restored and counted once",
+      "rapidDoubleClick": "one request and one receipt",
+      "networkFailure": "explicit retry succeeds without losing selection"
+    }
+  ]
+}

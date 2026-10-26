@@ -15,7 +15,7 @@ export function PlateChecker({ currentYear }: { currentYear: number }) {
   const reminderDate = suggestedRenewalDate(plate, Number(year));
   function clearResult() { setChecked(false); }
   return <section id="renewal-calculator" className={`${styles.example} ${styles.calculator}`} aria-labelledby="calculator-heading">
-    <span className="eyebrow">FREE · NO SIGN-IN NEEDED</span><h2 id="calculator-heading">Car registration renewal date calculator <a className={styles.headingAnchor} href="#renewal-calculator" aria-label="Link to renewal calculator">🔗</a></h2>
+    <h2 id="calculator-heading">Car registration renewal date calculator <a className={styles.headingAnchor} href="#renewal-calculator" aria-label="Link to renewal calculator">🔗</a></h2>
     <p>Check when to renew your car registration in the Philippines. Enter a regular car plate or just its last two digits to calculate the standard LTO renewal month and date window. Confirm the actual deadline using your registration record and current LTO advisories.</p>
     <p className={styles.workedExample}><strong>Example: a plate ending in 98.</strong> The last digit, 8, means August. The second-to-last digit, 9, gives the 22nd–31st window. For {currentYear}, the standard window is August 22–31. Choose a working day and confirm any exceptions with LTO.</p>
     <form onSubmit={event => { event.preventDefault(); setChecked(true); }} className={styles.checker}>
@@ -30,7 +30,7 @@ export function PlateChecker({ currentYear }: { currentYear: number }) {
     <div aria-live="polite" aria-atomic="true">
       {checked && (result ? <div className={styles.result}><strong>{result.month} {result.start}–{result.end}, {result.year}</strong><p>Standard renewal window. Last digit {result.last} → {result.month}; second-to-last digit {result.preceding} → days {result.start}–{result.end}.</p><p>Visit on a working day within this window. Holidays and LTO extensions can affect your actual deadline.</p></div> : <p className={styles.error}>Enter two digits (like 98), or a regular car plate with three letters and three or four digits (like CCC 2398). Choose a year from 2000 to 2100.</p>)}
     </div>
-    {result && <CalculatorReactions />}
+    <CalculatorReactions />
     <p id="plate-help" className={styles.disclosure}>Your plate stays in this page. “Set reminder” carries only the window’s start date into an editable reminder form, including through sign-in. Nothing is saved until you confirm the form. Choose the year from your registration record; this checker cannot tell whether you are overdue or still covered by an initial registration.</p>
     <p className={styles.source}>Based on the <a href="https://lto.gov.ph/wp-content/uploads/2023/10/FDM-vol.-2-2nd-Edition.pdf">LTO Filipino Driver’s Manual</a>, printed page 17. <a href="#schedule">See the plate number month and week tables ↓</a></p>
     <noscript><p>JavaScript is needed for the calculator. Use the <a href="#schedule">month and week tables below</a> to check your plate’s schedule.</p></noscript>

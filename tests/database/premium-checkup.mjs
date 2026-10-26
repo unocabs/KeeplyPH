@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
-export async function testPremiumCheckup({admin,actor,user,test}) {
+export async function testPremiumCheckup({admin,actor,user,test,rpcModeRepaired=false}) {
  const day=(date,n)=>new Date(Date.parse(date+'T00:00:00Z')+n*86400000).toISOString().slice(0,10);
  const rpc=async(owner,mode='saved',page=0)=>(await actor(owner,'select public.household_checkup_plan($1,null,null,null,null,$2) data',[mode,page])).rows[0].data;
  const capture=owner=>actor(owner,'select public.capture_household_checkup()');
@@ -13,6 +13,17 @@ export async function testPremiumCheckup({admin,actor,user,test}) {
   await admin.query("insert into public.date_occurrences(id,date_id,user_id,cycle,due_on,expected_amount_minor,amount_certainty) values($1,$2,$3,1,$4,$5,$6)",[occurrence,date,owner,day(today,offset),amount,amount==null?'unset':certainty]);
   return {item,date,occurrence};
  }
+ if(rpcModeRepaired)await test('Checkup executes in its actual PostgREST transaction mode without creating history',async()=>{
+  const owner=await user();await actor(owner,'select public.activate_installation_premium(true)');
+  const volatility=(await admin.query("select provolatile from pg_proc where oid='public.household_checkup_plan(text,date,text,date,uuid,integer)'::regprocedure")).rows[0].provolatile;
+  assert.equal(volatility,'v');
+  const today=(await rpc(owner)).today;await seed(owner,today,1,189900);
+  const before=(await admin.query('select to_jsonb(o) data from public.date_occurrences o where user_id=$1 order by id',[owner])).rows;
+  const plan=(await actor(owner,"select public.household_checkup_plan('30') data",[],'authenticated',volatility!=='v')).rows[0].data;
+  assert.equal(plan.total,1);assert.equal(plan.confirmed_minor,'189900');assert.equal(plan.comparison.status,'first_use');
+  assert.equal((await admin.query('select count(*)::int n from private.household_checkup_reviews where user_id=$1',[owner])).rows[0].n,0);
+  assert.deepEqual((await admin.query('select to_jsonb(o) data from public.date_occurrences o where user_id=$1 order by id',[owner])).rows,before);
+ });
  await test('Premium checkup authorises every RPC, isolates households, and reads never capture history',async()=>{
   const owner=await user(),other=await user();
   for(const call of [()=>rpc(owner),()=>capture(owner),()=>payday(owner,'2030-01-01')])await assert.rejects(call,/PREMIUM_REQUIRED/);

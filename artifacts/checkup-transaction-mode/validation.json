@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-23",
+  "cause": {
+    "migration": "202610220040_premium_checkup.sql",
+    "rpc": "household_checkup_plan",
+    "originalVolatility": "STABLE",
+    "databaseCode": "25006",
+    "error": "cannot execute SELECT FOR UPDATE in a read-only transaction",
+    "guard": "private.require_user",
+    "transport": "PostgREST POST to STABLE function uses READ ONLY"
+  },
+  "repair": {
+    "migration": "202610230041_checkup_rpc_transaction_mode.sql",
+    "volatility": "VOLATILE",
+    "cacheReload": true,
+    "functionBodyChanged": false,
+    "permissionsChanged": false,
+    "householdRecordsChangedByRepair": false
+  },
+  "hosted": {
+    "environment": "configured production Supabase project",
+    "prerequisites": "owner screenshot confirms 039 and 040 PRESENT",
+    "execution": "041 SQL statements executed through Supabase SQL Editor; success reported",
+    "catalogAfter": {
+      "volatility": "v",
+      "authenticatedExecute": true,
+      "anonymousExecute": false
+    },
+    "uiAfter": "actual signed-in checkup reload displayed existing populated timeline and preparation total",
+    "applicationDeploymentPerformed": false
+  },
+  "local": {
+    "unitTests": 388,
+    "focusedDatabaseTests": 74,
+    "beforeRepairRegression": "STABLE query fails with 25006 in READ ONLY; succeeds in ordinary transaction",
+    "afterRepairRegression": "VOLATILE query returns populated plan; occurrence rows unchanged; no read-created history",
+    "browser": "Chromium 1280 and 390; WebKit 390, corrected metadata-derived transaction bridge",
+    "browserScope": "compatibility recovery, restored full checkup, filtering and amount-editor cancellation",
+    "httpAndRenderedIndexing": "passed",
+    "typecheck": "passed",
+    "lint": "passed",
+    "fullDatabaseTests": 250
+  },
+  "commands": [
+    "npm test",
+    "npm run typecheck",
+    "npm run lint",
+    "npm run test:db",
+    "PG_TEST_PREMIUM_ONLY=1 node scripts/test-database.mjs",
+    "PG_TEST_PREMIUM_ONLY=1 PG_TEST_BROWSER=1 PG_TEST_PRODUCTION=1 PG_TEST_CHECKUP_ONLY=1 PG_TEST_CHECKUP_COMPATIBILITY_ONLY=1 node scripts/test-database.mjs"
+  ],
+  "limits": [
+    "Local browser checks use Auth/REST stand-ins and disposable PostgreSQL.",
+    "Live hosted verification covers successful checkup display and catalog state, not hosted payday edits or capture interactions.",
+    "No physical devices or household comprehension study.",
+    "Public application files and indexing configuration unchanged.",
+    "No private household contents, identifiers or live screenshot retained in repository."
+  ]
+}

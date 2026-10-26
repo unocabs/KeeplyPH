@@ -40,6 +40,7 @@ export interface Database {
       skip_unconfirmed_occurrence: Rpc<{ p_request: string; p_occurrence: string; p_revision: number; p_reason: string; p_reopen?: boolean }, undefined>;
       item_activity_history: Rpc<{ p_item: string; p_before?: string | null; p_before_id?: string | null }>;
       public_reactions_ready: Rpc<Record<string, never>, boolean>;
+      public_reaction_totals: Rpc<Record<string, never>>;
       record_public_reaction: Rpc<{ p_id: string; p_reaction: string }, undefined>;
       purge_public_reaction_receipts: Rpc<Record<string, never>, undefined>;
       update_email_preferences: Rpc<{p_email:boolean;p_suggestions:boolean},undefined>;

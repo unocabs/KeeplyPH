@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { PublicAuthLink } from '@/components/public-auth-link';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Brand } from '@/components/brand';
 import styles from './page.module.css';
 import { PlateChecker } from './plate-checker';
@@ -53,13 +54,21 @@ export default async function Page() {
     <main id="main-content" className={styles.guide}>
       <header className={styles.hero}>
         <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden="true"> / </span><span>LTO registration renewal</span></nav>
-        <div className="eyebrow">FREE TOOL FOR PHILIPPINE CAR OWNERS</div>
         <h1>LTO car registration renewal<br /><em>&amp; date calculator</em></h1>
         <p className={styles.intro}>Find your renewal schedule, prepare the right documents, and plan your next visit. Start with the free plate number calculator, then follow the car registration renewal guide below.</p>
         <p className={styles.review}>By <a href="#sources">Keeply</a> · Guide updated <time dateTime="2026-10-01">October 1, 2026</time> · Based on official LTO sources.</p>
         <div className="hero-actions"><a href="#renewal-calculator" className="button primary">Check my renewal schedule ↓</a><a href="#requirements" className="button secondary">See renewal requirements</a></div>
         <p className={styles.disclosure}>This guide covers vehicle registration, not driver’s license renewal. Keeply is an independent household admin app; renewal transactions are completed through LTO.</p>
       </header>
+      <div className={styles.renewalPhoto}>
+        <Image
+          src="/images/lto/registration-paperwork.webp"
+          alt="A car key beside a lavender folder and neatly arranged paperwork on a sunlit cream table."
+          width={1920}
+          height={800}
+          sizes="(max-width: 680px) calc(100vw - 40px), (max-width: 1040px) calc(100vw - 56px), 984px"
+        />
+      </div>
       <nav className={styles.jump} aria-label="On this page">{[['renewal-calculator','Renewal date calculator'],['renewal-overview','Quick guide'],['schedule','Plate number schedule'],['requirements','Requirements'],['steps','Steps'],['costs','Costs'],['special-cases','Special cases'],['questions','Questions'],['sources','Sources']].map(([id,label]) => <a key={id} href={'#'+id}>{label}</a>)}</nav>
 
       <PlateChecker currentYear={Number(new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: 'Asia/Manila' }).format(new Date()))} />

@@ -2,15 +2,23 @@ import { z } from 'zod';
 import { checkOrigin } from '@/lib/security';
 import { isConfigured } from '@/lib/env';
 import { adminClient } from '@/lib/supabase/admin';
+import { parseReactionTotals } from '@/lib/public-reactions';
 
 const input = z.object({ id: z.string().uuid(), reaction: z.enum(['helpful', 'easy', 'love']) }).strict();
 function enabled() { return isConfigured() && process.env.PUBLIC_REACTIONS_ENABLED === 'true'; }
 const noStore = { 'Cache-Control': 'no-store' };
+async function readTotals() {
+  try {
+    const { data, error } = await adminClient().rpc('public_reaction_totals', {});
+    return error ? null : parseReactionTotals(data);
+  } catch { return null; }
+}
 export async function GET() {
   if (!enabled()) return Response.json({ available: false }, { headers: noStore });
   try {
     const { data, error } = await adminClient().rpc('public_reactions_ready', {});
-    return Response.json({ available: !error && data === true }, { headers: noStore });
+    if (error || data !== true) return Response.json({ available: false }, { headers: noStore });
+    return Response.json({ available: true, totals: await readTotals() }, { headers: noStore });
   } catch { return Response.json({ available: false }, { headers: noStore }); }
 }
 export async function POST(request: Request) {
@@ -36,6 +44,6 @@ export async function POST(request: Request) {
   try {
     const { error } = await adminClient().rpc('record_public_reaction', { p_id: parsed.data.id, p_reaction: parsed.data.reaction });
     if (error) return new Response(null, { status: error.message.includes('RATE_LIMIT') ? 429 : 503 });
-    return Response.json({ saved: true }, { headers: noStore });
+    return Response.json({ saved: true, totals: await readTotals() }, { headers: noStore });
   } catch { return new Response(null, { status: 503 }); }
 }

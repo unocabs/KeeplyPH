@@ -1,0 +1,34 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "readableDisabledControls": true,
+      "overflow": false
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "readableDisabledControls": true,
+      "overflow": false
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "readableDisabledControls": true,
+      "overflow": false
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "readableDisabledControls": true,
+      "overflow": false
+    },
+    {
+      "engine": "chromium",
+      "initialReadTimeout": "visible disabled controls after 10 seconds, explicit refresh restores voting"
+    }
+  ],
+  "sitemap": "passed",
+  "robots": "passed"
+}

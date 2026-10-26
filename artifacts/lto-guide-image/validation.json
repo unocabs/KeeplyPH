@@ -1,0 +1,111 @@
+{
+  "date": "2026-10-26",
+  "environment": "Local production build with HTTPS proxy; browser emulation, no physical devices or live deployment",
+  "checks": [
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "photo": {
+        "loaded": true,
+        "width": 984,
+        "height": 410,
+        "naturalWidth": 984,
+        "src": "https://localhost:34592/_next/image?url=%2Fimages%2Flto%2Fregistration-paperwork.webp&w=1080&q=75",
+        "radius": "24px"
+      },
+      "metadata": "passed",
+      "structuredData": "Article and BreadcrumbList parsed and required properties checked",
+      "calculator": "valid result and invalid-input recovery passed",
+      "anchors": "calculator and sources passed",
+      "overflow": false
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "photo": {
+        "loaded": true,
+        "width": 350,
+        "height": 145.828125,
+        "naturalWidth": 350,
+        "src": "https://localhost:34592/_next/image?url=%2Fimages%2Flto%2Fregistration-paperwork.webp&w=384&q=75",
+        "radius": "18px"
+      },
+      "metadata": "passed",
+      "structuredData": "Article and BreadcrumbList parsed and required properties checked",
+      "calculator": "valid result and invalid-input recovery passed",
+      "anchors": "calculator and sources passed",
+      "overflow": false
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "photo": {
+        "loaded": true,
+        "width": 280,
+        "height": 116.65625,
+        "naturalWidth": 280,
+        "src": "https://localhost:34592/_next/image?url=%2Fimages%2Flto%2Fregistration-paperwork.webp&w=384&q=75",
+        "radius": "18px"
+      },
+      "metadata": "passed",
+      "structuredData": "Article and BreadcrumbList parsed and required properties checked",
+      "calculator": "valid result and invalid-input recovery passed",
+      "anchors": "calculator and sources passed",
+      "overflow": false
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "photo": {
+        "loaded": true,
+        "width": 350,
+        "height": 145.828125,
+        "naturalWidth": 350,
+        "src": "https://localhost:34592/_next/image?url=%2Fimages%2Flto%2Fregistration-paperwork.webp&w=384&q=75",
+        "radius": "18px"
+      },
+      "metadata": "passed",
+      "structuredData": "Article and BreadcrumbList parsed and required properties checked",
+      "calculator": "valid result and invalid-input recovery passed",
+      "anchors": "calculator and sources passed",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "sitemap": "passed",
+  "robots": "passed",
+  "build": "passed",
+  "lint": "passed",
+  "lighthouse": {
+    "mobile": {
+      "scores": {
+        "performance": 94,
+        "accessibility": 97,
+        "best-practices": 100,
+        "seo": 100,
+        "agentic-browsing": 100
+      },
+      "warnings": [],
+      "cls": 0
+    },
+    "desktop": {
+      "scores": {
+        "performance": 100,
+        "accessibility": 97,
+        "best-practices": 100,
+        "seo": 100,
+        "agentic-browsing": 100
+      },
+      "warnings": [],
+      "cls": 0
+    },
+    "existingAccessibilityFindings": [
+      "Contrast on existing LTMS portal and LTO office badges",
+      "Accessible name on existing shared brand link"
+    ]
+  },
+  "limitations": [
+    "Physical devices and live deployment were not tested",
+    "Structured data checked locally for JSON syntax, expected schema types, article properties, citations and breadcrumb positions; Google Rich Results Test was not run"
+  ]
+}

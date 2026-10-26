@@ -1,0 +1,40 @@
+{
+  "build": "passed",
+  "lint": "passed",
+  "environment": "Local production build and browser emulation; not deployed",
+  "checks": [
+    {
+      "browser": "chromium",
+      "width": 1280,
+      "labelsRemoved": true,
+      "headingsAndMetadataPreserved": true,
+      "structuredData": "passed",
+      "overflow": false
+    },
+    {
+      "browser": "chromium",
+      "width": 390,
+      "labelsRemoved": true,
+      "headingsAndMetadataPreserved": true,
+      "structuredData": "passed",
+      "overflow": false
+    },
+    {
+      "browser": "webkit",
+      "width": 390,
+      "labelsRemoved": true,
+      "headingsAndMetadataPreserved": true,
+      "structuredData": "passed",
+      "overflow": false
+    }
+  ],
+  "sitemap": "passed",
+  "robots": "passed",
+  "lighthouse": {
+    "performance": 93,
+    "accessibility": 97,
+    "best-practices": 100,
+    "seo": 100,
+    "agentic-browsing": 100
+  }
+}
