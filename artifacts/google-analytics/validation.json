@@ -1,0 +1,988 @@
+{
+  "reports": [
+    {
+      "engine": "chromium",
+      "width": 1280,
+      "checks": "consent, withdrawal, cross-tab consent, page views, anchor, keyboard submit, validation, result, reminder CTA, sample CTA, private preference gate",
+      "successfulSaveFixture": false
+    },
+    {
+      "engine": "chromium",
+      "width": 390,
+      "checks": "consent, withdrawal, cross-tab consent, page views, anchor, keyboard submit, validation, result, reminder CTA, sample CTA, private preference gate",
+      "successfulSaveFixture": true
+    },
+    {
+      "engine": "chromium",
+      "width": 320,
+      "checks": "consent, withdrawal, cross-tab consent, page views, anchor, keyboard submit, validation, result, reminder CTA, sample CTA, private preference gate",
+      "successfulSaveFixture": false
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "checks": "consent, withdrawal, cross-tab consent, page views, anchor, keyboard submit, validation, result, reminder CTA, sample CTA, private preference gate",
+      "successfulSaveFixture": true
+    }
+  ],
+  "seo": [
+    {
+      "engine": "chromium",
+      "path": "/",
+      "title": "Household Admin App: Bills, Maintenance & Warranties · Keeply",
+      "canonical": "https://www.keeplyph.com/",
+      "lang": "en-PH",
+      "locale": "en_PH",
+      "structured": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": "https://www.keeplyph.com/#website",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "inLanguage": "en-PH",
+              "publisher": {
+                "@id": "https://www.keeplyph.com/#organization"
+              },
+              "about": {
+                "@id": "https://www.keeplyph.com/#app"
+              }
+            },
+            {
+              "@type": "WebApplication",
+              "@id": "https://www.keeplyph.com/#app",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "applicationCategory": "LifestyleApplication",
+              "operatingSystem": "Web browser",
+              "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+              "inLanguage": "en-PH",
+              "publisher": {
+                "@id": "https://www.keeplyph.com/#organization"
+              },
+              "mainEntityOfPage": {
+                "@id": "https://www.keeplyph.com/#webpage"
+              },
+              "featureList": [
+                "Household bills and recurring payment dates",
+                "Home maintenance and service history",
+                "Purchase receipts and warranty dates",
+                "Upcoming payment totals from saved amounts, with estimates identified",
+                "Household planning up to a year ahead with Premium",
+                "Monthly household costs from saved amounts",
+                "Category-aware record completeness",
+                "Weekly household brief from saved data",
+                "Search notes, history, dates and authorised file names",
+                "Vehicle registration and insurance dates",
+                "ID and passport expiry dates",
+                "Optional alerts"
+              ]
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://www.keeplyph.com/#organization",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "logo": "https://www.keeplyph.com/brand/keeply-logo.png"
+            },
+            {
+              "@type": "WebPage",
+              "@id": "https://www.keeplyph.com/#webpage",
+              "url": "https://www.keeplyph.com",
+              "name": "Household Admin App: Bills, Maintenance & Warranties · Keeply",
+              "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+              "inLanguage": "en-PH",
+              "isPartOf": {
+                "@id": "https://www.keeplyph.com/#website"
+              },
+              "mainEntity": {
+                "@id": "https://www.keeplyph.com/#app"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/lto-registration-renewal",
+      "title": "LTO Car Registration Renewal & Date Calculator",
+      "canonical": "https://www.keeplyph.com/lto-registration-renewal",
+      "lang": "en-PH",
+      "locale": "en_PH",
+      "structured": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Article",
+              "@id": "https://www.keeplyph.com/lto-registration-renewal#guide",
+              "headline": "LTO Car Registration Renewal & Date Calculator",
+              "description": "Check your LTO car registration renewal schedule with a free plate number calculator. Find requirements, fees, online steps and answers for your next renewal.",
+              "url": "https://www.keeplyph.com/lto-registration-renewal",
+              "mainEntityOfPage": "https://www.keeplyph.com/lto-registration-renewal",
+              "inLanguage": "en-PH",
+              "dateModified": "2026-10-01",
+              "author": {
+                "@type": "Organization",
+                "name": "Keeply",
+                "url": "https://www.keeplyph.com"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Keeply",
+                "url": "https://www.keeplyph.com"
+              },
+              "citation": [
+                "https://lto.gov.ph/wp-content/uploads/2025/11/MV-CC-2025.pdf",
+                "https://lto.gov.ph/wp-content/uploads/2025/09/LTO-CC-2025-External.pdf",
+                "https://lto.gov.ph/wp-content/uploads/2023/10/FDM-vol.-2-2nd-Edition.pdf",
+                "https://www.ltoncr.com/renewal-of-motor-vehicle-mv-registration/",
+                "https://lto.gov.ph/wp-content/uploads/2023/08/Memo_04122023_.pdf"
+              ]
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://www.keeplyph.com/lto-registration-renewal#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.keeplyph.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "LTO registration renewal",
+                  "item": "https://www.keeplyph.com/lto-registration-renewal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/privacy",
+      "title": "Privacy · Keeply",
+      "canonical": "https://www.keeplyph.com/privacy",
+      "lang": "en-PH",
+      "locale": "en_PH",
+      "structured": []
+    },
+    {
+      "engine": "chromium",
+      "path": "/",
+      "title": "Household Admin App: Bills, Maintenance & Warranties · Keeply",
+      "canonical": "https://www.keeplyph.com/",
+      "lang": "en-PH",
+      "locale": "en_PH",
+      "structured": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": "https://www.keeplyph.com/#website",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "inLanguage": "en-PH",
+              "publisher": {
+                "@id": "https://www.keeplyph.com/#organization"
+              },
+              "about": {
+                "@id": "https://www.keeplyph.com/#app"
+              }
+            },
+            {
+              "@type": "WebApplication",
+              "@id": "https://www.keeplyph.com/#app",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "applicationCategory": "LifestyleApplication",
+              "operatingSystem": "Web browser",
+              "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+              "inLanguage": "en-PH",
+              "publisher": {
+                "@id": "https://www.keeplyph.com/#organization"
+              },
+              "mainEntityOfPage": {
+                "@id": "https://www.keeplyph.com/#webpage"
+              },
+              "featureList": [
+                "Household bills and recurring payment dates",
+                "Home maintenance and service history",
+                "Purchase receipts and warranty dates",
+                "Upcoming payment totals from saved amounts, with estimates identified",
+                "Household planning up to a year ahead with Premium",
+                "Monthly household costs from saved amounts",
+                "Category-aware record completeness",
+                "Weekly household brief from saved data",
+                "Search notes, history, dates and authorised file names",
+                "Vehicle registration and insurance dates",
+                "ID and passport expiry dates",
+                "Optional alerts"
+              ]
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://www.keeplyph.com/#organization",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "logo": "https://www.keeplyph.com/brand/keeply-logo.png"
+            },
+            {
+              "@type": "WebPage",
+              "@id": "https://www.keeplyph.com/#webpage",
+              "url": "https://www.keeplyph.com",
+              "name": "Household Admin App: Bills, Maintenance & Warranties · Keeply",
+              "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+              "inLanguage": "en-PH",
+              "isPartOf": {
+                "@id": "https://www.keeplyph.com/#website"
+              },
+              "mainEntity": {
+                "@id": "https://www.keeplyph.com/#app"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/lto-registration-renewal",
+      "title": "LTO Car Registration Renewal & Date Calculator",
+      "canonical": "https://www.keeplyph.com/lto-registration-renewal",
+      "lang": "en-PH",
+      "locale": "en_PH",
+      "structured": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Article",
+              "@id": "https://www.keeplyph.com/lto-registration-renewal#guide",
+              "headline": "LTO Car Registration Renewal & Date Calculator",
+              "description": "Check your LTO car registration renewal schedule with a free plate number calculator. Find requirements, fees, online steps and answers for your next renewal.",
+              "url": "https://www.keeplyph.com/lto-registration-renewal",
+              "mainEntityOfPage": "https://www.keeplyph.com/lto-registration-renewal",
+              "inLanguage": "en-PH",
+              "dateModified": "2026-10-01",
+              "author": {
+                "@type": "Organization",
+                "name": "Keeply",
+                "url": "https://www.keeplyph.com"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Keeply",
+                "url": "https://www.keeplyph.com"
+              },
+              "citation": [
+                "https://lto.gov.ph/wp-content/uploads/2025/11/MV-CC-2025.pdf",
+                "https://lto.gov.ph/wp-content/uploads/2025/09/LTO-CC-2025-External.pdf",
+                "https://lto.gov.ph/wp-content/uploads/2023/10/FDM-vol.-2-2nd-Edition.pdf",
+                "https://www.ltoncr.com/renewal-of-motor-vehicle-mv-registration/",
+                "https://lto.gov.ph/wp-content/uploads/2023/08/Memo_04122023_.pdf"
+              ]
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://www.keeplyph.com/lto-registration-renewal#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.keeplyph.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "LTO registration renewal",
+                  "item": "https://www.keeplyph.com/lto-registration-renewal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/privacy",
+      "title": "Privacy · Keeply",
+      "canonical": "https://www.keeplyph.com/privacy",
+      "lang": "en-PH",
+      "locale": "en_PH",
+      "structured": []
+    },
+    {
+      "engine": "chromium",
+      "path": "/",
+      "title": "Household Admin App: Bills, Maintenance & Warranties · Keeply",
+      "canonical": "https://www.keeplyph.com/",
+      "lang": "en-PH",
+      "locale": "en_PH",
+      "structured": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": "https://www.keeplyph.com/#website",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "inLanguage": "en-PH",
+              "publisher": {
+                "@id": "https://www.keeplyph.com/#organization"
+              },
+              "about": {
+                "@id": "https://www.keeplyph.com/#app"
+              }
+            },
+            {
+              "@type": "WebApplication",
+              "@id": "https://www.keeplyph.com/#app",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "applicationCategory": "LifestyleApplication",
+              "operatingSystem": "Web browser",
+              "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+              "inLanguage": "en-PH",
+              "publisher": {
+                "@id": "https://www.keeplyph.com/#organization"
+              },
+              "mainEntityOfPage": {
+                "@id": "https://www.keeplyph.com/#webpage"
+              },
+              "featureList": [
+                "Household bills and recurring payment dates",
+                "Home maintenance and service history",
+                "Purchase receipts and warranty dates",
+                "Upcoming payment totals from saved amounts, with estimates identified",
+                "Household planning up to a year ahead with Premium",
+                "Monthly household costs from saved amounts",
+                "Category-aware record completeness",
+                "Weekly household brief from saved data",
+                "Search notes, history, dates and authorised file names",
+                "Vehicle registration and insurance dates",
+                "ID and passport expiry dates",
+                "Optional alerts"
+              ]
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://www.keeplyph.com/#organization",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "logo": "https://www.keeplyph.com/brand/keeply-logo.png"
+            },
+            {
+              "@type": "WebPage",
+              "@id": "https://www.keeplyph.com/#webpage",
+              "url": "https://www.keeplyph.com",
+              "name": "Household Admin App: Bills, Maintenance & Warranties · Keeply",
+              "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+              "inLanguage": "en-PH",
+              "isPartOf": {
+                "@id": "https://www.keeplyph.com/#website"
+              },
+              "mainEntity": {
+                "@id": "https://www.keeplyph.com/#app"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/lto-registration-renewal",
+      "title": "LTO Car Registration Renewal & Date Calculator",
+      "canonical": "https://www.keeplyph.com/lto-registration-renewal",
+      "lang": "en-PH",
+      "locale": "en_PH",
+      "structured": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Article",
+              "@id": "https://www.keeplyph.com/lto-registration-renewal#guide",
+              "headline": "LTO Car Registration Renewal & Date Calculator",
+              "description": "Check your LTO car registration renewal schedule with a free plate number calculator. Find requirements, fees, online steps and answers for your next renewal.",
+              "url": "https://www.keeplyph.com/lto-registration-renewal",
+              "mainEntityOfPage": "https://www.keeplyph.com/lto-registration-renewal",
+              "inLanguage": "en-PH",
+              "dateModified": "2026-10-01",
+              "author": {
+                "@type": "Organization",
+                "name": "Keeply",
+                "url": "https://www.keeplyph.com"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Keeply",
+                "url": "https://www.keeplyph.com"
+              },
+              "citation": [
+                "https://lto.gov.ph/wp-content/uploads/2025/11/MV-CC-2025.pdf",
+                "https://lto.gov.ph/wp-content/uploads/2025/09/LTO-CC-2025-External.pdf",
+                "https://lto.gov.ph/wp-content/uploads/2023/10/FDM-vol.-2-2nd-Edition.pdf",
+                "https://www.ltoncr.com/renewal-of-motor-vehicle-mv-registration/",
+                "https://lto.gov.ph/wp-content/uploads/2023/08/Memo_04122023_.pdf"
+              ]
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://www.keeplyph.com/lto-registration-renewal#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.keeplyph.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "LTO registration renewal",
+                  "item": "https://www.keeplyph.com/lto-registration-renewal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "path": "/privacy",
+      "title": "Privacy · Keeply",
+      "canonical": "https://www.keeplyph.com/privacy",
+      "lang": "en-PH",
+      "locale": "en_PH",
+      "structured": []
+    },
+    {
+      "engine": "webkit",
+      "path": "/",
+      "title": "Household Admin App: Bills, Maintenance & Warranties · Keeply",
+      "canonical": "https://www.keeplyph.com/",
+      "lang": "en-PH",
+      "locale": "en_PH",
+      "structured": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": "https://www.keeplyph.com/#website",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "inLanguage": "en-PH",
+              "publisher": {
+                "@id": "https://www.keeplyph.com/#organization"
+              },
+              "about": {
+                "@id": "https://www.keeplyph.com/#app"
+              }
+            },
+            {
+              "@type": "WebApplication",
+              "@id": "https://www.keeplyph.com/#app",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "applicationCategory": "LifestyleApplication",
+              "operatingSystem": "Web browser",
+              "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+              "inLanguage": "en-PH",
+              "publisher": {
+                "@id": "https://www.keeplyph.com/#organization"
+              },
+              "mainEntityOfPage": {
+                "@id": "https://www.keeplyph.com/#webpage"
+              },
+              "featureList": [
+                "Household bills and recurring payment dates",
+                "Home maintenance and service history",
+                "Purchase receipts and warranty dates",
+                "Upcoming payment totals from saved amounts, with estimates identified",
+                "Household planning up to a year ahead with Premium",
+                "Monthly household costs from saved amounts",
+                "Category-aware record completeness",
+                "Weekly household brief from saved data",
+                "Search notes, history, dates and authorised file names",
+                "Vehicle registration and insurance dates",
+                "ID and passport expiry dates",
+                "Optional alerts"
+              ]
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://www.keeplyph.com/#organization",
+              "name": "Keeply",
+              "url": "https://www.keeplyph.com",
+              "logo": "https://www.keeplyph.com/brand/keeply-logo.png"
+            },
+            {
+              "@type": "WebPage",
+              "@id": "https://www.keeplyph.com/#webpage",
+              "url": "https://www.keeplyph.com",
+              "name": "Household Admin App: Bills, Maintenance & Warranties · Keeply",
+              "description": "Keeply is a household admin app for bills, home maintenance, receipts, warranties and renewals. Keep dates, records and optional alerts together.",
+              "inLanguage": "en-PH",
+              "isPartOf": {
+                "@id": "https://www.keeplyph.com/#website"
+              },
+              "mainEntity": {
+                "@id": "https://www.keeplyph.com/#app"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/lto-registration-renewal",
+      "title": "LTO Car Registration Renewal & Date Calculator",
+      "canonical": "https://www.keeplyph.com/lto-registration-renewal",
+      "lang": "en-PH",
+      "locale": "en_PH",
+      "structured": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Article",
+              "@id": "https://www.keeplyph.com/lto-registration-renewal#guide",
+              "headline": "LTO Car Registration Renewal & Date Calculator",
+              "description": "Check your LTO car registration renewal schedule with a free plate number calculator. Find requirements, fees, online steps and answers for your next renewal.",
+              "url": "https://www.keeplyph.com/lto-registration-renewal",
+              "mainEntityOfPage": "https://www.keeplyph.com/lto-registration-renewal",
+              "inLanguage": "en-PH",
+              "dateModified": "2026-10-01",
+              "author": {
+                "@type": "Organization",
+                "name": "Keeply",
+                "url": "https://www.keeplyph.com"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Keeply",
+                "url": "https://www.keeplyph.com"
+              },
+              "citation": [
+                "https://lto.gov.ph/wp-content/uploads/2025/11/MV-CC-2025.pdf",
+                "https://lto.gov.ph/wp-content/uploads/2025/09/LTO-CC-2025-External.pdf",
+                "https://lto.gov.ph/wp-content/uploads/2023/10/FDM-vol.-2-2nd-Edition.pdf",
+                "https://www.ltoncr.com/renewal-of-motor-vehicle-mv-registration/",
+                "https://lto.gov.ph/wp-content/uploads/2023/08/Memo_04122023_.pdf"
+              ]
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://www.keeplyph.com/lto-registration-renewal#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.keeplyph.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "LTO registration renewal",
+                  "item": "https://www.keeplyph.com/lto-registration-renewal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "path": "/privacy",
+      "title": "Privacy · Keeply",
+      "canonical": "https://www.keeplyph.com/privacy",
+      "lang": "en-PH",
+      "locale": "en_PH",
+      "structured": []
+    }
+  ],
+  "unexpectedErrors": [],
+  "navigationDiagnostics": [
+    {
+      "engine": "webkit",
+      "width": 390,
+      "message": "/localhost:34622/demo/add/car?_rsc=NShxnV88BmjGFKXN due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34622/demo/add/car?_rsc=NShxnV88BmjGFKXN due to access control checks.\n    at N (https://localhost:34622/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34622/add/car?focus=registration&renewalDate=2026-08-22",
+      "at": 1793241133834,
+      "recentFailed": [
+        {
+          "at": 1793241133832,
+          "url": "https://localhost:34622/demo/add/car?focus=registration&renewalDate=2026-08-22&_rsc=NShxnV88BmjGFKXN",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241133832,
+          "url": "https://localhost:34622/_next/static/chunks/3l4b6fzfbsj6k.js",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241133833,
+          "url": "https://localhost:34622/_next/static/chunks/3p1wmlicvzhw2.js",
+          "error": "cancelled"
+        }
+      ],
+      "recentNavigations": [
+        {
+          "at": 1793241132173,
+          "url": "https://localhost:34622/lto-registration-renewal?private=do-not-collect&utm_source=facebook&utm_medium=social"
+        },
+        {
+          "at": 1793241132952,
+          "url": "https://localhost:34622/lto-registration-renewal?private=do-not-collect&utm_source=facebook&utm_medium=social"
+        },
+        {
+          "at": 1793241133833,
+          "url": "https://localhost:34622/"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "message": "/localhost:34622/demo/settings/alerts?_rsc=ImvJ2tS2G70zB7fO due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34622/demo/settings/alerts?_rsc=ImvJ2tS2G70zB7fO due to access control checks.\n    at N (https://localhost:34622/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34622/demo",
+      "at": 1793241135258,
+      "recentFailed": [
+        {
+          "at": 1793241133832,
+          "url": "https://localhost:34622/demo/add/car?focus=registration&renewalDate=2026-08-22&_rsc=NShxnV88BmjGFKXN",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241133832,
+          "url": "https://localhost:34622/_next/static/chunks/3l4b6fzfbsj6k.js",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241133833,
+          "url": "https://localhost:34622/_next/static/chunks/3p1wmlicvzhw2.js",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241134530,
+          "url": "https://localhost:34622/api/reactions",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/items?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/dashboard?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        }
+      ],
+      "recentNavigations": [
+        {
+          "at": 1793241133833,
+          "url": "https://localhost:34622/"
+        },
+        {
+          "at": 1793241134530,
+          "url": "https://localhost:34622/"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/add/car?focus=registration&renewalDate=2030-08-22"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "message": "/localhost:34622/demo/settings?_rsc=ImvJ2tS2G70zB7fO due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34622/demo/settings?_rsc=ImvJ2tS2G70zB7fO due to access control checks.\n    at N (https://localhost:34622/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34622/demo",
+      "at": 1793241135258,
+      "recentFailed": [
+        {
+          "at": 1793241133832,
+          "url": "https://localhost:34622/demo/add/car?focus=registration&renewalDate=2026-08-22&_rsc=NShxnV88BmjGFKXN",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241133832,
+          "url": "https://localhost:34622/_next/static/chunks/3l4b6fzfbsj6k.js",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241133833,
+          "url": "https://localhost:34622/_next/static/chunks/3p1wmlicvzhw2.js",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241134530,
+          "url": "https://localhost:34622/api/reactions",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/items?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/dashboard?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        }
+      ],
+      "recentNavigations": [
+        {
+          "at": 1793241133833,
+          "url": "https://localhost:34622/"
+        },
+        {
+          "at": 1793241134530,
+          "url": "https://localhost:34622/"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/add/car?focus=registration&renewalDate=2030-08-22"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "message": "/localhost:34622/demo/items?filter=upcoming&_rsc=ImvJ2tS2G70zB7fO due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34622/demo/items?filter=upcoming&_rsc=ImvJ2tS2G70zB7fO due to access control checks.\n    at N (https://localhost:34622/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34622/demo",
+      "at": 1793241135258,
+      "recentFailed": [
+        {
+          "at": 1793241133832,
+          "url": "https://localhost:34622/demo/add/car?focus=registration&renewalDate=2026-08-22&_rsc=NShxnV88BmjGFKXN",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241133832,
+          "url": "https://localhost:34622/_next/static/chunks/3l4b6fzfbsj6k.js",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241133833,
+          "url": "https://localhost:34622/_next/static/chunks/3p1wmlicvzhw2.js",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241134530,
+          "url": "https://localhost:34622/api/reactions",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/items?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/dashboard?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        }
+      ],
+      "recentNavigations": [
+        {
+          "at": 1793241133833,
+          "url": "https://localhost:34622/"
+        },
+        {
+          "at": 1793241134530,
+          "url": "https://localhost:34622/"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/add/car?focus=registration&renewalDate=2030-08-22"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "message": "/localhost:34622/demo/items/payments?_rsc=ImvJ2tS2G70zB7fO due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34622/demo/items/payments?_rsc=ImvJ2tS2G70zB7fO due to access control checks.\n    at N (https://localhost:34622/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34622/demo",
+      "at": 1793241135258,
+      "recentFailed": [
+        {
+          "at": 1793241133832,
+          "url": "https://localhost:34622/demo/add/car?focus=registration&renewalDate=2026-08-22&_rsc=NShxnV88BmjGFKXN",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241133832,
+          "url": "https://localhost:34622/_next/static/chunks/3l4b6fzfbsj6k.js",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241133833,
+          "url": "https://localhost:34622/_next/static/chunks/3p1wmlicvzhw2.js",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241134530,
+          "url": "https://localhost:34622/api/reactions",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/items?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/dashboard?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        }
+      ],
+      "recentNavigations": [
+        {
+          "at": 1793241133833,
+          "url": "https://localhost:34622/"
+        },
+        {
+          "at": 1793241134530,
+          "url": "https://localhost:34622/"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/add/car?focus=registration&renewalDate=2030-08-22"
+        }
+      ]
+    },
+    {
+      "engine": "webkit",
+      "width": 390,
+      "message": "/localhost:34622/demo/items?filter=overdue&_rsc=ImvJ2tS2G70zB7fO due to access control checks.",
+      "stack": "Fetch API cannot load https://localhost:34622/demo/items?filter=overdue&_rsc=ImvJ2tS2G70zB7fO due to access control checks.\n    at N (https://localhost:34622/_next/static/chunks/0jh52hcy7u-xt.js:1:20576)",
+      "url": "https://localhost:34622/demo",
+      "at": 1793241135259,
+      "recentFailed": [
+        {
+          "at": 1793241133832,
+          "url": "https://localhost:34622/demo/add/car?focus=registration&renewalDate=2026-08-22&_rsc=NShxnV88BmjGFKXN",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241133832,
+          "url": "https://localhost:34622/_next/static/chunks/3l4b6fzfbsj6k.js",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241133833,
+          "url": "https://localhost:34622/_next/static/chunks/3p1wmlicvzhw2.js",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241134530,
+          "url": "https://localhost:34622/api/reactions",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/items?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/planner?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/items?filter=dates&_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/dashboard?_rsc=ImvJ2tS2G70zB7fO",
+          "error": "cancelled"
+        }
+      ],
+      "recentNavigations": [
+        {
+          "at": 1793241133833,
+          "url": "https://localhost:34622/"
+        },
+        {
+          "at": 1793241134530,
+          "url": "https://localhost:34622/"
+        },
+        {
+          "at": 1793241135255,
+          "url": "https://localhost:34622/demo/add/car?focus=registration&renewalDate=2030-08-22"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Local production with Google command queue and Auth/save stand-ins. No hosted OAuth, database saves, physical-device or Google report receipt verification.",
+    "WebKit may report cancellation of local self-signed HTTPS RSC prefetches during document replacement. Those narrowly matched diagnostics are preserved separately; this does not establish clean physical Safari behavior."
+  ]
+}

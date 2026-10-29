@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { templates, getReminderPreset, addIntent, type TemplateKey } from '@/features/templates';
 import { dateSchema } from '@/features/items/validation';
 import { createAndSaveItem, saveItem, saveDate, deleteItem } from '@/features/items/actions';
+import { trackAnalytics } from '@/lib/google-analytics';
 import { actionError } from '@/lib/action-error';
 import type { ItemWithDetails } from '@/features/items/domain';
 import { ReminderIcon } from './reminder-icon';
@@ -59,6 +60,12 @@ export function ItemForm({ template, item, focus, preset, renewalDate, demo = fa
   useEffect(() => { const warn = (event: BeforeUnloadEvent) => { if(dirty.current)event.preventDefault(); }; window.addEventListener('beforeunload',warn); return () => window.removeEventListener('beforeunload',warn); }, []);
   const [busy, setBusy] = useState(false), [error, setError] = useState(''), [preview, setPreview] = useState(false);
   const submitting = useRef(false);
+  const saveMeasured = useRef(false);
+  function measureSave() {
+    if (saveMeasured.current) return;
+    saveMeasured.current = true;
+    trackAnalytics('reminder_saved', 'app');
+  }
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault(); if (submitting.current) return; setError(''); if(withDate){ const parsed=dateSchema.safeParse(date);if(!parsed.success){setError(parsed.error.issues[0].message);return;} } if (demo) { setPreview(true); dirty.current=false; return; }
     const form = new FormData(e.currentTarget); submitting.current = true; setBusy(true);
@@ -67,6 +74,7 @@ export function ItemForm({ template, item, focus, preset, renewalDate, demo = fa
         dateId.current ||= crypto.randomUUID();
         const result = await saveDate(dateId.current, existingVehicle, 0, date);
         if (result.error) throw new Error(result.error);
+        measureSave();
         dirty.current = false;
         router.push('/items/' + existingVehicle + '?saved=updated&savedDate=' + result.id + '#date-' + result.id);
         router.refresh();
@@ -84,6 +92,7 @@ export function ItemForm({ template, item, focus, preset, renewalDate, demo = fa
       if (withDate) form.set('date', JSON.stringify(date));
       const result = item ? await saveItem(form) : await createAndSaveItem(form, template); if (result.error) throw new Error(result.error);
       const saved = item?.state === 'saved' ? 'updated' : 'created';
+      if (saved === 'created' && withDate) measureSave();
       dirty.current=false; router.push('/items/' + result.id + '?saved=' + saved); router.refresh();
     } catch(e) { setError(actionError(e)); } finally { submitting.current = false; setBusy(false); }
   }

@@ -52,7 +52,7 @@ export default async function Page() {
     <script type="application/ld+json" nonce={nonce} dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
     <nav className="public-nav" aria-label="Main navigation"><Brand showAppType /><div><Link href="/vehicle-registration-reminder">Vehicle reminders</Link><PublicAuthLink /></div></nav>
     <main id="main-content" className={styles.guide}>
-      <header className={styles.hero}>
+      <header className={styles.hero} data-analytics-surface="guide_hero">
         <nav className={styles.breadcrumb} aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden="true"> / </span><span>LTO registration renewal</span></nav>
         <h1>LTO car registration renewal<br /><em>&amp; date calculator</em></h1>
         <p className={styles.intro}>Find your renewal schedule, prepare the right documents, and plan your next visit. Start with the free plate number calculator, then follow the car registration renewal guide below.</p>
@@ -69,11 +69,11 @@ export default async function Page() {
           sizes="(max-width: 680px) calc(100vw - 40px), (max-width: 1040px) calc(100vw - 56px), 984px"
         />
       </div>
-      <nav className={styles.jump} aria-label="On this page">{[['renewal-calculator','Renewal date calculator'],['renewal-overview','Quick guide'],['schedule','Plate number schedule'],['requirements','Requirements'],['steps','Steps'],['costs','Costs'],['special-cases','Special cases'],['questions','Questions'],['sources','Sources']].map(([id,label]) => <a key={id} href={'#'+id}>{label}</a>)}</nav>
+      <nav data-analytics-surface="guide_navigation" className={styles.jump} aria-label="On this page">{[['renewal-calculator','Renewal date calculator'],['renewal-overview','Quick guide'],['schedule','Plate number schedule'],['requirements','Requirements'],['steps','Steps'],['costs','Costs'],['special-cases','Special cases'],['questions','Questions'],['sources','Sources']].map(([id,label]) => <a key={id} href={'#'+id}>{label}</a>)}</nav>
 
       <PlateChecker currentYear={Number(new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: 'Asia/Manila' }).format(new Date()))} />
 
-      <section id="renewal-overview" className={`${styles.section} ${styles.overview}`} aria-labelledby="overview-heading">
+      <section data-analytics-surface="guide_overview" id="renewal-overview" className={`${styles.section} ${styles.overview}`} aria-labelledby="overview-heading">
         <h2 id="overview-heading">How to renew your car registration in the Philippines</h2>
         <p>Start with your schedule, then choose the renewal route that applies to your vehicle.</p>
         <ol className={styles.overviewSteps}>
@@ -127,7 +127,7 @@ export default async function Page() {
           <div><dt>Inspection</dt><dd><strong>₱600 assumed in the example.</strong> This is a historical reduced-fee benchmark, not a verified current quote. Ask your chosen center for its current price and what it includes before booking.</dd></div>
           <div><dt>Excluded from the example</dt><dd>Other LTO-assessed charges, payment-channel fees, late penalties, repairs, retests and any additional transactions. A heavier vehicle or a different classification can cost substantially more.</dd></div>
         </dl>
-        <aside className={styles.penaltyCta} aria-labelledby="penalty-reminder-title"><div><span className="eyebrow">PLAN AHEAD FOR RENEWAL</span><h3 id="penalty-reminder-title">A heads-up before late fees become a worry.</h3><p>Give yourself time to arrange insurance, inspection and renewal. Save your confirmed deadline in Keeply and choose alerts before it’s due.</p><p className={styles.disclosure}>You still complete the renewal with LTO. Reminders help you plan; they do not extend your deadline or waive penalties.</p></div><Link className="button primary" href={reminder}>Remind me before renewal →</Link></aside>
+        <aside data-analytics-surface="guide_costs" className={styles.penaltyCta} aria-labelledby="penalty-reminder-title"><div><span className="eyebrow">PLAN AHEAD FOR RENEWAL</span><h3 id="penalty-reminder-title">A heads-up before late fees become a worry.</h3><p>Give yourself time to arrange insurance, inspection and renewal. Save your confirmed deadline in Keeply and choose alerts before it’s due.</p><p className={styles.disclosure}>You still complete the renewal with LTO. Reminders help you plan; they do not extend your deadline or waive penalties.</p></div><Link className="button primary" href={reminder} data-analytics-event="set_reminder_click">Remind me before renewal →</Link></aside>
         <p className={styles.source}>Budget inputs checked September 30, 2026: <a href={manual}>LTO MVUC table, printed page 21</a>; <a href="https://www.bdo.com.ph/bdo-insure/personal/ctpl">BDO Insure’s published CTPL prices</a>; <a href="https://www.pna.gov.ph/articles/1131822">2021 DOTr reduced-inspection-fee announcement, reported by PNA</a>. Confirm the current LTO assessment and provider quotes.</p>
       </section>
 
@@ -139,7 +139,7 @@ export default async function Page() {
         <p>For a first renewal, overdue registration, changed ownership or missing records, get vehicle-specific instructions from LTO before relying on this private-car guide.</p>
       </section>
 
-      <section id="questions" className={`${styles.section} ${styles.faq}`}>
+      <section data-analytics-surface="guide_faq" id="questions" className={`${styles.section} ${styles.faq}`}>
         <h2>Car registration renewal questions</h2>
         <details><summary>Can I complete my first car registration renewal online?</summary><p>The <a href={charter}>2025 LTO motor-vehicle Citizen’s Charter</a> lists a previous LTMS renewal transaction as an online-renewal condition. If this is your first renewal, check with the handling LTO office rather than assuming your vehicle is eligible for the portal.</p></details>
         <details><summary>Can I renew my car registration early?</summary><p>Advance renewal is covered in LTO guidance, including examples two months before the scheduled renewal in its <a href={plateMemo}>April 2023 plate-transition memorandum</a>. Ask LTO to confirm how early you can renew and the applicable assessment for your vehicle before booking.</p></details>
@@ -154,7 +154,7 @@ export default async function Page() {
         <details><summary>Can Keeply renew my registration?</summary><p>Keeply stores the date you confirm and sends alerts you choose. It does not submit a renewal, calculate an official deadline or collect LTO fees.</p></details>
       </section>
 
-      <section className={styles.cta}><span className="eyebrow">ONE LESS DATE TO REMEMBER</span><h2>Know your renewal date?<br />Give yourself a heads-up.</h2><p>Add your car, enter the date you’ve confirmed, and choose reminders. No full plate number is needed.</p><Link className="button primary" href={reminder}>Set my renewal reminder →</Link><p className={styles.disclosure}>Google sign-in is required to save. Alerts are optional.</p><Link className="text-button" href="/vehicle-registration-reminder">Explore Keeply’s vehicle reminders →</Link></section>
+      <section data-analytics-surface="guide_footer" className={styles.cta}><span className="eyebrow">ONE LESS DATE TO REMEMBER</span><h2>Know your renewal date?<br />Give yourself a heads-up.</h2><p>Add your car, enter the date you’ve confirmed, and choose reminders. No full plate number is needed.</p><Link className="button primary" href={reminder} data-analytics-event="set_reminder_click">Set my renewal reminder →</Link><p className={styles.disclosure}>Google sign-in is required to save. Alerts are optional.</p><Link className="text-button" href="/vehicle-registration-reminder">Explore Keeply’s vehicle reminders →</Link></section>
 
       <section id="sources" className={`${styles.section} ${styles.sources}`}><h2>Official sources and review notes</h2><p>Original source excerpts reviewed September 30, 2026; additional online-eligibility and plate-transition excerpts checked October 1, 2026. Prepared by Keeply using official LTO publications. Direct access to the LTO PDFs was unavailable during review, so the relevant indexed excerpts were used alongside official supporting material. These sources may be updated by later LTO issuances. Confirm your transaction’s requirements and assessment with LTO.</p><ul><li><a href={charter}>LTO 2025 motor-vehicle Citizen’s Charter</a>: renewal checklist and portal process, printed pages 205 onward.</li><li><a href={externalCharter}>LTO 2025 external-services Citizen’s Charter</a>: individual walk-in procedure.</li><li><a href={manual}>LTO Filipino Driver’s Manual, volume 2</a>: standard registration schedule, printed page 17.</li><li><a href={plateMemo}>LTO April 2023 plate-transition memorandum</a>: registration adjustments and advance-renewal examples.</li><li><a href={ncr}>LTO NCR motor-vehicle renewal guidance</a>: special cases and receipt guidance.</li><li><a href="https://portal.lto.gov.ph/">Official LTMS portal</a> · <a href="https://lto.gov.ph/">LTO announcements and services</a></li></ul></section>
     </main>

@@ -1,0 +1,8 @@
+.preferences { position: fixed; z-index: 39; bottom: max(10px, env(safe-area-inset-bottom)); left: 12px; padding: 7px 11px; border: 1px solid #d5cde0; border-radius: 20px; background: #fff; color: #4c365f; font: inherit; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px #27103b12; }
+.banner { position: fixed; z-index: 40; inset: auto 16px max(48px, calc(env(safe-area-inset-bottom) + 48px)); margin-inline: auto; max-width: 800px; max-height: 65dvh; overflow-y: auto; display: flex; gap: 24px; align-items: center; padding: 22px; border: 1px solid #d5cde0; border-radius: 20px; background: #fff; color: #352b40; box-shadow: 0 12px 50px #27103b29; }
+.banner h2 { font-size: 18px; margin: 0 0 7px; }
+.banner p { font-size: 13px; line-height: 1.6; margin: 0; }
+.banner a { text-decoration: underline; }
+.actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+.actions button { font-size: 13px; white-space: normal; }
+@media (max-width: 600px) { .banner { padding: 18px; gap: 14px; align-items: stretch; flex-direction: column; } .actions { flex-direction: row; flex-wrap: wrap; } .actions button { flex: 1; } }

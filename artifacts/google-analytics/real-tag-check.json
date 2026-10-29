@@ -1,0 +1,55 @@
+{
+  "environment": "Local production, real Google tag, synthetic plate, explicit debug mode on test commands",
+  "requests": [
+    {
+      "event": "page_view",
+      "location": "http://localhost:34631/lto-registration-renewal",
+      "debug": null,
+      "body": null,
+      "custom": {
+        "ep.debug_mode": "true"
+      }
+    },
+    {
+      "event": "check_schedule",
+      "location": "http://localhost:34631/lto-registration-renewal",
+      "debug": null,
+      "body": null,
+      "custom": {
+        "ep.debug_mode": "true",
+        "ep.surface": "calculator"
+      }
+    },
+    {
+      "event": "calculator_result",
+      "location": "http://localhost:34631/lto-registration-renewal",
+      "debug": null,
+      "body": null,
+      "custom": {
+        "ep.debug_mode": "true",
+        "ep.surface": "calculator"
+      }
+    }
+  ],
+  "responses": [
+    204,
+    204,
+    204
+  ],
+  "failures": [
+    "net::ERR_ABORTED",
+    "net::ERR_ABORTED",
+    "net::ERR_ABORTED"
+  ],
+  "queuedEvents": [
+    "page_view",
+    "check_schedule",
+    "calculator_result"
+  ],
+  "errors": [],
+  "noNewRequestsAfterWithdrawal": true,
+  "cookiesAfterWithdrawal": [],
+  "limitations": [
+    "Hosted deployment, hosted saves and physical devices remain unverified. Debug traffic is a synthetic local test."
+  ]
+}

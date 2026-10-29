@@ -5,10 +5,11 @@ export async function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
   const development = process.env.NODE_ENV !== 'production';
   const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin : '';
+  const analyticsConnections = process.env.GOOGLE_ANALYTICS_ENABLED === 'true' ? ' https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com' : '';
   const csp = [
     "default-src 'self'", "script-src 'self' 'nonce-" + nonce + "' 'strict-dynamic'" + (development ? " 'unsafe-eval'" : ''),
     "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob: https://googleusercontent.com https://*.googleusercontent.com " + supabaseOrigin,
-    "connect-src 'self' " + supabaseOrigin + (development ? ' ws://localhost:* ws://127.0.0.1:*' : ''),
+    "connect-src 'self' " + supabaseOrigin + analyticsConnections + (development ? ' ws://localhost:* ws://127.0.0.1:*' : ''),
     "worker-src 'self'", "font-src 'self'", "object-src 'none'", "base-uri 'self'", "form-action 'self' https://accounts.google.com https://checkout.paymongo.com " + supabaseOrigin,
     "frame-ancestors 'none'", ...(development ? [] : ['upgrade-insecure-requests']),
   ].join('; ');

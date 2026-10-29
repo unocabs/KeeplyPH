@@ -1,6 +1,6 @@
 # Keeply user research and product decisions
 
-Updated 26 October 2026.
+Updated 29 October 2026.
 
 ## Purpose
 
@@ -62,6 +62,22 @@ For a material change, add a dated entry here or link a separate research note. 
 Record feedback without names, account numbers, credentials, unredacted receipts, or other household-sensitive information. Link only appropriately redacted supporting material.
 
 ## Recorded direction and findings
+
+### 29 October 2026: consented Google Analytics for the calculator-to-reminder journey
+
+**Problem and evidence:** the owner asks to connect Google Analytics and measure calculator anchor clicks, schedule checks and reminder CTAs, then approves the proposed plan. Source inspection found no GA tag and existing separate optional internal metrics. The owner supplied a new GA4 web stream, verified against its Analytics screen. This is explicit owner direction and repository observation, not evidence of household demand or a measured conversion problem. Baseline sections 2.3, 2.6, Gap E and the job-focused pilot metrics support clear outcome distinctions and restrained data collection.
+
+**Decision and expected outcome:** add consent-gated GA4 with static route labels, curated CTA locations, calculator result/error events, sample-account links and acknowledged new reminder saves. Mark the three requested intent events and successful saves as key events in GA4. Require the existing account measurement preference as well as browser consent for private pages and saves. Preserve internal measurement and household flows. Expected benefit is identifying useful acquisition sources and possible friction for further investigation, without treating a click as a saved or delivered reminder.
+
+**Validation and uncertainty:** production build, type checking, lint and all 415 unit tests passed. Local production checks passed in Chrome at 1280/390/320 px and WebKit at 390 px, including consent, calculator events, navigation, sample cancellation and failed-save retry with an isolated API fixture. Six narrowly matched local WebKit prefetch-cancellation diagnostics remain recorded. Real Google requests for page views, schedule checks and calculator results returned HTTP 204 with sanitized URLs; withdrawal stopped further collection and cleared cookies. GA4 key events, the CTA location dimension, retention and privacy settings were verified in the new property, and Vercel confirmed both production environment variables were saved. Mobile Lighthouse SEO was 100 on home, calculator and privacy, with performance 97/94/96. See [the integration notes](../google-analytics.md) and `artifacts/google-analytics/`. Production deployment, hosted OAuth/database saves, Google report receipt, physical devices and reduced household effort remain unverified. Record those results separately after deployment.
+
+### 29 October 2026: proposed aircon guide usefulness improvements
+
+**Problem and evidence:** the owner asks for researched ways to make the existing aircon guide more useful and requests a plan. The current source and public page already cover schedules, prices, filter care and visit preparation. Manufacturer guidance, two providers' published offers and anecdotal Philippine discussions suggest investigating personal date planning, quote scope and post-service recovery. Current Teko copy does not explicitly promise outdoor-unit cleaning although Keeply's table attributes that inclusion to it. See the [research and proposed plan](2026-10-29-aircon-guide-usefulness-plan.md) for source links and limitations.
+
+**Recommendation, not implementation approval:** correct the source attribution, then consider one public planner using a known last-service date and a reader-chosen maintenance interval, plus a dated comparison of quote inclusions and a clearer after-service checklist. Reuse existing Keeply records. Do not prescribe a universal interval, diagnose faults, add booking/directory functionality or change the LTO page.
+
+**Expected outcome and validation:** reduce calendar arithmetic, incomplete quote comparisons and missing follow-up records. These benefits remain assistant hypotheses, supported by desk research rather than observed Keeply household behaviour. Validate with formative household tasks and, if implemented, the complete sign-in/save flow, dates, browser behaviour, rendered SEO, structured data and Lighthouse. No application changes, deployment or new-flow verification were performed for this plan.
 
 ### 26 October 2026: implement focused homepage clarity and Premium demonstration
 

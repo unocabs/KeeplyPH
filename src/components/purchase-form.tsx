@@ -6,6 +6,7 @@ import { ArrowLeft, Camera, FileText, Lightbulb, Trash2, UploadCloud } from 'luc
 import { addMonths, categories, FILE_TYPES, MAX_FILE_BYTES, todayIn, type Document, type PurchaseWithDetails } from '@/lib/domain';
 import { ProductTypePicker } from './product-type-picker';
 import { isProductType } from '@/features/purchases/product-types';
+import { trackAnalytics } from '@/lib/google-analytics';
 import { actionError } from '@/lib/action-error';
 import { type Category } from '@/lib/domain';
 import { createDraft, savePurchase, deletePurchase } from '@/features/purchases/actions';
@@ -37,6 +38,7 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
   const idRef = useRef(purchase?.id || '');
   const draft = useRef<Promise<string> | null>(null);
   const dirty = useRef(false);
+  const saveMeasured = useRef(false);
   const [error, setError] = useState('');
   const [savedPreview, setSavedPreview] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -117,6 +119,10 @@ export function PurchaseForm({ purchase, demo = false, warrantyFocus = false, in
       const result = await savePurchase(data);
       if (result.error) throw new Error(result.error);
       const saved = purchase?.state === 'saved' ? 'updated' : 'created';
+      if (saved === 'created' && hasWarranty && !saveMeasured.current) {
+        saveMeasured.current = true;
+        trackAnalytics('reminder_saved', 'app');
+      }
       dirty.current = false; router.push('/items/' + result.id + '?saved=' + saved); router.refresh();
     } catch (e) { setError(actionError(e)); }
     finally { setSaving(false); }

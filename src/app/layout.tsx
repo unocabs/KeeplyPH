@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { GoogleAnalyticsSetup } from '@/components/google-analytics-setup';
 import './globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.keeplyph.com'), title: { default: 'Keeply: Household Admin for Bills, Maintenance & Warranties', template: '%s · Keeply' },
@@ -10,5 +12,5 @@ export const metadata: Metadata = {
 };
 export const dynamic = 'force-dynamic';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="en-PH"><body><a className="skip-link" href="#main-content">Skip to content</a>{children}</body></html>;
+  return <html lang="en-PH"><body><a className="skip-link" href="#main-content">Skip to content</a>{children}<Suspense fallback={null}><GoogleAnalyticsSetup /></Suspense></body></html>;
 }
