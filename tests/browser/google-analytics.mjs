@@ -9,7 +9,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { chromium, webkit } from 'playwright';
 
-const output = 'artifacts/google-analytics';
+const output = process.env.GOOGLE_ANALYTICS_TEST_OUTPUT || 'artifacts/google-analytics';
 const appPort = 34621, tlsPort = 34622, apiPort = 34623, base = `https://localhost:${tlsPort}`;
 const temporary = await mkdtemp(join(tmpdir(), 'keeply-analytics-'));
 const reports = [], errors = [], seo = [];
@@ -75,8 +75,18 @@ try {
     assert.equal(scriptRequests, 0, 'No Google request before consent');
     assert.equal(await count('page_view'), 0);
     await page.getByRole('button', { name: 'Decline analytics', exact: true }).click();
+    assert.equal(await page.getByRole('button', { name: 'Analytics choices', exact: true }).count(), 0, 'No floating control after answering');
     await page.reload(); await page.waitForLoadState('networkidle');
     assert.equal(scriptRequests, 0, 'Decline persists over reload');
+    assert.equal(await page.locator('#analytics-choices').count(), 0, 'Saved answer keeps the prompt closed');
+    assert.equal(await page.getByRole('button', { name: 'Analytics choices', exact: true }).count(), 0, 'Reload does not restore the floating control');
+    await visit('/privacy#google-analytics');
+    await page.getByRole('status').filter({ hasText: 'Analytics declined in this browser.' }).waitFor();
+    await page.getByRole('button', { name: 'Analytics choices', exact: true }).click();
+    assert.equal(await page.locator('#analytics-heading').evaluate(node => node === document.activeElement), true, 'Reopened choices receive keyboard focus');
+    await page.getByRole('button', { name: 'Close', exact: true }).click();
+    assert.equal(await page.getByRole('button', { name: 'Analytics choices', exact: true }).evaluate(node => node === document.activeElement), true, 'Closing restores focus');
+    assert.equal(scriptRequests, 0, 'Closing does not grant consent');
     await page.getByRole('button', { name: 'Analytics choices', exact: true }).click();
     await page.screenshot({ path: `${output}/${engine.name()}-${width}-consent.png` });
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Consent layout fits');
@@ -84,6 +94,13 @@ try {
     await page.waitForFunction(() => window.__gaFixtureLoaded);
     assert.equal(scriptRequests, 1);
     assert.equal(await count('page_view'), 1);
+    await page.getByRole('status').filter({ hasText: 'Analytics allowed in this browser.' }).waitFor();
+    assert.equal(await page.locator('#analytics-choices').count(), 0, 'Allow closes the prompt');
+    assert.notEqual(await page.getByRole('button', { name: 'Analytics choices', exact: true }).evaluate(node => getComputedStyle(node).position), 'fixed', 'Privacy control stays inline');
+    await visit('/lto-registration-renewal?private=do-not-collect&utm_source=facebook&utm_medium=social#renewal-calculator');
+    await page.waitForFunction(() => window.__gaFixtureLoaded);
+    assert.equal(await count('page_view'), 1);
+    assert.equal(await page.getByRole('button', { name: 'Analytics choices', exact: true }).count(), 0, 'No floating control after Allow and navigation');
     const view = (await events()).find(event => event[1] === 'page_view')[2];
     assert.equal(view.page_location, base + '/lto-registration-renewal');
     assert.equal(view.campaign_source, 'facebook');
@@ -120,8 +137,11 @@ try {
     await page.getByRole('status').filter({ hasText: 'Your sample is ready' }).waitFor();
     assert.equal(await count('reminder_saved'), 0, 'Sample preview never counts as a real save');
     await page.getByRole('link', { name: 'Cancel', exact: true }).click();
+    await page.waitForURL(url => url.pathname === '/demo/items');
     await page.waitForLoadState('networkidle');
     assert.equal(await count('reminder_saved'), 0, 'Cancellation never counts as a real save');
+    await visit('/demo/settings');
+    await page.getByRole('heading', { name: 'Analytics in this browser', exact: true }).waitFor();
     await page.getByRole('button', { name: 'Analytics choices', exact: true }).click();
     await page.evaluate(() => { document.cookie = '_ga=fixture; Path=/'; });
     await page.getByRole('button', { name: 'Decline analytics', exact: true }).click();
@@ -142,6 +162,12 @@ try {
       const session = { access_token: jwt, refresh_token: 'fixture', expires_in: 3600, expires_at: now + 3600, token_type: 'bearer', user };
       await context.addCookies([{ name: 'sb-localhost-auth-token', value: 'base64-' + Buffer.from(JSON.stringify(session)).toString('base64url'), url: base }]);
       await page.evaluate(() => localStorage.setItem('keeply.google-analytics-consent.v1', JSON.stringify({ choice: 'granted', at: Date.now() })));
+      await visit('/settings');
+      await page.getByRole('heading', { name: 'Analytics in this browser', exact: true }).waitFor();
+      await page.locator('#browser-analytics').screenshot({ path: `${output}/${engine.name()}-${width}-settings.png` });
+      await page.getByRole('button', { name: 'Analytics choices', exact: true }).click();
+      await page.getByRole('button', { name: 'Close', exact: true }).click();
+      assert.equal(await page.locator('#analytics-choices').count(), 0, 'Signed-in Settings can reopen and close without changing consent');
       await visit('/add/car?focus=registration&renewalDate=2030-08-22');
       await page.getByLabel('A helpful name').fill('Private fixture car');
       failSave = true;
@@ -156,7 +182,7 @@ try {
       await page.waitForLoadState('networkidle');
       accountAllowed = false;
     }
-    reports.push({ engine: engine.name(), width, checks: 'consent, withdrawal, cross-tab consent, page views, anchor, keyboard submit, validation, result, reminder CTA, sample CTA, private preference gate', successfulSaveFixture: width === 390 });
+    reports.push({ engine: engine.name(), width, checks: 'consent, no floating control after either answer, inline Privacy access, Settings access, close preserves choice and keyboard focus, withdrawal, cross-tab consent, page views, anchor, keyboard submit, validation, result, reminder CTA, sample CTA, private preference gate', successfulSaveFixture: width === 390 });
     for (const path of ['/', '/lto-registration-renewal', '/privacy']) {
       await visit(path);
       const rendered = await page.evaluate(() => ({ title: document.title, canonical: document.querySelector('link[rel="canonical"]')?.href, lang: document.documentElement.lang, locale: document.querySelector('meta[property="og:locale"]')?.content, structured: [...document.querySelectorAll('script[type="application/ld+json"]')].map(node => JSON.parse(node.textContent)) }));
@@ -173,6 +199,11 @@ try {
       await blockedPage.locator('#renewal-plate').fill('98');
       await blockedPage.getByRole('button', { name: 'Check my renewal schedule', exact: true }).click();
       await blockedPage.locator('[aria-live="polite"]').filter({ hasText: 'Standard renewal window' }).waitFor();
+      assert.equal(await blockedPage.getByRole('button', { name: 'Analytics choices', exact: true }).count(), 0);
+      await blockedPage.getByRole('link', { name: 'Keeply home', exact: true }).click();
+      await blockedPage.waitForURL(url => url.pathname === '/');
+      await blockedPage.getByRole('link', { name: 'Privacy', exact: true }).click();
+      await blockedPage.waitForURL(url => url.pathname === '/privacy');
       await blockedPage.getByRole('button', { name: 'Analytics choices', exact: true }).click();
       await blockedPage.getByRole('button', { name: 'Decline analytics', exact: true }).click();
       await blocked.close();

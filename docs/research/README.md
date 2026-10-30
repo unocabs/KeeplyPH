@@ -63,6 +63,16 @@ Record feedback without names, account numbers, credentials, unredacted receipts
 
 ## Recorded direction and findings
 
+### 30 October 2026: move answered analytics choices out of the dashboard
+
+**Problem and evidence:** the owner supplies a screenshot of the floating Analytics choices button over the lower account area and asks to hide it or put it in Settings after someone answers. Source inspection confirms the fixed button remains after either Allow or Decline. This is direct owner feedback and repository observation. Baseline section 2.5 supports respectful control over attention; the expected reduction in distraction is an assistant hypothesis.
+
+**Decision and expected outcome:** remove the persistent floating button. Preserve the initial prompt when no valid browser choice is saved, and keep reopening available in Settings under Analytics in this browser and on the public Privacy page without signing in. Sample Settings explicitly uses the actual browser choice. Show the current browser choice inline, preserve Close without changing consent, and restore focus to the opening button. Keep the existing consent lifetime, withdrawal, cookie clearing, account measurement gate and blocked-storage fallback. Expected benefit: clear the dashboard after an answer while retaining a discoverable way to change it.
+
+**Validation:** the production build, lint, type checking and all 426 unit tests passed. Local production browser checks passed in Chrome at 1280/390/320px and WebKit at 390px for both answers, reload persistence, no floating control, public Privacy access, sample Settings, signed-in Settings against a local fixture, Close without changing consent, focus restoration, withdrawal, cookie clearing, cross-tab changes and blocked storage. Existing tracking and failed-save/retry checks also passed against stand-ins. There were no unexpected page errors; four narrowly matched local WebKit prefetch-cancellation diagnostics are retained in [the browser report](../../artifacts/analytics-choice-placement/validation.json).
+
+**SEO and remaining limits:** HTTP/auth-guard smoke checks and rendered homepage/calculator/privacy canonicals, language, locale and structured-data parsing passed. Sample and private routes remain excluded from the sitemap. Mobile Lighthouse performance was 95 for home and 97 for Privacy, with 100 accessibility, best practices and SEO on both. The existing experimental shared-brand accessible-name and back/forward-cache findings remain. See [the Lighthouse summary](../../artifacts/analytics-choice-placement/lighthouse-summary.json). Hosted deployment, physical devices, real Google delivery and real account saves were not tested for this placement change; no measurement permission is granted by moving these controls.
+
 ### 30 October 2026: compare Free and Premium inside the sample account
 
 **Problem and evidence:** the owner likes the proposed dashboard direction and explicitly asks for a Free/Premium switch in the demo before the redesign is implemented. The existing sample always grants fictional Premium planning, so visitors cannot compare which everyday tools remain available with Free. This is owner direction and repository observation, not observed household purchasing behavior.

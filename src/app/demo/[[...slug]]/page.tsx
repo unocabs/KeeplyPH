@@ -29,6 +29,7 @@ import { SpendingCheckupView } from '@/components/spending-checkup';
 import { cookies } from 'next/headers';
 import { DEMO_PLAN_COOKIE, demoPlan } from '@/lib/demo-plan';
 import { DemoCheckupInvitation } from '@/components/demo-plan-switch';
+import { GoogleAnalyticsPreferences } from '@/components/google-analytics-setup';
 export const metadata = { title: 'Sample account', robots: { index: false, follow: false } };
 export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ q?: string; filter?: string; preset?: string; focus?: string; renewalDate?: string; serviceDate?: string; serviceInterval?: string; category?: string; template?: string; before?: string; id?: string; days?: string; month?: string; week?:string; mode?:string; payday?:string; view?:string }> }) {
   const { slug = [] } = await params;
@@ -84,7 +85,7 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   }
   else if (slug[0] === 'settings' && slug[1] === 'billing') content = <Billing demo usage={usage} />;
   else if (slug[0] === 'settings' && slug[1] === 'alerts') content = <><div className="page-heading"><div><h1>Alert Options</h1><p>Your alerts, in this sample account.</p></div></div><section className="panel narrow-form"><AlertOptions demo initial={{email_reminders_enabled:true}}/></section></>;
-  else if (slug[0] === 'settings') content = <><div className="page-heading"><div><h1>Make yourself at home.</h1><p>Your preferences, in this sample account.</p></div></div><SettingsForm demo profile={{ id: 'sample', display_name: 'Alex Reyes', timezone: 'Asia/Manila', email_reminders_enabled: true, email_delivery_blocked: false, deletion_requested_at: null, created_at: '', updated_at: '' }} /></>;
+  else if (slug[0] === 'settings') content = <><div className="page-heading"><div><h1>Make yourself at home.</h1><p>Your preferences, in this sample account.</p></div></div><SettingsForm demo profile={{ id: 'sample', display_name: 'Alex Reyes', timezone: 'Asia/Manila', email_reminders_enabled: true, email_delivery_blocked: false, deletion_requested_at: null, created_at: '', updated_at: '' }} /><GoogleAnalyticsPreferences/></>;
   else content = <Dashboard items={items} usage={usage} name="Alex" today={today} unconfirmed={sampleUnconfirmed(items)} insights={sampleInsights(items,today)} demo />;
   return <AppShell name="Alex Reyes" hasExtraSlots demo demoPlan={selectedPlan} signedIn={await isSignedIn()}>{content}</AppShell>;
 }

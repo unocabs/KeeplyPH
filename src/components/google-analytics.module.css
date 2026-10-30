@@ -1,5 +1,6 @@
-.preferences { position: fixed; z-index: 39; bottom: max(10px, env(safe-area-inset-bottom)); left: 12px; padding: 7px 11px; border: 1px solid #d5cde0; border-radius: 20px; background: #fff; color: #4c365f; font: inherit; font-size: 12px; cursor: pointer; box-shadow: 0 2px 8px #27103b12; }
-.banner { position: fixed; z-index: 40; inset: auto 16px max(48px, calc(env(safe-area-inset-bottom) + 48px)); margin-inline: auto; max-width: 800px; max-height: 65dvh; overflow-y: auto; display: flex; gap: 24px; align-items: center; padding: 22px; border: 1px solid #d5cde0; border-radius: 20px; background: #fff; color: #352b40; box-shadow: 0 12px 50px #27103b29; }
+.control { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 16px; }
+.control p { color: var(--muted); font-size: 13px; }
+.banner { position: fixed; z-index: 40; inset: auto 16px max(16px, calc(env(safe-area-inset-bottom) + 16px)); margin-inline: auto; max-width: 800px; max-height: 65dvh; overflow-y: auto; display: flex; gap: 24px; align-items: center; padding: 22px; border: 1px solid #d5cde0; border-radius: 20px; background: #fff; color: #352b40; box-shadow: 0 12px 50px #27103b29; }
 .banner h2 { font-size: 18px; margin: 0 0 7px; }
 .banner p { font-size: 13px; line-height: 1.6; margin: 0; }
 .banner a { text-decoration: underline; }

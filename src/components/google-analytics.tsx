@@ -7,6 +7,8 @@ import { analyticsPage, analyticsReferrer, analyticsSurfaces, consentKey, readAn
 import styles from './google-analytics.module.css';
 
 const choiceChanged = 'keeply-analytics-choice';
+const openChoices = 'keeply-open-analytics-choices';
+let choicesOpener: HTMLButtonElement | null = null;
 let sessionChoice = 'null';
 function consentSnapshot() {
   try { return 'saved:' + (localStorage.getItem(consentKey) || 'null'); }
@@ -19,6 +21,18 @@ function subscribeToChoice(callback: () => void) {
   return () => { window.removeEventListener('storage', sync); window.removeEventListener(choiceChanged, callback); };
 }
 const serverConsentSnapshot = () => '';
+
+export function AnalyticsChoicesButton() {
+  const snapshot = useSyncExternalStore(subscribeToChoice, consentSnapshot, serverConsentSnapshot);
+  const choice = readAnalyticsChoice(snapshot.slice(snapshot.indexOf(':') + 1));
+  return <div className={styles.control}>
+    <p role="status">{snapshot === '' ? 'Loading browser choice…' : choice === 'granted' ? 'Analytics allowed in this browser.' : choice === 'denied' ? 'Analytics declined in this browser.' : 'No analytics choice saved in this browser.'}</p>
+    <button type="button" className="button secondary" disabled={snapshot === ''} aria-controls="analytics-choices" onClick={event => {
+      choicesOpener = event.currentTarget;
+      window.dispatchEvent(new Event(openChoices));
+    }}>Analytics choices</button>
+  </div>;
+}
 
 function clearAnalyticsCookies() {
   const domains = location.hostname.split('.');
@@ -36,11 +50,20 @@ export function GoogleAnalytics({ measurementId, nonce, accountAllowed }: { meas
   const choice = readAnalyticsChoice(snapshot.slice(snapshot.indexOf(':') + 1));
   const loaded = snapshot !== '';
   const [editing, setEditing] = useState(false);
+  const heading = useRef<HTMLHeadingElement>(null);
   const storageFailed = snapshot.startsWith('session:');
   const lastView = useRef('');
   const initialized = useRef(false);
   const route = analyticsPage(pathname);
   const allowed = choice === 'granted' && Boolean(route) && (!route?.private || accountAllowed);
+  useEffect(() => {
+    const open = () => setEditing(true);
+    window.addEventListener(openChoices, open);
+    // A Settings control may hydrate before this suspended integration finishes.
+    if (choicesOpener) open();
+    return () => window.removeEventListener(openChoices, open);
+  }, []);
+  useEffect(() => { if (editing && loaded) heading.current?.focus({ preventScroll: true }); }, [editing, loaded]);
   useEffect(() => {
     const page = analyticsPage(pathname);
     // Disable collection before changing consent or navigating to an excluded route.
@@ -93,6 +116,11 @@ export function GoogleAnalytics({ measurementId, nonce, accountAllowed }: { meas
     return () => { setAnalyticsActive(false); document.removeEventListener('click', click, true); };
   }, [allowed, measurementId, pathname, choice]);
 
+  function closeChoices() {
+    setEditing(false);
+    if (choicesOpener?.isConnected) choicesOpener.focus({ preventScroll: true });
+    choicesOpener = null;
+  }
   function choose(next: 'granted' | 'denied') {
     if (next === 'denied') {
       (window as unknown as Record<string, unknown>)['ga-disable-' + measurementId] = true;
@@ -102,15 +130,14 @@ export function GoogleAnalytics({ measurementId, nonce, accountAllowed }: { meas
     sessionChoice = JSON.stringify({ choice: next, at: Date.now() });
     try { localStorage.setItem(consentKey, sessionChoice); } catch { /* Use the browser session when persistent storage is blocked. */ }
     window.dispatchEvent(new Event(choiceChanged));
-    setEditing(false);
+    closeChoices();
   }
   const showChoices = loaded && (choice === null || editing);
   return <>
     {allowed && <Script id="keeply-google-analytics" src={'https://www.googletagmanager.com/gtag/js?id=' + measurementId} nonce={nonce} strategy="afterInteractive" />}
-    {loaded && <button type="button" className={styles.preferences} onClick={() => setEditing(value => !value)} aria-expanded={showChoices} aria-controls="analytics-choices">Analytics choices</button>}
     {showChoices && <section id="analytics-choices" className={styles.banner} aria-labelledby="analytics-heading">
-      <div><h2 id="analytics-heading">Help us improve Keeply?</h2><p>Allow optional Google Analytics cookies to understand visits, calculator use and saves. We exclude household details. Signed-in actions also follow Help improve Keeply in Settings. <Link href="/privacy#google-analytics">Privacy details</Link></p>{storageFailed && <p>Your browser could not remember this choice. It applies to this page session.</p>}</div>
-      <div className={styles.actions}><button type="button" className="button secondary" onClick={() => choose('denied')}>Decline analytics</button><button type="button" className="button primary" onClick={() => choose('granted')}>Allow analytics</button>{editing && choice !== null && <button type="button" className="text-button" onClick={() => setEditing(false)}>Close</button>}</div>
+      <div><h2 id="analytics-heading" ref={heading} tabIndex={-1}>Help us improve Keeply?</h2><p>Allow optional Google Analytics cookies to understand visits, calculator use and saves. We exclude household details. Signed-in actions also follow Help improve Keeply in Settings. <Link href="/privacy#google-analytics">Privacy details</Link></p>{storageFailed && <p>Your browser could not remember this choice. It applies to this page session.</p>}</div>
+      <div className={styles.actions}><button type="button" className="button secondary" onClick={() => choose('denied')}>Decline analytics</button><button type="button" className="button primary" onClick={() => choose('granted')}>Allow analytics</button>{editing && choice !== null && <button type="button" className="text-button" onClick={closeChoices}>Close</button>}</div>
     </section>}
   </>;
 }
