@@ -6,10 +6,11 @@ import { appUrl } from '@/lib/env';
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
+  const next = safeAuthIntent(url.searchParams.get('next'));
   if (code) {
     const supabase = await serverClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(appUrl() + safeAuthIntent(url.searchParams.get('next')), { headers: { 'Cache-Control': 'no-store' } });
+    if (!error) return NextResponse.redirect(appUrl() + next, { headers: { 'Cache-Control': 'no-store' } });
   }
-  return NextResponse.redirect(appUrl() + '/login?error=callback');
+  return NextResponse.redirect(appUrl() + '/login?error=callback&next=' + encodeURIComponent(next));
 }

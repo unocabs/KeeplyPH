@@ -8,13 +8,13 @@ import { appUrl, isConfigured } from '@/lib/env';
 import { type ActionResult } from '@/lib/domain';
 import { errorMessage } from '@/lib/errors';
 export async function signIn(form: FormData) {
-  if (!isConfigured()) redirect('/login?setup=needed');
   const next = safeAuthIntent(String(form.get('next') || '/dashboard'));
+  if (!isConfigured()) redirect('/login?setup=needed&next=' + encodeURIComponent(next));
   const supabase = await serverClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google', options: { redirectTo: appUrl() + '/auth/callback?next=' + encodeURIComponent(next), queryParams: { prompt: 'select_account' } },
   });
-  if (error || !data.url) redirect('/login?error=signin');
+  if (error || !data.url) redirect('/login?error=signin&next=' + encodeURIComponent(next));
   redirect(data.url);
 }
 export async function signOut() {

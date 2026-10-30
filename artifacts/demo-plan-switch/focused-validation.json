@@ -1,0 +1,32 @@
+[
+  {
+    "engine": "chromium",
+    "status": "passed",
+    "checks": [
+      "switch pending",
+      "network failure and retry",
+      "session preference excludes private paths",
+      "reload persistence",
+      "Free horizon clamp",
+      "Premium restoration at requested year",
+      "Free amount cancel/error/update",
+      "320px doubled switch text"
+    ],
+    "expectedNetworkErrors": []
+  },
+  {
+    "engine": "webkit",
+    "status": "passed",
+    "checks": [
+      "switch pending",
+      "network failure and retry",
+      "session preference excludes private paths",
+      "reload persistence",
+      "Free horizon clamp",
+      "Premium restoration at requested year",
+      "Free amount cancel/error/update",
+      "320px doubled switch text"
+    ],
+    "expectedNetworkErrors": []
+  }
+]

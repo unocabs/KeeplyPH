@@ -26,30 +26,36 @@ import { notFound } from 'next/navigation';
 import { sampleCheckupComparison, sampleSpendingCheckup, spendingCategories } from '@/features/premium/checkup';
 import { CheckupChangesView } from '@/components/checkup-changes';
 import { SpendingCheckupView } from '@/components/spending-checkup';
+import { cookies } from 'next/headers';
+import { DEMO_PLAN_COOKIE, demoPlan } from '@/lib/demo-plan';
+import { DemoCheckupInvitation } from '@/components/demo-plan-switch';
 export const metadata = { title: 'Sample account', robots: { index: false, follow: false } };
-export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ q?: string; filter?: string; preset?: string; focus?: string; renewalDate?: string; category?: string; template?: string; before?: string; id?: string; days?: string; month?: string; week?:string; mode?:string; payday?:string; view?:string }> }) {
+export default async function DemoPage({ params, searchParams }: { params: Promise<{ slug?: string[] }>; searchParams: Promise<{ q?: string; filter?: string; preset?: string; focus?: string; renewalDate?: string; serviceDate?: string; serviceInterval?: string; category?: string; template?: string; before?: string; id?: string; days?: string; month?: string; week?:string; mode?:string; payday?:string; view?:string }> }) {
   const { slug = [] } = await params;
   const query = await searchParams;
   const today = todayIn();
   const items = sampleItems(today);
   const purchases = samplePurchases(items);
-  const usage = sampleUsage(items, today);
+  const selectedPlan = demoPlan((await cookies()).get(DEMO_PLAN_COOKIE)?.value);
+  const premium = selectedPlan === 'premium';
+  const usage = sampleUsage(items, today, selectedPlan);
   let content;
   if (slug[0] === 'checkup') {
     const cursor=requiredDate.safeParse(query.before).success&&uuidSchema.safeParse(query.id).success;
     const filter={week:requiredDate.safeParse(query.week).success?query.week:undefined,category:spendingCategories.includes(query.category??'')?query.category:undefined,before:cursor?query.before:undefined,id:cursor?query.id:undefined,mode:query.mode,payday:requiredDate.safeParse(query.payday).success?query.payday:undefined};
     const plan={...sampleSpendingCheckup(items,today,filter),comparison:sampleCheckupComparison(items,today,filter)};
-    content=query.view==='changes'?<CheckupChangesView plan={plan} demo/>:<SpendingCheckupView plan={plan} paged={cursor} demo/>;
+    content=!premium?<DemoCheckupInvitation/>:query.view==='changes'?<CheckupChangesView plan={plan} demo/>:<SpendingCheckupView plan={plan} paged={cursor} demo/>;
   }
   else if (slug[0] === 'planner') {
-    const days=plannerHorizon(query.days),month=/^\d{4}-\d{2}-01$/.test(query.month||'')&&requiredDate.safeParse(query.month).success?query.month:undefined;
-    const cursor=requiredDate.safeParse(query.before).success&&uuidSchema.safeParse(query.id).success;
-    content=<HouseholdPlannerView key={days} plan={samplePlanner(items,today,days,month)} allSampleRows={samplePlannerRows(items,today,days)} premium demo month={month} before={cursor?query.before:undefined} beforeId={cursor?query.id:undefined}/>;
+    const requested=plannerHorizon(query.days),days=premium?requested:30;
+    const month=requested===days&&/^\d{4}-\d{2}-01$/.test(query.month||'')&&requiredDate.safeParse(query.month).success?query.month:undefined;
+    const cursor=requested===days&&requiredDate.safeParse(query.before).success&&uuidSchema.safeParse(query.id).success;
+    content=<HouseholdPlannerView key={selectedPlan+':'+days+':'+month+':'+query.before} plan={samplePlanner(items,today,days,month,cursor?query.before:undefined,cursor?query.id:undefined)} allSampleRows={samplePlannerRows(items,today,days)} premium={premium} demo usage={usage} requestedDays={requested} month={month} before={cursor?query.before:undefined} beforeId={cursor?query.id:undefined}/>;
   }
   else if (slug[0] === 'add') {
     if(!slug[1]) content = <><h1>What would you like to organise first?</h1><TemplateChoices demo initialCategory={query.category} /></>;
     else if(!isTemplate(slug[1])) notFound();
-    else content = slug[1] === 'receipt' ? <PurchaseForm demo warrantyFocus={query.focus === 'warranty'} initialCategory={categories.includes(query.category as Category) ? query.category as Category : undefined} /> : <ItemForm template={slug[1]} vehicles={items.filter(item => item.template_key === slug[1])} preset={query.preset} focus={query.focus} renewalDate={query.renewalDate} demo />;
+    else content = slug[1] === 'receipt' ? <PurchaseForm demo warrantyFocus={query.focus === 'warranty'} initialCategory={categories.includes(query.category as Category) ? query.category as Category : undefined} /> : <ItemForm template={slug[1]} vehicles={items.filter(item => item.template_key === slug[1])} preset={query.preset} focus={query.focus} renewalDate={query.renewalDate} serviceDate={query.serviceDate} serviceInterval={query.serviceInterval} demo />;
   }
   else if(slug[0] === 'items' && slug[1] === 'payments') {
     const valid = requiredDate.safeParse(query.before).success && uuidSchema.safeParse(query.id).success;
@@ -80,5 +86,5 @@ export default async function DemoPage({ params, searchParams }: { params: Promi
   else if (slug[0] === 'settings' && slug[1] === 'alerts') content = <><div className="page-heading"><div><h1>Alert Options</h1><p>Your alerts, in this sample account.</p></div></div><section className="panel narrow-form"><AlertOptions demo initial={{email_reminders_enabled:true}}/></section></>;
   else if (slug[0] === 'settings') content = <><div className="page-heading"><div><h1>Make yourself at home.</h1><p>Your preferences, in this sample account.</p></div></div><SettingsForm demo profile={{ id: 'sample', display_name: 'Alex Reyes', timezone: 'Asia/Manila', email_reminders_enabled: true, email_delivery_blocked: false, deletion_requested_at: null, created_at: '', updated_at: '' }} /></>;
   else content = <Dashboard items={items} usage={usage} name="Alex" today={today} unconfirmed={sampleUnconfirmed(items)} insights={sampleInsights(items,today)} demo />;
-  return <AppShell name="Alex Reyes" hasExtraSlots demo signedIn={await isSignedIn()}>{content}</AppShell>;
+  return <AppShell name="Alex Reyes" hasExtraSlots demo demoPlan={selectedPlan} signedIn={await isSignedIn()}>{content}</AppShell>;
 }

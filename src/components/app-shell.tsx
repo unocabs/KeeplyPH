@@ -7,8 +7,10 @@ import { AddItemButton } from './template-picker';
 import { Brand } from './brand';
 import { signOut } from '@/features/account/actions';
 import { AccountAvatar } from './account-avatar';
+import { DemoPlanSwitch } from './demo-plan-switch';
+import type { DemoPlan } from '@/lib/demo-plan';
 
-export function AppShell({ children, name, avatarUrl, alertCoverage, hasExtraSlots, demo = false, signedIn = false }: { children: React.ReactNode; name: string; avatarUrl?: string | null; alertCoverage?: { covered: number; total: number }; hasExtraSlots: boolean; demo?: boolean; signedIn?: boolean }) {
+export function AppShell({ children, name, avatarUrl, alertCoverage, hasExtraSlots, demo = false, signedIn = false, demoPlan = 'premium' }: { children: React.ReactNode; name: string; avatarUrl?: string | null; alertCoverage?: { covered: number; total: number }; hasExtraSlots: boolean; demo?: boolean; signedIn?: boolean; demoPlan?: DemoPlan }) {
   const pathname = usePathname();
   const filter = useSearchParams().get('filter');
   const [open, setOpen] = useState(false);
@@ -24,11 +26,12 @@ export function AppShell({ children, name, avatarUrl, alertCoverage, hasExtraSlo
         {!hasExtraSlots && <div className="upgrade-card"><span className="mini-icon"><ShieldCheck size={18} /></span><strong>A little more breathing room</strong><p>Plan the months ahead.<br />Try 30 days when you install.</p><Link href={base + '/settings/billing'}>Explore Premium <ArrowUpRight size={15} /></Link></div>}
         {!demo && <Link href="/feedback" className={'nav-link ' + (pathname === '/feedback' ? 'active' : '')} onClick={() => setOpen(false)}><MessageSquare size={19} aria-hidden="true"/>Add feedback</Link>}
         <Link href={base + '/settings'} className="nav-link" onClick={() => setOpen(false)}><Settings size={19} />Settings</Link>
-        <div className="account-row"><AccountAvatar name={name} src={demo ? null : avatarUrl}/><div><strong>{name || 'Your account'}</strong><span>{demo ? 'Sample account' : alertCoverage ? `Alerts on ${alertCoverage.covered} of ${alertCoverage.total} ${alertCoverage.total === 1 ? 'item' : 'items'}` : 'Your account'}</span></div>{!demo && <form action={signOut}><button className="icon-button" aria-label="Sign out"><LogOut size={17} /></button></form>}</div>
+        <div className="account-row"><AccountAvatar name={name} src={demo ? null : avatarUrl}/><div><strong>{name || 'Your account'}</strong><span>{demo ? `Sample account · ${demoPlan === 'premium' ? 'Premium' : 'Free'}` : alertCoverage ? `Alerts on ${alertCoverage.covered} of ${alertCoverage.total} ${alertCoverage.total === 1 ? 'item' : 'items'}` : 'Your account'}</span></div>{!demo && <form action={signOut}><button className="icon-button" aria-label="Sign out"><LogOut size={17} /></button></form>}</div>
       </div>
     </aside>
     <div className="workspace">
       {demo ? <div className="demo-banner">Explore a sample household account. Items and files are fictional; no alerts are sent. <Link href={signedIn ? "/dashboard" : "/login"}>{signedIn ? "Open your account" : "Start your own account"} <ArrowUpRight size={14} /></Link></div> : <div className="workspace-top"><span><LockKeyhole size={13} /> Your household details, kept private</span><span>Made for everyday peace of mind</span></div>}
+      {demo && <DemoPlanSwitch plan={demoPlan}/>}
       <main className="main-content" id="main-content">{children}</main>
       {!pathname.includes('/settings') && !pathname.includes('/add') && !pathname.endsWith('/edit') && !pathname.endsWith('/new') && <AddItemButton demo={demo} floating />}<footer className="app-footer"><span>One less thing to worry about.</span><div><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><span>Keeply © {new Date().getFullYear()}</span></div></footer>
     </div>

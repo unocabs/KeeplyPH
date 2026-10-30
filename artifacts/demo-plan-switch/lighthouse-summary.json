@@ -1,0 +1,62 @@
+[
+  {
+    "name": "home",
+    "scores": {
+      "performance": 89,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "failedAudits": [
+      {
+        "id": "label-content-name-mismatch",
+        "title": "Elements with visible text labels do not have matching accessible names."
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration"
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "name": "demo-premium",
+    "scores": {
+      "performance": 85,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 66
+    },
+    "failedAudits": [
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing"
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration"
+      }
+    ],
+    "warnings": []
+  },
+  {
+    "name": "demo-free",
+    "scores": {
+      "performance": 88,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 66
+    },
+    "failedAudits": [
+      {
+        "id": "is-crawlable",
+        "title": "Page is blocked from indexing"
+      },
+      {
+        "id": "bf-cache",
+        "title": "Page prevented back/forward cache restoration"
+      }
+    ],
+    "warnings": []
+  }
+]

@@ -1,11 +1,12 @@
 import { addIntent, isTemplate } from '@/features/templates';
 import { safeReturnPath } from './domain';
+import { safeAirconPlan } from './aircon-plan';
 import { isPremiumProduct } from '@/features/premium/products';
 import { isProduct, isSlotCount } from '@/features/billing/products';
 export function safeAuthIntent(value: string | null | undefined): string {
  const safe=safeReturnPath(value),url=new URL(safe,'https://keeplyph.com');
  const template=url.pathname.split('/')[2];
- if(url.pathname.startsWith('/add/') && isTemplate(template) && url.pathname==='/add/'+template)return addIntent(template,url.searchParams.get('focus') || undefined,url.searchParams.get('category') || undefined,url.searchParams.get('preset') || undefined,url.searchParams.get('renewalDate') || undefined);
+ if(url.pathname.startsWith('/add/') && isTemplate(template) && url.pathname==='/add/'+template)return addIntent(template,url.searchParams.get('focus') || undefined,url.searchParams.get('category') || undefined,url.searchParams.get('preset') || undefined,url.searchParams.get('renewalDate') || undefined,safeAirconPlan(url.searchParams.get('serviceDate'),url.searchParams.get('serviceInterval')));
  if(url.pathname==='/settings/billing') {
    const query = new URLSearchParams();
    const slots = Number(url.searchParams.get('slots')), product = url.searchParams.get('product') || '';

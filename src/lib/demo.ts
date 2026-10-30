@@ -3,6 +3,7 @@ import { defaultOffsets, reminderPresets, type DateKind, type ReminderPreset, ty
 import { comingUp, dateRows, type DateWithDetails, type ItemWithDetails } from '@/features/items/domain';
 import { readinessChecks } from '@/features/items/insights';
 import { activityTitle, completionType, type UnconfirmedSummary } from '@/features/items/activity';
+import type { DemoPlan } from './demo-plan';
 
 // Stable IDs preserve existing sample links, including the passport and receipt previews.
 const ids = {
@@ -146,10 +147,10 @@ export function samplePurchases(items = sampleItems()): PurchaseWithDetails[] {
   });
 }
 
-export function sampleUsage(items: ItemWithDetails[], today = todayIn()): Usage {
+export function sampleUsage(items: ItemWithDetails[], today = todayIn(), plan: DemoPlan = 'premium'): Usage {
   const rows = dateRows(items);
   return {
-    household_premium: true,
+    household_premium: plan === 'premium',
     purchases: items.length, active_reminders: items.length,
     reminders: items.filter(item => item.coverage === 'covered').length,
     slot_limit: 2147483647, uncovered: items.filter(item => item.coverage === 'off').length,

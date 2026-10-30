@@ -1,4 +1,5 @@
 import { safeRenewalDate } from '@/lib/lto-schedule';
+import { safeAirconPlan, type AirconPlan } from '@/lib/aircon-plan';
 export const templateKeys = ['receipt', 'car', 'motorcycle', 'licence', 'passport', 'aircon', 'other'] as const;
 export type TemplateKey = typeof templateKeys[number];
 export type DateKind = 'warranty' | 'registration' | 'insurance' | 'service' | 'expiration' | 'other';
@@ -19,13 +20,15 @@ export function defaultOffsets(template: TemplateKey, kind: DateKind): Offset[] 
   return [{unit:'days',value:days}];
 }
 // Only supported, non-private intent survives the OAuth round trip.
-export function addIntent(template: TemplateKey, focus?: string, category?: string, preset?: string, renewalDate?: string): string {
+export function addIntent(template: TemplateKey, focus?: string, category?: string, preset?: string, renewalDate?: string, servicePlan?: AirconPlan): string {
   const query = new URLSearchParams();
   if (focus && templates[template].kinds.includes(focus as DateKind)) query.set('focus', focus);
   if (template === 'receipt' && ['electronics', 'appliances', 'home', 'clothing', 'other'].includes(category || '')) query.set('category', category!);
   if (template === 'other' && isReminderPreset(preset)) query.set('preset', preset);
   const suggestedDate = template === 'car' && focus === 'registration' ? safeRenewalDate(renewalDate) : undefined;
   if (suggestedDate) query.set('renewalDate', suggestedDate);
+  const aircon = template === 'aircon' ? safeAirconPlan(servicePlan?.serviceDate, servicePlan?.serviceInterval) : undefined;
+  if (aircon) { query.set('serviceDate', aircon.serviceDate); query.set('serviceInterval', String(aircon.serviceInterval)); }
   return '/add/' + template + (query.size ? '?' + query.toString() : '');
 }
 

@@ -1,6 +1,6 @@
 # Keeply user research and product decisions
 
-Updated 29 October 2026.
+Updated 30 October 2026.
 
 ## Purpose
 
@@ -63,6 +63,32 @@ Record feedback without names, account numbers, credentials, unredacted receipts
 
 ## Recorded direction and findings
 
+### 30 October 2026: compare Free and Premium inside the sample account
+
+**Problem and evidence:** the owner likes the proposed dashboard direction and explicitly asks for a Free/Premium switch in the demo before the redesign is implemented. The existing sample always grants fictional Premium planning, so visitors cannot compare which everyday tools remain available with Free. This is owner direction and repository observation, not observed household purchasing behavior.
+
+**Decision and expected outcome:** add a clearly labelled sample-only plan switch above the dashboard and keep it available while exploring sample routes. Use the same fictional records for both plans. Free retains records, alerts, history, useful details, totals and 30-day planning. Premium adds the existing checkup, monthly comparisons and longer planning. Store the selection in an HTTP-only browser-session cookie scoped to `/demo`; private account entitlements and payment state never read this preference. Preserve existing Premium sample entry points as the default. Include pending and failed-switch feedback, a clear Free checkup explanation and an explicit way to switch into the Premium sample. This implements plan comparison before the visual redesign, not the proposed full-dashboard styling.
+
+**Validation:** the production build, lint, type checking and all 426 unit tests passed. Functional public/sample journey assertions passed in Chrome at 1280/390/320px and WebKit at 390px, including switching, reload persistence, preserved Free summaries, Free's 30-day limit, checkup explanation and Premium restoration. The broader run's final strict console check failed on five WebKit navigation fetch/access-control diagnostics; raw results remain in `artifacts/demo-plan-switch/browser-checks.json`. Separate focused Chrome and WebKit checks passed for pending controls, interrupted-request failure and retry, session-cookie scope excluding the private dashboard, restoration of the requested year-ahead view, Free sample amount cancellation/error/update and 320px doubled-text controls, with no unexpected page errors. See `artifacts/demo-plan-switch/focused-validation.json` and the retained screenshots.
+
+**SEO and remaining uncertainty:** HTTP/auth-guard smoke checks, rendered metadata on 18 routes, structured-data parsing, sitemap exclusion and public/private indexing checks passed. Mobile Lighthouse scored 85/88 performance for Premium/Free samples and 100 accessibility and best practices for both; their SEO score of 66 reflects intentional noindex. The unchanged public homepage scored 89 performance and 100 SEO/accessibility/best practices, with the existing experimental shared-brand accessible-name finding still present. Scores are local lab measurements. See `artifacts/demo-plan-switch/lighthouse-summary.json` and `seo-checks.json`. Reduced comparison effort and plan comprehension remain hypotheses to validate with visitors. Hosted deployment, physical devices and a real signed-in account were not tested; private entitlement decisions do not read the sample preference.
+
+### 30 October 2026: plan a polished Free and Premium dashboard comparison
+
+**Problem and evidence:** after reviewing the first active-Premium concept, the owner asks for a more premium design across the dashboard, explicitly requests planning first and asks to see Free and Premium differences. This is owner direction. The expected clarity and recognition benefits remain assistant hypotheses, not validated household results.
+
+**Proposed direction:** give both plans a polished warm neutral foundation and clearer hierarchy. Use a restrained deep-plum identity for active Premium and integrate existing spending insights and longer planning into Plan & organise. Preserve Free's everyday organisation, dates, amounts, history and records. The [design plan](2026-10-30-dashboard-free-premium-design-plan.md) records scope, access states, item artwork, data requirements, mobile behavior and validation criteria.
+
+**Validation status:** source and prior research reviewed; visual comparison is illustrative. No application implementation, entitlement changes, hosted actions or real-device verification are authorized by the proposal. Test plan recognition, next-obligation discovery and available-tool navigation before treating the design as an improvement.
+
+### 30 October 2026: distinguish active Premium tools from upgrade promotion
+
+**Problem and evidence:** the owner reports that the signed-in desktop dashboard's Premium checkup panel looks like an advertisement and does not communicate that access is already active. Source inspection confirms that Free, active Premium, sample and expired access share the same promotional panel structure, with different wording. This is direct owner feedback and repository observation, not a household usability study or independent verification of the account's payment state. Baseline sections 2.2, 2.3 and "What premium should mean" support dependable access, clear next actions and continuity.
+
+**Recommendation, not implementation approval:** show active access with a small account status indicator and present the existing spending checkup as a normal tool within Plan & organise, alongside the existing spending summary. Use a clear tool name, a direct action and restrained styling. Where existing complete checkup data is available, prefer one useful result over benefit-selling copy without repeating the existing total. Distinguish paid access, installation gift access and expired access using authoritative entitlement data; payment awaiting activation must not appear active. Preserve current entitlements, amounts, records and existing destinations.
+
+**Expected outcome and validation:** help a returning household recognise its available tool and reach the checkup without interpreting a sales message. The expected benefit is an assistant hypothesis. Validate whether people can identify their access state and open the checkup without being prompted to upgrade, including gift and expiry transitions and mobile layouts. This entry records the feedback and recommendation only. Application behavior, payment activation and device flows were not changed or tested.
+
 ### 29 October 2026: consented Google Analytics for the calculator-to-reminder journey
 
 **Problem and evidence:** the owner asks to connect Google Analytics and measure calculator anchor clicks, schedule checks and reminder CTAs, then approves the proposed plan. Source inspection found no GA tag and existing separate optional internal metrics. The owner supplied a new GA4 web stream, verified against its Analytics screen. This is explicit owner direction and repository observation, not evidence of household demand or a measured conversion problem. Baseline sections 2.3, 2.6, Gap E and the job-focused pilot metrics support clear outcome distinctions and restrained data collection.
@@ -78,6 +104,8 @@ Record feedback without names, account numbers, credentials, unredacted receipts
 **Recommendation, not implementation approval:** correct the source attribution, then consider one public planner using a known last-service date and a reader-chosen maintenance interval, plus a dated comparison of quote inclusions and a clearer after-service checklist. Reuse existing Keeply records. Do not prescribe a universal interval, diagnose faults, add booking/directory functionality or change the LTO page.
 
 **Expected outcome and validation:** reduce calendar arithmetic, incomplete quote comparisons and missing follow-up records. These benefits remain assistant hypotheses, supported by desk research rather than observed Keeply household behaviour. Validate with formative household tasks and, if implemented, the complete sign-in/save flow, dates, browser behaviour, rendered SEO, structured data and Lighthouse. No application changes, deployment or new-flow verification were performed for this plan.
+
+**Design plan finalized the same day:** the owner requests a premium visual direction using the LTO and bills SEO pages as references. Live desktop inspection and source/CSS review informed a warm ivory and plum palette, a restrained purple serif accent, one natural household photo, a prominent planner, clearer quote comparisons and chronological visit guidance. The linked plan now specifies hierarchy, typography, spacing, mobile order, states, identity artwork, content sequence and implementation checks. This is owner direction and an assistant design proposal; mobile usability and household outcomes remain untested. Only planning documents changed.
 
 ### 26 October 2026: implement focused homepage clarity and Premium demonstration
 
